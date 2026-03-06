@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from scipy.stats import poisson
 
-# --- SETUP DA PÁGINA ---
+# --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(page_title="GESTOR IA - ELITE", layout="wide", page_icon="⚽")
 
 # --- ESTILO VISUAL BETANO DARK ---
@@ -39,16 +39,16 @@ def calcular_probabilidades(home, away, df):
     # Médias avançadas
     xg_h = h_matches['FTHG'].mean()
     xg_a = a_matches['FTAG'].mean()
-    chutes_h = h_matches['HS'].mean()
-    chutes_a = a_matches['AS'].mean()
-    corners_h = h_matches['HC'].mean()
-    corners_a = a_matches['AC'].mean()
-    cartoes = h_matches['HY'].mean() + a_matches['AY'].mean()
+    chutes_h = h_matches['HS'].mean() if 'HS' in h_matches else 0
+    chutes_a = a_matches['AS'].mean() if 'AS' in a_matches else 0
+    corners_h = h_matches['HC'].mean() if 'HC' in h_matches else 0
+    corners_a = a_matches['AC'].mean() if 'AC' in a_matches else 0
+    cartoes = (h_matches['HY'].mean() if 'HY' in h_matches else 0) + (a_matches['AY'].mean() if 'AY' in a_matches else 0)
     
     # Poisson para Probabilidades
-    prob_h = poisson.pmf(np.arange(0, 5), xg_h)
-    prob_a = poisson.pmf(np.arange(0, 5), xg_a)
-    matrix = np.outer(prob_h, prob_a)
+    prob_h_list = poisson.pmf(np.arange(0, 5), xg_h)
+    prob_a_list = poisson.pmf(np.arange(0, 5), xg_a)
+    matrix = np.outer(prob_h_list, prob_a_list)
     
     win_h = np.sum(np.triu(matrix, 1)) * 100
     draw = np.trace(matrix) * 100
@@ -86,34 +86,4 @@ if not df.empty:
             if res:
                 st.markdown(f"""
                 <div class="card-jogo">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div style="text-align: center; width: 40%;"><h3>{t_home}</h3></div>
-                        <div style="text-align: center; width: 20%;"><h2>VS</h2></div>
-                        <div style="text-align: center; width: 40%;"><h3>{t_away}</h3></div>
-                    </div>
-                    <hr style="border-color: #313d49;">
-                    <div style="display: flex; justify-content: space-around; text-align: center;">
-                        <div><p class="metric-title">Vitória Casa</p><p class="metric-value">{res['win_h']:.1f}%</p></div>
-                        <div><p class="metric-title">Empate</p><p class="metric-value">{res['draw']:.1f}%</p></div>
-                        <div><p class="metric-title">Vitória Fora</p><p class="metric-value">{res['win_a']:.1f}%</p></div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                c1, c2, c3, c4 = st.columns(4)
-                c1.metric("🚩 Cantos", f"{res['corners']:.1f}")
-                c2.metric("⚽ Over 2.5", f"{res['over25']:.1f}%")
-                c3.metric("👞 Chutes", f"{res['chutes']:.0f}")
-                c4.metric("🟨 Cartões", f"{res['cartoes']:.1f}")
-                
-                st.info(f"💡 **Dica da IA:** A odd justa para o {t_home} é {res['odd_justa_h']:.2f}. Se a Betano pagar mais que isso, entre!")
-
-    with tab2:
-        st.header("🔎 Scanner de Oportunidades")
-        st.write("A IA analisou todos os confrontos possíveis desta liga hoje:")
-        
-        scan_data = []
-        for h in teams[:10]: # Analisando amostra
-            for a in teams[10:20]:
-                if h != a:
-                    r = calcular
+                    <div style="display: flex; justify-con
