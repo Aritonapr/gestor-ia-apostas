@@ -4,7 +4,7 @@ import numpy as np
 from scipy.stats import poisson
 
 # --- CONFIGURAÇÃO VISUAL ---
-st.set_config(page_title="GESTOR IA PRO", layout="wide")
+st.set_page_config(page_title="GESTOR IA PRO", layout="wide")
 st.markdown("""
     <style>
     .main { background-color: #1a242d; color: white; }
