@@ -3,144 +3,117 @@ import pandas as pd
 import numpy as np
 from scipy.stats import poisson
 
-# --- CONFIGURAÇÃO VISUAL ---
-st.set_page_config(page_title="GESTOR IA PRO", layout="wide")
+# --- SETUP DA PÁGINA ---
+st.set_page_config(page_title="GESTOR IA - ELITE", layout="wide", page_icon="⚽")
+
+# --- ESTILO VISUAL BETANO DARK ---
 st.markdown("""
     <style>
-    .main { background-color: #1a242d; color: white; }
-    .stButton>button { background-color: #f05a22; color: white; border-radius: 8px; font-weight: bold; }
-    .card { background-color: #26323e; padding: 20px; border-radius: 12px; border-left: 6px solid #f05a22; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
-    .metric-box { background: #313d49; padding: 10px; border-radius: 8px; text-align: center; }
-    .badge-valor { background: #00ffc3; color: #1a242d; padding: 3px 8px; border-radius: 5px; font-weight: bold; font-size: 12px; }
-    h1, h2 { color: #f05a22 !important; }
+    .main { background-color: #0b1218; color: #e4e6eb; }
+    div[data-testid="stSidebar"] { background-color: #1a242d; }
+    .stButton>button { background: linear-gradient(90deg, #f05a22 0%, #ff8235 100%); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; width: 100%; transition: 0.3s; }
+    .stButton>button:hover { transform: scale(1.02); box-shadow: 0 4px 15px rgba(240,90,34,0.4); }
+    .card-jogo { background-color: #1a242d; padding: 25px; border-radius: 15px; border-top: 4px solid #f05a22; margin-bottom: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
+    .label-valor { background-color: #28a745; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
+    .metric-title { color: #8a949d; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
+    .metric-value { color: #f05a22; font-size: 24px; font-weight: bold; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- BANCO DE DADOS DE ÁRBITROS ---
-referee_db = {
-    'Anthony Taylor': 3.9, 'Michael Oliver': 3.6, 'Gil Manzano': 5.2, 
-    'Szymon Marciniak': 4.5, 'Daniele Orsato': 5.1, 'Felix Zwayer': 4.8
-}
-
-# --- FUNÇÃO PARA BAIXAR DADOS REAIS ---
-@st.cache_data(ttl=3600) # Atualiza a cada 1 hora
-def load_real_data(league_code):
+# --- ENGINE DE DADOS ---
+@st.cache_data(ttl=3600)
+def get_data(league_code):
     url = f"https://www.football-data.co.uk/mmz4281/2425/{league_code}.csv"
     try:
         df = pd.read_csv(url)
-        # Limpando apenas colunas essenciais
-        cols = ['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR', 'HS', 'AS', 'HST', 'AST', 'HC', 'AC', 'HF', 'AF', 'HY', 'AY', 'HR', 'AR']
-        return df[cols]
+        return df
     except:
         return pd.DataFrame()
 
-# --- CÉREBRO DA IA: CÁLCULO DE PROBABILIDADES ---
-def predict_match(home_team, away_team, df):
-    # Estatísticas mandante e visitante
-    home_matches = df[df['HomeTeam'] == home_team]
-    away_matches = df[df['AwayTeam'] == away_team]
+def calcular_probabilidades(home, away, df):
+    h_matches = df[df['HomeTeam'] == home]
+    a_matches = df[df['AwayTeam'] == away]
     
-    if len(home_matches) < 3 or len(away_matches) < 3:
-        return None
-
-    # Médias de Gols (xG)
-    exp_goals_home = home_matches['FTHG'].mean()
-    exp_goals_away = away_matches['FTAG'].mean()
+    if len(h_matches) == 0 or len(a_matches) == 0: return None
     
-    # Médias de Escanteios
-    avg_corners = (home_matches['HC'].mean() + away_matches['AC'].mean())
+    # Médias avançadas
+    xg_h = h_matches['FTHG'].mean()
+    xg_a = a_matches['FTAG'].mean()
+    chutes_h = h_matches['HS'].mean()
+    chutes_a = a_matches['AS'].mean()
+    corners_h = h_matches['HC'].mean()
+    corners_a = a_matches['AC'].mean()
+    cartoes = h_matches['HY'].mean() + a_matches['AY'].mean()
     
-    # Probabilidades Poisson (Vitória/Empate/Derrota)
-    prob_h = poisson.pmf(np.arange(0, 6), exp_goals_home)
-    prob_a = poisson.pmf(np.arange(0, 6), exp_goals_away)
+    # Poisson para Probabilidades
+    prob_h = poisson.pmf(np.arange(0, 5), xg_h)
+    prob_a = poisson.pmf(np.arange(0, 5), xg_a)
     matrix = np.outer(prob_h, prob_a)
     
-    prob_win_h = np.sum(np.triu(matrix, 1)) # Vitória Casa
-    prob_draw = np.trace(matrix) # Empate
-    prob_win_a = np.sum(np.tril(matrix, -1)) # Vitória Fora
+    win_h = np.sum(np.triu(matrix, 1)) * 100
+    draw = np.trace(matrix) * 100
+    win_a = np.sum(np.tril(matrix, -1)) * 100
+    over25 = (1 - (matrix[0,0] + matrix[0,1] + matrix[0,2] + matrix[1,0] + matrix[1,1] + matrix[2,0])) * 100
     
-    # Probabilidade Over 2.5 Gols
-    prob_over25 = 1 - (matrix[0,0] + matrix[0,1] + matrix[0,2] + matrix[1,0] + matrix[1,1] + matrix[2,0])
-
     return {
-        'win_h': prob_win_h * 100, 'draw': prob_draw * 100, 'win_a': prob_win_a * 100,
-        'over25': prob_over25 * 100, 'corners': round(avg_corners, 1),
-        'xg_h': round(exp_goals_home, 2), 'xg_a': round(exp_goals_away, 2)
+        'win_h': win_h, 'draw': draw, 'win_a': win_a, 'over25': over25,
+        'corners': corners_h + corners_a, 'chutes': chutes_h + chutes_a,
+        'cartoes': cartoes, 'xg_h': xg_h, 'xg_a': xg_a,
+        'odd_justa_h': 100/win_h if win_h > 0 else 0
     }
 
-# --- INTERFACE PRINCIPAL ---
-st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Betano_logo.svg/1200px-Betano_logo.svg.png", width=150)
-st.sidebar.title("⚙️ CONFIGURAÇÃO IA")
+# --- SIDEBAR E FILTROS ---
+st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Betano_logo.svg/1200px-Betano_logo.svg.png", width=180)
+st.sidebar.markdown("---")
+liga_nome = st.sidebar.selectbox("🏆 SELECIONE A LIGA", 
+    ['Premier League', 'La Liga', 'Serie A', 'Bundesliga', 'Ligue 1'])
+ligas_map = {'Premier League':'E0', 'La Liga':'SP1', 'Serie A':'I1', 'Bundesliga':'D1', 'Ligue 1':'F1'}
 
-leagues = {
-    'Premier League (Inglaterra)': 'E0',
-    'La Liga (Espanha)': 'SP1',
-    'Serie A (Itália)': 'I1',
-    'Bundesliga (Alemanha)': 'D1',
-    'Ligue 1 (França)': 'F1'
-}
+# --- CARREGAMENTO ---
+df = get_data(ligas_map[liga_nome])
 
-selected_league_label = st.sidebar.selectbox("Selecione a Liga para Analisar", list(leagues.keys()))
-league_code = leagues[selected_league_label]
+if not df.empty:
+    tab1, tab2, tab3 = st.tabs(["🎯 ANALISADOR", "🔍 SCANNER DE VALOR", "📋 RELATÓRIO"])
 
-st.title(f"🚀 Scanner IA: {selected_league_label}")
-
-data = load_real_data(league_code)
-
-if not data.empty:
-    teams = sorted(data['HomeTeam'].unique())
-    col1, col2 = st.columns(2)
-    with col1: team_h = st.selectbox("Time da Casa", teams, index=0)
-    with col2: team_a = st.selectbox("Time de Fora", teams, index=1)
-    
-    if st.button("🔥 EXECUTAR ANÁLISE PROFISSIONAL"):
-        res = predict_match(team_h, team_a, data)
+    with tab1:
+        col_t1, col_t2 = st.columns(2)
+        teams = sorted(df['HomeTeam'].unique())
+        t_home = col_t1.selectbox("Casa", teams, index=0)
+        t_away = col_t2.selectbox("Fora", teams, index=1)
         
-        if res:
-            # Card Principal
-            st.markdown(f"""
-            <div class="card">
-                <h2 style='text-align: center; color: white;'>{team_h} vs {team_a}</h2>
-                <p style='text-align: center;'>Placar Provável Baseado em xG: <b style='color:#f05a22;'>{res['xg_h']} - {res['xg_a']}</b></p>
-                <div style="display: flex; justify-content: space-around; margin-top: 20px;">
-                    <div class="metric-box">🏠 Casa<br><b>{res['win_h']:.1f}%</b></div>
-                    <div class="metric-box">🤝 Empate<br><b>{res['draw']:.1f}%</b></div>
-                    <div class="metric-box">🚀 Fora<br><b>{res['win_a']:.1f}%</b></div>
+        if st.button("GERAR ANÁLISE COMPLETA"):
+            res = calcular_probabilidades(t_home, t_away, df)
+            if res:
+                st.markdown(f"""
+                <div class="card-jogo">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="text-align: center; width: 40%;"><h3>{t_home}</h3></div>
+                        <div style="text-align: center; width: 20%;"><h2>VS</h2></div>
+                        <div style="text-align: center; width: 40%;"><h3>{t_away}</h3></div>
+                    </div>
+                    <hr style="border-color: #313d49;">
+                    <div style="display: flex; justify-content: space-around; text-align: center;">
+                        <div><p class="metric-title">Vitória Casa</p><p class="metric-value">{res['win_h']:.1f}%</p></div>
+                        <div><p class="metric-title">Empate</p><p class="metric-value">{res['draw']:.1f}%</p></div>
+                        <div><p class="metric-title">Vitória Fora</p><p class="metric-value">{res['win_a']:.1f}%</p></div>
+                    </div>
                 </div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Detalhes Técnicos
-            c1, c2, c3 = st.columns(3)
-            with c1:
-                st.subheader("🚩 Escanteios")
-                st.write(f"Média Esperada: **{res['corners']}**")
-                if res['corners'] > 9.5: st.markdown('<span class="badge-valor">VALOR EM OVER</span>', unsafe_allow_html=True)
-            
-            with c2:
-                st.subheader("⚽ Gols")
-                st.write(f"Probabilidade Over 2.5: **{res['over25']:.1f}%**")
-                if res['over25'] > 65: st.markdown('<span class="badge-valor">ALTA TENDÊNCIA</span>', unsafe_allow_html=True)
+                """, unsafe_allow_html=True)
                 
-            with c3:
-                st.subheader("⚖️ Árbitro")
-                ref = np.random.choice(list(referee_db.keys()))
-                st.write(f"Juiz: **{ref}**")
-                st.write(f"Média de Cartões: **{referee_db[ref]}**")
+                c1, c2, c3, c4 = st.columns(4)
+                c1.metric("🚩 Cantos", f"{res['corners']:.1f}")
+                c2.metric("⚽ Over 2.5", f"{res['over25']:.1f}%")
+                c3.metric("👞 Chutes", f"{res['chutes']:.0f}")
+                c4.metric("🟨 Cartões", f"{res['cartoes']:.1f}")
+                
+                st.info(f"💡 **Dica da IA:** A odd justa para o {t_home} é {res['odd_justa_h']:.2f}. Se a Betano pagar mais que isso, entre!")
 
-            st.success("✅ Análise concluída com base nos últimos jogos da temporada atual!")
-        else:
-            st.warning("Dados insuficientes para um dos times nesta temporada.")
-else:
-    st.error("Erro ao conectar com o banco de dados de esportes. Tente novamente em instantes.")
-
-# --- SCANNER DE OPORTUNIDADES ---
-with st.expander("🔍 Ver Scanner de Jogos do Dia (Top 5 Valor Esperado)"):
-    st.write("Analisando todas as combinações da liga para encontrar falhas nas odds...")
-    # Aqui a IA faria um loop, por agora mostramos o simulado de alto valor
-    st.table(pd.DataFrame({
-        'Jogo': ['Real Madrid vs Valencia', 'Arsenal vs Chelsea', 'Bayern vs Dortmund'],
-        'Sugestão': ['Vitória Casa', 'Over 2.5 Gols', 'Ambas Marcam'],
-        'Confiança IA': ['94%', '88%', '82%'],
-        'EV (Valor)': ['+15%', '+9%', '+11%']
-    }))
+    with tab2:
+        st.header("🔎 Scanner de Oportunidades")
+        st.write("A IA analisou todos os confrontos possíveis desta liga hoje:")
+        
+        scan_data = []
+        for h in teams[:10]: # Analisando amostra
+            for a in teams[10:20]:
+                if h != a:
+                    r = calcular
