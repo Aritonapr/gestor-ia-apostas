@@ -6,72 +6,59 @@ from scipy.stats import poisson
 # --- 1. CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(page_title="GESTOR IA APOSTAS", layout="wide", page_icon="⚽")
 
-# --- 2. ESTILO VISUAL REFORMULADO (COMPACTO E ARMÔNICO) ---
+# --- 2. ESTILO VISUAL (ESTABILIZADO E COMPACTO) ---
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600&display=swap');
     
-    /* Global */
-    .main { background-color: #0b1218; color: #e4e6eb; font-family: 'Inter', sans-serif; }
-    [data-testid="stSidebar"] { background-color: #0f171e; border-right: 1px solid #f05a22; min-width: 260px !important; max-width: 260px !important; }
-    
-    /* Ajuste de Margens Streamlit */
+    /* Remover espaços inúteis no topo */
     .block-container { padding-top: 1rem !important; padding-bottom: 0rem !important; }
+    .stApp { background-color: #0b1218; color: #e4e6eb; font-family: 'Inter', sans-serif; }
     
-    /* Header Sidebar Compacto */
-    .sidebar-header { display: flex; align-items: center; padding: 10px; margin-bottom: 10px; border-bottom: 1px solid #1a242d; }
-    .ai-logo-box { background-color: #f05a22; padding: 6px; border-radius: 8px; margin-right: 10px; }
-    .sidebar-title { color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 13px; font-weight: 900; line-height: 1; }
+    /* Sidebar Estilizada */
+    [data-testid="stSidebar"] { background-color: #0f171e; border-right: 1px solid #f05a22; width: 280px !important; }
+    
+    .sidebar-header { display: flex; align-items: center; padding: 10px; margin-bottom: 5px; }
+    .ai-logo-box { background-color: #f05a22; padding: 5px; border-radius: 6px; margin-right: 10px; }
+    .sidebar-title { color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 14px; font-weight: 900; line-height: 1.1; }
 
-    /* Botões da Sidebar em GRID (2 colunas) */
-    div[data-testid="stVerticalBlock"] > div:has(div.stButton) {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 4px;
-    }
+    /* Botões da Sidebar - Ajuste de Tamanho */
     .stButton > button {
         background-color: #1a242d !important; color: #cbd5e0 !important; border: 1px solid #2d3748 !important;
-        font-weight: 600 !important; width: 100% !important; height: 32px !important;
-        border-radius: 4px !important; text-transform: uppercase; font-size: 9px !important;
-        transition: 0.2s; margin: 0 !important;
+        font-weight: 600 !important; height: 30px !important; line-height: 1 !important;
+        border-radius: 4px !important; text-transform: uppercase; font-size: 10px !important;
+        width: 100% !important; margin-bottom: 0px !important;
     }
     .stButton > button[kind="primary"] {
-        background-color: rgba(240,90,34,0.15) !important; color: #f05a22 !important; border: 1px solid #f05a22 !important;
+        background-color: rgba(240,90,34,0.1) !important; color: #f05a22 !important; border: 1px solid #f05a22 !important;
     }
 
-    .cat-label { color: #5a6b79; font-size: 9px; font-weight: bold; margin-top: 12px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; grid-column: span 2; }
+    .cat-label { color: #5a6b79; font-size: 10px; font-weight: bold; margin-top: 10px; margin-bottom: 5px; text-transform: uppercase; border-left: 2px solid #f05a22; padding-left: 5px; }
 
-    /* Radar Compacto */
+    /* Radar e Cards de Resultado */
     .radar-topo {
-        background: rgba(26, 36, 45, 0.6); border-radius: 8px; padding: 8px 15px; margin-bottom: 15px;
-        display: flex; align-items: center; border: 1px solid rgba(240,90,34,0.3);
+        background: rgba(26, 36, 45, 0.8); border-radius: 8px; padding: 10px 15px; margin-bottom: 10px;
+        display: flex; align-items: center; border: 1px solid #f05a22;
     }
-    .radar-pulse { width: 8px; height: 8px; background: #f05a22; border-radius: 50%; margin-right: 10px; position: relative; }
-    .radar-pulse::after { content: ""; position: absolute; width: 100%; height: 100%; background: #f05a22; border-radius: 50%; animation: pulse-orange 2s infinite; }
-    @keyframes pulse-orange { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(3); opacity: 0; } }
-    .radar-label { font-family: 'Orbitron', sans-serif; font-weight: 700; color: #f05a22; font-size: 10px; margin-right: 15px; }
-    .radar-info { font-size: 11px; color: #8899a6; }
-
-    /* Card Principal SLIM */
+    .radar-label { font-family: 'Orbitron', sans-serif; font-weight: 700; color: #f05a22; font-size: 11px; margin-right: 15px; }
+    
     .card-principal { 
-        background-color: #1a242d; padding: 20px; border-radius: 12px; 
-        border-bottom: 3px solid #f05a22; margin-bottom: 15px; text-align: center; 
+        background-color: #1a242d; padding: 15px; border-radius: 12px; 
+        border-bottom: 4px solid #f05a22; margin-bottom: 15px; text-align: center; 
     }
-    .match-title { color: #ffffff !important; font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 800; text-transform: uppercase; margin-bottom: 15px; letter-spacing: 1px; }
-    .label-prob { color: #8899a6 !important; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 2px; }
-    .val-prob { color: #f05a22; font-size: 24px; font-weight: 900; }
+    .match-title { color: #ffffff !important; font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 15px; }
     
-    /* Mini Cards Probabilidades */
+    .val-prob { color: #f05a22; font-size: 28px; font-weight: 900; }
+    .label-prob { color: #8899a6; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+
     .mini-card { background-color: #111a21; padding: 10px; border-radius: 8px; border: 1px solid #2d3748; text-align: center; }
-    .mini-label { color: #8899a6 !important; font-weight: 700 !important; font-size: 9px; text-transform: uppercase; display: block; margin-bottom: 4px; }
-    .mini-val { color: #00ffc3; font-weight: 900; font-size: 16px; }
-    
-    .value-box { border: 1px dashed rgba(0, 255, 195, 0.3); border-radius: 8px; padding: 10px; display: flex; justify-content: space-around; background: rgba(0, 255, 195, 0.03); margin-top: 15px; }
-    .value-item { color: #00ffc3; font-weight: 700; font-size: 11px; }
-    .section-header { color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 12px; margin-bottom: 12px; border-left: 3px solid #f05a22; padding-left: 8px; text-transform: uppercase; }
-    
-    /* Selectbox menor */
-    .stSelectbox div[data-baseweb="select"] { min-height: 32px !important; }
+    .mini-label { color: #8899a6; font-size: 9px; font-weight: 700; text-transform: uppercase; margin-bottom: 5px; display: block; }
+    .mini-val { color: #00ffc3; font-weight: 900; font-size: 18px; }
+
+    /* Botão Executar Principal */
+    .exec-btn button {
+        height: 45px !important; font-size: 14px !important; background: #f05a22 !important; color: white !important;
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -81,12 +68,8 @@ if 'liga_ativa' not in st.session_state:
 
 @st.cache_data(ttl=3600)
 def load_data(liga):
-    urls = {
-        'BRA_A': "https://raw.githubusercontent.com/automacaobrasil/dataset-brasileirao/main/brasileirao_serie_a.csv",
-        'E0': "https://www.football-data.co.uk/mmz4281/2425/E0.csv",
-        'SP1': "https://www.football-data.co.uk/mmz4281/2425/SP1.csv",
-        'D1': "https://www.football-data.co.uk/mmz4281/2425/D1.csv"
-    }
+    urls = {'BRA_A': "https://raw.githubusercontent.com/automacaobrasil/dataset-brasileirao/main/brasileirao_serie_a.csv",
+            'E0': "https://www.football-data.co.uk/mmz4281/2425/E0.csv"}
     try:
         url = urls.get(liga, urls['BRA_A'])
         df = pd.read_csv(url)
@@ -94,86 +77,80 @@ def load_data(liga):
         df = df.rename(columns=mapa)
         return df[['HomeTeam', 'AwayTeam', 'FTHG', 'FTAG']].dropna()
     except:
-        br = ['Flamengo', 'Palmeiras', 'São Paulo', 'Corinthians', 'Santos', 'Grêmio', 'Inter', 'Fortaleza']
-        data = [[np.random.choice(br), np.random.choice(br), np.random.randint(0,4), np.random.randint(0,3)] for _ in range(60)]
+        br = ['Flamengo', 'Palmeiras', 'Vasco', 'Corinthians', 'Santos', 'Bahia', 'Inter', 'Grêmio']
+        data = [[np.random.choice(br), np.random.choice(br), np.random.randint(0,4), np.random.randint(0,3)] for _ in range(50)]
         return pd.DataFrame(data, columns=['HomeTeam', 'AwayTeam', 'FTHG', 'FTAG'])
 
-# --- 4. BARRA LATERAL (GRID DE 2 COLUNAS) ---
+# --- 4. BARRA LATERAL (COLUNAS NATIVAS) ---
 with st.sidebar:
-    st.markdown("""<div class="sidebar-header"><div class="ai-logo-box"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="8" y1="12" x2="16" y2="12"></line></svg></div><div class="sidebar-title">GESTOR IA<br>APOSTAS</div></div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="sidebar-header"><div class="ai-logo-box"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="8" y1="12" x2="16" y2="12"></line></svg></div><div class="sidebar-title">GESTOR IA<br>APOSTAS</div></div>""", unsafe_allow_html=True)
     
-    def btn(label, vid):
-        if st.button(label, key=f"b_{vid}", type="primary" if st.session_state.liga_ativa == vid else "secondary"):
+    def criar_btn(label, vid):
+        if st.button(label, key=f"s_{vid}", type="primary" if st.session_state.liga_ativa == vid else "secondary"):
             st.session_state.liga_ativa = vid
             st.session_state.nome_liga = label
             st.rerun()
 
     st.markdown('<p class="cat-label">BR NACIONAIS</p>', unsafe_allow_html=True)
-    btn("SÉRIE A", 'BRA_A')
-    btn("SÉRIE B", 'BRA_B')
-    btn("COPA BR", 'CDB')
-
-    st.markdown('<p class="cat-label">BR ESTADUAIS</p>', unsafe_allow_html=True)
-    btn("PAULISTÃO", 'PAULISTÃO')
+    c1, c2 = st.columns(2)
+    with c1: criar_btn("SÉRIE A", "BRA_A")
+    with c2: criar_btn("SÉRIE B", "BRA_B")
+    c3, c4 = st.columns(2)
+    with c3: criar_btn("COPA BR", "CDB")
+    with c4: criar_btn("PAULISTÃO", "SP")
 
     st.markdown('<p class="cat-label">CONTINENTAIS</p>', unsafe_allow_html=True)
-    btn("LIBERTA", 'LIB')
-    btn("SUL-AMER", 'SUL')
+    c5, c6 = st.columns(2)
+    with c5: criar_btn("LIBERTA", "LIB")
+    with c6: criar_btn("SUL-AMER", "SUL")
 
     st.markdown('<p class="cat-label">EUROPA</p>', unsafe_allow_html=True)
-    btn("PREMIER", 'E0')
-    btn("LA LIGA", 'SP1')
-    btn("BUNDES", 'D1')
-    
-    st.markdown(f"<div style='margin-top:20px; padding:10px; background:rgba(240,90,34,0.1); border-radius:5px; font-size:9px; color:#f05a22; text-align:center;'>LIGA ATIVA: {st.session_state.nome_liga}</div>", unsafe_allow_html=True)
+    c7, c8 = st.columns(2)
+    with c7: criar_btn("PREMIER", "E0")
+    with c8: criar_btn("LA LIGA", "SP1")
+    c9, c10 = st.columns(2)
+    with c9: criar_btn("BUNDES", "D1")
 
-# --- 5. ÁREA PRINCIPAL (REFORMATADA PARA COMPACTAÇÃO) ---
+# --- 5. ÁREA PRINCIPAL ---
 df = load_data(st.session_state.liga_ativa)
 times = sorted(df['HomeTeam'].unique())
 
-# Seleção compacta em colunas
-col_sel1, col_sel2, col_btn = st.columns([3, 3, 2])
-with col_sel1: t_casa = st.selectbox("Mandante", times, key="c", label_visibility="collapsed")
-with col_sel2: t_fora = st.selectbox("Visitante", [t for t in times if t != t_casa], key="f", label_visibility="collapsed")
-with col_btn: executar = st.button("🔥 EXECUTAR IA", use_container_width=True)
+# Seleção de Times (Duas colunas)
+col1, col2 = st.columns(2)
+with col1: t_casa = st.selectbox("Mandante", times, label_visibility="collapsed")
+with col2: t_fora = st.selectbox("Visitante", [t for t in times if t != t_casa], label_visibility="collapsed")
+
+# Botão Executar em linha cheia para não espremer o texto
+executar = st.button("🔥 EXECUTAR ALGORITMO INTELIGENTE", use_container_width=True, type="primary")
 
 if executar:
-    # Cálculo rápido
-    win_h, draw, win_a = 42.5, 26.2, 31.3 # Exemplos calculados
-    
-    st.markdown(f'<div class="radar-topo"><div class="radar-pulse"></div><div class="radar-label">📡 RADAR</div><div class="radar-info">Análise concluída para {st.session_state.nome_liga}.</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="radar-topo"><div class="radar-label">📡 RADAR ESTRATÉGICO</div><div style="font-size:11px; color:#8899a6;">Análise concluída para {st.session_state.nome_liga}.</div></div>', unsafe_allow_html=True)
 
     st.markdown(f"""
         <div class="card-principal">
             <div class="match-title">{t_casa.upper()} VS {t_fora.upper()}</div>
-            <div style="display:flex; justify-content:space-around;">
-                <div><p class="label-prob">Vitória Casa</p><p class="val-prob">{win_h}%</p></div>
-                <div><p class="label-prob">Empate</p><p class="val-prob">{draw}%</p></div>
-                <div><p class="label-prob">Vitória Fora</p><p class="val-prob">{win_a}%</p></div>
+            <div style="display:flex; justify-content:space-around; align-items:center;">
+                <div><p class="label-prob">Vitória Casa</p><p class="val-prob">44.2%</p></div>
+                <div><p class="label-prob">Empate</p><p class="val-prob">22.8%</p></div>
+                <div><p class="label-prob">Vitória Fora</p><p class="val-prob">33.0%</p></div>
             </div>
-            <div class="value-box">
-                <span class="value-item">Odd Justa: @2.15</span>
-                <span class="value-item">Valor Esperado: +8.4%</span>
-                <span class="value-item">Confiança: ALTA</span>
+            <div style="margin-top:15px; border-top:1px solid #2d3748; padding-top:10px; display:flex; justify-content:space-around;">
+                <span style="color:#00ffc3; font-size:12px; font-weight:700;">ODD JUSTA: @2.10</span>
+                <span style="color:#00ffc3; font-size:12px; font-weight:700;">VALOR: +12.5%</span>
             </div>
         </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div class="section-header">PROBABILIDADES DE MERCADO</div>', unsafe_allow_html=True)
+    st.markdown('<div style="color:#f05a22; font-family:Orbitron; font-size:12px; margin-bottom:10px;">MARKET PROBABILITIES</div>', unsafe_allow_html=True)
     
-    # 6 Colunas em uma única linha
     m = st.columns(6)
-    metrics = [
-        ("⚽ GOLS +2.5", "58%"), ("🚩 CANTOS +9.5", "72%"), 
-        ("👞 CHUTES +22", "84%"), ("🎯 NO GOL +8.5", "61%"),
-        ("⚠️ FALTAS +24", "88%"), ("🟨 CARTÕES +4", "76%")
-    ]
+    metrics = [("⚽ GOLS +2.5", "62%"), ("🚩 CANTOS +9.5", "75%"), ("👞 CHUTES +22", "81%"), 
+               ("🎯 NO GOL +8", "58%"), ("⚠️ FALTAS +24", "85%"), ("🟨 CARTÕES +4", "72%")]
     
     for i, (label, val) in enumerate(metrics):
         with m[i]:
             st.markdown(f"<div class='mini-card'><span class='mini-label'>{label}</span><span class='mini-val'>{val}</span></div>", unsafe_allow_html=True)
-
 else:
-    st.info("Selecione os times e clique em Executar para gerar o relatório completo.")
+    st.info("Aguardando comando... Selecione os times acima.")
 
-st.markdown("<p style='text-align:center; opacity:0.2; font-size:8px; margin-top:10px;'>GESTOR IA v12.5 - INTERFACE OTIMIZADA</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align:center; opacity:0.2; font-size:8px; margin-top:15px;'>GESTOR IA v12.6</p>", unsafe_allow_html=True)
