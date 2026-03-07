@@ -4,56 +4,72 @@ import numpy as np
 from scipy.stats import poisson
 import requests
 
-# --- CONFIGURAÇÃO ---
+# --- CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(page_title="GESTOR IA - BRASILEIRÃO & ELITE", layout="wide", page_icon="🇧🇷")
 
-# --- ESTILO VISUAL ---
+# --- ESTILO VISUAL BETANO DARK ---
 st.markdown("""
     <style>
     .main { background-color: #0b1218; color: #e4e6eb; }
     div[data-testid="stSidebar"] { background-color: #1a242d; }
-    .stButton>button { background: linear-gradient(90deg, #f05a22 0%, #ff8235 100%); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; width: 100%; transition: 0.3s; }
-    .card-jogo { background-color: #1a242d; padding: 25px; border-radius: 15px; border-top: 4px solid #f05a22; margin-bottom: 20px; box-shadow: 0 8px 16px rgba(0,0,0,0.4); }
+    .stButton>button { background: linear-gradient(90deg, #f05a22 0%, #ff8235 100%); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; width: 100%; }
+    .card-jogo { background-color: #1a242d; padding: 20px; border-radius: 15px; border-top: 4px solid #f05a22; margin-bottom: 20px; }
     .metric-value { color: #f05a22; font-size: 24px; font-weight: bold; }
-    .success-text { color: #28a745; font-weight: bold; }
     </style>
     """, unsafe_allow_html=True)
 
 # --- FUNÇÃO TELEGRAM ---
 def enviar_telegram(mensagem, token, chat_id):
     if token and chat_id:
-        url = f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text={mensagem}"
-        requests.get(url)
+        try:
+            url = f"https://api.telegram.org/bot{token}/sendMessage?chat_id={chat_id}&text={mensagem}"
+            requests.get(url)
+        except:
+            pass
 
-# --- ENGINE DE DADOS (BRASILEIRÃO + EUROPA) ---
+# --- ENGINE DE DADOS ---
 @st.cache_data(ttl=3600)
 def get_data(league_code):
-    # Ligas Europeias
-    if league_code != 'BRA':
-        url = f"https://www.football-data.co.uk/mmz4281/2425/{league_code}.csv"
+    if league_code == 'BRA':
+        # Fonte alternativa e mais estável para o Brasileirão
+        url = "https://raw.githubusercontent.com/automacaobrasil/dataset-brasileirao/main/brasileirao_serie_a.csv"
     else:
-        # Fonte para Brasileirão Série A (Repositório de dados atualizados)
-        url = "https://raw.githubusercontent.com/adaoduque/brasileirao-dataset/master/data/brasileirao_serie_a.csv"
+        url = f"https://www.football-data.co.uk/mmz4281/2425/{league_code}.csv"
     
     try:
         df = pd.read_csv(url)
-        # Padronização para o Brasileirão (Ajustando nomes de colunas se necessário)
+        # Padronização de Colunas (Brasil vs Europa)
         if league_code == 'BRA':
-            df = df.rename(columns={'home_team': 'HomeTeam', 'away_team': 'AwayTeam', 'home_score': 'FTHG', 'away_score': 'FTAG', 'result': 'FTR'})
-        return df
-    except:
+            # Se for Brasil, traduzimos os nomes das colunas
+            mapping = {
+                'mandante': 'HomeTeam', 'visitante': 'AwayTeam', 
+                'mandante_placar': 'FTHG', 'visitante_placar': 'FTAG',
+                'vencedor': 'FTR'
+            }
+            df = df.rename(columns=mapping)
+        
+        # Garante que as colunas de gols sejam números
+        df['FTHG'] = pd.to_numeric(df['FTHG'], errors='coerce')
+        df['FTAG'] = pd.to_numeric(df['FTAG'], errors='coerce')
+        return df.dropna(subset=['HomeTeam', 'AwayTeam', 'FTHG', 'FTAG'])
+    except Exception as e:
+        st.error(f"Erro ao carregar dados: {e}")
         return pd.DataFrame()
 
 def calcular_probabilidades(home, away, df):
+    # Filtra os últimos 10 jogos de cada time
     h_matches = df[df['HomeTeam'] == home].tail(10)
     a_matches = df[df['AwayTeam'] == away].tail(10)
-    if len(h_matches) == 0 or len(a_matches) == 0: return None
+    
+    if len(h_matches) == 0 or len(a_matches) == 0:
+        return None
     
     xg_h = h_matches['FTHG'].mean()
     xg_a = a_matches['FTAG'].mean()
     
-    prob_h_list = poisson.pmf(np.arange(0, 5), xg_h)
-    prob_a_list = poisson.pmf(np.arange(0, 5), xg_a)
+    # Poisson
+    prob_h_list = poisson.pmf(np.arange(0, 6), xg_h)
+    prob_a_list = poisson.pmf(np.arange(0, 6), xg_a)
     matrix = np.outer(prob_h_list, prob_a_list)
     
     win_h = np.sum(np.triu(matrix, 1)) * 100
@@ -66,38 +82,39 @@ def calcular_probabilidades(home, away, df):
         'odd_justa_h': 100/win_h if win_h > 0 else 0, 'xg_h': xg_h, 'xg_a': xg_a
     }
 
-# --- SIDEBAR: CONFIGURAÇÃO TELEGRAM ---
+# --- SIDEBAR ---
 st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Betano_logo.svg/1200px-Betano_logo.svg.png", width=180)
 st.sidebar.header("🤖 BOT TELEGRAM")
-tg_token = st.sidebar.text_input("Bot Token", type="password")
-tg_id = st.sidebar.text_input("Seu Chat ID")
+tg_token = st.sidebar.text_input("Bot Token", type="password", help="Pegue no @BotFather")
+tg_id = st.sidebar.text_input("Seu Chat ID", help="Pegue no @userinfobot")
 
 st.sidebar.markdown("---")
 liga_nome = st.sidebar.selectbox("🏆 SELECIONE A LIGA", 
     ['Brasileirão Série A', 'Premier League', 'La Liga', 'Serie A', 'Bundesliga'])
 
 ligas_map = {
-    'Brasileirão Série A': 'BRA', 'Premier League':'E0', 'La Liga':'SP1', 
-    'Serie A':'I1', 'Bundesliga':'D1'
+    'Brasileirão Série A': 'BRA', 'Premier League':'E0', 
+    'La Liga':'SP1', 'Serie A':'I1', 'Bundesliga':'D1'
 }
 
+# --- CARREGAMENTO ---
 df = get_data(ligas_map[liga_nome])
 
 if not df.empty:
-    tab1, tab2, tab3, tab4 = st.tabs(["🎯 ANALISADOR", "🔍 SCANNER", "📈 HISTÓRICO/BACKTEST", "📋 RELATÓRIO"])
+    tab1, tab2, tab3 = st.tabs(["🎯 ANALISADOR", "🔍 SCANNER DE VALOR", "📈 BACKTEST"])
 
     with tab1:
         teams = sorted(df['HomeTeam'].unique())
         c1, c2 = st.columns(2)
-        t_home = c1.selectbox("Casa", teams)
-        t_away = c2.selectbox("Fora", teams)
+        t_home = c1.selectbox("Time da Casa", teams)
+        t_away = c2.selectbox("Time de Fora", teams)
         
         if st.button("GERAR ANÁLISE"):
             res = calcular_probabilidades(t_home, t_away, df)
             if res:
                 st.markdown(f"""
                 <div class="card-jogo">
-                    <h3 style='text-align:center;'>{t_home} {res['xg_h']:.0f} x {res['xg_a']:.0f} {t_away}</h3>
+                    <h3 style='text-align:center;'>{t_home} vs {t_away}</h3>
                     <div style='display:flex; justify-content:space-around; text-align:center;'>
                         <div><p>Casa</p><p class='metric-value'>{res['win_h']:.1f}%</p></div>
                         <div><p>Empate</p><p class='metric-value'>{res['draw']:.1f}%</p></div>
@@ -106,50 +123,46 @@ if not df.empty:
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # Alerta Telegram Manual
-                if st.button("Enviar esta análise para o Telegram"):
-                    msg = f"⚽ ANÁLISE IA: {t_home} vs {t_away}\n🏠 Casa: {res['win_h']:.1f}%\n📊 Over 2.5: {res['over25']:.1f}%\n💰 Odd Justa: {res['odd_justa_h']:.2f}"
-                    enviar_telegram(msg, tg_token, tg_id)
-                    st.toast("Enviado para o Telegram!")
+                st.write(f"📊 **Probabilidade Over 2.5 Gols:** {res['over25']:.1f}%")
+                st.write(f"💰 **Odd Justa (Casa):** {res['odd_justa_h']:.2f}")
+
+                if tg_token and tg_id:
+                    if st.button("Enviar para o Telegram"):
+                        msg = f"⚽ IA: {t_home} vs {t_away}\n🏠 Vit: {res['win_h']:.1f}%\n📊 Over 2.5: {res['over25']:.1f}%"
+                        enviar_telegram(msg, tg_token, tg_id)
+                        st.success("Mensagem enviada!")
 
     with tab2:
-        st.header("🔍 Scanner de Valor (EV+)")
+        st.header("🔎 Scanner de Valor (Top 10)")
         if st.button("VARRE LIGA INTEIRA"):
-            oportunidades = []
-            for h in teams[:10]:
-                for a in teams[10:20]:
-                    if h != a:
-                        r = calcular_probabilidades(h, a, df)
-                        if r and r['win_h'] > 70:
-                            oportunidades.append(f"⚠️ VALOR: {h} para vencer ({r['win_h']:.1f}%)")
-                            st.write(f"✅ Encontrado: {h} vs {a} - Prob: {r['win_h']:.1f}%")
-            
-            if oportunidades and tg_token:
-                enviar_telegram("\n".join(oportunidades), tg_token, tg_id)
+            with st.spinner("Analisando combinações..."):
+                encontrados = []
+                for h in teams[:10]: # Limite para não travar
+                    for a in teams:
+                        if h != a:
+                            r = calcular_probabilidades(h, a, df)
+                            if r and r['win_h'] > 70:
+                                encontrados.append([h, a, f"{r['win_h']:.1f}%", f"{r['odd_justa_h']:.2f}"])
+                
+                if encontrados:
+                    scan_df = pd.DataFrame(encontrados, columns=['Casa', 'Fora', 'Prob. Casa', 'Odd Justa'])
+                    st.table(scan_df)
+                else:
+                    st.write("Nenhuma oportunidade óbvia encontrada agora.")
 
     with tab3:
-        st.header("📈 Backtest: A IA é confiável?")
-        st.write("Analisando os últimos 20 jogos e comparando com o que a IA previu:")
-        ultimos_jogos = df.tail(20)
+        st.header("📈 Backtest (Últimos 10 Jogos)")
+        ultimos = df.tail(10)
         acertos = 0
-        
-        for idx, row in ultimos_jogos.iterrows():
-            r = calcular_probabilidades(row['HomeTeam'], row['AwayTeam'], df.head(idx))
+        for _, row in ultimos.iterrows():
+            r = calcular_probabilidades(row['HomeTeam'], row['AwayTeam'], df.head(_))
             if r:
-                predicao = "H" if r['win_h'] > r['win_a'] and r['win_h'] > r['draw'] else "A"
-                if predicao == row['FTR']:
+                # Simplificação: se Prob Casa > 50% e Casa ganhou, é acerto.
+                previsao = "H" if r['win_h'] > 50 else ("A" if r['win_a'] > 50 else "D")
+                real = row['FTR']
+                if previsao == real or (previsao == "H" and row['FTHG'] > row['FTAG']):
                     acertos += 1
-                    status = "✅ ACERTO"
-                else:
-                    status = "❌ ERRO"
-                st.write(f"{row['HomeTeam']} vs {row['AwayTeam']} | Previsão IA: {predicao} | Real: {row['FTR']} | {status}")
-        
-        st.metric("Taxa de Acerto (Últimos 20 jogos)", f"{(acertos/20)*100}%")
-
-    with tab4:
-        st.header("📋 Relatório")
-        st.write("Dados atualizados com sucesso para:", liga_nome)
-        st.dataframe(df.tail(5))
+        st.metric("Taxa de Assertividade IA", f"{(acertos/10)*100}%")
 
 else:
-    st.error("Erro ao carregar dados. Verifique a conexão.")
+    st.warning("Selecione uma liga para começar.")
