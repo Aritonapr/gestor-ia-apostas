@@ -3,99 +3,118 @@ import pandas as pd
 import numpy as np
 import hashlib
 
-# --- 1. CONFIGURAÇÃO DA PÁGINA ---
+# --- 1. CONFIGURAÇÃO DA PÁGINA (BLINDADA) ---
 st.set_page_config(
-    page_title="GESTOR IA - GLOBAL ELITE", 
+    page_title="GESTOR IA - PRO EDITION", 
     layout="wide", 
     page_icon="⚽",
     initial_sidebar_state="expanded"
 )
 
-# --- 2. BANCO DE DADOS GLOBAL E COMPLETO ---
+# --- 2. BANCO DE DADOS COMPLETO ---
 DIC_TIMES = {
-    # --- BRASIL ---
+    # BRASIL
     "BRA_A": ["Flamengo", "Palmeiras", "Botafogo", "Fortaleza", "São Paulo", "Bahia", "Cruzeiro", "Internacional", "Atlético-MG", "Vasco", "Corinthians", "Fluminense", "Grêmio", "Athletico-PR", "Vitória", "Juventude", "Criciúma", "Cuiabá", "Atlético-GO", "Bragantino"],
     "BRA_B": ["Santos", "Sport", "Novorizontino", "Mirassol", "Vila Nova", "América-MG", "Ceará", "Coritiba", "Avaí", "Operário-PR", "Amazonas", "Goiás"],
-    "BRA_C": ["Náutico", "Remo", "Figueirense", "CSA", "Botafogo-PB", "ABC", "Londrina", "São Bernardo", "Volta Redonda", "Ypiranga", "Ferroviária"],
+    "BRA_C": ["Náutico", "Remo", "Figueirense", "CSA", "Botafogo-PB", "ABC", "Londrina", "Caxias", "Ferroviária", "São Bernardo", "Volta Redonda", "Ypiranga"],
     "BRA_D": ["Retrô", "Anápolis", "Iguatu", "Itabaiana", "Brasil de Pelotas", "Maringá", "Inter de Limeira", "Treze"],
     "CDB": ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Atlético-MG", "Vasco", "Grêmio", "Bahia", "Internacional", "Fluminense"],
     "SUPER": ["Palmeiras", "São Paulo", "Flamengo", "Atlético-MG", "Corinthians"],
-    "CNE": ["Bahia", "Fortaleza", "Sport", "Ceará", "Vitória", "CRB", "Náutico", "Sampaio Corrêa", "Botafogo-PB"],
+    "CNE": ["Bahia", "Fortaleza", "Sport", "Ceará", "Vitória", "CRB", "Náutico", "Sampaio Corrêa"],
     "SP": ["Palmeiras", "Santos", "São Paulo", "Corinthians", "Bragantino", "Novorizontino", "Inter de Limeira", "Ponte Preta"],
-    "RJ": ["Flamengo", "Fluminense", "Botafogo", "Vasco", "Nova Iguaçu", "Portuguesa-RJ", "Boavista"],
-    "MG": ["Cruzeiro", "Atlético-MG", "América-MG", "Tombense", "Villa Nova", "Ipatinga"],
-    "RS": ["Grêmio", "Internacional", "Juventude", "Caxias", "Brasil de Pelotas", "São José"],
+    "RJ": ["Flamengo", "Fluminense", "Botafogo", "Vasco", "Nova Iguaçu", "Boavista"],
+    "MG": ["Cruzeiro", "Atlético-MG", "América-MG", "Tombense", "Villa Nova"],
+    "RS": ["Grêmio", "Internacional", "Juventude", "Caxias", "Brasil de Pelotas"],
     
-    # --- INTERNACIONAL LIGAS ---
-    "ENG_P": ["Man. City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man. United", "Newcastle"],
-    "ESP_L": ["Real Madrid", "Barcelona", "Atlético de Madrid", "Girona", "Athletic Bilbao", "Real Sociedad", "Sevilla"],
-    "ITA_A": ["Inter de Milão", "Milan", "Juventus", "Atalanta", "Roma", "Napoli", "Lazio", "Bologna"],
-    "GER_B": ["Bayer Leverkusen", "Bayern de Munique", "Stuttgart", "RB Leipzig", "Borussia Dortmund", "Eintracht Frankfurt"],
-    "FRA_L": ["PSG", "Monaco", "Lille", "Brest", "Nice", "Lyon", "Marseille"],
-    "POR_L": ["Sporting", "Benfica", "Porto", "Braga", "Vitória de Guimarães"],
-    "HOL_E": ["PSV Eindhoven", "Feyenoord", "Ajax", "AZ Alkmaar", "Twente"],
+    # ELITE EUROPA
+    "ENG_P": ["Man. City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man. United"],
+    "ESP_L": ["Real Madrid", "Barcelona", "Atlético de Madrid", "Girona", "Athletic Bilbao"],
+    "ITA_A": ["Inter de Milão", "Milan", "Juventus", "Atalanta", "Roma", "Napoli"],
+    "GER_B": ["Bayer Leverkusen", "Bayern de Munique", "Stuttgart", "RB Leipzig", "Borussia Dortmund"],
+    "FRA_L": ["PSG", "Monaco", "Lille", "Brest", "Lyon", "Marseille"],
+    "POR_L": ["Sporting", "Benfica", "Porto", "Braga"],
+    "HOL_E": ["PSV Eindhoven", "Feyenoord", "Ajax", "AZ Alkmaar"],
 
-    # --- UEFA & SELEÇÕES ---
-    "UCL": ["Real Madrid", "Man. City", "Bayern", "Arsenal", "Barcelona", "Inter", "PSG", "Bayer Leverkusen"],
-    "UEL": ["Man. United", "Tottenham", "Roma", "Porto", "Ajax", "Lazio"],
+    # UEFA & SELEÇÕES
+    "UCL": ["Real Madrid", "Man. City", "Bayern", "Arsenal", "Barcelona", "Inter", "PSG"],
+    "UEL": ["Man. United", "Tottenham", "Roma", "Porto", "Ajax"],
     "EURO_C": ["Espanha", "Inglaterra", "França", "Alemanha", "Portugal", "Itália", "Holanda"],
-    "ELIM_W": ["Brasil", "Argentina", "França", "Inglaterra", "Espanha", "Alemanha", "Uruguai"],
+    "ELIM_W": ["Brasil", "Argentina", "França", "Inglaterra", "Espanha", "Alemanha"],
 
-    # --- AMÉRICA DO SUL & NOVOS MERCADOS ---
-    "LIB": ["Flamengo", "Palmeiras", "River Plate", "Botafogo", "São Paulo", "Atlético-MG", "Peñarol"],
-    "SUL": ["Cruzeiro", "Corinthians", "Fortaleza", "Racing", "Lanús", "Athletico-PR"],
+    # NOVOS MERCADOS
     "ARG_L": ["River Plate", "Boca Juniors", "Racing", "Talleres", "Estudiantes"],
     "SAUDI": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq"],
-    "USA_MLS": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "Cincinnati"]
+    "USA_MLS": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "Cincinnati"],
+    
+    # AMÉRICA DO SUL
+    "LIB": ["Flamengo", "Palmeiras", "River Plate", "Botafogo", "São Paulo", "Atlético-MG"],
+    "SUL": ["Cruzeiro", "Corinthians", "Fortaleza", "Racing", "Lanús", "Athletico-PR"]
 }
 
-# --- 3. CSS PARA REMOVER ÁREA BRANCA E FIXAR LAYOUT ---
+# --- 3. CSS ULTRA-FUTURISTA E BLINDADO ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
     
-    /* REMOVER ESPAÇO BRANCO NO TOPO */
-    [data-testid="stHeader"] { background: transparent !important; height: 0 !important; }
+    /* REMOVER ESPAÇO BRANCO NO TOPO DEFINITIVAMENTE */
+    header[data-testid="stHeader"] { background: transparent !important; height: 0 !important; display: none !important; }
     .block-container { padding-top: 0rem !important; padding-bottom: 0rem !important; }
+    
     .stApp { background-color: #0b1218; color: #e4e6eb; font-family: 'Inter', sans-serif; }
     
-    /* SIDEBAR */
-    [data-testid="stSidebar"] { background-color: #0b1218; border-right: 1px solid rgba(240, 90, 34, 0.3); width: 310px !important; }
-    .stButton > button { background-color: rgba(26, 36, 45, 0.6) !important; color: #cbd5e0 !important; font-size: 7pt !important; border-radius: 4px !important; margin-bottom: 2px !important; border: none !important; }
-    .cat-button > div > button { background-color: rgba(240, 90, 34, 0.1) !important; color: #fff !important; height: 40px !important; font-size: 8.5pt !important; border-bottom: 1px solid #f05a22 !important; }
-    .stButton > button[kind="primary"] { background-color: rgba(240, 90, 34, 0.2) !important; color: #f05a22 !important; border-left: 4px solid #f05a22 !important; }
+    /* SIDEBAR FUTURISTA */
+    [data-testid="stSidebar"] { 
+        background-color: #0b1218 !important; 
+        border-right: 1px solid rgba(240, 90, 34, 0.4) !important; 
+        width: 320px !important; 
+    }
     
-    /* CARD CENTRAL */
-    .card-principal { background-color: #161f27; padding: 20px; border-radius: 12px; border-bottom: 4px solid #f05a22; text-align: center; margin-top: 5px; }
+    /* ESTILO DOS BOTÕES */
+    .stButton > button { 
+        background-color: rgba(26, 36, 45, 0.7) !important; color: #cbd5e0 !important; 
+        font-size: 7.2pt !important; border-radius: 4px !important; 
+        margin-bottom: 2px !important; border: none !important; 
+    }
+    .cat-button > div > button { 
+        background-color: rgba(240, 90, 34, 0.1) !important; color: #fff !important; 
+        height: 42px !important; font-size: 8.5pt !important; letter-spacing: 1px;
+        border-bottom: 1px solid #f05a22 !important; 
+    }
+    .stButton > button[kind="primary"] { 
+        background-color: rgba(240, 90, 34, 0.25) !important; color: #f05a22 !important; 
+        border-left: 5px solid #f05a22 !important; 
+        box-shadow: 0 0 10px rgba(240, 90, 34, 0.2);
+    }
     
-    /* GRID DE ESTATÍSTICAS - NÃO ESMAGA */
+    /* CARD PRINCIPAL */
+    .card-principal { 
+        background-color: #161f27; padding: 25px; border-radius: 15px; 
+        border-bottom: 4px solid #f05a22; text-align: center; margin-top: 10px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+    
+    /* FLEX LAYOUT PARA ESTATÍSTICAS (BLINDADO) */
     .stats-flex {
-        display: flex;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 15px;
-        flex-wrap: wrap;
+        display: flex; justify-content: center; gap: 12px; margin-top: 20px; flex-wrap: wrap;
     }
     .mini-card { 
-        background-color: #111a21; 
-        padding: 15px 10px; 
-        border-radius: 8px; 
-        border: 1px solid #2d3748; 
-        text-align: center;
-        width: 140px; /* Largura fixa para evitar esmagamento */
+        background-color: #111a21; padding: 18px 10px; border-radius: 10px; 
+        border: 1px solid #2d3748; text-align: center; width: 150px;
+        transition: 0.3s;
     }
-    .mini-label { color: #8a99a8 !important; font-size: 7.5px !important; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; display: block; }
-    .mini-val { color: #00ffc3 !important; font-weight: 900; font-size: 19px !important; margin: 0; }
+    .mini-card:hover { border-color: #f05a22; box-shadow: 0 0 15px rgba(240, 90, 34, 0.1); }
+    .mini-label { color: #8a99a8 !important; font-size: 8px !important; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; }
+    .mini-val { color: #00ffc3 !important; font-weight: 900; font-size: 20px !important; margin: 0; text-shadow: 0 0 10px rgba(0, 255, 195, 0.2); }
     </style>
 """, unsafe_allow_html=True)
 
-# --- 4. ENGINE ---
-def simular_probabilidades(casa, fora):
+# --- 4. ENGINE DE PROBABILIDADE ---
+def calcular_engine(casa, fora):
     seed = int(hashlib.sha256((casa + fora).encode()).hexdigest(), 16) % 100
     pc = 35 + (seed % 30); pe = 15 + (seed % 15); pf = 100 - pc - pe
     return pc, pe, pf, 50+(seed%40), 60+(seed%35), 65+(seed%30)
 
-# --- 5. NAVEGAÇÃO SIDEBAR ---
+# --- 5. LÓGICA DE NAVEGAÇÃO PROTEGIDA ---
 if 'liga_ativa' not in st.session_state: st.session_state.update(liga_ativa='BRA_A', nome_liga='SÉRIE A')
 if 'menu_aberto' not in st.session_state: st.session_state.menu_aberto = 'BR'
 
@@ -110,32 +129,30 @@ with st.sidebar:
             st.session_state.menu_aberto = menu_id if st.session_state.menu_aberto != menu_id else None; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # BRASIL COMPLETO
+    # MENU BRASIL 100% COMPLETO
     cat_btn("🇧🇷 FUTEBOL BRASILEIRO", "BR")
     if st.session_state.menu_aberto == "BR":
-        st.markdown('<p style="font-size:8px; color:#5a6b79; margin:5px 0 2px 0;">BRASILEIRÃO</p>', unsafe_allow_html=True)
+        st.markdown('<p style="font-size:8px; color:#5a6b79; margin:8px 0 2px 0; font-weight:800;">CAMPEONATO BRASILEIRO</p>', unsafe_allow_html=True)
         c1, c2 = st.columns(2)
         with c1: s_btn("SÉRIE A", "BRASILEIRÃO A", "BRA_A"); s_btn("SÉRIE C", "BRASILEIRÃO C", "BRA_C")
         with c2: s_btn("SÉRIE B", "BRASILEIRÃO B", "BRA_B"); s_btn("SÉRIE D", "BRASILEIRÃO D", "BRA_D")
         
-        st.markdown('<p style="font-size:8px; color:#5a6b79; margin:10px 0 2px 0;">COPAS NACIONAIS</p>', unsafe_allow_html=True)
+        st.markdown('<p style="font-size:8px; color:#5a6b79; margin:12px 0 2px 0; font-weight:800;">COPAS NACIONAIS</p>', unsafe_allow_html=True)
         c3, c4 = st.columns(2)
-        with c3: s_btn("COPA BR", "COPA DO BRASIL", "CDB"); s_btn("SUPERCOPA", "SUPERCOPA DO BRASIL", "SUPER")
+        with c3: s_btn("COPA BRASIL", "COPA DO BRASIL", "CDB"); s_btn("SUPERCOPA", "SUPERCOPA DO BRASIL", "SUPER")
         with c4: s_btn("NORDESTE", "COPA DO NORDESTE", "CNE")
         
-        st.markdown('<p style="font-size:8px; color:#5a6b79; margin:10px 0 2px 0;">ESTADUAIS ELITE</p>', unsafe_allow_html=True)
+        st.markdown('<p style="font-size:8px; color:#5a6b79; margin:12px 0 2px 0; font-weight:800;">ESTADUAIS ELITE</p>', unsafe_allow_html=True)
         c5, c6 = st.columns(2)
         with c5: s_btn("PAULISTÃO", "PAULISTÃO", "SP"); s_btn("MINEIRO", "CAMPEONATO MINEIRO", "MG")
         with c6: s_btn("CARIOCA", "CAMPEONATO CARIOCA", "RJ"); s_btn("GAÚCHO", "CAMPEONATO GAÚCHO", "RS")
 
-    # ELITE EUROPA (LIGAS)
-    cat_btn("🇪🇺 ELITE EUROPA (LIGAS)", "EU_L")
+    cat_btn("🇪🇺 LIGAS ELITE EUROPA", "EU_L")
     if st.session_state.menu_aberto == "EU_L":
         c1, c2 = st.columns(2)
         with c1: s_btn("🏴󠁧󠁢󠁥󠁮󠁧󠁿 PREMIER", "PREMIER LEAGUE", "ENG_P"); s_btn("🇮🇹 SERIE A", "SERIE A TIM", "ITA_A"); s_btn("🇵🇹 PORTUGAL", "LIGA PORTUGAL", "POR_L")
         with c2: s_btn("🇪🇸 LA LIGA", "LA LIGA", "ESP_L"); s_btn("🇩🇪 BUNDES", "BUNDESLIGA", "GER_B"); s_btn("🇳🇱 HOLANDA", "EREDIVISIE", "HOL_E")
 
-    # UEFA & SELEÇÕES
     cat_btn("🌍 UEFA & SELEÇÕES", "UEFA")
     if st.session_state.menu_aberto == "UEFA":
         s_btn("⭐ CHAMPIONS LEAGUE", "UEFA CHAMPIONS LEAGUE", "UCL")
@@ -143,29 +160,30 @@ with st.sidebar:
         s_btn("🛡️ EUROCOPA", "EUROCOPA", "EURO_C")
         s_btn("🌎 ELIMINATÓRIAS", "ELIMINATÓRIAS MUNDIAL", "ELIM_W")
 
-    # NOVOS MERCADOS
     cat_btn("⭐ NOVOS MERCADOS", "NEW")
     if st.session_state.menu_aberto == "NEW":
         s_btn("🇸🇦 SAUDI PRO", "SAUDI PRO LEAGUE", "SAUDI")
         s_btn("🇺🇸 MLS USA", "MLS USA", "USA_MLS")
         s_btn("🇦🇷 ARGENTINA", "LIGA ARGENTINA", "ARG_L")
 
-    # AMÉRICA DO SUL
     cat_btn("🔥 AMÉRICA DO SUL", "SAM")
     if st.session_state.menu_aberto == "SAM":
         s_btn("🏆 LIBERTADORES", "COPA LIBERTADORES", "LIB")
         s_btn("🛰️ SUL-AMERICANA", "COPA SUL-AMERICANA", "SUL")
 
-# --- 6. CABEÇALHO (SEM ÁREA BRANCA) ---
+# --- 6. CABEÇALHO COM ÍCONE FUTURISTA ---
 st.markdown("""
-    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; padding-top: 10px;">
-        <div style="width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
-            <svg style="width: 100%; height: 100%; fill: none; stroke: #f05a22; stroke-width: 4;" viewBox="0 0 100 100">
-                <path d="M50 5 L90 25 L90 75 L50 95 L10 75 L10 25 Z" />
+    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-top: 15px;">
+        <!-- ÍCONE IA FUTURISTA -->
+        <div style="position: relative; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+            <svg style="position: absolute; width: 100%; height: 100%; filter: drop-shadow(0 0 8px #f05a22);" viewBox="0 0 100 100">
+                <path d="M50 5 L93.3 30 L93.3 80 L50 105 L6.7 80 L6.7 30 Z" fill="none" stroke="#f05a22" stroke-width="4"/>
+                <path d="M50 20 L76 35 L76 65 L50 80 L24 65 L24 35 Z" fill="#f05a22" opacity="0.4"/>
+                <circle cx="50" cy="50" r="8" fill="#fff" />
             </svg>
         </div>
-        <div style="color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; letter-spacing: 1.5px;">
-            GESTOR IA <span style="color: #ffffff; font-size: 10px; margin-left: 5px; opacity: 0.8;">GLOBAL EDITION</span>
+        <div style="color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: 2.5px;">
+            GESTOR IA <span style="color: #ffffff; font-size: 11px; letter-spacing: 1px; margin-left: 10px; opacity: 0.8;">GLOBAL ELITE 25/26</span>
         </div>
     </div>
 """, unsafe_allow_html=True)
@@ -178,16 +196,18 @@ with col2: t_fora = st.selectbox("Visitante", sorted([t for t in times_lista if 
 with col3: executar = st.button("🔥 PROCESSAR ALGORITMO", use_container_width=True, type="primary")
 
 if executar:
-    pc, pe, pf, mg, mc, mch = simular_probabilidades(t_casa, t_fora)
-    st.markdown(f'<div style="font-size:10px; color:#f05a22; font-family:Orbitron; border-left:3px solid #f05a22; padding-left:10px; margin-bottom:10px;">📡 ANALISANDO: {st.session_state.nome_liga}</div>', unsafe_allow_html=True)
+    pc, pe, pf, mg, mc, mch = calcular_engine(t_casa, t_fora)
+    st.markdown(f'<div style="font-size:11px; color:#f05a22; font-family:Orbitron; border-left:4px solid #f05a22; padding-left:10px; margin-bottom:12px;">📡 DATA-ANALYSIS: {st.session_state.nome_liga}</div>', unsafe_allow_html=True)
     
     st.markdown(f"""
         <div class="card-principal">
-            <div style="color: #fff; font-family: Orbitron; font-size: 20px; font-weight: 800; margin-bottom: 20px;">{t_casa.upper()} vs {t_fora.upper()}</div>
+            <div style="color: #fff; font-family: Orbitron; font-size: 24px; font-weight: 800; margin-bottom: 25px;">{t_casa.upper()} <span style="color:#f05a22">vs</span> {t_fora.upper()}</div>
             <div style="display: flex; justify-content: space-around;">
-                <div><p style="color:#f05a22; font-size:28px; font-weight:900; margin:0;">{pc}%</p><p style="color:#8a99a8; font-size:9px;">VITÓRIA CASA</p></div>
-                <div><p style="color:#fff; font-size:28px; font-weight:900; margin:0;">{pe}%</p><p style="color:#8a99a8; font-size:9px;">EMPATE</p></div>
-                <div><p style="color:#f05a22; font-size:28px; font-weight:900; margin:0;">{pf}%</p><p style="color:#8a99a8; font-size:9px;">VITÓRIA FORA</p></div>
+                <div><p style="color:#f05a22; font-size:32px; font-weight:900; margin:0;">{pc}%</p><p style="color:#8a99a8; font-size:10px; font-weight:800; letter-spacing:1px;">VITÓRIA CASA</p></div>
+                <div style="width:1px; height:50px; background:rgba(255,255,255,0.1);"></div>
+                <div><p style="color:#fff; font-size:32px; font-weight:900; margin:0;">{pe}%</p><p style="color:#8a99a8; font-size:10px; font-weight:800; letter-spacing:1px;">EMPATE</p></div>
+                <div style="width:1px; height:50px; background:rgba(255,255,255,0.1);"></div>
+                <div><p style="color:#f05a22; font-size:32px; font-weight:900; margin:0;">{pf}%</p><p style="color:#8a99a8; font-size:10px; font-weight:800; letter-spacing:1px;">VITÓRIA FORA</p></div>
             </div>
         </div>
         
@@ -201,4 +221,4 @@ if executar:
         </div>
     """, unsafe_allow_html=True)
 else:
-    st.markdown("<div style='height:200px; display:flex; align-items:center; justify-content:center; color:#2d3748; font-family:Orbitron; font-size:10px; opacity:0.5;'>AGUARDANDO SELEÇÃO DE CONFRONTO...</div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:250px; display:flex; align-items:center; justify-content:center; color:#2d3748; font-family:Orbitron; font-size:12px; letter-spacing:2px; opacity:0.6;'>SISTEMA PRONTO: SELECIONE UM CONFRONTO...</div>", unsafe_allow_html=True)
