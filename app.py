@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- 2. CSS DE ALTA VISIBILIDADE (LETRAS MAIS CLARAS E NÍTIDAS) ---
+# --- 2. CSS REFINADO (ALINHAMENTO E ESPAÇAMENTO) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
@@ -40,64 +40,63 @@ st.markdown("""
         clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
         animation: pulse-core 2s infinite ease-in-out;
     }
-    @keyframes pulse-core {
-        0%, 100% { transform: scale(1); opacity: 0.8; }
-        50% { transform: scale(1.3); opacity: 1; }
-    }
     .main-title-text {
         color: #f05a22; font-family: 'Orbitron', sans-serif;
         font-size: 20px; font-weight: 900; letter-spacing: 2px;
     }
 
-    /* SIDEBAR PADS */
+    /* SIDEBAR PADS - CORREÇÃO DE ALINHAMENTO */
     [data-testid="stSidebar"] { background-color: #0b1218; border-right: 1px solid rgba(240, 90, 34, 0.2); width: 280px !important; }
-    .cat-label { color: #5a6b79; font-size: 8px; font-weight: 800; margin-top: 15px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; padding-left: 10px; }
+    .cat-label { color: #5a6b79; font-size: 8px; font-weight: 800; margin-top: 15px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; text-align: center; display: block; }
 
     .stButton > button {
         background-color: rgba(26, 36, 45, 0.4) !important; color: #cbd5e0 !important; 
         border: none !important; border-left: 2px solid transparent !important;
-        font-weight: 600 !important; height: 28px !important; text-transform: uppercase; 
-        font-size: 8px !important; width: 100% !important; text-align: left !important;
-        padding-left: 10px !important; white-space: nowrap !important;
+        font-weight: 700 !important; height: 32px !important; text-transform: uppercase; 
+        font-size: 8px !important; width: 100% !important; 
+        text-align: center !important; /* CENTRALIZADO PARA CABER LIBERTADORES */
+        padding: 0 5px !important; white-space: nowrap !important;
+        border-radius: 4px !important;
     }
     .stButton > button[kind="primary"] { background-color: rgba(240, 90, 34, 0.1) !important; color: #f05a22 !important; border-left: 2px solid #f05a22 !important; }
 
-    /* --- ESTATÍSTICAS (MELHORIA DE LEITURA) --- */
+    /* --- ESTATÍSTICAS (AUMENTO DE LETRAS E ESPAÇO) --- */
     .mini-card { 
         background-color: #111a21; 
-        padding: 12px; 
-        border-radius: 8px; 
+        padding: 18px 10px; /* Mais altura para o card */
+        border-radius: 10px; 
         border: 1px solid #2d3748; 
         text-align: center;
-        transition: 0.3s;
+        height: 120px; /* Altura fixa para simetria */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
-    .mini-card:hover { border-color: #00ffc3; background-color: rgba(0, 255, 195, 0.02); }
 
     .mini-label { 
-        color: #ffffff !important; /* TEXTO BRANCO PARA MÁXIMA LEITURA */
-        font-size: 9px !important; 
+        color: #ffffff !important; 
+        font-size: 11px !important; /* AUMENTADO */
         font-weight: 800 !important; 
         text-transform: uppercase; 
-        margin-bottom: 6px; 
-        display: block;
-        letter-spacing: 0.5px;
+        margin-bottom: 12px !important; /* MAIS ESPAÇO ENTRE NOME E NÚMERO */
+        letter-spacing: 1px;
     }
     .mini-val { 
-        color: #00ffc3 !important; /* VERDE NEON NÍTIDO */
+        color: #00ffc3 !important; 
         font-weight: 900 !important; 
-        font-size: 20px !important; /* AUMENTADO PARA DESTAQUE */
+        font-size: 26px !important; /* NÚMEROS GRANDES E NÍTIDOS */
         margin: 0;
-        text-shadow: 0 0 10px rgba(0, 255, 195, 0.2);
+        text-shadow: 0 0 15px rgba(0, 255, 195, 0.3);
     }
 
-    .card-principal { background-color: #1a242d; padding: 20px; border-radius: 12px; border-bottom: 4px solid #f05a22; text-align: center; }
-    .match-title { color: #ffffff !important; font-family: 'Orbitron', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 20px; }
-    .val-prob { color: #f05a22; font-size: 30px; font-weight: 900; }
-    .label-prob { color: #cbd5e0; font-size: 11px; font-weight: 700; text-transform: uppercase; margin-top: 5px; }
+    .card-principal { background-color: #1a242d; padding: 25px; border-radius: 12px; border-bottom: 4px solid #f05a22; text-align: center; }
+    .match-title { color: #ffffff !important; font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 800; margin-bottom: 25px; }
+    .val-prob { color: #f05a22; font-size: 32px; font-weight: 900; }
+    .label-prob { color: #cbd5e0; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-top: 8px; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. LOGICA DE ESTADO ---
+# --- 3. LÓGICA DE ESTADO ---
 if 'liga_ativa' not in st.session_state: 
     st.session_state.update(liga_ativa='BRA_A', nome_liga='SÉRIE A')
 
@@ -143,12 +142,12 @@ with col_b: t_fora = st.selectbox("Visitante", sorted([t for t in times if t != 
 with col_c: executar = st.button("🔥 EXECUTAR ALGORITMO", use_container_width=True, type="primary")
 
 if executar:
-    st.markdown(f'<div style="font-size:10px; color:#f05a22; font-family:Orbitron; margin-bottom:10px; border-left:3px solid #f05a22; padding-left:10px;">📡 ANALISANDO: {st.session_state.nome_liga}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:11px; color:#f05a22; font-family:Orbitron; margin-bottom:12px; border-left:4px solid #f05a22; padding-left:10px;">📡 ANALISANDO: {st.session_state.nome_liga}</div>', unsafe_allow_html=True)
     
     st.markdown(f"""
         <div class="card-principal">
             <div class="match-title">{t_casa.upper()} VS {t_fora.upper()}</div>
-            <div style="display: flex; justify-content: space-around; align-items: center; background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px 0; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-around; align-items: center; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 20px 0; margin-bottom: 25px;">
                 <div><p class="val-prob">44.2%</p><p class="label-prob">Mandante</p></div>
                 <div><p class="val-prob">22.8%</p><p class="label-prob">Empate</p></div>
                 <div><p class="val-prob">33.0%</p><p class="label-prob">Visitante</p></div>
@@ -157,7 +156,6 @@ if executar:
     """, unsafe_allow_html=True)
     
     m = st.columns(6)
-    # MUDANÇA PARA ESCANTEIOS E VALORES MAIS FORTES
     metrics = [
         ("⚽ GOLS +2.5", "62%"), 
         ("🚩 ESCANTEIOS +9.5", "75%"), 
@@ -176,4 +174,4 @@ if executar:
                 </div>
             """, unsafe_allow_html=True)
 else:
-    st.markdown("<div style='height:150px; display:flex; align-items:center; justify-content:center; border:1px dashed #2d3748; border-radius:10px; color:#5a6b79; font-size:14px;'>Selecione os times acima e inicie o processamento</div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:150px; display:flex; align-items:center; justify-content:center; border:1px dashed #2d3748; border-radius:10px; color:#5a6b79; font-size:14px;'>Dashboard em standby. Aguardando seleção de partida...</div>", unsafe_allow_html=True)
