@@ -29,20 +29,12 @@ DIC_TIMES = {
     "ITA_A": ["Inter de Milão", "Milan", "Juventus", "Atalanta", "Roma", "Napoli"],
     "GER_B": ["Bayer Leverkusen", "Bayern de Munique", "Stuttgart", "RB Leipzig", "Borussia Dortmund"],
     "FRA_L": ["PSG", "Monaco", "Lille", "Brest", "Lyon", "Marseille"],
-    "POR_L": ["Sporting", "Benfica", "Porto", "Braga"],
-    "HOL_E": ["PSV Eindhoven", "Feyenoord", "Ajax", "AZ Alkmaar"],
     "UCL": ["Real Madrid", "Man. City", "Bayern", "Arsenal", "Barcelona", "Inter", "PSG"],
-    "UEL": ["Man. United", "Tottenham", "Roma", "Porto", "Ajax"],
-    "EURO_C": ["Espanha", "Inglaterra", "França", "Alemanha", "Portugal", "Itália", "Holanda"],
-    "ELIM_W": ["Brasil", "Argentina", "França", "Inglaterra", "Espanha", "Alemanha"],
-    "ARG_L": ["River Plate", "Boca Juniors", "Racing", "Talleres", "Estudiantes"],
-    "SAUDI": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq"],
-    "USA_MLS": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "Cincinnati"],
     "LIB": ["Flamengo", "Palmeiras", "River Plate", "Botafogo", "São Paulo", "Atlético-MG"],
     "SUL": ["Cruzeiro", "Corinthians", "Fortaleza", "Racing", "Lanús", "Athletico-PR"]
 }
 
-# --- 3. CSS REALINHADO E FUTURISTA ---
+# --- 3. CSS OTIMIZADO (SIDEBAR ESTREITA E ESPAÇO AMPLIADO) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
@@ -51,36 +43,42 @@ st.markdown("""
     .block-container { padding-top: 0rem !important; padding-bottom: 0rem !important; }
     .stApp { background-color: #0b1218; color: #e4e6eb; font-family: 'Inter', sans-serif; }
     
-    [data-testid="stSidebar"] { background-color: #0b1218 !important; border-right: 1px solid rgba(240, 90, 34, 0.4) !important; width: 320px !important; }
+    /* SIDEBAR MAIS ESTREITA PARA GANHAR ESPAÇO NA DIREITA */
+    [data-testid="stSidebar"] { 
+        background-color: #0b1218 !important; 
+        border-right: 1px solid rgba(240, 90, 34, 0.4) !important; 
+        width: 250px !important; 
+    }
     
-    .stButton > button { background-color: rgba(26, 36, 45, 0.7) !important; color: #cbd5e0 !important; font-size: 7.2pt !important; border-radius: 4px !important; margin-bottom: 2px !important; border: none !important; }
-    .cat-button > div > button { background-color: rgba(240, 90, 34, 0.1) !important; color: #fff !important; height: 42px !important; font-size: 8.5pt !important; letter-spacing: 1px; border-bottom: 1px solid #f05a22 !important; }
-    .stButton > button[kind="primary"] { background-color: rgba(240, 90, 34, 0.25) !important; color: #f05a22 !important; border-left: 5px solid #f05a22 !important; }
+    /* BOTÕES DA SIDEBAR AJUSTADOS PARA LARGURA MENOR */
+    .stButton > button { background-color: rgba(26, 36, 45, 0.7) !important; color: #cbd5e0 !important; font-size: 6.8pt !important; border-radius: 4px !important; margin-bottom: 2px !important; border: none !important; padding: 0 5px !important; }
+    .cat-button > div > button { background-color: rgba(240, 90, 34, 0.1) !important; color: #fff !important; height: 38px !important; font-size: 8pt !important; letter-spacing: 0.5px; border-bottom: 1px solid #f05a22 !important; }
+    .stButton > button[kind="primary"] { background-color: rgba(240, 90, 34, 0.25) !important; color: #f05a22 !important; border-left: 4px solid #f05a22 !important; }
     
-    .card-principal { background-color: #161f27; padding: 25px; border-radius: 15px; border-bottom: 4px solid #f05a22; text-align: center; margin-top: 10px; }
+    .card-principal { background-color: #161f27; padding: 20px; border-radius: 12px; border-bottom: 4px solid #f05a22; text-align: center; margin-top: 10px; }
     
-    /* CORREÇÃO DOS 6 ÍCONES: FLEXBOX SEM QUEBRA */
+    /* FLEXBOX DAS ESTATÍSTICAS COM MAIS ESPAÇO */
     .stats-flex {
         display: flex; 
         justify-content: space-between; 
-        gap: 8px; 
+        gap: 12px; 
         margin-top: 20px; 
         width: 100%;
-        flex-wrap: nowrap !important; /* PROÍBE PULAR LINHA */
+        flex-wrap: nowrap !important;
     }
     .mini-card { 
-        flex: 1; /* CADA CARD OCUPA O MESMO ESPAÇO */
+        flex: 1;
         background-color: #111a21; 
-        padding: 15px 5px; 
+        padding: 15px 2px; 
         border-radius: 10px; 
         border: 1px solid #2d3748; 
         text-align: center;
-        min-width: 0; /* PERMITE ENCOLHER PARA CABER */
+        min-width: 0;
         transition: 0.3s;
     }
     .mini-card:hover { border-color: #f05a22; box-shadow: 0 0 10px rgba(240, 90, 34, 0.2); }
-    .mini-label { color: #8a99a8 !important; font-size: 7px !important; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; display: block; white-space: nowrap; }
-    .mini-val { color: #00ffc3 !important; font-weight: 900; font-size: 17px !important; margin: 0; }
+    .mini-label { color: #8a99a8 !important; font-size: 7.2px !important; font-weight: 800; text-transform: uppercase; margin-bottom: 6px; display: block; white-space: nowrap; }
+    .mini-val { color: #00ffc3 !important; font-weight: 900; font-size: 19px !important; margin: 0; text-shadow: 0 0 8px rgba(0, 255, 195, 0.3); }
     </style>
 """, unsafe_allow_html=True)
 
@@ -111,29 +109,24 @@ with st.sidebar:
         with c1: s_btn("SÉRIE A", "BRASILEIRÃO A", "BRA_A"); s_btn("SÉRIE C", "BRASILEIRÃO C", "BRA_C")
         with c2: s_btn("SÉRIE B", "BRASILEIRÃO B", "BRA_B"); s_btn("SÉRIE D", "BRASILEIRÃO D", "BRA_D")
         c3, c4 = st.columns(2)
-        with c3: s_btn("COPA BRASIL", "COPA DO BRASIL", "CDB"); s_btn("SUPERCOPA", "SUPERCOPA DO BRASIL", "SUPER")
+        with c3: s_btn("COPA BR", "COPA DO BRASIL", "CDB"); s_btn("SUPERCOPA", "SUPERCOPA BR", "SUPER")
         with c4: s_btn("NORDESTE", "COPA DO NORDESTE", "CNE")
         c5, c6 = st.columns(2)
-        with c5: s_btn("PAULISTÃO", "PAULISTÃO", "SP"); s_btn("MINEIRO", "CAMPEONATO MINEIRO", "MG")
-        with c6: s_btn("CARIOCA", "CAMPEONATO CARIOCA", "RJ"); s_btn("GAÚCHO", "CAMPEONATO GAÚCHO", "RS")
+        with c5: s_btn("PAULISTÃO", "PAULISTÃO", "SP"); s_btn("MINEIRO", "MINEIRO", "MG")
+        with c6: s_btn("CARIOCA", "CARIOCA", "RJ"); s_btn("GAÚCHO", "GAÚCHO", "RS")
 
-    cat_btn("🇪🇺 LIGAS ELITE EUROPA", "EU_L")
-    if st.session_state.menu_aberto == "EU_L":
+    cat_btn("🇪🇺 ELITE EUROPA", "EU")
+    if st.session_state.menu_aberto == "EU":
         c1, c2 = st.columns(2)
-        with c1: s_btn("🏴󠁧󠁢󠁥󠁮󠁧󠁿 PREMIER", "PREMIER LEAGUE", "ENG_P"); s_btn("🇮🇹 SERIE A", "SERIE A TIM", "ITA_A")
-        with c2: s_btn("🇪🇸 LA LIGA", "LA LIGA", "ESP_L"); s_btn("🇩🇪 BUNDES", "BUNDESLIGA", "GER_B")
+        with c1: s_btn("PREMIER", "PREMIER LEAGUE", "ENG_P"); s_btn("SERIE A", "SERIE A TIM", "ITA_A")
+        with c2: s_btn("LA LIGA", "LA LIGA", "ESP_L"); s_btn("BUNDES", "BUNDESLIGA", "GER_B")
 
-    cat_btn("🌍 UEFA & SELEÇÕES", "UEFA")
+    cat_btn("🌍 UEFA & COPAS", "UEFA")
     if st.session_state.menu_aberto == "UEFA":
-        s_btn("⭐ CHAMPIONS LEAGUE", "UEFA CHAMPIONS LEAGUE", "UCL")
-        s_btn("🛡️ EUROCOPA", "EUROCOPA", "EURO_C")
+        s_btn("CHAMPIONS", "CHAMPIONS LEAGUE", "UCL")
+        s_btn("LIBERTADORES", "COPA LIBERTADORES", "LIB")
 
-    cat_btn("🔥 AMÉRICA DO SUL", "SAM")
-    if st.session_state.menu_aberto == "SAM":
-        s_btn("🏆 LIBERTADORES", "COPA LIBERTADORES", "LIB")
-        s_btn("🛰️ SUL-AMERICANA", "COPA SUL-AMERICANA", "SUL")
-
-# --- 6. CABEÇALHO COM ÍCONE FUTURISTA ---
+# --- 6. CABEÇALHO ---
 st.markdown("""
     <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-top: 15px;">
         <div style="position: relative; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
@@ -143,7 +136,7 @@ st.markdown("""
                 <circle cx="50" cy="50" r="8" fill="#fff" />
             </svg>
         </div>
-        <div style="color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: 2.5px;">
+        <div style="color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: 2px;">
             GESTOR IA <span style="color: #ffffff; font-size: 11px; letter-spacing: 1px; margin-left: 10px; opacity: 0.8;">PRO EDITION</span>
         </div>
     </div>
@@ -163,13 +156,12 @@ if executar:
         <div class="card-principal">
             <div style="color: #fff; font-family: Orbitron; font-size: 24px; font-weight: 800; margin-bottom: 25px;">{t_casa.upper()} <span style="color:#f05a22">vs</span> {t_fora.upper()}</div>
             <div style="display: flex; justify-content: space-around;">
-                <div><p style="color:#f05a22; font-size:32px; font-weight:900; margin:0;">{pc}%</p><p style="color:#8a99a8; font-size:10px; font-weight:800;">VITÓRIA CASA</p></div>
-                <div><p style="color:#fff; font-size:32px; font-weight:900; margin:0;">{pe}%</p><p style="color:#8a99a8; font-size:10px; font-weight:800;">EMPATE</p></div>
-                <div><p style="color:#f05a22; font-size:32px; font-weight:900; margin:0;">{pf}%</p><p style="color:#8a99a8; font-size:10px; font-weight:800;">VITÓRIA FORA</p></div>
+                <div><p style="color:#f05a22; font-size:32px; font-weight:900; margin:0;">{pc}%</p><p style="color:#8a99a8; font-size:10px; font-weight:800; letter-spacing:1px;">VITÓRIA CASA</p></div>
+                <div><p style="color:#fff; font-size:32px; font-weight:900; margin:0;">{pe}%</p><p style="color:#8a99a8; font-size:10px; font-weight:800; letter-spacing:1px;">EMPATE</p></div>
+                <div><p style="color:#f05a22; font-size:32px; font-weight:900; margin:0;">{pf}%</p><p style="color:#8a99a8; font-size:10px; font-weight:800; letter-spacing:1px;">VITÓRIA FORA</p></div>
             </div>
         </div>
         
-        <!-- ESTE BLOCO AGORA ESTÁ BLINDADO PARA FICAR EM UMA SÓ LINHA -->
         <div class="stats-flex">
             <div class="mini-card"><span class="mini-label">⚽ GOLS +2.5</span><p class="mini-val">{mg}%</p></div>
             <div class="mini-card"><span class="mini-label">🚩 CANTOS +9.5</span><p class="mini-val">{mc}%</p></div>
