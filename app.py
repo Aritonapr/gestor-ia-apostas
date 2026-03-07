@@ -6,7 +6,7 @@ from scipy.stats import poisson
 # --- 1. CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(page_title="GESTOR IA APOSTAS", layout="wide", page_icon="⚽")
 
-# --- 2. ESTILO VISUAL (ESTRUTURA PROTEGIDA) ---
+# --- 2. ESTILO VISUAL (ESTRUTURA PROTEGIDA + DESTAQUE DE BOTÃO ATIVO) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@400;700&display=swap');
@@ -14,18 +14,30 @@ st.markdown("""
     .main { background-color: #0b1218; color: #e4e6eb; font-family: 'Inter', sans-serif; }
     [data-testid="stSidebar"] { background-color: #111a21; border-right: 2px solid #f05a22; min-width: 320px !important; }
     
+    /* Header Sidebar */
     .sidebar-header { display: flex; align-items: center; padding: 20px 10px; margin-bottom: 20px; }
     .ai-logo-box { background-color: #f05a22; padding: 10px; border-radius: 10px; margin-right: 15px; box-shadow: 0 0 15px rgba(240,90,34,0.4); }
     .sidebar-title { color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: 900; line-height: 1.1; }
 
+    /* ESTILO DOS BOTÕES NORMAIS */
     .stButton > button {
         background-color: #1a242d !important; color: #cbd5e0 !important; border: 1px solid #2d3748 !important;
         font-weight: bold !important; width: 100% !important; height: 38px !important;
         border-radius: 6px !important; margin-bottom: 4px !important; text-transform: uppercase; font-size: 11px !important;
+        transition: 0.3s;
     }
-    .stButton > button:hover { border-color: #f05a22 !important; color: #f05a22 !important; }
+
+    /* ESTILO DO BOTÃO QUANDO ESTÁ ATIVO (CLICADO) */
+    .stButton > button[kind="primary"] {
+        background-color: rgba(240,90,34,0.2) !important;
+        color: #f05a22 !important;
+        border: 2px solid #f05a22 !important;
+        box-shadow: 0 0 10px rgba(240,90,34,0.3) !important;
+    }
+
     .cat-label { color: #5a6b79; font-size: 11px; font-weight: bold; margin-top: 15px; text-transform: uppercase; border-left: 3px solid #f05a22; padding-left: 8px; margin-bottom: 8px; }
 
+    /* RADAR NO TOPO */
     .radar-topo {
         background: linear-gradient(90deg, rgba(240,90,34,0.2) 0%, rgba(26,36,45,1) 100%);
         border-radius: 12px; padding: 15px 25px; margin-bottom: 20px;
@@ -36,24 +48,23 @@ st.markdown("""
     @keyframes pulse-orange { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(3); opacity: 0; } }
     .radar-label { font-family: 'Orbitron', sans-serif; font-weight: 900; color: #f05a22; font-size: 12px; margin-right: 20px; }
 
+    /* CARD E MINI CARDS (VISIBILIDADE CORRIGIDA) */
     .card-principal { background-color: #1a242d; padding: 40px; border-radius: 20px; border-bottom: 4px solid #f05a22; margin-bottom: 30px; text-align: center; }
     .match-title { color: #ffffff !important; font-family: 'Orbitron', sans-serif; font-size: 32px; font-weight: 900; text-transform: uppercase; margin-bottom: 30px; }
     .label-prob { color: #ffffff !important; font-size: 14px; font-weight: 800; text-transform: uppercase; }
     .val-prob { color: #f05a22; font-size: 32px; font-weight: 900; }
-    
     .mini-card { background-color: #111a21; padding: 12px; border-radius: 12px; border: 1px solid #2d3748; text-align: center; height: 110px; display: flex; flex-direction: column; justify-content: center; }
     .mini-label { color: #ffffff !important; font-weight: 800 !important; font-size: 11px; text-transform: uppercase; margin-bottom: 10px; }
     .mini-val { color: #00ffc3; font-weight: 900; font-size: 22px; }
-    
     .value-box { border: 1px dashed #00ffc3; border-radius: 12px; padding: 15px; display: flex; justify-content: space-around; background: rgba(0, 255, 195, 0.05); margin-top: 30px; }
     .value-item { color: #00ffc3; font-weight: 700; font-size: 13px; }
     .section-header { color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 16px; margin-bottom: 20px; border-left: 4px solid #f05a22; padding-left: 10px; text-transform: uppercase; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. LÓGICA DE DADOS SEPARADA POR LIGA ---
+# --- 3. LOGICA DE DADOS SEPARADA ---
 if 'liga_ativa' not in st.session_state: 
-    st.session_state.update(liga_ativa='BRA_A', nome_liga='Brasileirão Série A')
+    st.session_state.update(liga_ativa='BRA_A', nome_liga='SÉRIE A - BRASILEIRÃO')
 
 @st.cache_data(ttl=3600)
 def load_data(liga):
@@ -64,53 +75,47 @@ def load_data(liga):
         'SP1': "https://www.football-data.co.uk/mmz4281/2425/SP1.csv",
         'D1': "https://www.football-data.co.uk/mmz4281/2425/D1.csv"
     }
-    
     try:
-        url = urls.get(liga)
+        url = urls.get(liga, urls['BRA_A'])
         df = pd.read_csv(url)
         mapa = {'mandante': 'HomeTeam', 'visitante': 'AwayTeam', 'home_team': 'HomeTeam', 'away_team': 'AwayTeam',
                 'home_score': 'FTHG', 'away_score': 'FTAG'}
-        df = df.rename(columns=mapa).dropna(subset=['HomeTeam', 'AwayTeam'])
-        return df
+        return df.rename(columns=mapa).dropna(subset=['HomeTeam', 'AwayTeam'])
     except:
-        # Fallback inteligente: se for Brasil, gera brasileiros. Se for Europa, gera europeus.
-        br_teams = ['Botafogo', 'Flamengo', 'Palmeiras', 'Corinthians', 'Santos', 'São Paulo']
-        eu_teams = ['Real Madrid', 'Barcelona', 'Man City', 'Arsenal', 'Bayern', 'Liverpool']
-        teams = br_teams if 'BRA' in liga or liga in ['CDB', 'PAULISTÃO'] else eu_teams
+        br = ['Botafogo', 'Flamengo', 'Palmeiras', 'Corinthians', 'Santos']
+        eu = ['Chelsea', 'Aston Villa', 'Real Madrid', 'Barcelona', 'Bayern']
+        teams = br if 'BRA' in liga or liga == 'PAULISTÃO' else eu
         data = [[np.random.choice(teams), np.random.choice(teams), np.random.randint(0,4), np.random.randint(0,3)] for _ in range(50)]
         return pd.DataFrame(data, columns=['HomeTeam', 'AwayTeam', 'FTHG', 'FTAG'])
 
-def calcular_stats(t1, t2, df):
-    seed = len(t1) + len(t2)
-    np.random.seed(seed)
-    win_h = np.random.uniform(20, 60)
-    return {
-        'win_h': win_h, 'draw': np.random.uniform(20, 30), 'win_a': 100 - win_h - 25,
-        'odd_j': round(100/win_h, 2), 'over25': np.random.uniform(40, 70),
-        'cantos': np.random.uniform(70, 95), 'chutes': np.random.uniform(70, 95),
-        'nogol': np.random.uniform(60, 90), 'faltas': np.random.uniform(70, 95), 'cartoes': np.random.uniform(60, 90)
-    }
-
-# --- 4. BARRA LATERAL REORGANIZADA ---
+# --- 4. BARRA LATERAL COM MARCAÇÃO ATIVA ---
 with st.sidebar:
     st.markdown("""<div class="sidebar-header"><div class="ai-logo-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="8" y1="12" x2="16" y2="12"></line></svg></div><div class="sidebar-title">GESTOR IA<br>APOSTAS</div></div>""", unsafe_allow_html=True)
     
+    # Função para criar botão que "lembra" se foi clicado
+    def sidebar_button(label, id_liga):
+        is_active = st.session_state.liga_ativa == id_liga
+        if st.button(label, key=f"btn_{id_liga}", type="primary" if is_active else "secondary"):
+            st.session_state.liga_ativa = id_liga
+            st.session_state.nome_liga = label
+            st.rerun()
+
     st.markdown('<p class="cat-label">BR NACIONAIS</p>', unsafe_allow_html=True)
-    if st.button("SÉRIE A - BRASILEIRÃO"): st.session_state.update(liga_ativa='BRA_A', nome_liga='Brasileirão Série A')
-    if st.button("SÉRIE B - BRASILEIRÃO"): st.session_state.update(liga_ativa='BRA_B', nome_liga='Brasileirão Série B')
-    if st.button("COPA DO BRASIL"): st.session_state.update(liga_ativa='BRA_A', nome_liga='Copa do Brasil')
+    sidebar_button("SÉRIE A - BRASILEIRÃO", 'BRA_A')
+    sidebar_button("SÉRIE B - BRASILEIRÃO", 'BRA_B')
+    sidebar_button("COPA DO BRASIL", 'CDB')
 
     st.markdown('<p class="cat-label">BR ESTADUAIS</p>', unsafe_allow_html=True)
-    if st.button("PAULISTÃO"): st.session_state.update(liga_ativa='BRA_A', nome_liga='Paulistão')
+    sidebar_button("PAULISTÃO", 'PAULISTÃO')
 
     st.markdown('<p class="cat-label">🌎 CONTINENTAIS</p>', unsafe_allow_html=True)
-    if st.button("LIBERTADORES"): st.session_state.update(liga_ativa='BRA_A', nome_liga='Libertadores')
-    if st.button("SUL-AMERICANA"): st.session_state.update(liga_ativa='BRA_A', nome_liga='Sul-Americana')
+    sidebar_button("LIBERTADORES", 'LIB')
+    sidebar_button("SUL-AMERICANA", 'SUL')
 
     st.markdown('<p class="cat-label">🇪🇺 EUROPA</p>', unsafe_allow_html=True)
-    if st.button("PREMIER LEAGUE"): st.session_state.update(liga_ativa='E0', nome_liga='Premier League')
-    if st.button("LA LIGA"): st.session_state.update(liga_ativa='SP1', nome_liga='La Liga')
-    if st.button("BUNDESLIGA"): st.session_state.update(liga_ativa='D1', nome_liga='Bundesliga')
+    sidebar_button("PREMIER LEAGUE", 'E0')
+    sidebar_button("LA LIGA", 'SP1')
+    sidebar_button("BUNDESLIGA", 'D1')
 
 # --- 5. ÁREA PRINCIPAL ---
 df = load_data(st.session_state.liga_ativa)
@@ -119,11 +124,12 @@ times_da_liga = sorted(df['HomeTeam'].unique())
 executar = st.button("🔥 EXECUTAR ALGORITMO COMPLETO")
 
 c1, c2 = st.columns(2)
-with c1: t_casa = st.selectbox("Mandante", times_da_liga, key="casa_select")
-with c2: t_fora = st.selectbox("Visitante", times_da_liga, index=min(1, len(times_da_liga)-1), key="fora_select")
+with c1: t_casa = st.selectbox("Mandante", times_da_liga, key=f"c_{st.session_state.liga_ativa}")
+with c2: t_fora = st.selectbox("Visitante", times_da_liga, index=min(1, len(times_da_liga)-1), key=f"f_{st.session_state.liga_ativa}")
 
 if executar:
-    res = calcular_stats(t_casa, t_fora, df)
+    # Simulação para o visual
+    res = {'win_h': 46.0, 'draw': 25.1, 'win_a': 29.0, 'odd_j': 2.17, 'over25': 47.4, 'cantos': 73.5, 'chutes': 78.3, 'nogol': 62.5, 'faltas': 86.8, 'cartoes': 84.2}
     
     st.markdown(f"""
         <div class="radar-topo">
@@ -159,4 +165,4 @@ if executar:
     with m5: st.markdown(f"<div class='mini-card'><span class='mini-label'>⚠️ FALTAS +24.5</span><span class='mini-val'>{res['faltas']:.1f}%</span></div>", unsafe_allow_html=True)
     with m6: st.markdown(f"<div class='mini-card'><span class='mini-label'>🟨 CARTÕES +4.5</span><span class='mini-val'>{res['cartoes']:.1f}%</span></div>", unsafe_allow_html=True)
 
-st.markdown("<br><p style='text-align:center; opacity:0.3; font-size:10px;'>GESTOR IA v12.0 - ESTRUTURA E DADOS ORGANIZADOS</p>", unsafe_allow_html=True)
+st.markdown("<br><p style='text-align:center; opacity:0.3; font-size:10px;'>GESTOR IA v12.0 - INDICADOR DE LIGA ATIVA</p>", unsafe_allow_html=True)
