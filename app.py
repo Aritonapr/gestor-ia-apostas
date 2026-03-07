@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- 2. BANCO DE DADOS MEGA ATUALIZADO (GLOBAL) ---
+# --- 2. BANCO DE DADOS (GLOBAL) ---
 DIC_TIMES = {
     "BRA_A": ["Flamengo", "Palmeiras", "Botafogo", "Fortaleza", "São Paulo", "Bahia", "Cruzeiro", "Internacional", "Atlético-MG", "Vasco", "Corinthians", "Fluminense", "Grêmio", "Athletico-PR", "Vitória", "Juventude", "Criciúma", "Cuiabá", "Atlético-GO", "Bragantino"],
     "BRA_B": ["Santos", "Sport", "Novorizontino", "Mirassol", "Vila Nova", "América-MG", "Ceará", "Coritiba", "Avaí", "Operário-PR", "Amazonas", "Goiás"],
@@ -40,7 +40,7 @@ DIC_TIMES = {
     "SUL": ["Cruzeiro", "Corinthians", "Fortaleza", "Racing", "Lanús", "Athletico-PR"]
 }
 
-# --- 3. CSS CUSTOMIZADO (CORRIGIDO PARA ESTATÍSTICAS) ---
+# --- 3. CSS ULTRA-CORRIGIDO ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
@@ -54,42 +54,42 @@ st.markdown("""
     .stButton > button[kind="primary"] { background-color: rgba(240, 90, 34, 0.15) !important; color: #f05a22 !important; border-left: 4px solid #f05a22 !important; }
     
     /* CARD PRINCIPAL */
-    .card-principal { background-color: #161f27; padding: 25px; border-radius: 15px; border-bottom: 5px solid #f05a22; text-align: center; margin-top: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .card-principal { background-color: #161f27; padding: 20px; border-radius: 12px; border-bottom: 4px solid #f05a22; text-align: center; margin-top: 10px; }
     
-    /* MINI CARDS DE ESTATÍSTICAS - CORREÇÃO DE TAMANHO */
+    /* GRID DE ESTATÍSTICAS - RESOLVE O ERRO DE LAYOUT */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 8px;
+        margin-top: 15px;
+        width: 100%;
+    }
+    
     .mini-card { 
         background-color: #111a21; 
-        padding: 10px 5px; 
+        padding: 12px 5px; 
         border-radius: 8px; 
         border: 1px solid #2d3748; 
-        text-align: center; 
-        min-height: 85px;
+        text-align: center;
+        min-height: 80px;
         display: flex;
         flex-direction: column;
         justify-content: center;
-        transition: 0.2s;
     }
-    .mini-card:hover { border-color: #f05a22; background-color: #162129; }
     .mini-label { 
         color: #8a99a8 !important; 
-        font-size: 8px !important; 
+        font-size: 7.5px !important; 
         font-weight: 800; 
         text-transform: uppercase; 
-        margin-bottom: 4px;
+        margin-bottom: 5px;
         letter-spacing: 0.5px;
-        line-height: 1.1;
     }
     .mini-val { 
         color: #00ffc3 !important; 
         font-weight: 900; 
         font-size: 18px !important; 
         margin: 0;
-        text-shadow: 0 0 10px rgba(0, 255, 195, 0.2);
-    }
-    
-    /* FORÇAR COLUNAS EM UMA LINHA */
-    [data-testid="stHorizontalBlock"] {
-        gap: 8px !important;
+        text-shadow: 0 0 10px rgba(0, 255, 195, 0.3);
     }
     </style>
 """, unsafe_allow_html=True)
@@ -159,7 +159,7 @@ with st.sidebar:
         s_btn("🏟️ COPA AMÉRICA", "COPA AMÉRICA", "COPA_AME")
 
 # --- 6. CONTEÚDO PRINCIPAL ---
-st.markdown('<div style="color:#f05a22; font-family:Orbitron; font-size:22px; font-weight:900; margin-bottom:20px;">GESTOR IA <span style="color:#fff; font-size:11px;">GLOBAL EDITION 25/26</span></div>', unsafe_allow_html=True)
+st.markdown('<div style="color:#f05a22; font-family:Orbitron; font-size:22px; font-weight:900; margin-bottom:15px;">GESTOR IA <span style="color:#fff; font-size:11px;">GLOBAL EDITION 25/26</span></div>', unsafe_allow_html=True)
 
 times_lista = DIC_TIMES.get(st.session_state.liga_ativa, ["Escolha a Liga"])
 col1, col2, col3 = st.columns([3, 3, 2.5])
@@ -169,41 +169,30 @@ with col3: executar = st.button("🔥 PROCESSAR ALGORITMO", use_container_width=
 
 if executar:
     pc, pe, pf, mg, mc, mch = simular_probabilidades(t_casa, t_fora)
-    st.markdown(f'<div style="font-size:10px; color:#f05a22; font-family:Orbitron; border-left:4px solid #f05a22; padding-left:10px; margin-bottom:10px;">📡 DATA-ANALYSIS: {st.session_state.nome_liga}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:10px; color:#f05a22; font-family:Orbitron; border-left:4px solid #f05a22; padding-left:10px;">📡 DATA-ANALYSIS: {st.session_state.nome_liga}</div>', unsafe_allow_html=True)
     
     # CARD PRINCIPAL
     st.markdown(f"""
         <div class="card-principal">
             <div style="color: #fff; font-family: Orbitron; font-size: 22px; font-weight: 800; margin-bottom: 25px;">{t_casa.upper()} <span style="color:#f05a22">vs</span> {t_fora.upper()}</div>
             <div style="display: flex; justify-content: space-around; align-items: center;">
-                <div><p style="color:#f05a22; font-size:30px; font-weight:900; margin:0;">{pc}%</p><p style="color:#8a99a8; font-size:9px; font-weight:700; margin-top:5px;">VITÓRIA CASA</p></div>
+                <div><p style="color:#f05a22; font-size:28px; font-weight:900; margin:0;">{pc}%</p><p style="color:#8a99a8; font-size:9px; font-weight:700;">VITÓRIA CASA</p></div>
                 <div style="width:1px; height:40px; background:rgba(255,255,255,0.1);"></div>
-                <div><p style="color:#fff; font-size:30px; font-weight:900; margin:0;">{pe}%</p><p style="color:#8a99a8; font-size:9px; font-weight:700; margin-top:5px;">EMPATE</p></div>
+                <div><p style="color:#fff; font-size:28px; font-weight:900; margin:0;">{pe}%</p><p style="color:#8a99a8; font-size:9px; font-weight:700;">EMPATE</p></div>
                 <div style="width:1px; height:40px; background:rgba(255,255,255,0.1);"></div>
-                <div><p style="color:#f05a22; font-size:30px; font-weight:900; margin:0;">{pf}%</p><p style="color:#8a99a8; font-size:9px; font-weight:700; margin-top:5px;">VITÓRIA FORA</p></div>
+                <div><p style="color:#f05a22; font-size:28px; font-weight:900; margin:0;">{pf}%</p><p style="color:#8a99a8; font-size:9px; font-weight:700;">VITÓRIA FORA</p></div>
             </div>
         </div>
-        <div style="height:15px;"></div>
+        
+        <!-- GRID DE ESTATÍSTICAS EM BLOCO ÚNICO -->
+        <div class="stats-grid">
+            <div class="mini-card"><p class="mini-label">⚽ GOLS +2.5</p><p class="mini-val">{mg}%</p></div>
+            <div class="mini-card"><p class="mini-label">🚩 CANTOS +9.5</p><p class="mini-val">{mc}%</p></div>
+            <div class="mini-card"><p class="mini-label">👞 CHUTES +22</p><p class="mini-val">{mch}%</p></div>
+            <div class="mini-card"><p class="mini-label">🎯 NO GOL +8</p><p class="mini-val">{mg-5}%</p></div>
+            <div class="mini-card"><p class="mini-label">⚠️ FALTAS +24</p><p class="mini-val">{mc+10}%</p></div>
+            <div class="mini-card"><p class="mini-label">🟨 CARTÕES +4</p><p class="mini-val">{pe+20}%</p></div>
+        </div>
     """, unsafe_allow_html=True)
-    
-    # ESTATÍSTICAS EM 6 COLUNAS (CORRIGIDO)
-    m1, m2, m3, m4, m5, m6 = st.columns(6)
-    metricas = [
-        ("⚽ GOLS +2.5", f"{mg}%"), 
-        ("🚩 CANTOS +9.5", f"{mc}%"), 
-        ("👞 CHUTES +22", f"{mch}%"), 
-        ("🎯 NO GOL +8", f"{mg-5}%"), 
-        ("⚠️ FALTAS +24", f"{mc+10}%"), 
-        ("🟨 CARTÕES +4", f"{pe+20}%")
-    ]
-    cols = [m1, m2, m3, m4, m5, m6]
-    for i, (lab, val) in enumerate(metricas):
-        with cols[i]: 
-            st.markdown(f"""
-                <div class="mini-card">
-                    <p class="mini-label">{lab}</p>
-                    <p class="mini-val">{val}</p>
-                </div>
-            """, unsafe_allow_html=True)
 else:
-    st.markdown("<div style='height:200px; display:flex; align-items:center; justify-content:center; color:#2d3748; font-size:12px; letter-spacing:1px;'>AGUARDANDO SELEÇÃO DE CONFRONTO...</div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:250px; display:flex; align-items:center; justify-content:center; color:#4a5568; font-size:11px; letter-spacing:2px; font-family:Orbitron;'>AGUARDANDO SELEÇÃO DE CONFRONTO...</div>", unsafe_allow_html=True)
