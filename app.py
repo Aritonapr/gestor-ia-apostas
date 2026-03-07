@@ -5,13 +5,13 @@ import hashlib
 
 # --- 1. CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(
-    page_title="GESTOR IA - PRO EDITION", 
+    page_title="GESTOR IA - JARVIS EDITION", 
     layout="wide", 
     page_icon="⚽",
     initial_sidebar_state="expanded"
 )
 
-# --- 2. BANCO DE DADOS ---
+# --- 2. BANCO DE DADOS COMPLETO ---
 DIC_TIMES = {
     "BRA_A": ["Flamengo", "Palmeiras", "Botafogo", "Fortaleza", "São Paulo", "Bahia", "Cruzeiro", "Internacional", "Atlético-MG", "Vasco", "Corinthians", "Fluminense", "Grêmio", "Athletico-PR", "Vitória", "Juventude", "Criciúma", "Cuiabá", "Atlético-GO", "Bragantino"],
     "BRA_B": ["Santos", "Sport", "Novorizontino", "Mirassol", "Vila Nova", "América-MG", "Ceará", "Coritiba", "Avaí", "Operário-PR", "Amazonas", "Goiás"],
@@ -21,71 +21,75 @@ DIC_TIMES = {
     "CNE": ["Bahia", "Fortaleza", "Sport", "Ceará", "Vitória", "CRB", "Náutico", "Sampaio Corrêa"],
     "ENG_P": ["Man. City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man. United", "Newcastle"],
     "ESP_L": ["Real Madrid", "Barcelona", "Atlético de Madrid", "Girona", "Athletic Bilbao", "Real Sociedad", "Sevilla"],
-    "ITA_A": ["Inter de Milão", "Milan", "Juventus", "Atalanta", "Roma", "Napoli", "Lazio", "Bologna"],
-    "GER_B": ["Bayer Leverkusen", "Bayern de Munique", "Stuttgart", "RB Leipzig", "Borussia Dortmund", "Eintracht Frankfurt"],
-    "FRA_L": ["PSG", "Monaco", "Lille", "Brest", "Nice", "Lyon", "Marseille"],
-    "UCL": ["Real Madrid", "Man. City", "Bayern", "Arsenal", "Barcelona", "Inter", "PSG", "Bayer Leverkusen"],
-    "EURO_C": ["Espanha", "Inglaterra", "França", "Alemanha", "Portugal", "Itália", "Holanda"],
-    "SAUDI": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq"],
-    "USA_MLS": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "Cincinnati"],
+    "UCL": ["Real Madrid", "Man. City", "Bayern", "Arsenal", "Barcelona", "Inter", "PSG"],
     "LIB": ["Flamengo", "Palmeiras", "River Plate", "Botafogo", "São Paulo", "Atlético-MG"],
     "SUL": ["Cruzeiro", "Corinthians", "Fortaleza", "Racing", "Lanús", "Athletico-PR"]
 }
 
-# --- 3. CSS "ICON-BUTTON" FUTURISTA ---
+# --- 3. CSS DESIGN SYSTEM JARVIS ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
     
+    /* REMOVER ÁREA BRANCA E FIXAR SETA LARANJA */
     header[data-testid="stHeader"] { background: transparent !important; }
-    button[data-testid="stSidebarCollapse"] svg { color: #f05a22 !important; fill: #f05a22 !important; }
+    button[data-testid="stSidebarCollapse"] svg { color: #f05a22 !important; fill: #f05a22 !important; filter: drop-shadow(0 0 5px #f05a22); }
     .block-container { padding-top: 0.5rem !important; }
     .stApp { background-color: #0b1218; color: #e4e6eb; font-family: 'Inter', sans-serif; }
     
+    /* SIDEBAR PRO DESIGN */
     [data-testid="stSidebar"] { 
         background-color: #0b1218 !important; 
         border-right: 2px solid #f05a22 !important; 
-        width: 260px !important; 
+        width: 255px !important; 
     }
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { padding: 0.4rem !important; gap: 0rem !important; }
 
-    /* REDESENHO DOS BOTÕES INSPIRADO NA IMAGEM */
+    /* BOTÕES SIMÉTRICOS (MESMO TAMANHO E ALINHAMENTO) */
     .stButton > button { 
-        background: linear-gradient(90deg, rgba(240, 90, 34, 0.1) 0%, rgba(26, 36, 45, 0.8) 20%) !important;
+        background: linear-gradient(90deg, rgba(240, 90, 34, 0.1) 0%, rgba(26, 36, 45, 0.9) 25%) !important;
         color: #cbd5e0 !important; 
-        font-size: 7.5pt !important; 
-        border-radius: 30px !important; /* Estilo 'Pílula' da imagem */
-        margin-bottom: 4px !important; 
+        font-size: 7.2pt !important; 
+        border-radius: 6px !important; 
+        margin-bottom: 3px !important; 
         border: 1px solid rgba(240, 90, 34, 0.2) !important; 
         height: 32px !important; 
-        transition: all 0.3s ease !important;
+        width: 100% !important; /* FORÇA O MESMO TAMANHO */
+        display: flex !important;
+        justify-content: flex-start !important; /* ÍCONE À ESQUERDA */
+        align-items: center !important;
+        padding-left: 10px !important;
         white-space: nowrap !important;
-        text-align: left !important;
-        padding-left: 15px !important;
-        width: 100% !important;
+        transition: all 0.2s ease !important;
     }
 
-    /* EFEITO HOVER LARANJA */
+    /* EFEITO HOVER JARVIS */
     .stButton > button:hover { 
-        background: linear-gradient(90deg, #f05a22 0%, rgba(240, 90, 34, 0.3) 100%) !important;
-        color: #ffffff !important; 
+        background: rgba(240, 90, 34, 0.3) !important;
+        color: #f05a22 !important; 
         border: 1px solid #f05a22 !important;
-        box-shadow: 0 0 15px rgba(240, 90, 34, 0.4) !important;
-        transform: translateX(5px);
+        box-shadow: 0 0 10px rgba(240, 90, 34, 0.3) !important;
     }
 
-    /* BOTÃO ATIVO */
+    /* BOTÃO ATIVO FIXO */
     .stButton > button[kind="primary"] { 
-        background: linear-gradient(90deg, #f05a22 0%, #ff8c00 100%) !important;
+        background: #f05a22 !important;
         color: #ffffff !important; 
         font-weight: 800 !important;
-        box-shadow: 0 0 20px rgba(240, 90, 34, 0.6) !important;
+        box-shadow: 0 0 15px rgba(240, 90, 34, 0.6) !important;
+        border: none !important;
     }
 
+    /* CATEGORIAS CABEÇALHO */
     .cat-button > div > button { 
         background: rgba(240, 90, 34, 0.05) !important; 
-        border-radius: 8px !important;
         height: 36px !important;
+        font-size: 8pt !important;
         border-bottom: 2px solid #f05a22 !important;
+        border-radius: 4px !important;
+        margin-top: 5px !important;
+        justify-content: center !important; /* TEXTO CENTRALIZADO NO MESTRE */
+        padding-left: 0 !important;
     }
 
     .card-principal { background-color: #161f27; padding: 20px; border-radius: 12px; border-bottom: 4px solid #f05a22; text-align: center; }
@@ -102,14 +106,13 @@ def calcular_engine(casa, fora):
     pc = 35 + (seed % 30); pe = 15 + (seed % 15); pf = 100 - pc - pe
     return pc, pe, pf, 50+(seed%40), 60+(seed%35), 65+(seed%30)
 
-# --- 5. NAVEGAÇÃO ---
+# --- 5. NAVEGAÇÃO SIDEBAR ---
 if 'liga_ativa' not in st.session_state: st.session_state.update(liga_ativa='BRA_A', nome_liga='SÉRIE A')
 if 'menu_aberto' not in st.session_state: st.session_state.menu_aberto = 'BR'
 
 with st.sidebar:
     def s_btn(icon, display, full, vid):
-        # Usando o ícone antes do texto para simular o design da imagem
-        label = f"{icon}  {display}"
+        label = f"{icon} {display}"
         if st.button(label, key=f"s_{vid}", type="primary" if st.session_state.liga_ativa == vid else "secondary"):
             st.session_state.liga_ativa = vid; st.session_state.nome_liga = full; st.rerun()
 
@@ -131,16 +134,11 @@ with st.sidebar:
             s_btn("🔘", "SÉRIE D", "BRASILEIRÃO D", "BRA_D")
             s_btn("☀️", "NORDESTE", "COPA NORDESTE", "CNE")
 
-    cat_btn("🌍 ELITE EUROPA", "EU_L")
+    cat_btn("🇪🇺 ELITE EUROPA", "EU_L")
     if st.session_state.menu_aberto == "EU_L":
         c1, c2 = st.columns(2, gap="small")
-        with c1: s_btn("🏴󠁧󠁢󠁥󠁮󠁧󠁿", "PREMIER", "PREMIER LEAGUE", "ENG_P"); s_btn("🇮🇹", "SERIE A", "SERIE A TIM", "ITA_A")
+        with c1: s_btn("🏴", "PREMIER", "PREMIER LEAGUE", "ENG_P"); s_btn("🇮🇹", "SERIE A", "SERIE A TIM", "ITA_A")
         with c2: s_btn("🇪🇸", "LA LIGA", "LA LIGA", "ESP_L"); s_btn("🇩🇪", "BUNDES", "BUNDESLIGA", "GER_B")
-
-    cat_btn("⭐ UEFA / INTER", "UEFA")
-    if st.session_state.menu_aberto == "UEFA":
-        s_btn("🏆", "CHAMPIONS", "CHAMPIONS LEAGUE", "UCL")
-        s_btn("🛡️", "EUROCOPA", "EUROCOPA", "EURO_C")
 
     cat_btn("🔥 AMÉRICA DO SUL", "SAM")
     if st.session_state.menu_aberto == "SAM":
@@ -150,14 +148,14 @@ with st.sidebar:
 # --- 6. CABEÇALHO ---
 st.markdown("""
     <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-        <div style="position: relative; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+        <div style="position: relative; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;">
             <svg style="position: absolute; width: 100%; height: 100%; filter: drop-shadow(0 0 8px #f05a22);" viewBox="0 0 100 100">
-                <path d="M50 5 L93.3 30 L93.3 80 L50 105 L6.7 80 L6.7 30 Z" fill="none" stroke="#f05a22" stroke-width="4"/>
-                <path d="M50 20 L76 35 L76 65 L50 80 L24 65 L24 35 Z" fill="#f05a22" opacity="0.4"/>
+                <path d="M50 5 L93.3 30 L93.3 80 L50 105 L6.7 80 L6.7 30 Z" fill="none" stroke="#f05a22" stroke-width="5"/>
+                <circle cx="50" cy="50" r="10" fill="#f05a22" />
             </svg>
         </div>
         <div style="color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 2px;">
-            GESTOR IA <span style="color: #ffffff; font-size: 10px; margin-left: 5px; opacity: 0.6;">PRO EDITION</span>
+            GESTOR IA <span style="color: #ffffff; font-size: 10px; margin-left: 5px; opacity: 0.7;">JARVIS EDITION</span>
         </div>
     </div>
 """, unsafe_allow_html=True)
@@ -170,7 +168,7 @@ with col3: executar = st.button("🔥 PROCESSAR ALGORITMO", use_container_width=
 
 if executar:
     pc, pe, pf, mg, mc, mch = calcular_engine(t_casa, t_fora)
-    st.markdown(f'<div style="font-size:11px; color:#f05a22; font-family:Orbitron; border-left:4px solid #f05a22; padding-left:10px; margin-bottom:12px;">📡 ANALISANDO: {st.session_state.nome_liga}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:11px; color:#f05a22; font-family:Orbitron; border-left:4px solid #f05a22; padding-left:10px; margin-bottom:12px;">📡 DATA-ANALYSIS: {st.session_state.nome_liga}</div>', unsafe_allow_html=True)
     
     st.markdown(f"""
         <div class="card-principal">
@@ -192,4 +190,4 @@ if executar:
         </div>
     """, unsafe_allow_html=True)
 else:
-    st.markdown("<div style='height:200px; display:flex; align-items:center; justify-content:center; color:#2d3748; font-family:Orbitron; font-size:12px; opacity:0.6;'>SELECIONE UM CONFRONTO...</div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:200px; display:flex; align-items:center; justify-content:center; color:#2d3748; font-family:Orbitron; font-size:12px; opacity:0.6;'>PROJETO FINALIZADO. SELECIONE UM CONFRONTO...</div>", unsafe_allow_html=True)
