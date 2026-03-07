@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- 2. CSS REFINADO (ESPAÇAMENTO E COMPATIBILIDADE DE TEXTO) ---
+# --- 2. CSS REFINADO (GEOMETRIA E SIMETRIA) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
@@ -22,26 +22,7 @@ st.markdown("""
     .block-container { padding-top: 1rem !important; }
     .stApp { background-color: #0b1218; color: #e4e6eb; font-family: 'Inter', sans-serif; }
     
-    /* HEADER PRINCIPAL */
-    .main-logo-container {
-        display: flex; align-items: center; gap: 12px; margin-bottom: 25px; padding-left: 5px;
-    }
-    .ai-icon-small {
-        position: relative; width: 38px; height: 38px;
-        display: flex; align-items: center; justify-content: center;
-    }
-    .hexagon-small {
-        position: absolute; width: 100%; height: 100%;
-        fill: none; stroke: #f05a22; stroke-width: 3;
-        filter: drop-shadow(0 0 5px #f05a22);
-    }
-    .core-small {
-        width: 12px; height: 12px; background-color: #f05a22;
-        clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
-        animation: pulse-core 2s infinite ease-in-out;
-    }
-
-    /* SIDEBAR - LARGURA AUMENTADA PARA CABER NOMES LONGOS */
+    /* SIDEBAR - LARGURA SEGURA */
     [data-testid="stSidebar"] { 
         background-color: #0b1218; 
         border-right: 1px solid rgba(240, 90, 34, 0.2); 
@@ -50,64 +31,62 @@ st.markdown("""
     
     .cat-label { 
         color: #5a6b79; font-size: 8px; font-weight: 800; 
-        margin-top: 18px; margin-bottom: 8px; text-transform: uppercase; 
+        margin-top: 15px; margin-bottom: 5px; text-transform: uppercase; 
         letter-spacing: 2px; text-align: center; display: block; 
     }
 
+    /* BOTÕES DA SIDEBAR - AJUSTE PARA NOMES LONGOS */
     .stButton > button {
         background-color: rgba(26, 36, 45, 0.4) !important; color: #cbd5e0 !important; 
         border: none !important; border-left: 2px solid transparent !important;
-        font-weight: 700 !important; height: 34px !important; text-transform: uppercase; 
-        font-size: 7.2px !important; /* REDUZIDO PARA NÃO VAZAR */
-        letter-spacing: -0.2px !important; /* AJUSTE FINO */
-        width: 100% !important; 
-        text-align: center !important; 
-        padding: 0 2px !important; 
-        white-space: nowrap !important;
-        border-radius: 4px !important;
+        font-weight: 700 !important; height: 32px !important; text-transform: uppercase; 
+        font-size: 7pt !important; /* Tamanho fixo em pontos para maior precisão */
+        width: 100% !important; text-align: center !important; 
+        padding-left: 2px !important; padding-right: 2px !important;
+        white-space: nowrap !important; border-radius: 4px !important;
         overflow: hidden !important;
     }
     .stButton > button[kind="primary"] { background-color: rgba(240, 90, 34, 0.1) !important; color: #f05a22 !important; border-left: 2px solid #f05a22 !important; }
 
-    /* ESPAÇAMENTO DO CONTEÚDO PARA NÃO ENCOSTAR NO TOPO */
-    .radar-topo {
-        margin-top: 35px !important; /* ESPAÇO ADICIONAL APÓS O BOTÃO EXECUTAR */
-        background: rgba(26, 36, 45, 0.6); border-radius: 6px; padding: 6px 15px; margin-bottom: 12px;
-        display: flex; align-items: center; border-left: 4px solid #f05a22;
-    }
-
-    /* ESTATÍSTICAS */
-    .mini-card { 
-        background-color: #111a21; 
-        padding: 18px 10px; 
-        border-radius: 10px; 
-        border: 1px solid #2d3748; 
-        text-align: center;
-        height: 125px;
-        display: flex; flex-direction: column; justify-content: center;
-    }
-    .mini-label { 
-        color: #ffffff !important; 
-        font-size: 11px !important; 
-        font-weight: 800 !important; 
-        text-transform: uppercase; 
-        margin-bottom: 15px !important;
-        letter-spacing: 1px;
-    }
-    .mini-val { 
-        color: #00ffc3 !important; 
-        font-weight: 900 !important; 
-        font-size: 26px !important; 
-        text-shadow: 0 0 15px rgba(0, 255, 195, 0.3);
+    /* ÁREA DE RESULTADOS - SIMETRIA DE ESPAÇAMENTO */
+    .main-results-container {
+        margin-top: 30px !important;
     }
 
     .card-principal { 
-        background-color: #1a242d; padding: 25px; border-radius: 12px; 
+        background-color: #1a242d; padding: 20px; border-radius: 12px; 
         border-bottom: 4px solid #f05a22; text-align: center; 
-        margin-top: 10px !important;
+        margin-bottom: 20px !important; /* DISTÂNCIA VERTICAL IGUAL À HORIZONTAL */
     }
-    .match-title { color: #ffffff !important; font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 800; margin-bottom: 25px; }
-    .val-prob { color: #f05a22; font-size: 32px; font-weight: 900; }
+
+    .prob-container { 
+        display: flex; justify-content: space-around; align-items: center; 
+        background: rgba(0,0,0,0.3); border-radius: 10px; padding: 15px 0; 
+    }
+
+    /* MINI CARDS (ESTATÍSTICAS) */
+    [data-testid="stHorizontalBlock"] {
+        gap: 20px !important; /* DISTÂNCIA HORIZONTAL ENTRE CARDS */
+    }
+
+    .mini-card { 
+        background-color: #111a21; 
+        padding: 15px 10px; 
+        border-radius: 10px; 
+        border: 1px solid #2d3748; 
+        text-align: center;
+        height: 110px;
+        display: flex; flex-direction: column; justify-content: center;
+    }
+    .mini-label { 
+        color: #ffffff !important; font-size: 10px !important; 
+        font-weight: 800 !important; text-transform: uppercase; 
+        margin-bottom: 12px !important; letter-spacing: 1px;
+    }
+    .mini-val { 
+        color: #00ffc3 !important; font-weight: 900 !important; 
+        font-size: 24px !important; text-shadow: 0 0 15px rgba(0, 255, 195, 0.3);
+    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -143,9 +122,15 @@ with st.sidebar:
     with c8: s_btn("SUL-AMERICANA", "COPA SUL-AMERICANA", "SUL")
 
 # --- 5. ÁREA PRINCIPAL ---
+# HEADER
 st.markdown("""
-    <div class="main-logo-container">
-        <div class="ai-icon-small"><svg class="hexagon-small" viewBox="0 0 100 100"><path d="M50 5 L90 25 L90 75 L50 95 L10 75 L10 25 Z" /></svg><div class="core-small"></div></div>
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-left: 5px;">
+        <div style="position: relative; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center;">
+            <svg style="position: absolute; width: 100%; height: 100%; fill: none; stroke: #f05a22; stroke-width: 3; filter: drop-shadow(0 0 5px #f05a22);" viewBox="0 0 100 100">
+                <path d="M50 5 L90 25 L90 75 L50 95 L10 75 L10 25 Z" />
+            </svg>
+            <div style="width: 12px; height: 12px; background-color: #f05a22; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); animation: pulse-core 2s infinite ease-in-out;"></div>
+        </div>
         <div style="color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 2px;">GESTOR IA</div>
     </div>
 """, unsafe_allow_html=True)
@@ -157,20 +142,21 @@ with col_b: t_fora = st.selectbox("Visitante", sorted([t for t in times if t != 
 with col_c: executar = st.button("🔥 EXECUTAR ALGORITMO", use_container_width=True, type="primary")
 
 if executar:
-    # O radar-topo agora tem margem superior para não encostar nos seletores
-    st.markdown(f'<div class="radar-topo"><div style="color:#f05a22; font-family:Orbitron; font-weight:700; font-size:10px; margin-right:15px;">📡 RADAR</div><div style="font-size:11px; color:#8899a6;">{st.session_state.nome_liga} analisada com sucesso.</div></div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:10px; color:#f05a22; font-family:Orbitron; margin-bottom:12px; border-left:4px solid #f05a22; padding-left:10px;">📡 ANALISANDO: {st.session_state.nome_liga}</div>', unsafe_allow_html=True)
     
+    # CARD PRINCIPAL
     st.markdown(f"""
         <div class="card-principal">
-            <div class="match-title">{t_casa.upper()} VS {t_fora.upper()}</div>
-            <div style="display: flex; justify-content: space-around; align-items: center; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 22px 0; margin-bottom: 25px;">
-                <div><p class="val-prob">44.2%</p><p style="color:#cbd5e0; font-size:12px; font-weight:700; text-transform:uppercase; margin-top:8px;">Mandante</p></div>
-                <div><p class="val-prob">22.8%</p><p style="color:#cbd5e0; font-size:12px; font-weight:700; text-transform:uppercase; margin-top:8px;">Empate</p></div>
-                <div><p class="val-prob">33.0%</p><p style="color:#cbd5e0; font-size:12px; font-weight:700; text-transform:uppercase; margin-top:8px;">Visitante</p></div>
+            <div style="color: #ffffff; font-family: 'Orbitron', sans-serif; font-size: 24px; font-weight: 800; margin-bottom: 20px;">{t_casa.upper()} VS {t_fora.upper()}</div>
+            <div class="prob-container">
+                <div><p style="color: #f05a22; font-size: 28px; font-weight: 900; margin:0;">44.2%</p><p style="color:#cbd5e0; font-size:11px; font-weight:700; text-transform:uppercase; margin-top:5px;">Mandante</p></div>
+                <div><p style="color: #f05a22; font-size: 28px; font-weight: 900; margin:0;">22.8%</p><p style="color:#cbd5e0; font-size:11px; font-weight:700; text-transform:uppercase; margin-top:5px;">Empate</p></div>
+                <div><p style="color: #f05a22; font-size: 28px; font-weight: 900; margin:0;">33.0%</p><p style="color:#cbd5e0; font-size:11px; font-weight:700; text-transform:uppercase; margin-top:5px;">Visitante</p></div>
             </div>
         </div>
     """, unsafe_allow_html=True)
     
+    # LINHA DE MINI-CARDS (SIMETRIA APLICADA VIA CSS)
     m = st.columns(6)
     metrics = [
         ("⚽ GOLS +2.5", "62%"), ("🚩 ESCANTEIOS +9.5", "75%"), ("👞 CHUTES +22", "81%"), 
