@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- 2. BANCO DE DADOS COMPLETO ---
+# --- 2. BANCO DE DADOS ---
 DIC_TIMES = {
     "BRA_A": ["Flamengo", "Palmeiras", "Botafogo", "Fortaleza", "São Paulo", "Bahia", "Cruzeiro", "Internacional", "Atlético-MG", "Vasco", "Corinthians", "Fluminense", "Grêmio", "Athletico-PR", "Vitória", "Juventude", "Criciúma", "Cuiabá", "Atlético-GO", "Bragantino"],
     "BRA_B": ["Santos", "Sport", "Novorizontino", "Mirassol", "Vila Nova", "América-MG", "Ceará", "Coritiba", "Avaí", "Operário-PR", "Amazonas", "Goiás"],
@@ -32,7 +32,7 @@ DIC_TIMES = {
     "SUL": ["Cruzeiro", "Corinthians", "Fortaleza", "Racing", "Lanús", "Athletico-PR"]
 }
 
-# --- 3. CSS FUTURISTA - CORREÇÃO DE QUEBRA DE TEXTO ---
+# --- 3. CSS "ICON-BUTTON" FUTURISTA ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
@@ -42,53 +42,52 @@ st.markdown("""
     .block-container { padding-top: 0.5rem !important; }
     .stApp { background-color: #0b1218; color: #e4e6eb; font-family: 'Inter', sans-serif; }
     
-    /* SIDEBAR AJUSTADA PARA 260PX (EVITA QUEBRA) */
     [data-testid="stSidebar"] { 
         background-color: #0b1218 !important; 
         border-right: 2px solid #f05a22 !important; 
         width: 260px !important; 
     }
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { padding: 0.4rem !important; gap: 0.1rem !important; }
-    
-    /* BOTÕES: TRAVA DE QUEBRA DE LINHA */
+
+    /* REDESENHO DOS BOTÕES INSPIRADO NA IMAGEM */
     .stButton > button { 
-        background-color: rgba(26, 36, 45, 0.8) !important; 
+        background: linear-gradient(90deg, rgba(240, 90, 34, 0.1) 0%, rgba(26, 36, 45, 0.8) 20%) !important;
         color: #cbd5e0 !important; 
-        font-size: 6.5pt !important; /* Ajuste fino da fonte */
-        border-radius: 4px !important; 
-        margin-bottom: 2px !important; 
-        border: 1px solid transparent !important; 
-        height: 30px !important; 
-        transition: all 0.2s ease !important;
-        white-space: nowrap !important; /* PROÍBE QUEBRA DE LINHA */
-        overflow: hidden !important;
-        text-overflow: ellipsis;
-        padding: 0 5px !important;
+        font-size: 7.5pt !important; 
+        border-radius: 30px !important; /* Estilo 'Pílula' da imagem */
+        margin-bottom: 4px !important; 
+        border: 1px solid rgba(240, 90, 34, 0.2) !important; 
+        height: 32px !important; 
+        transition: all 0.3s ease !important;
+        white-space: nowrap !important;
+        text-align: left !important;
+        padding-left: 15px !important;
         width: 100% !important;
     }
 
+    /* EFEITO HOVER LARANJA */
     .stButton > button:hover { 
-        background-color: rgba(240, 90, 34, 0.2) !important; 
-        color: #f05a22 !important; 
+        background: linear-gradient(90deg, #f05a22 0%, rgba(240, 90, 34, 0.3) 100%) !important;
+        color: #ffffff !important; 
         border: 1px solid #f05a22 !important;
+        box-shadow: 0 0 15px rgba(240, 90, 34, 0.4) !important;
+        transform: translateX(5px);
+    }
+
+    /* BOTÃO ATIVO */
+    .stButton > button[kind="primary"] { 
+        background: linear-gradient(90deg, #f05a22 0%, #ff8c00 100%) !important;
+        color: #ffffff !important; 
+        font-weight: 800 !important;
+        box-shadow: 0 0 20px rgba(240, 90, 34, 0.6) !important;
     }
 
     .cat-button > div > button { 
-        background-color: rgba(240, 90, 34, 0.05) !important; 
-        color: #fff !important; 
-        height: 34px !important; 
-        font-size: 7.5pt !important; 
-        border-bottom: 1px solid rgba(240, 90, 34, 0.4) !important; 
+        background: rgba(240, 90, 34, 0.05) !important; 
+        border-radius: 8px !important;
+        height: 36px !important;
+        border-bottom: 2px solid #f05a22 !important;
     }
 
-    .stButton > button[kind="primary"] { 
-        background-color: #f05a22 !important; 
-        color: #ffffff !important; 
-        box-shadow: 0 0 12px rgba(240, 90, 34, 0.4) !important;
-        font-weight: 800 !important;
-    }
-
-    /* CARDS */
     .card-principal { background-color: #161f27; padding: 20px; border-radius: 12px; border-bottom: 4px solid #f05a22; text-align: center; }
     .stats-flex { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; width: 100%; flex-wrap: nowrap !important; }
     .mini-card { flex: 1; background-color: #111a21; padding: 15px 5px; border-radius: 10px; border: 1px solid #2d3748; text-align: center; min-width: 0; }
@@ -108,8 +107,10 @@ if 'liga_ativa' not in st.session_state: st.session_state.update(liga_ativa='BRA
 if 'menu_aberto' not in st.session_state: st.session_state.menu_aberto = 'BR'
 
 with st.sidebar:
-    def s_btn(display, full, vid):
-        if st.button(display, key=f"s_{vid}", type="primary" if st.session_state.liga_ativa == vid else "secondary"):
+    def s_btn(icon, display, full, vid):
+        # Usando o ícone antes do texto para simular o design da imagem
+        label = f"{icon}  {display}"
+        if st.button(label, key=f"s_{vid}", type="primary" if st.session_state.liga_ativa == vid else "secondary"):
             st.session_state.liga_ativa = vid; st.session_state.nome_liga = full; st.rerun()
 
     def cat_btn(label, menu_id):
@@ -118,34 +119,33 @@ with st.sidebar:
             st.session_state.menu_aberto = menu_id if st.session_state.menu_aberto != menu_id else None; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-    cat_btn("🇧🇷 BRASIL COMPLETO", "BR")
+    cat_btn("📂 FUTEBOL BRASIL", "BR")
     if st.session_state.menu_aberto == "BR":
-        # Gap reduzido entre colunas para dar mais espaço interno
         c1, c2 = st.columns(2, gap="small")
         with c1: 
-            s_btn("SÉRIE A", "BRASILEIRÃO A", "BRA_A")
-            s_btn("SÉRIE C", "BRASILEIRÃO C", "BRA_C")
-            s_btn("COPA BR", "COPA DO BRASIL", "CDB")
+            s_btn("🔘", "SÉRIE A", "BRASILEIRÃO A", "BRA_A")
+            s_btn("🔘", "SÉRIE C", "BRASILEIRÃO C", "BRA_C")
+            s_btn("🏆", "COPA BR", "COPA DO BRASIL", "CDB")
         with c2: 
-            s_btn("SÉRIE B", "BRASILEIRÃO B", "BRA_B")
-            s_btn("SÉRIE D", "BRASILEIRÃO D", "BRA_D")
-            s_btn("NORDESTE", "COPA NORDESTE", "CNE")
+            s_btn("🔘", "SÉRIE B", "BRASILEIRÃO B", "BRA_B")
+            s_btn("🔘", "SÉRIE D", "BRASILEIRÃO D", "BRA_D")
+            s_btn("☀️", "NORDESTE", "COPA NORDESTE", "CNE")
 
-    cat_btn("🇪🇺 ELITE EUROPA", "EU_L")
+    cat_btn("🌍 ELITE EUROPA", "EU_L")
     if st.session_state.menu_aberto == "EU_L":
         c1, c2 = st.columns(2, gap="small")
-        with c1: s_btn("PREMIER", "PREMIER LEAGUE", "ENG_P"); s_btn("SERIE A", "SERIE A TIM", "ITA_A")
-        with c2: s_btn("LA LIGA", "LA LIGA", "ESP_L"); s_btn("BUNDES", "BUNDESLIGA", "GER_B")
+        with c1: s_btn("🏴󠁧󠁢󠁥󠁮󠁧󠁿", "PREMIER", "PREMIER LEAGUE", "ENG_P"); s_btn("🇮🇹", "SERIE A", "SERIE A TIM", "ITA_A")
+        with c2: s_btn("🇪🇸", "LA LIGA", "LA LIGA", "ESP_L"); s_btn("🇩🇪", "BUNDES", "BUNDESLIGA", "GER_B")
 
-    cat_btn("🌍 UEFA / INTER", "UEFA")
+    cat_btn("⭐ UEFA / INTER", "UEFA")
     if st.session_state.menu_aberto == "UEFA":
-        s_btn("⭐ CHAMPIONS", "CHAMPIONS LEAGUE", "UCL")
-        s_btn("🛡️ EUROCOPA", "EUROCOPA", "EURO_C")
+        s_btn("🏆", "CHAMPIONS", "CHAMPIONS LEAGUE", "UCL")
+        s_btn("🛡️", "EUROCOPA", "EUROCOPA", "EURO_C")
 
     cat_btn("🔥 AMÉRICA DO SUL", "SAM")
     if st.session_state.menu_aberto == "SAM":
-        s_btn("🏆 LIBERTADORES", "COPA LIBERTADORES", "LIB")
-        s_btn("🛰️ SUL-AMERICANA", "COPA SUL-AMERICANA", "SUL")
+        s_btn("🏆", "LIBERTADORES", "COPA LIBERTADORES", "LIB")
+        s_btn("🛰️", "SUL-AMERICANA", "COPA SUL-AMERICANA", "SUL")
 
 # --- 6. CABEÇALHO ---
 st.markdown("""
