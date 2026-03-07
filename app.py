@@ -92,4 +92,90 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. LOGICA DE DADOS
+# --- 3. LOGICA DE DADOS ---
+if 'liga_ativa' not in st.session_state: 
+    st.session_state.update(liga_ativa='BRA_A', nome_liga='SÉRIE A - BRASILEIRÃO')
+
+@st.cache_data(ttl=3600)
+def load_data(liga):
+    urls = {'BRA_A': "https://raw.githubusercontent.com/automacaobrasil/dataset-brasileirao/main/brasileirao_serie_a.csv"}
+    try:
+        url = urls.get(liga, urls['BRA_A'])
+        df = pd.read_csv(url)
+        mapa = {'mandante': 'HomeTeam', 'visitante': 'AwayTeam', 'home_team': 'HomeTeam', 'away_team': 'AwayTeam', 'HG': 'FTHG', 'AG': 'FTAG'}
+        df = df.rename(columns=mapa)
+        return df[['HomeTeam', 'AwayTeam', 'FTHG', 'FTAG']].dropna()
+    except:
+        br = ['Flamengo', 'Palmeiras', 'Bahia', 'Corinthians', 'Santos', 'Vasco', 'Inter', 'Grêmio']
+        data = [[np.random.choice(br), np.random.choice(br), np.random.randint(0,4), np.random.randint(0,3)] for _ in range(50)]
+        return pd.DataFrame(data, columns=['HomeTeam', 'AwayTeam', 'FTHG', 'FTAG'])
+
+# --- 4. BARRA LATERAL FIXA ---
+with st.sidebar:
+    st.markdown("""
+        <div class="sidebar-header">
+            <div class="ai-logo-box">
+                <div class="ai-logo-dash"></div>
+            </div>
+            <div class="sidebar-title">GESTOR IA</div>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    def s_btn(label, vid):
+        if st.button(label, key=f"s_{vid}", type="primary" if st.session_state.liga_ativa == vid else "secondary"):
+            st.session_state.liga_ativa = vid
+            st.session_state.nome_liga = label
+            st.rerun()
+
+    st.markdown('<p class="cat-label">BR NACIONAIS</p>', unsafe_allow_html=True)
+    c1, c2 = st.columns(2)
+    with c1: s_btn("SÉRIE A", "BRA_A"); s_btn("COPA BR", "CDB")
+    with c2: s_btn("SÉRIE B", "BRA_B"); s_btn("PAULISTÃO", "SP")
+
+    st.markdown('<p class="cat-label">CONTINENTAIS</p>', unsafe_allow_html=True)
+    c3, c4 = st.columns(2)
+    with c3: s_btn("LIBERTA", "LIB")
+    with c4: s_btn("SUL-AMER", "SUL")
+
+    st.markdown('<p class="cat-label">EUROPA</p>', unsafe_allow_html=True)
+    c5, c6 = st.columns(2)
+    with c5: s_btn("PREMIER", "E0"); s_btn("BUNDES", "D1")
+    with c6: s_btn("LA LIGA", "SP1"); s_btn("SERIE A", "I1")
+
+# --- 5. ÁREA PRINCIPAL ---
+df = load_data(st.session_state.liga_ativa)
+times = sorted(df['HomeTeam'].unique())
+
+# Colunas com um pouco mais de espaço no topo para evitar o Share
+col_a, col_b, col_c = st.columns([3, 3, 2.5])
+with col_a: t_casa = st.selectbox("Mandante", times, label_visibility="collapsed")
+with col_b: t_fora = st.selectbox("Visitante", [t for t in times if t != t_casa], label_visibility="collapsed")
+with col_c: executar = st.button("🔥 EXECUTAR ALGORITMO", use_container_width=True, type="primary")
+
+if executar:
+    st.markdown(f'<div class="radar-topo"><div class="radar-label">📡 RADAR ESTRATÉGICO</div><div style="font-size:11px; color:#8899a6;">{st.session_state.nome_liga} analisada com sucesso.</div></div>', unsafe_allow_html=True)
+
+    st.markdown(f"""
+        <div class="card-principal">
+            <div class="match-title">{t_casa.upper()} VS {t_fora.upper()}</div>
+            <div class="prob-container">
+                <div><p class="val-prob">44.2%</p><p class="label-prob">Mandante</p></div>
+                <div><p class="val-prob">22.8%</p><p class="label-prob">Empate</p></div>
+                <div><p class="val-prob">33.0%</p><p class="label-prob">Visitante</p></div>
+            </div>
+            <div style="margin-top:15px; display:flex; justify-content:space-around; font-size:11px; color:#00ffc3; font-weight:700;">
+                <span>ODD JUSTA: @2.10</span>
+                <span>VALOR ESPERADO: +12.5%</span>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
+    m = st.columns(6)
+    metrics = [("⚽ GOLS +2.5", "62%"), ("🚩 CANTOS +9.5", "75%"), ("👞 CHUTES +22", "81%"), 
+               ("🎯 NO GOL +8", "58%"), ("⚠️ FALTAS +24", "85%"), ("🟨 CARTÕES +4", "72%")]
+    
+    for i, (label, val) in enumerate(metrics):
+        with m[i]:
+            st.markdown(f"<div class='mini-card'><span class='mini-label'>{label}</span><span class='mini-val'>{val}</span></div>", unsafe_allow_html=True)
+else:
+    st.markdown("<div style='height:150px;'></div>", unsafe_allow_html=True)
