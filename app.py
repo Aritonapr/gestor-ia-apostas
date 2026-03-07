@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- 2. CSS REFINADO (ALINHAMENTO E ESPAÇAMENTO) ---
+# --- 2. CSS REFINADO (ESPAÇAMENTO E COMPATIBILIDADE DE TEXTO) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
@@ -24,7 +24,7 @@ st.markdown("""
     
     /* HEADER PRINCIPAL */
     .main-logo-container {
-        display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-left: 5px;
+        display: flex; align-items: center; gap: 12px; margin-bottom: 25px; padding-left: 5px;
     }
     .ai-icon-small {
         position: relative; width: 38px; height: 38px;
@@ -40,63 +40,78 @@ st.markdown("""
         clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
         animation: pulse-core 2s infinite ease-in-out;
     }
-    .main-title-text {
-        color: #f05a22; font-family: 'Orbitron', sans-serif;
-        font-size: 20px; font-weight: 900; letter-spacing: 2px;
-    }
 
-    /* SIDEBAR PADS - CORREÇÃO DE ALINHAMENTO */
-    [data-testid="stSidebar"] { background-color: #0b1218; border-right: 1px solid rgba(240, 90, 34, 0.2); width: 280px !important; }
-    .cat-label { color: #5a6b79; font-size: 8px; font-weight: 800; margin-top: 15px; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 2px; text-align: center; display: block; }
+    /* SIDEBAR - LARGURA AUMENTADA PARA CABER NOMES LONGOS */
+    [data-testid="stSidebar"] { 
+        background-color: #0b1218; 
+        border-right: 1px solid rgba(240, 90, 34, 0.2); 
+        width: 300px !important; 
+    }
+    
+    .cat-label { 
+        color: #5a6b79; font-size: 8px; font-weight: 800; 
+        margin-top: 18px; margin-bottom: 8px; text-transform: uppercase; 
+        letter-spacing: 2px; text-align: center; display: block; 
+    }
 
     .stButton > button {
         background-color: rgba(26, 36, 45, 0.4) !important; color: #cbd5e0 !important; 
         border: none !important; border-left: 2px solid transparent !important;
-        font-weight: 700 !important; height: 32px !important; text-transform: uppercase; 
-        font-size: 8px !important; width: 100% !important; 
-        text-align: center !important; /* CENTRALIZADO PARA CABER LIBERTADORES */
-        padding: 0 5px !important; white-space: nowrap !important;
+        font-weight: 700 !important; height: 34px !important; text-transform: uppercase; 
+        font-size: 7.2px !important; /* REDUZIDO PARA NÃO VAZAR */
+        letter-spacing: -0.2px !important; /* AJUSTE FINO */
+        width: 100% !important; 
+        text-align: center !important; 
+        padding: 0 2px !important; 
+        white-space: nowrap !important;
         border-radius: 4px !important;
+        overflow: hidden !important;
     }
     .stButton > button[kind="primary"] { background-color: rgba(240, 90, 34, 0.1) !important; color: #f05a22 !important; border-left: 2px solid #f05a22 !important; }
 
-    /* --- ESTATÍSTICAS (AUMENTO DE LETRAS E ESPAÇO) --- */
+    /* ESPAÇAMENTO DO CONTEÚDO PARA NÃO ENCOSTAR NO TOPO */
+    .radar-topo {
+        margin-top: 35px !important; /* ESPAÇO ADICIONAL APÓS O BOTÃO EXECUTAR */
+        background: rgba(26, 36, 45, 0.6); border-radius: 6px; padding: 6px 15px; margin-bottom: 12px;
+        display: flex; align-items: center; border-left: 4px solid #f05a22;
+    }
+
+    /* ESTATÍSTICAS */
     .mini-card { 
         background-color: #111a21; 
-        padding: 18px 10px; /* Mais altura para o card */
+        padding: 18px 10px; 
         border-radius: 10px; 
         border: 1px solid #2d3748; 
         text-align: center;
-        height: 120px; /* Altura fixa para simetria */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
+        height: 125px;
+        display: flex; flex-direction: column; justify-content: center;
     }
-
     .mini-label { 
         color: #ffffff !important; 
-        font-size: 11px !important; /* AUMENTADO */
+        font-size: 11px !important; 
         font-weight: 800 !important; 
         text-transform: uppercase; 
-        margin-bottom: 12px !important; /* MAIS ESPAÇO ENTRE NOME E NÚMERO */
+        margin-bottom: 15px !important;
         letter-spacing: 1px;
     }
     .mini-val { 
         color: #00ffc3 !important; 
         font-weight: 900 !important; 
-        font-size: 26px !important; /* NÚMEROS GRANDES E NÍTIDOS */
-        margin: 0;
+        font-size: 26px !important; 
         text-shadow: 0 0 15px rgba(0, 255, 195, 0.3);
     }
 
-    .card-principal { background-color: #1a242d; padding: 25px; border-radius: 12px; border-bottom: 4px solid #f05a22; text-align: center; }
+    .card-principal { 
+        background-color: #1a242d; padding: 25px; border-radius: 12px; 
+        border-bottom: 4px solid #f05a22; text-align: center; 
+        margin-top: 10px !important;
+    }
     .match-title { color: #ffffff !important; font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 800; margin-bottom: 25px; }
     .val-prob { color: #f05a22; font-size: 32px; font-weight: 900; }
-    .label-prob { color: #cbd5e0; font-size: 12px; font-weight: 700; text-transform: uppercase; margin-top: 8px; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. LÓGICA DE ESTADO ---
+# --- 3. LOGICA DE ESTADO ---
 if 'liga_ativa' not in st.session_state: 
     st.session_state.update(liga_ativa='BRA_A', nome_liga='SÉRIE A')
 
@@ -131,7 +146,7 @@ with st.sidebar:
 st.markdown("""
     <div class="main-logo-container">
         <div class="ai-icon-small"><svg class="hexagon-small" viewBox="0 0 100 100"><path d="M50 5 L90 25 L90 75 L50 95 L10 75 L10 25 Z" /></svg><div class="core-small"></div></div>
-        <div class="main-title-text">GESTOR IA</div>
+        <div style="color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 2px;">GESTOR IA</div>
     </div>
 """, unsafe_allow_html=True)
 
@@ -142,27 +157,24 @@ with col_b: t_fora = st.selectbox("Visitante", sorted([t for t in times if t != 
 with col_c: executar = st.button("🔥 EXECUTAR ALGORITMO", use_container_width=True, type="primary")
 
 if executar:
-    st.markdown(f'<div style="font-size:11px; color:#f05a22; font-family:Orbitron; margin-bottom:12px; border-left:4px solid #f05a22; padding-left:10px;">📡 ANALISANDO: {st.session_state.nome_liga}</div>', unsafe_allow_html=True)
+    # O radar-topo agora tem margem superior para não encostar nos seletores
+    st.markdown(f'<div class="radar-topo"><div style="color:#f05a22; font-family:Orbitron; font-weight:700; font-size:10px; margin-right:15px;">📡 RADAR</div><div style="font-size:11px; color:#8899a6;">{st.session_state.nome_liga} analisada com sucesso.</div></div>', unsafe_allow_html=True)
     
     st.markdown(f"""
         <div class="card-principal">
             <div class="match-title">{t_casa.upper()} VS {t_fora.upper()}</div>
-            <div style="display: flex; justify-content: space-around; align-items: center; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 20px 0; margin-bottom: 25px;">
-                <div><p class="val-prob">44.2%</p><p class="label-prob">Mandante</p></div>
-                <div><p class="val-prob">22.8%</p><p class="label-prob">Empate</p></div>
-                <div><p class="val-prob">33.0%</p><p class="label-prob">Visitante</p></div>
+            <div style="display: flex; justify-content: space-around; align-items: center; background: rgba(0,0,0,0.3); border-radius: 12px; padding: 22px 0; margin-bottom: 25px;">
+                <div><p class="val-prob">44.2%</p><p style="color:#cbd5e0; font-size:12px; font-weight:700; text-transform:uppercase; margin-top:8px;">Mandante</p></div>
+                <div><p class="val-prob">22.8%</p><p style="color:#cbd5e0; font-size:12px; font-weight:700; text-transform:uppercase; margin-top:8px;">Empate</p></div>
+                <div><p class="val-prob">33.0%</p><p style="color:#cbd5e0; font-size:12px; font-weight:700; text-transform:uppercase; margin-top:8px;">Visitante</p></div>
             </div>
         </div>
     """, unsafe_allow_html=True)
     
     m = st.columns(6)
     metrics = [
-        ("⚽ GOLS +2.5", "62%"), 
-        ("🚩 ESCANTEIOS +9.5", "75%"), 
-        ("👞 CHUTES +22", "81%"), 
-        ("🎯 NO GOL +8", "58%"), 
-        ("⚠️ FALTAS +24", "85%"), 
-        ("🟨 CARTÕES +4", "72%")
+        ("⚽ GOLS +2.5", "62%"), ("🚩 ESCANTEIOS +9.5", "75%"), ("👞 CHUTES +22", "81%"), 
+        ("🎯 NO GOL +8", "58%"), ("⚠️ FALTAS +24", "85%"), ("🟨 CARTÕES +4", "72%")
     ]
     
     for i, (label, val) in enumerate(metrics):
@@ -174,4 +186,4 @@ if executar:
                 </div>
             """, unsafe_allow_html=True)
 else:
-    st.markdown("<div style='height:150px; display:flex; align-items:center; justify-content:center; border:1px dashed #2d3748; border-radius:10px; color:#5a6b79; font-size:14px;'>Dashboard em standby. Aguardando seleção de partida...</div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:150px;'></div>", unsafe_allow_html=True)
