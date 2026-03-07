@@ -11,65 +11,89 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- 2. BANCO DE DADOS COMPLETO ---
+# --- 2. BANCO DE DADOS ---
 DIC_TIMES = {
     "BRA_A": ["Flamengo", "Palmeiras", "Botafogo", "Fortaleza", "São Paulo", "Bahia", "Cruzeiro", "Internacional", "Atlético-MG", "Vasco", "Corinthians", "Fluminense", "Grêmio", "Athletico-PR", "Vitória", "Juventude", "Criciúma", "Cuiabá", "Atlético-GO", "Bragantino"],
     "BRA_B": ["Santos", "Sport", "Novorizontino", "Mirassol", "Vila Nova", "América-MG", "Ceará", "Coritiba", "Avaí", "Operário-PR", "Amazonas", "Goiás"],
-    "BRA_C": ["Náutico", "Remo", "Figueirense", "CSA", "Botafogo-PB", "ABC", "Londrina", "Caxias", "Ferroviária", "São Bernardo", "Volta Redonda", "Ypiranga"],
-    "BRA_D": ["Retrô", "Anápolis", "Iguatu", "Itabaiana", "Brasil de Pelotas", "Maringá", "Inter de Limeira", "Treze"],
     "CDB": ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Atlético-MG", "Vasco", "Grêmio", "Bahia", "Internacional", "Fluminense"],
-    "SUPER": ["Palmeiras", "São Paulo", "Flamengo", "Atlético-MG", "Corinthians"],
-    "CNE": ["Bahia", "Fortaleza", "Sport", "Ceará", "Vitória", "CRB", "Náutico", "Sampaio Corrêa", "Botafogo-PB"],
-    "SP": ["Palmeiras", "Santos", "São Paulo", "Corinthians", "Bragantino", "Novorizontino", "Inter de Limeira", "Ponte Preta"],
-    "RJ": ["Flamengo", "Fluminense", "Botafogo", "Vasco", "Nova Iguaçu", "Portuguesa-RJ", "Boavista"],
-    "MG": ["Cruzeiro", "Atlético-MG", "América-MG", "Tombense", "Villa Nova", "Ipatinga"],
-    "RS": ["Grêmio", "Internacional", "Juventude", "Caxias", "Brasil de Pelotas", "São José"],
+    "CNE": ["Bahia", "Fortaleza", "Sport", "Ceará", "Vitória", "CRB", "Náutico"],
     "ENG_P": ["Man. City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man. United", "Newcastle"],
     "ESP_L": ["Real Madrid", "Barcelona", "Atlético de Madrid", "Girona", "Athletic Bilbao", "Real Sociedad", "Sevilla"],
     "ITA_A": ["Inter de Milão", "Milan", "Juventus", "Atalanta", "Roma", "Napoli", "Lazio", "Bologna"],
     "GER_B": ["Bayer Leverkusen", "Bayern de Munique", "Stuttgart", "RB Leipzig", "Borussia Dortmund", "Eintracht Frankfurt"],
     "FRA_L": ["PSG", "Monaco", "Lille", "Brest", "Nice", "Lyon", "Marseille"],
-    "POR_L": ["Sporting", "Benfica", "Porto", "Braga", "Vitória de Guimarães"],
-    "HOL_E": ["PSV Eindhoven", "Feyenoord", "Ajax", "AZ Alkmaar", "Twente"],
     "UCL": ["Real Madrid", "Man. City", "Bayern", "Arsenal", "Barcelona", "Inter", "PSG", "Bayer Leverkusen"],
-    "UEL": ["Man. United", "Tottenham", "Roma", "Porto", "Ajax", "Lazio"],
     "EURO_C": ["Espanha", "Inglaterra", "França", "Alemanha", "Portugal", "Itália", "Holanda"],
-    "ELIM_W": ["Brasil", "Argentina", "França", "Inglaterra", "Espanha", "Alemanha", "Uruguai"],
-    "ARG_L": ["River Plate", "Boca Juniors", "Racing", "Talleres", "Estudiantes"],
     "SAUDI": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq"],
     "USA_MLS": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "Cincinnati"],
     "LIB": ["Flamengo", "Palmeiras", "River Plate", "Botafogo", "São Paulo", "Atlético-MG"],
     "SUL": ["Cruzeiro", "Corinthians", "Fortaleza", "Racing", "Lanús", "Athletico-PR"]
 }
 
-# --- 3. CSS OTIMIZADO (COMPACTO E SETA LARANJA) ---
+# --- 3. CSS FUTURISTA - FOCO EM INTERATIVIDADE E ESPAÇO ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
     
-    /* SETA DA SIDEBAR LARANJA */
-    [data-testid="stHeader"] { background: transparent !important; }
-    button[data-testid="stSidebarCollapse"] svg { color: #f05a22 !important; fill: #f05a22 !important; }
-    
+    /* REMOVER ESPAÇOS E CORRIGIR SETA */
+    header[data-testid="stHeader"] { background: transparent !important; }
+    button[data-testid="stSidebarCollapse"] svg { color: #f05a22 !important; fill: #f05a22 !important; filter: drop-shadow(0 0 5px #f05a22); }
+    .block-container { padding-top: 0.5rem !important; }
     .stApp { background-color: #0b1218; color: #e4e6eb; font-family: 'Inter', sans-serif; }
     
-    /* SIDEBAR COMPACTA */
+    /* SIDEBAR COMPACTA ULTRA PRO */
     [data-testid="stSidebar"] { 
         background-color: #0b1218 !important; 
         border-right: 2px solid #f05a22 !important; 
-        width: 240px !important; 
+        width: 230px !important; 
     }
-    /* Puxar botões para o topo da sidebar */
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { padding-top: 0.5rem !important; gap: 0rem !important; }
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { padding: 0.5rem !important; gap: 0.1rem !important; }
     
-    .stButton > button { background-color: rgba(26, 36, 45, 0.7) !important; color: #cbd5e0 !important; font-size: 6.8pt !important; border-radius: 4px !important; margin-bottom: 1px !important; border: none !important; height: 28px !important; }
-    .cat-button > div > button { background-color: rgba(240, 90, 34, 0.1) !important; color: #fff !important; height: 34px !important; font-size: 7.8pt !important; letter-spacing: 0.5px; border-bottom: 1px solid #f05a22 !important; margin-top: 5px !important; }
-    .stButton > button[kind="primary"] { background-color: rgba(240, 90, 34, 0.25) !important; color: #f05a22 !important; border-left: 4px solid #f05a22 !important; }
-    
-    .card-principal { background-color: #161f27; padding: 20px; border-radius: 12px; border-bottom: 4px solid #f05a22; text-align: center; margin-top: 5px; }
+    /* BOTÕES: ESTILO BASE */
+    .stButton > button { 
+        background-color: rgba(26, 36, 45, 0.8) !important; 
+        color: #cbd5e0 !important; 
+        font-size: 7pt !important; 
+        border-radius: 4px !important; 
+        margin-bottom: 2px !important; 
+        border: 1px solid transparent !important; 
+        height: 28px !important; 
+        transition: all 0.2s ease-in-out !important;
+    }
+
+    /* EFEITO HOVER: FICA LARANJA AO PASSAR O MOUSE */
+    .stButton > button:hover { 
+        background-color: rgba(240, 90, 34, 0.2) !important; 
+        color: #f05a22 !important; 
+        border: 1px solid #f05a22 !important;
+        box-shadow: 0 0 10px rgba(240, 90, 34, 0.3);
+    }
+
+    /* CATEGORIAS (BOTÕES MESTRE) */
+    .cat-button > div > button { 
+        background-color: rgba(240, 90, 34, 0.05) !important; 
+        color: #fff !important; 
+        height: 32px !important; 
+        font-size: 7.5pt !important; 
+        font-weight: 800 !important;
+        border-bottom: 1px solid rgba(240, 90, 34, 0.4) !important; 
+        margin-top: 4px !important; 
+    }
+
+    /* BOTÃO ATIVO: PERMANECE LARANJA */
+    .stButton > button[kind="primary"] { 
+        background-color: #f05a22 !important; 
+        color: #ffffff !important; 
+        border: none !important;
+        box-shadow: 0 0 15px rgba(240, 90, 34, 0.5) !important;
+        font-weight: 900 !important;
+    }
+
+    /* LAYOUT CENTRAL */
+    .card-principal { background-color: #161f27; padding: 20px; border-radius: 12px; border-bottom: 4px solid #f05a22; text-align: center; }
     .stats-flex { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; width: 100%; flex-wrap: nowrap !important; }
     .mini-card { flex: 1; background-color: #111a21; padding: 15px 5px; border-radius: 10px; border: 1px solid #2d3748; text-align: center; min-width: 0; }
-    .mini-label { color: #ffffff !important; font-size: 10px !important; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; white-space: nowrap; }
+    .mini-label { color: #ffffff !important; font-size: 10px !important; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; }
     .mini-val { color: #00ffc3 !important; font-weight: 900; font-size: 24px !important; margin: 0; text-shadow: 0 0 10px rgba(0, 255, 195, 0.4); }
     </style>
 """, unsafe_allow_html=True)
@@ -80,12 +104,13 @@ def calcular_engine(casa, fora):
     pc = 35 + (seed % 30); pe = 15 + (seed % 15); pf = 100 - pc - pe
     return pc, pe, pf, 50+(seed%40), 60+(seed%35), 65+(seed%30)
 
-# --- 5. NAVEGAÇÃO ---
+# --- 5. NAVEGAÇÃO SIDEBAR ---
 if 'liga_ativa' not in st.session_state: st.session_state.update(liga_ativa='BRA_A', nome_liga='SÉRIE A')
 if 'menu_aberto' not in st.session_state: st.session_state.menu_aberto = 'BR'
 
 with st.sidebar:
     def s_btn(display, full, vid):
+        # type="primary" define o estilo do botão ATIVO
         if st.button(display, key=f"s_{vid}", type="primary" if st.session_state.liga_ativa == vid else "secondary"):
             st.session_state.liga_ativa = vid; st.session_state.nome_liga = full; st.rerun()
 
@@ -95,46 +120,40 @@ with st.sidebar:
             st.session_state.menu_aberto = menu_id if st.session_state.menu_aberto != menu_id else None; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-    cat_btn("🇧🇷 FUTEBOL BRASILEIRO", "BR")
+    # --- CATEGORIAS COMPACTADAS ---
+    cat_btn("🇧🇷 BRASIL COMPLETO", "BR")
     if st.session_state.menu_aberto == "BR":
         c1, c2 = st.columns(2)
         with c1: s_btn("SÉRIE A", "BRASILEIRÃO A", "BRA_A"); s_btn("SÉRIE C", "BRASILEIRÃO C", "BRA_C"); s_btn("COPA BR", "COPA DO BRASIL", "CDB")
         with c2: s_btn("SÉRIE B", "BRASILEIRÃO B", "BRA_B"); s_btn("SÉRIE D", "BRASILEIRÃO D", "BRA_D"); s_btn("NORDESTE", "COPA NORDESTE", "CNE")
-        s_btn("SUPERCOPA / ESTADUAIS", "COPAS E ESTADUAIS", "SUPER") # Compactado para economizar espaço
 
     cat_btn("🇪🇺 ELITE EUROPA", "EU_L")
     if st.session_state.menu_aberto == "EU_L":
         c1, c2 = st.columns(2)
-        with c1: s_btn("PREMIER", "PREMIER LEAGUE", "ENG_P"); s_btn("SERIE A", "SERIE A TIM", "ITA_A"); s_btn("PORTUGAL", "LIGA PORTUGAL", "POR_L")
-        with c2: s_btn("LA LIGA", "LA LIGA", "ESP_L"); s_btn("BUNDES", "BUNDESLIGA", "GER_B"); s_btn("HOLANDA", "EREDIVISIE", "HOL_E")
+        with c1: s_btn("PREMIER", "PREMIER LEAGUE", "ENG_P"); s_btn("SERIE A", "SERIE A TIM", "ITA_A")
+        with c2: s_btn("LA LIGA", "LA LIGA", "ESP_L"); s_btn("BUNDES", "BUNDESLIGA", "GER_B")
 
-    cat_btn("🌍 UEFA & SELEÇÕES", "UEFA")
+    cat_btn("🌍 UEFA / INTER", "UEFA")
     if st.session_state.menu_aberto == "UEFA":
-        s_btn("⭐ CHAMPIONS LEAGUE", "CHAMPIONS", "UCL")
-        s_btn("🛡️ EUROCOPA / ELIMINAT.", "SELEÇÕES", "EURO_C")
-
-    cat_btn("⭐ NOVOS MERCADOS", "NEW")
-    if st.session_state.menu_aberto == "NEW":
-        s_btn("🇸🇦 SAUDI / 🇺🇸 MLS", "MERCADOS EMERGENTES", "SAUDI")
-        s_btn("🇦🇷 ARGENTINA", "LIGA ARGENTINA", "ARG_L")
+        s_btn("⭐ CHAMPIONS", "CHAMPIONS LEAGUE", "UCL")
+        s_btn("🛡️ EUROCOPA", "EUROCOPA", "EURO_C")
 
     cat_btn("🔥 AMÉRICA DO SUL", "SAM")
     if st.session_state.menu_aberto == "SAM":
-        s_btn("🏆 LIBERTADORES", "LIBERTADORES", "LIB")
-        s_btn("🛰️ SUL-AMERICANA", "SUL-AMERICANA", "SUL")
+        s_btn("🏆 LIBERTADORES", "COPA LIBERTADORES", "LIB")
+        s_btn("🛰️ SUL-AMERICANA", "COPA SUL-AMERICANA", "SUL")
 
 # --- 6. CABEÇALHO ---
 st.markdown("""
-    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-top: 5px;">
-        <div style="position: relative; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+        <div style="position: relative; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
             <svg style="position: absolute; width: 100%; height: 100%; filter: drop-shadow(0 0 8px #f05a22);" viewBox="0 0 100 100">
                 <path d="M50 5 L93.3 30 L93.3 80 L50 105 L6.7 80 L6.7 30 Z" fill="none" stroke="#f05a22" stroke-width="4"/>
                 <path d="M50 20 L76 35 L76 65 L50 80 L24 65 L24 35 Z" fill="#f05a22" opacity="0.4"/>
-                <circle cx="50" cy="50" r="8" fill="#fff" />
             </svg>
         </div>
-        <div style="color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 22px; font-weight: 900; letter-spacing: 2px;">
-            GESTOR IA <span style="color: #ffffff; font-size: 11px; letter-spacing: 1px; margin-left: 10px; opacity: 0.8;">PRO EDITION</span>
+        <div style="color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 2px;">
+            GESTOR IA <span style="color: #ffffff; font-size: 10px; margin-left: 5px; opacity: 0.6;">PRO EDITION</span>
         </div>
     </div>
 """, unsafe_allow_html=True)
@@ -147,7 +166,7 @@ with col3: executar = st.button("🔥 PROCESSAR ALGORITMO", use_container_width=
 
 if executar:
     pc, pe, pf, mg, mc, mch = calcular_engine(t_casa, t_fora)
-    st.markdown(f'<div style="font-size:11px; color:#f05a22; font-family:Orbitron; border-left:4px solid #f05a22; padding-left:10px; margin-bottom:12px;">📡 DATA-ANALYSIS: {st.session_state.nome_liga}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:11px; color:#f05a22; font-family:Orbitron; border-left:4px solid #f05a22; padding-left:10px; margin-bottom:12px;">📡 ANALISANDO: {st.session_state.nome_liga}</div>', unsafe_allow_html=True)
     
     st.markdown(f"""
         <div class="card-principal">
@@ -169,4 +188,4 @@ if executar:
         </div>
     """, unsafe_allow_html=True)
 else:
-    st.markdown("<div style='height:250px; display:flex; align-items:center; justify-content:center; color:#2d3748; font-family:Orbitron; font-size:12px; opacity:0.6;'>SISTEMA ONLINE: SELECIONE UM CONFRONTO...</div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:200px; display:flex; align-items:center; justify-content:center; color:#2d3748; font-family:Orbitron; font-size:12px; opacity:0.6;'>SELECIONE UM CONFRONTO...</div>", unsafe_allow_html=True)
