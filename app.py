@@ -28,32 +28,24 @@ st.markdown("""
         width: 300px !important; 
     }
     
-    /* ESTILO DOS BOTÕES */
     .stButton > button {
         background-color: rgba(26, 36, 45, 0.4) !important; color: #cbd5e0 !important; 
         border: none !important; border-left: 2px solid transparent !important;
         font-weight: 700 !important; height: 32px !important; text-transform: uppercase; 
-        font-size: 7.5pt !important;
-        width: 100% !important; text-align: center !important; 
-        white-space: nowrap !important; border-radius: 4px !important;
+        font-size: 7.2pt !important; width: 100% !important; border-radius: 4px !important;
         margin-bottom: 2px !important;
     }
 
-    /* BOTÃO DE CATEGORIA (MESTRE) */
     .cat-button > div > button {
         background-color: rgba(240, 90, 34, 0.05) !important;
         color: #ffffff !important;
         border-bottom: 1px solid rgba(240, 90, 34, 0.2) !important;
-        font-size: 8.5pt !important;
-        height: 40px !important;
-        letter-spacing: 1px;
+        font-size: 8.2pt !important; height: 38px !important; letter-spacing: 1px;
     }
 
-    /* BOTÃO ATIVO */
     .stButton > button[kind="primary"] { 
         background-color: rgba(240, 90, 34, 0.1) !important; 
-        color: #f05a22 !important; 
-        border-left: 3px solid #f05a22 !important; 
+        color: #f05a22 !important; border-left: 3px solid #f05a22 !important; 
     }
 
     .card-principal { 
@@ -61,8 +53,6 @@ st.markdown("""
         border-bottom: 4px solid #f05a22; text-align: center; 
         margin-top: 25px !important; margin-bottom: 15px !important;
     }
-
-    [data-testid="stHorizontalBlock"] { gap: 10px !important; display: flex !important; flex-wrap: nowrap !important; }
 
     .mini-card { 
         background-color: #111a21; padding: 10px 5px; border-radius: 8px; 
@@ -74,58 +64,65 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. LÓGICA DE ESTADO (MENUS E LIGAS) ---
+# --- 3. LÓGICA DE ESTADO ---
 if 'liga_ativa' not in st.session_state: 
-    st.session_state.update(liga_ativa='BRA_A', nome_liga='SÉRIE A')
+    st.session_state.update(liga_ativa='BRA_A', nome_liga='BRASILEIRÃO SÉRIE A')
 if 'menu_aberto' not in st.session_state:
-    st.session_state.menu_aberto = 'BRASIL' # Começa com Brasil aberto
+    st.session_state.menu_aberto = 'BRASIL'
 
-# --- 4. BARRA LATERAL (SISTEMA DE MENUS DROPDOWN) ---
+# --- 4. BARRA LATERAL ORGANIZADA ---
 with st.sidebar:
-    # Função para o botão da liga (filho)
     def s_btn(display, full, vid):
-        is_active = st.session_state.liga_ativa == vid
-        if st.button(display, key=f"s_{vid}", type="primary" if is_active else "secondary"):
-            st.session_state.liga_ativa = vid
-            st.session_state.nome_liga = full
-            st.rerun()
+        if st.button(display, key=f"s_{vid}", type="primary" if st.session_state.liga_ativa == vid else "secondary"):
+            st.session_state.liga_ativa = vid; st.session_state.nome_liga = full; st.rerun()
 
-    # Função para o botão da categoria (mestre)
     def cat_btn(label, menu_id):
-        # Container especial para estilizar o botão mestre via CSS
         st.markdown('<div class="cat-button">', unsafe_allow_html=True)
         if st.button(f" {label}", key=f"cat_{menu_id}"):
-            # Se clicar no que já está aberto, ele fecha, senão abre o novo
             st.session_state.menu_aberto = menu_id if st.session_state.menu_aberto != menu_id else None
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- CATEGORIA: BRASILEIRÃO ---
-    cat_btn("📂 BRASILEIRÃO", "BRASIL")
+    # --- CATEGORIA: BRASIL ---
+    cat_btn("🇧🇷 FUTEBOL BRASILEIRO", "BRASIL")
     if st.session_state.menu_aberto == "BRASIL":
         c1, c2 = st.columns(2)
-        with c1: s_btn("SÉRIE A", "BRASILEIRÃO SÉRIE A", "BRA_A"); s_btn("SÉRIE C", "BRASILEIRÃO SÉRIE C", "BRA_C")
-        with c2: s_btn("SÉRIE B", "BRASILEIRÃO SÉRIE B", "BRA_B"); s_btn("SÉRIE D", "BRASILEIRÃO SÉRIE D", "BRA_D")
+        with c1: s_btn("SÉRIE A", "BRASILEIRÃO A", "BRA_A"); s_btn("SÉRIE C", "BRASILEIRÃO C", "BRA_C"); s_btn("COPA BRASIL", "COPA DO BRASIL", "CDB")
+        with c2: s_btn("SÉRIE B", "BRASILEIRÃO B", "BRA_B"); s_btn("SÉRIE D", "BRASILEIRÃO D", "BRA_D"); s_btn("NORDESTE", "COPA NORDESTE", "CNE")
 
-    # --- CATEGORIA: COPAS ---
-    cat_btn("🏆 COPAS", "COPAS")
-    if st.session_state.menu_aberto == "COPAS":
+    # --- CATEGORIA: ELITE EUROPA (LIGAS) ---
+    cat_btn("⚽ ELITE EUROPA (LIGAS)", "EURO_LIGAS")
+    if st.session_state.menu_aberto == "EURO_LIGAS":
+        s_btn("🏴󠁧󠁢󠁥󠁮󠁧󠁿 PREMIER LEAGUE", "PREMIER LEAGUE", "ENG_P")
+        s_btn("🇪🇸 LA LIGA", "LA LIGA (ESPANHA)", "ESP_L")
+        s_btn("🇮🇹 SERIE A", "SERIE A (ITÁLIA)", "ITA_A")
+        s_btn("🇩🇪 BUNDESLIGA", "BUNDESLIGA (ALEMANHA)", "GER_B")
+        s_btn("🇫🇷 LIGUE 1", "LIGUE 1 (FRANÇA)", "FRA_L")
+
+    # --- CATEGORIA: COPAS NACIONAIS ---
+    cat_btn("🏆 COPAS NACIONAIS (EURO)", "EURO_COPAS")
+    if st.session_state.menu_aberto == "EURO_COPAS":
         c1, c2 = st.columns(2)
-        with c1: s_btn("BRASIL", "COPA DO BRASIL", "CDB"); s_btn("SUPERCOPA", "SUPERCOPA", "SUPER")
-        with c2: s_btn("NORDESTE", "COPA DO NORDESTE", "CNE")
+        with c1: 
+            s_btn("FA CUP", "COPA DA INGLATERRA", "ENG_FA")
+            s_btn("COPA DO REI", "COPA DO REI (ESP)", "ESP_CR")
+        with c2: 
+            s_btn("CARABAO CUP", "COPA DA LIGA (ING)", "ENG_CC")
+            s_btn("COPA ITÁLIA", "COPA DA ITÁLIA", "ITA_CI")
 
-    # --- CATEGORIA: ESTADUAIS ---
-    cat_btn("📍 ESTADUAIS", "ESTADUAIS")
-    if st.session_state.menu_aberto == "ESTADUAIS":
-        c1, c2 = st.columns(2)
-        with c1: s_btn("PAULISTÃO", "PAULISTÃO", "SP"); s_btn("MINEIRO", "MINEIRO", "MG")
-        with c2: s_btn("CARIOCA", "CARIOCA", "RJ"); s_btn("GAÚCHO", "GAÚCHO", "RS")
+    # --- CATEGORIA: CONTINENTAIS UEFA ---
+    cat_btn("🌍 COMPETIÇÕES UEFA", "UEFA")
+    if st.session_state.menu_aberto == "UEFA":
+        s_btn("⭐ CHAMPIONS LEAGUE", "UEFA CHAMPIONS LEAGUE", "UCL")
+        s_btn("🇪🇺 EUROPA LEAGUE", "UEFA EUROPA LEAGUE", "UEL")
+        s_btn("🏟️ CONFERENCE LEAGUE", "UEFA CONFERENCE LEAGUE", "UECL")
+        s_btn("🛡️ EUROCOPA", "EUROCOPA 2024/2028", "EURO_C")
 
-    # --- CATEGORIA: CONTINENTAIS ---
-    cat_btn("🌎 CONTINENTAIS", "CONTINENTAIS")
-    if st.session_state.menu_aberto == "CONTINENTAIS":
-        s_btn("LIBERTADORES", "LIBERTADORES", "LIB")
-        s_btn("SUL-AMERICANA", "SUL-AMERICANA", "SUL")
+    # --- CATEGORIA: AMÉRICA DO SUL ---
+    cat_btn("🔥 AMÉRICA DO SUL", "SUL_AM")
+    if st.session_state.menu_aberto == "SUL_AM":
+        s_btn("🏆 LIBERTADORES", "COPA LIBERTADORES", "LIB")
+        s_btn("🛰️ SUL-AMERICANA", "COPA SUL-AMERICANA", "SUL")
 
 # --- 5. ÁREA PRINCIPAL ---
 st.markdown("""
@@ -140,7 +137,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-times = ['Flamengo', 'Palmeiras', 'Bahia', 'Botafogo', 'Vasco', 'Corinthians', 'Santos', 'Inter']
+times = ['Real Madrid', 'Man. City', 'Liverpool', 'Barcelona', 'Bayern', 'Inter Milão', 'PSG', 'Arsenal']
 col_a, col_b, col_btn = st.columns([3, 3, 2.5])
 with col_a: t_casa = st.selectbox("Mandante", sorted(times), label_visibility="collapsed")
 with col_b: t_fora = st.selectbox("Visitante", sorted([t for t in times if t != t_casa]), label_visibility="collapsed")
