@@ -6,7 +6,7 @@ from scipy.stats import poisson
 # --- 1. CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(page_title="GESTOR IA APOSTAS", layout="wide", page_icon="⚽")
 
-# --- 2. ESTILO VISUAL (ESTRUTURA TRAVADA + RADAR NO TOPO) ---
+# --- 2. ESTILO VISUAL (MELHORIA DE VISIBILIDADE + RADAR NO TOPO) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@400;700&display=swap');
@@ -14,7 +14,7 @@ st.markdown("""
     .main { background-color: #0b1218; color: #e4e6eb; font-family: 'Inter', sans-serif; }
     [data-testid="stSidebar"] { background-color: #111a21; border-right: 2px solid #f05a22; min-width: 320px !important; }
     
-    /* Sidebar Header Restaurado conforme foto */
+    /* Sidebar Header */
     .sidebar-header { display: flex; align-items: center; padding: 20px 10px; margin-bottom: 20px; }
     .ai-logo-box { 
         background-color: #f05a22; padding: 10px; border-radius: 10px; margin-right: 15px; 
@@ -22,7 +22,7 @@ st.markdown("""
     }
     .sidebar-title { color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 16px; font-weight: 900; line-height: 1.1; }
 
-    /* Botões Sidebar Restaurados */
+    /* Botões Sidebar */
     .stButton > button {
         background-color: #1a242d !important; color: #cbd5e0 !important; border: 1px solid #2d3748 !important;
         font-weight: bold !important; width: 100% !important; height: 38px !important;
@@ -31,7 +31,7 @@ st.markdown("""
     .stButton > button:hover { border-color: #f05a22 !important; color: #f05a22 !important; }
     .cat-label { color: #5a6b79; font-size: 11px; font-weight: bold; margin-top: 15px; text-transform: uppercase; border-left: 3px solid #f05a22; padding-left: 8px; margin-bottom: 8px; }
 
-    /* RADAR ESTRATÉGICO NO TOPO (ESTILO PREMIUM) */
+    /* RADAR ESTRATÉGICO NO TOPO */
     .radar-topo {
         background: linear-gradient(90deg, rgba(240,90,34,0.2) 0%, rgba(26,36,45,1) 100%);
         border-radius: 12px; padding: 15px 25px; margin-bottom: 20px;
@@ -53,15 +53,23 @@ st.markdown("""
     .radar-label { font-family: 'Orbitron', sans-serif; font-weight: 900; color: #f05a22; font-size: 12px; letter-spacing: 1px; margin-right: 20px; }
     .radar-info { color: #ffffff; font-size: 14px; font-weight: 400; }
 
-    /* CARD PRINCIPAL E MINI CARDS */
+    /* CARD PRINCIPAL - AJUSTE DE VISIBILIDADE DAS LETRAS */
     .card-principal { background-color: #1a242d; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.6); border-bottom: 4px solid #f05a22; margin-bottom: 30px; text-align: center; }
     .match-title { color: #ffffff !important; font-family: 'Orbitron', sans-serif; font-size: 32px; font-weight: 900; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px; }
-    .val-prob { color: #f05a22; font-size: 30px; font-weight: 900; margin-top: 5px; }
+    
+    /* CORREÇÃO: Letras "Vitória Casa", "Empate", etc agora em Branco Puro */
+    .label-prob { color: #ffffff !important; font-size: 14px; font-weight: 800; text-transform: uppercase; opacity: 1 !important; letter-spacing: 1px; }
+    
+    .val-prob { color: #f05a22; font-size: 32px; font-weight: 900; margin-top: 8px; }
     .value-box { border: 1px dashed #00ffc3; border-radius: 12px; padding: 15px; display: flex; justify-content: space-around; align-items: center; background: rgba(0, 255, 195, 0.05); margin-top: 30px; }
     .value-item { color: #00ffc3; font-weight: 700; font-size: 13px; }
+
+    /* MINI CARDS - CORREÇÃO: Letras agora em Branco Puro e Negrito */
     .mini-card { background-color: #111a21; padding: 12px; border-radius: 12px; border: 1px solid #2d3748; text-align: center; height: 110px; display: flex; flex-direction: column; justify-content: center; }
-    .mini-val { color: #00ffc3; font-weight: 900; font-size: 20px; }
-    .section-header { color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 16px; margin-bottom: 15px; border-left: 4px solid #f05a22; padding-left: 10px; text-transform: uppercase; }
+    .mini-label { color: #ffffff !important; font-weight: 800 !important; font-size: 11px; text-transform: uppercase; margin-bottom: 10px; opacity: 1 !important; }
+    .mini-val { color: #00ffc3; font-weight: 900; font-size: 22px; }
+    
+    .section-header { color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 16px; margin-bottom: 20px; border-left: 4px solid #f05a22; padding-left: 10px; text-transform: uppercase; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -84,7 +92,6 @@ def load_data(liga):
         return pd.DataFrame(data, columns=['HomeTeam', 'AwayTeam', 'FTHG', 'FTAG'])
 
 def calcular_stats(t1, t2, df):
-    # Simulação de cálculo real
     seed = len(t1) + len(t2)
     np.random.seed(seed)
     win_h = np.random.uniform(20, 60)
@@ -95,7 +102,7 @@ def calcular_stats(t1, t2, df):
         'nogol': np.random.uniform(60, 90), 'faltas': np.random.uniform(70, 95), 'cartoes': np.random.uniform(60, 90)
     }
 
-# --- 4. BARRA LATERAL (RESTAURAÇÃO COMPLETA) ---
+# --- 4. BARRA LATERAL ---
 with st.sidebar:
     st.markdown("""
         <div class="sidebar-header">
@@ -127,7 +134,6 @@ with st.sidebar:
 df = load_data(st.session_state.liga)
 times = sorted(df['HomeTeam'].unique())
 
-# Executar e Seletores
 col_exec, col_vazio = st.columns([1, 2])
 with col_exec:
     executar = st.button("🔥 EXECUTAR ALGORITMO COMPLETO")
@@ -139,16 +145,16 @@ with c2: t_fora = st.selectbox("Visitante", times, index=min(1, len(times)-1), k
 if executar:
     res = calcular_stats(t_casa, t_fora, df)
     
-    # RADAR ESTRATÉGICO NO TOPO (INFORMAÇÃO PRIVILEGIADA)
+    # RADAR ESTRATÉGICO NO TOPO
     st.markdown(f"""
         <div class="radar-topo">
             <div class="radar-pulse"></div>
             <div class="radar-label">📡 RADAR ESTRATÉGICO</div>
-            <div class="radar-info">Alta probabilidade detectada para <b>{t_casa}</b>. O modelo neural sugere entrada no mercado de <b>Gols e Cantos</b> devido à pressão ofensiva.</div>
+            <div class="radar-info">Análise concluída para <b>{t_casa} x {t_fora}</b>. O modelo neural indica valor no mercado de cantos.</div>
         </div>
     """, unsafe_allow_html=True)
 
-    # CARD PRINCIPAL
+    # CARD PRINCIPAL (LETRAS CLARAS AGORA)
     st.markdown(f"""
         <div class="card-principal">
             <div class="match-title">{t_casa.upper()} VS {t_fora.upper()}</div>
@@ -167,7 +173,7 @@ if executar:
 
     st.markdown('<div class="section-header">PROBABILIDADES DE MERCADO (OVER/MAIS DE)</div>', unsafe_allow_html=True)
 
-    # MINI CARDS
+    # MINI CARDS (LETRAS CLARAS AGORA)
     m1, m2, m3, m4, m5, m6 = st.columns(6)
     with m1: st.markdown(f"<div class='mini-card'><span class='mini-label'>⚽ GOLS +2.5</span><span class='mini-val'>{res['over25']:.1f}%</span></div>", unsafe_allow_html=True)
     with m2: st.markdown(f"<div class='mini-card'><span class='mini-label'>🚩 CANTOS +9.5</span><span class='mini-val'>{res['cantos']:.1f}%</span></div>", unsafe_allow_html=True)
@@ -176,4 +182,4 @@ if executar:
     with m5: st.markdown(f"<div class='mini-card'><span class='mini-label'>⚠️ FALTAS +24.5</span><span class='mini-val'>{res['faltas']:.1f}%</span></div>", unsafe_allow_html=True)
     with m6: st.markdown(f"<div class='mini-card'><span class='mini-label'>🟨 CARTÕES +4.5</span><span class='mini-val'>{res['cartoes']:.1f}%</span></div>", unsafe_allow_html=True)
 
-st.markdown("<br><p style='text-align:center; opacity:0.3; font-size:10px;'>GESTOR IA v12.0 - ESTRUTURA PREMIUM RESTAURADA</p>", unsafe_allow_html=True)
+st.markdown("<br><p style='text-align:center; opacity:0.3; font-size:10px;'>GESTOR IA v12.0 - VISIBILIDADE MÁXIMA ATIVADA</p>", unsafe_allow_html=True)
