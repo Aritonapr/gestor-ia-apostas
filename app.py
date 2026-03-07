@@ -40,19 +40,57 @@ DIC_TIMES = {
     "SUL": ["Cruzeiro", "Corinthians", "Fortaleza", "Racing", "Lanús", "Athletico-PR"]
 }
 
-# --- 3. CSS CUSTOMIZADO ---
+# --- 3. CSS CUSTOMIZADO (CORRIGIDO PARA ESTATÍSTICAS) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
+    
     .stApp { background-color: #0b1218; color: #e4e6eb; font-family: 'Inter', sans-serif; }
-    [data-testid="stSidebar"] { background-color: #0b1218; border-right: 1px solid rgba(240, 90, 34, 0.3); width: 320px !important; }
-    .stButton > button { background-color: rgba(26, 36, 45, 0.6) !important; color: #cbd5e0 !important; font-size: 7.5pt !important; border-radius: 4px !important; margin-bottom: 2px !important; border: none !important; }
-    .cat-button > div > button { background-color: rgba(240, 90, 34, 0.08) !important; color: #fff !important; height: 40px !important; font-size: 8.5pt !important; letter-spacing: 1px; border-bottom: 1px solid #f05a22 !important; }
+    [data-testid="stSidebar"] { background-color: #0b1218; border-right: 1px solid rgba(240, 90, 34, 0.3); width: 300px !important; }
+    
+    /* BOTOES SIDEBAR */
+    .stButton > button { background-color: rgba(26, 36, 45, 0.6) !important; color: #cbd5e0 !important; font-size: 7.2pt !important; border-radius: 4px !important; margin-bottom: 2px !important; border: none !important; }
+    .cat-button > div > button { background-color: rgba(240, 90, 34, 0.08) !important; color: #fff !important; height: 38px !important; font-size: 8pt !important; letter-spacing: 1px; border-bottom: 1px solid #f05a22 !important; }
     .stButton > button[kind="primary"] { background-color: rgba(240, 90, 34, 0.15) !important; color: #f05a22 !important; border-left: 4px solid #f05a22 !important; }
-    .card-principal { background-color: #161f27; padding: 20px; border-radius: 15px; border-bottom: 5px solid #f05a22; text-align: center; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    .mini-card { background-color: #111a21; padding: 12px; border-radius: 10px; border: 1px solid #2d3748; text-align: center; }
-    .mini-label { color: #8a99a8 !important; font-size: 9px !important; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; }
-    .mini-val { color: #00ffc3 !important; font-weight: 900; font-size: 20px !important; }
+    
+    /* CARD PRINCIPAL */
+    .card-principal { background-color: #161f27; padding: 25px; border-radius: 15px; border-bottom: 5px solid #f05a22; text-align: center; margin-top: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    
+    /* MINI CARDS DE ESTATÍSTICAS - CORREÇÃO DE TAMANHO */
+    .mini-card { 
+        background-color: #111a21; 
+        padding: 10px 5px; 
+        border-radius: 8px; 
+        border: 1px solid #2d3748; 
+        text-align: center; 
+        min-height: 85px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        transition: 0.2s;
+    }
+    .mini-card:hover { border-color: #f05a22; background-color: #162129; }
+    .mini-label { 
+        color: #8a99a8 !important; 
+        font-size: 8px !important; 
+        font-weight: 800; 
+        text-transform: uppercase; 
+        margin-bottom: 4px;
+        letter-spacing: 0.5px;
+        line-height: 1.1;
+    }
+    .mini-val { 
+        color: #00ffc3 !important; 
+        font-weight: 900; 
+        font-size: 18px !important; 
+        margin: 0;
+        text-shadow: 0 0 10px rgba(0, 255, 195, 0.2);
+    }
+    
+    /* FORÇAR COLUNAS EM UMA LINHA */
+    [data-testid="stHorizontalBlock"] {
+        gap: 8px !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -69,7 +107,7 @@ def simular_probabilidades(casa, fora):
 
 # --- 5. LÓGICA DE NAVEGAÇÃO ---
 if 'liga_ativa' not in st.session_state: st.session_state.update(liga_ativa='BRA_A', nome_liga='BRASILEIRÃO A')
-if 'menu_aberto' not in st.session_state: st.session_state.menu_aberto = None # Inicia fechado
+if 'menu_aberto' not in st.session_state: st.session_state.menu_aberto = None
 
 with st.sidebar:
     def s_btn(display, full, vid):
@@ -79,15 +117,10 @@ with st.sidebar:
     def cat_btn(label, menu_id):
         st.markdown('<div class="cat-button">', unsafe_allow_html=True)
         if st.button(label, key=f"cat_{menu_id}"):
-            # LÓGICA DE ALTERNÂNCIA (TOGGLE)
-            if st.session_state.menu_aberto == menu_id:
-                st.session_state.menu_aberto = None # Se já estiver aberto, fecha
-            else:
-                st.session_state.menu_aberto = menu_id # Se estiver fechado ou outro aberto, abre este
+            st.session_state.menu_aberto = menu_id if st.session_state.menu_aberto != menu_id else None
             st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # --- CATEGORIAS ---
     cat_btn("🇧🇷 BRASIL", "BR")
     if st.session_state.menu_aberto == "BR":
         c1, c2 = st.columns(2)
@@ -126,7 +159,7 @@ with st.sidebar:
         s_btn("🏟️ COPA AMÉRICA", "COPA AMÉRICA", "COPA_AME")
 
 # --- 6. CONTEÚDO PRINCIPAL ---
-st.markdown('<div style="color:#f05a22; font-family:Orbitron; font-size:24px; font-weight:900; margin-bottom:20px;">GESTOR IA <span style="color:#fff; font-size:12px;">GLOBAL EDITION 25/26</span></div>', unsafe_allow_html=True)
+st.markdown('<div style="color:#f05a22; font-family:Orbitron; font-size:22px; font-weight:900; margin-bottom:20px;">GESTOR IA <span style="color:#fff; font-size:11px;">GLOBAL EDITION 25/26</span></div>', unsafe_allow_html=True)
 
 times_lista = DIC_TIMES.get(st.session_state.liga_ativa, ["Escolha a Liga"])
 col1, col2, col3 = st.columns([3, 3, 2.5])
@@ -136,21 +169,41 @@ with col3: executar = st.button("🔥 PROCESSAR ALGORITMO", use_container_width=
 
 if executar:
     pc, pe, pf, mg, mc, mch = simular_probabilidades(t_casa, t_fora)
-    st.markdown(f'<div style="font-size:11px; color:#f05a22; font-family:Orbitron; border-left:4px solid #f05a22; padding-left:10px;">📡 DATA-ANALYSIS: {st.session_state.nome_liga}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div style="font-size:10px; color:#f05a22; font-family:Orbitron; border-left:4px solid #f05a22; padding-left:10px; margin-bottom:10px;">📡 DATA-ANALYSIS: {st.session_state.nome_liga}</div>', unsafe_allow_html=True)
+    
+    # CARD PRINCIPAL
     st.markdown(f"""
         <div class="card-principal">
-            <div style="color: #fff; font-family: Orbitron; font-size: 24px; font-weight: 800; margin-bottom: 25px;">{t_casa.upper()} <span style="color:#f05a22">vs</span> {t_fora.upper()}</div>
-            <div style="display: flex; justify-content: space-around;">
-                <div><p style="color:#f05a22; font-size:32px; font-weight:900; margin:0;">{pc}%</p><p style="color:#8a99a8; font-size:10px; font-weight:700;">VITÓRIA CASA</p></div>
-                <div><p style="color:#fff; font-size:32px; font-weight:900; margin:0;">{pe}%</p><p style="color:#8a99a8; font-size:10px; font-weight:700;">EMPATE</p></div>
-                <div><p style="color:#f05a22; font-size:32px; font-weight:900; margin:0;">{pf}%</p><p style="color:#8a99a8; font-size:10px; font-weight:700;">VITÓRIA FORA</p></div>
+            <div style="color: #fff; font-family: Orbitron; font-size: 22px; font-weight: 800; margin-bottom: 25px;">{t_casa.upper()} <span style="color:#f05a22">vs</span> {t_fora.upper()}</div>
+            <div style="display: flex; justify-content: space-around; align-items: center;">
+                <div><p style="color:#f05a22; font-size:30px; font-weight:900; margin:0;">{pc}%</p><p style="color:#8a99a8; font-size:9px; font-weight:700; margin-top:5px;">VITÓRIA CASA</p></div>
+                <div style="width:1px; height:40px; background:rgba(255,255,255,0.1);"></div>
+                <div><p style="color:#fff; font-size:30px; font-weight:900; margin:0;">{pe}%</p><p style="color:#8a99a8; font-size:9px; font-weight:700; margin-top:5px;">EMPATE</p></div>
+                <div style="width:1px; height:40px; background:rgba(255,255,255,0.1);"></div>
+                <div><p style="color:#f05a22; font-size:30px; font-weight:900; margin:0;">{pf}%</p><p style="color:#8a99a8; font-size:9px; font-weight:700; margin-top:5px;">VITÓRIA FORA</p></div>
             </div>
         </div>
+        <div style="height:15px;"></div>
     """, unsafe_allow_html=True)
+    
+    # ESTATÍSTICAS EM 6 COLUNAS (CORRIGIDO)
     m1, m2, m3, m4, m5, m6 = st.columns(6)
-    metricas = [("⚽ GOLS +2.5", f"{mg}%"), ("🚩 CANTOS +9.5", f"{mc}%"), ("👞 CHUTES +22", f"{mch}%"), ("🎯 NO GOL +8", f"{mg-5}%"), ("⚠️ FALTAS +24", f"{mc+10}%"), ("🟨 CARTÕES +4", f"{pe+20}%")]
+    metricas = [
+        ("⚽ GOLS +2.5", f"{mg}%"), 
+        ("🚩 CANTOS +9.5", f"{mc}%"), 
+        ("👞 CHUTES +22", f"{mch}%"), 
+        ("🎯 NO GOL +8", f"{mg-5}%"), 
+        ("⚠️ FALTAS +24", f"{mc+10}%"), 
+        ("🟨 CARTÕES +4", f"{pe+20}%")
+    ]
     cols = [m1, m2, m3, m4, m5, m6]
     for i, (lab, val) in enumerate(metricas):
-        with cols[i]: st.markdown(f'<div class="mini-card"><p class="mini-label">{lab}</p><p class="mini-val">{val}</p></div>', unsafe_allow_html=True)
+        with cols[i]: 
+            st.markdown(f"""
+                <div class="mini-card">
+                    <p class="mini-label">{lab}</p>
+                    <p class="mini-val">{val}</p>
+                </div>
+            """, unsafe_allow_html=True)
 else:
-    st.markdown("<div style='height:200px; display:flex; align-items:center; justify-content:center; color:#2d3748;'>AGUARDANDO SELEÇÃO DE CONFRONTO...</div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:200px; display:flex; align-items:center; justify-content:center; color:#2d3748; font-size:12px; letter-spacing:1px;'>AGUARDANDO SELEÇÃO DE CONFRONTO...</div>", unsafe_allow_html=True)
