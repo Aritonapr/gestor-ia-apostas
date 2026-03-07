@@ -13,7 +13,6 @@ st.set_page_config(
 
 # --- 2. BANCO DE DADOS COMPLETO E RECUPERADO ---
 DIC_TIMES = {
-    # --- BRASIL ---
     "BRA_A": ["Flamengo", "Palmeiras", "Botafogo", "Fortaleza", "São Paulo", "Bahia", "Cruzeiro", "Internacional", "Atlético-MG", "Vasco", "Corinthians", "Fluminense", "Grêmio", "Athletico-PR", "Vitória", "Juventude", "Criciúma", "Cuiabá", "Atlético-GO", "Bragantino"],
     "BRA_B": ["Santos", "Sport", "Novorizontino", "Mirassol", "Vila Nova", "América-MG", "Ceará", "Coritiba", "Avaí", "Operário-PR", "Amazonas", "Goiás"],
     "BRA_C": ["Náutico", "Remo", "Figueirense", "CSA", "Botafogo-PB", "ABC", "Londrina", "Caxias", "Ferroviária", "São Bernardo", "Volta Redonda", "Ypiranga"],
@@ -25,8 +24,6 @@ DIC_TIMES = {
     "RJ": ["Flamengo", "Fluminense", "Botafogo", "Vasco", "Nova Iguaçu", "Portuguesa-RJ", "Boavista"],
     "MG": ["Cruzeiro", "Atlético-MG", "América-MG", "Tombense", "Villa Nova", "Ipatinga"],
     "RS": ["Grêmio", "Internacional", "Juventude", "Caxias", "Brasil de Pelotas", "São José"],
-    
-    # --- INTERNACIONAL LIGAS ---
     "ENG_P": ["Man. City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man. United", "Newcastle"],
     "ESP_L": ["Real Madrid", "Barcelona", "Atlético de Madrid", "Girona", "Athletic Bilbao", "Real Sociedad", "Sevilla"],
     "ITA_A": ["Inter de Milão", "Milan", "Juventus", "Atalanta", "Roma", "Napoli", "Lazio", "Bologna"],
@@ -34,84 +31,57 @@ DIC_TIMES = {
     "FRA_L": ["PSG", "Monaco", "Lille", "Brest", "Nice", "Lyon", "Marseille"],
     "POR_L": ["Sporting", "Benfica", "Porto", "Braga", "Vitória de Guimarães"],
     "HOL_E": ["PSV Eindhoven", "Feyenoord", "Ajax", "AZ Alkmaar", "Twente"],
-
-    # --- UEFA & SELEÇÕES ---
     "UCL": ["Real Madrid", "Man. City", "Bayern", "Arsenal", "Barcelona", "Inter", "PSG", "Bayer Leverkusen"],
     "UEL": ["Man. United", "Tottenham", "Roma", "Porto", "Ajax", "Lazio"],
     "EURO_C": ["Espanha", "Inglaterra", "França", "Alemanha", "Portugal", "Itália", "Holanda"],
     "ELIM_W": ["Brasil", "Argentina", "França", "Inglaterra", "Espanha", "Alemanha", "Uruguai"],
-
-    # --- NOVOS MERCADOS ---
     "ARG_L": ["River Plate", "Boca Juniors", "Racing", "Talleres", "Estudiantes"],
     "SAUDI": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq"],
     "USA_MLS": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "Cincinnati"],
-    
-    # --- CONTINENTAIS ---
     "LIB": ["Flamengo", "Palmeiras", "River Plate", "Botafogo", "São Paulo", "Atlético-MG"],
     "SUL": ["Cruzeiro", "Corinthians", "Fortaleza", "Racing", "Lanús", "Athletico-PR"]
 }
 
-# --- 3. CSS OTIMIZADO (SIDEBAR ESTREITA E LETRAS GRANDES) ---
+# --- 3. CSS OTIMIZADO E CORREÇÃO DA SETA (SIDEBAR) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
     
-    header[data-testid="stHeader"] { background: transparent !important; height: 0 !important; display: none !important; }
-    .block-container { padding-top: 0rem !important; padding-bottom: 0rem !important; }
+    /* CORREÇÃO DO CABEÇALHO PARA A SETA NÃO SUMIR */
+    [data-testid="stHeader"] { background: transparent !important; color: white !important; }
+    button[data-testid="stSidebarCollapse"] { color: #f05a22 !important; background: rgba(240, 90, 34, 0.1) !important; border-radius: 50% !important; }
+    
+    .block-container { padding-top: 1rem !important; }
     .stApp { background-color: #0b1218; color: #e4e6eb; font-family: 'Inter', sans-serif; }
     
-    /* SIDEBAR ESTREITA PARA GANHAR ESPAÇO NA DIREITA */
+    /* SIDEBAR ESTREITA PARA GANHAR ESPAÇO */
     [data-testid="stSidebar"] { 
         background-color: #0b1218 !important; 
         border-right: 2px solid #f05a22 !important; 
-        width: 240px !important; 
+        width: 245px !important; 
     }
     
-    /* BOTÕES DA SIDEBAR */
     .stButton > button { background-color: rgba(26, 36, 45, 0.7) !important; color: #cbd5e0 !important; font-size: 6.8pt !important; border-radius: 4px !important; margin-bottom: 2px !important; border: none !important; }
     .cat-button > div > button { background-color: rgba(240, 90, 34, 0.1) !important; color: #fff !important; height: 38px !important; font-size: 8pt !important; letter-spacing: 0.5px; border-bottom: 1px solid #f05a22 !important; }
     .stButton > button[kind="primary"] { background-color: rgba(240, 90, 34, 0.25) !important; color: #f05a22 !important; border-left: 4px solid #f05a22 !important; }
     
     .card-principal { background-color: #161f27; padding: 25px; border-radius: 12px; border-bottom: 4px solid #f05a22; text-align: center; margin-top: 5px; }
     
-    /* FLEXBOX DAS ESTATÍSTICAS COM LETRAS GRANDES */
+    /* FLEXBOX DAS ESTATÍSTICAS COM FONTES LEITURA FÁCIL */
     .stats-flex {
-        display: flex; 
-        justify-content: space-between; 
-        gap: 12px; 
-        margin-top: 25px; 
-        width: 100%;
-        flex-wrap: nowrap !important;
+        display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; width: 100%; flex-wrap: nowrap !important;
     }
     .mini-card { 
-        flex: 1;
-        background-color: #111a21; 
-        padding: 20px 5px; /* Aumentado padding para dar peso */
-        border-radius: 12px; 
-        border: 1px solid #2d3748; 
-        text-align: center;
-        min-width: 0;
-        transition: 0.3s;
+        flex: 1; background-color: #111a21; padding: 15px 5px; border-radius: 10px; border: 1px solid #2d3748; text-align: center; min-width: 0; transition: 0.3s;
     }
     .mini-card:hover { border-color: #00ffc3; box-shadow: 0 0 15px rgba(0, 255, 195, 0.2); }
     
-    /* LETRAS DOS QUADRADOS - AGORA GRANDES E LEGÍVEIS */
+    /* LABELS MAIORES PARA LEITURA */
     .mini-label { 
-        color: #ffffff !important; 
-        font-size: 11px !important; /* AUMENTADO */
-        font-weight: 800; 
-        text-transform: uppercase; 
-        margin-bottom: 10px; 
-        display: block; 
-        white-space: nowrap; 
-        letter-spacing: 1px;
+        color: #ffffff !important; font-size: 10.5px !important; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; white-space: nowrap; letter-spacing: 0.5px;
     }
     .mini-val { 
-        color: #00ffc3 !important; 
-        font-weight: 900; 
-        font-size: 26px !important; /* AUMENTADO PARA DESTAQUE */
-        margin: 0; 
-        text-shadow: 0 0 10px rgba(0, 255, 195, 0.4); 
+        color: #00ffc3 !important; font-weight: 900; font-size: 24px !important; margin: 0; text-shadow: 0 0 10px rgba(0, 255, 195, 0.4); 
     }
     </style>
 """, unsafe_allow_html=True)
@@ -137,42 +107,36 @@ with st.sidebar:
             st.session_state.menu_aberto = menu_id if st.session_state.menu_aberto != menu_id else None; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-    # 🇧🇷 BRASIL
     cat_btn("🇧🇷 FUTEBOL BRASILEIRO", "BR")
     if st.session_state.menu_aberto == "BR":
-        st.markdown('<p style="font-size:8px; color:#5a6b79; margin:8px 0 2px 0;">NACIONAIS / COPAS</p>', unsafe_allow_html=True)
         c1, c2 = st.columns(2)
         with c1: s_btn("SÉRIE A", "BRASILEIRÃO A", "BRA_A"); s_btn("SÉRIE C", "BRASILEIRÃO C", "BRA_C"); s_btn("COPA BR", "COPA DO BRASIL", "CDB")
         with c2: s_btn("SÉRIE B", "BRASILEIRÃO B", "BRA_B"); s_btn("SÉRIE D", "BRASILEIRÃO D", "BRA_D"); s_btn("NORDESTE", "COPA DO NORDESTE", "CNE")
         s_btn("SUPERCOPA", "SUPERCOPA DO BRASIL", "SUPER")
-        st.markdown('<p style="font-size:8px; color:#5a6b79; margin:10px 0 2px 0;">ESTADUAIS ELITE</p>', unsafe_allow_html=True)
+        st.markdown('<p style="font-size:8px; color:#5a6b79; margin:10px 0 2px 0;">ESTADUAIS</p>', unsafe_allow_html=True)
         c3, c4 = st.columns(2)
         with c3: s_btn("PAULISTÃO", "PAULISTÃO", "SP"); s_btn("MINEIRO", "MINEIRO", "MG")
         with c4: s_btn("CARIOCA", "CARIOCA", "RJ"); s_btn("GAÚCHO", "GAÚCHO", "RS")
 
-    # 🇪🇺 EUROPA
     cat_btn("🇪🇺 ELITE EUROPA", "EU_L")
     if st.session_state.menu_aberto == "EU_L":
         c1, c2 = st.columns(2)
-        with c1: s_btn("🏴󠁧󠁢󠁥󠁮󠁧󠁿 PREMIER", "PREMIER LEAGUE", "ENG_P"); s_btn("🇮🇹 SERIE A", "SERIE A TIM", "ITA_A"); s_btn("🇵🇹 PORTUGAL", "LIGA PORTUGAL", "POR_L")
-        with c2: s_btn("🇪🇸 LA LIGA", "LA LIGA", "ESP_L"); s_btn("🇩🇪 BUNDES", "BUNDESLIGA", "GER_B"); s_btn("🇳🇱 HOLANDA", "EREDIVISIE", "HOL_E")
+        with c1: s_btn("PREMIER", "PREMIER LEAGUE", "ENG_P"); s_btn("SERIE A", "SERIE A TIM", "ITA_A"); s_btn("PORTUGAL", "LIGA PORTUGAL", "POR_L")
+        with c2: s_btn("LA LIGA", "LA LIGA", "ESP_L"); s_btn("BUNDES", "BUNDESLIGA", "GER_B"); s_btn("HOLANDA", "EREDIVISIE", "HOL_E")
 
-    # 🌍 UEFA / INTERNACIONAL
     cat_btn("🌍 UEFA & SELEÇÕES", "UEFA")
     if st.session_state.menu_aberto == "UEFA":
-        s_btn("⭐ CHAMPIONS LEAGUE", "CHAMPIONS LEAGUE", "UCL")
+        s_btn("⭐ CHAMPIONS", "CHAMPIONS LEAGUE", "UCL")
         s_btn("🇪🇺 EUROPA LEAGUE", "EUROPA LEAGUE", "UEL")
         s_btn("🛡️ EUROCOPA", "EUROCOPA", "EURO_C")
         s_btn("🌎 ELIMINATÓRIAS", "ELIMINATÓRIAS", "ELIM_W")
 
-    # ⭐ NOVOS MERCADOS
     cat_btn("⭐ NOVOS MERCADOS", "NEW")
     if st.session_state.menu_aberto == "NEW":
         s_btn("🇸🇦 SAUDI PRO", "SAUDI PRO LEAGUE", "SAUDI")
         s_btn("🇺🇸 MLS USA", "MLS USA", "USA_MLS")
         s_btn("🇦🇷 ARGENTINA", "LIGA ARGENTINA", "ARG_L")
 
-    # 🔥 AMÉRICA DO SUL
     cat_btn("🔥 AMÉRICA DO SUL", "SAM")
     if st.session_state.menu_aberto == "SAM":
         s_btn("🏆 LIBERTADORES", "COPA LIBERTADORES", "LIB")
@@ -180,7 +144,7 @@ with st.sidebar:
 
 # --- 6. CABEÇALHO ---
 st.markdown("""
-    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-top: 15px;">
+    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; padding-top: 10px;">
         <div style="position: relative; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center;">
             <svg style="position: absolute; width: 100%; height: 100%; filter: drop-shadow(0 0 8px #f05a22);" viewBox="0 0 100 100">
                 <path d="M50 5 L93.3 30 L93.3 80 L50 105 L6.7 80 L6.7 30 Z" fill="none" stroke="#f05a22" stroke-width="4"/>
@@ -224,4 +188,4 @@ if executar:
         </div>
     """, unsafe_allow_html=True)
 else:
-    st.markdown("<div style='height:250px; display:flex; align-items:center; justify-content:center; color:#2d3748; font-family:Orbitron; font-size:12px; opacity:0.6;'>AGUARDANDO CONFRONTO...</div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:250px; display:flex; align-items:center; justify-content:center; color:#2d3748; font-family:Orbitron; font-size:12px; opacity:0.6;'>SISTEMA ONLINE: SELECIONE UM CONFRONTO...</div>", unsafe_allow_html=True)
