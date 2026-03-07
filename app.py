@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- 2. CSS ULTRA-MODERNO (Pads Minimalistas & Micro-Tech) ---
+# --- 2. CSS ULTRA-MODERNO (TEXTO INTEIRO & NO-WRAP) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
@@ -50,11 +50,11 @@ st.markdown("""
         font-size: 20px; font-weight: 900; letter-spacing: 2px;
     }
 
-    /* --- SIDEBAR: ESTILO "PAD" MODERNO --- */
+    /* --- SIDEBAR: ESTILO "PAD" OTIMIZADO --- */
     [data-testid="stSidebar"] { 
         background-color: #0b1218; 
         border-right: 1px solid rgba(240, 90, 34, 0.2); 
-        width: 260px !important; 
+        width: 280px !important; /* AUMENTADO PARA CABER OS NOMES */
     }
     
     .cat-label { 
@@ -63,7 +63,7 @@ st.markdown("""
         letter-spacing: 2px; text-align: left; padding-left: 10px;
     }
 
-    /* O NOVO "PAD" DOS CAMPEONATOS */
+    /* PAD DOS CAMPEONATOS SEM QUEBRA DE LINHA */
     .stButton > button {
         background-color: rgba(26, 36, 45, 0.4) !important; 
         color: #a0aec0 !important; 
@@ -73,30 +73,29 @@ st.markdown("""
         height: 28px !important;
         border-radius: 0px 4px 4px 0px !important; 
         text-transform: uppercase; 
-        font-size: 7.5px !important; /* LETRAS MENORES */
+        font-size: 7px !important; /* TAMANHO AJUSTADO */
         width: 100% !important; 
         margin-bottom: 2px !important; 
         text-align: left !important;
-        padding-left: 10px !important;
+        padding-left: 8px !important;
         transition: 0.3s;
+        white-space: nowrap !important; /* IMPEDE QUEBRA DE LINHA */
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
     }
     
-    /* PAD ATIVO (SELECIONADO) */
     .stButton > button[kind="primary"] {
         background-color: rgba(240, 90, 34, 0.1) !important; 
         color: #f05a22 !important; 
         border-left: 2px solid #f05a22 !important;
-        box-shadow: inset 10px 0px 20px rgba(240, 90, 34, 0.05);
     }
 
-    /* HOVER EFEITO GLOW */
     .stButton > button:hover {
         color: #ffffff !important;
         background-color: rgba(240, 90, 34, 0.05) !important;
-        border-left: 2px solid rgba(240, 90, 34, 0.5) !important;
     }
 
-    /* --- CARDS DE RESULTADOS --- */
+    /* CARDS DE RESULTADOS */
     .card-principal { 
         background-color: #1a242d; padding: 15px; border-radius: 12px; 
         border-bottom: 4px solid #f05a22; text-align: center; 
@@ -107,11 +106,11 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. LÓGICA DE DADOS ---
+# --- 3. LÓGICA DE ESTADO ---
 if 'liga_ativa' not in st.session_state: 
-    st.session_state.update(liga_ativa='BRA_A', nome_liga='BRASILEIRÃO SÉRIE A')
+    st.session_state.update(liga_ativa='BRA_A', nome_liga='SÉRIE A')
 
-# --- 4. BARRA LATERAL (PADS MODERNOS) ---
+# --- 4. BARRA LATERAL (ORGANIZAÇÃO SOLICITADA) ---
 with st.sidebar:
     def s_btn(label, vid):
         if st.button(label, key=f"s_{vid}", type="primary" if st.session_state.liga_ativa == vid else "secondary"):
@@ -126,27 +125,26 @@ with st.sidebar:
 
     st.markdown('<p class="cat-label">COPAS NACIONAIS</p>', unsafe_allow_html=True)
     c3, c4 = st.columns(2)
-    with c3: s_btn("COPA DO BRASIL", "CDB"); s_btn("SUPERCOPA BR", "SUPER")
+    with c3: s_btn("COPA DO BRASIL", "CDB")
     with c4: s_btn("COPA NORDESTE", "CNE")
+    s_btn("SUPERCOPA", "SUPER") # Removido BR para não quebrar
 
     st.markdown('<p class="cat-label">ESTADUAIS</p>', unsafe_allow_html=True)
     c5, c6 = st.columns(2)
     with c5: s_btn("PAULISTÃO", "SP"); s_btn("MINEIRO", "MG")
     with c6: s_btn("CARIOCA", "RJ"); s_btn("GAÚCHO", "RS")
 
-    st.markdown('<p class="cat-label">CONTINENTAIS (BR)</p>', unsafe_allow_html=True)
+    st.markdown('<p class="cat-label">CONTINENTAIS</p>', unsafe_allow_html=True)
     c7, c8 = st.columns(2)
     with c7: s_btn("LIBERTADORES", "LIB")
-    with c8: s_btn("SUL-AMERICANA", "SUL")
+    with c8: s_btn("SUL-AMERICANA", "SUL") # Nome ajustado
 
     st.markdown('<p class="cat-label">LIGAS EUROPEIAS</p>', unsafe_allow_html=True)
     c9, c10 = st.columns(2)
     with c9: s_btn("PREMIER LEAGUE", "E0"); s_btn("BUNDESLIGA", "D1")
-    with c10: s_btn("LA LIGA", "SP1"); s_btn("SERIE A TIM", "I1")
+    with c10: s_btn("LA LIGA", "SP1"); s_btn("SERIE A", "I1")
 
 # --- 5. ÁREA PRINCIPAL ---
-
-# HEADER À ESQUERDA (ALINHADO COM A SIDEBAR)
 st.markdown("""
     <div class="main-logo-container">
         <div class="ai-icon-small">
@@ -159,8 +157,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# LOGICA DE SELEÇÃO E EXECUÇÃO
-# (Supondo que você use o DataFrame carregado anteriormente)
+# Seleção
 times = ['Palmeiras', 'Flamengo', 'Corinthians', 'Vasco', 'Santos', 'Bahia', 'Botafogo', 'Inter']
 col_a, col_b, col_c = st.columns([3, 3, 2.5])
 with col_a: t_casa = st.selectbox("Mandante", sorted(times), label_visibility="collapsed")
@@ -169,7 +166,6 @@ with col_c: executar = st.button("🔥 EXECUTAR ALGORITMO", use_container_width=
 
 if executar:
     st.markdown(f'<div style="font-size:10px; color:#f05a22; font-family:Orbitron; margin-bottom:10px;">📡 ANALISANDO: {st.session_state.nome_liga}</div>', unsafe_allow_html=True)
-
     st.markdown(f"""
         <div class="card-principal">
             <div class="match-title">{t_casa.upper()} VS {t_fora.upper()}</div>
@@ -178,22 +174,14 @@ if executar:
                 <div><p class="val-prob">22.8%</p><p style="font-size:9px; color:#8899a6; text-transform:uppercase;">Empate</p></div>
                 <div><p class="val-prob">33.0%</p><p style="font-size:9px; color:#8899a6; text-transform:uppercase;">Visitante</p></div>
             </div>
-            <div style="display:flex; justify-content:space-around; font-size:11px; color:#00ffc3; font-weight:700;">
-                <span>ODD JUSTA: @2.10</span>
-                <span>VALOR ESPERADO: +12.5%</span>
-            </div>
         </div>
     """, unsafe_allow_html=True)
-
+    
     m = st.columns(6)
     metrics = [("⚽ GOLS +2.5", "62%"), ("🚩 CANTOS +9.5", "75%"), ("👞 CHUTES +22", "81%"), 
                ("🎯 NO GOL +8", "58%"), ("⚠️ FALTAS +24", "85%"), ("🟨 CARTÕES +4", "72%")]
-    
-    for i, (label, val) in enumerate(metrics):
+    for i, (l, v) in enumerate(metrics):
         with m[i]:
-            st.markdown(f"""
-                <div style="background:#111a21; padding:8px; border-radius:6px; border:1px solid #2d3748; text-align:center;">
-                    <p style="color:#8899a6; font-size:8px; margin-bottom:2px;">{label}</p>
-                    <p style="color:#00ffc3; font-size:14px; font-weight:900; margin:0;">{val}</p>
-                </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f"<div style='background:#111a21; padding:8px; border-radius:6px; border:1px solid #2d3748; text-align:center;'><p style='color:#8899a6; font-size:8px; margin-bottom:2px;'>{l}</p><p style='color:#00ffc3; font-size:14px; font-weight:900; margin:0;'>{v}</p></div>", unsafe_allow_html=True)
+else:
+    st.markdown("<div style='height:150px;'></div>", unsafe_allow_html=True)
