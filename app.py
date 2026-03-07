@@ -6,7 +6,7 @@ from scipy.stats import poisson
 # --- 1. CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(page_title="GESTOR IA APOSTAS", layout="wide", page_icon="⚽")
 
-# --- 2. ESTILO VISUAL (ESTRUTURA PROTEGIDA) ---
+# --- 2. ESTILO VISUAL ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Inter:wght@400;700&display=swap');
@@ -78,8 +78,7 @@ def load_data(liga):
         df = df.rename(columns=mapa)
         return df[['HomeTeam', 'AwayTeam', 'FTHG', 'FTAG']].dropna()
     except:
-        # Fallback para ligas sem URL direta (Copa do Brasil, Paulistão, etc)
-        br = ['Flamengo', 'Palmeiras', 'São Paulo', 'Corinthians', 'Santos', 'Gêmio', 'Inter', 'Fortaleza']
+        br = ['Flamengo', 'Palmeiras', 'São Paulo', 'Corinthians', 'Santos', 'Grêmio', 'Inter', 'Fortaleza']
         data = [[np.random.choice(br), np.random.choice(br), np.random.randint(0,4), np.random.randint(0,3)] for _ in range(60)]
         return pd.DataFrame(data, columns=['HomeTeam', 'AwayTeam', 'FTHG', 'FTAG'])
 
@@ -87,13 +86,9 @@ def calcular_ia(df, casa, fora):
     try:
         m_gols_casa = df['FTHG'].mean()
         m_gols_fora = df['FTAG'].mean()
-        
-        # Força Ataque/Defesa (Simplificada para estabilidade)
         l_casa = (df[df['HomeTeam']==casa]['FTHG'].mean() / m_gols_casa) * m_gols_casa if not df[df['HomeTeam']==casa].empty else m_gols_casa
         l_fora = (df[df['AwayTeam']==fora]['FTAG'].mean() / m_gols_fora) * m_gols_fora if not df[df['AwayTeam']==fora].empty else m_gols_fora
-
         probs = np.outer(poisson.pmf(range(6), l_casa), poisson.pmf(range(6), l_fora))
-        
         return {
             'win_h': np.sum(np.tril(probs, -1)) * 100,
             'draw': np.sum(np.diag(probs)) * 100,
@@ -104,7 +99,7 @@ def calcular_ia(df, casa, fora):
     except:
         return {'win_h': 40.0, 'draw': 25.0, 'win_a': 35.0, 'over25': 52.0, 'odd_j': 2.15}
 
-# --- 4. BARRA LATERAL (RESTAURADA) ---
+# --- 4. BARRA LATERAL ---
 with st.sidebar:
     st.markdown("""<div class="sidebar-header"><div class="ai-logo-box"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="8" y1="12" x2="16" y2="12"></line></svg></div><div class="sidebar-title">GESTOR IA<br>APOSTAS</div></div>""", unsafe_allow_html=True)
     
@@ -130,6 +125,9 @@ with st.sidebar:
     menu_btn("PREMIER LEAGUE", 'E0')
     menu_btn("LA LIGA", 'SP1')
     menu_btn("BUNDESLIGA", 'D1')
+    
+    # MENSAGEM MOVIDA PARA O FINAL DA SIDEBAR
+    st.markdown("<br><br><br><br><p style='text-align:center; opacity:0.3; font-size:10px;'>GESTOR IA v12.0 - INDICADOR DE LIGA ATIVA</p>", unsafe_allow_html=True)
 
 # --- 5. ÁREA PRINCIPAL ---
 df = load_data(st.session_state.liga_ativa)
@@ -169,5 +167,3 @@ if executar:
     with m4: st.markdown(f"<div class='mini-card'><span class='mini-label'>🎯 NO GOL +8.5</span><span class='mini-val'>{60 + np.random.randint(0,15)}%</span></div>", unsafe_allow_html=True)
     with m5: st.markdown(f"<div class='mini-card'><span class='mini-label'>⚠️ FALTAS +24.5</span><span class='mini-val'>{82 + np.random.randint(0,10)}%</span></div>", unsafe_allow_html=True)
     with m6: st.markdown(f"<div class='mini-card'><span class='mini-label'>🟨 CARTÕES +4.5</span><span class='mini-val'>{75 + np.random.randint(0,15)}%</span></div>", unsafe_allow_html=True)
-
-st.markdown("<br><p style='text-align:center; opacity:0.3; font-size:10px;'>GESTOR IA v12.0 - INDICADOR DE LIGA ATIVA</p>", unsafe_allow_html=True)
