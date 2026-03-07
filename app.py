@@ -11,12 +11,11 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- 2. CSS ULTRA-MODERNO (TEXTO INTEIRO & NO-WRAP) ---
+# --- 2. CSS ULTRA-MODERNO (PADS MINIMALISTAS) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
     
-    /* Limpeza de Interface */
     [data-testid="stHeader"] { background: transparent !important; }
     [data-testid="stSidebarCollapse"] { display: none !important; }
     button[kind="headerNoPadding"] { display: none !important; }
@@ -50,11 +49,11 @@ st.markdown("""
         font-size: 20px; font-weight: 900; letter-spacing: 2px;
     }
 
-    /* --- SIDEBAR: ESTILO "PAD" OTIMIZADO --- */
+    /* --- SIDEBAR: ESTILO "PAD" --- */
     [data-testid="stSidebar"] { 
         background-color: #0b1218; 
         border-right: 1px solid rgba(240, 90, 34, 0.2); 
-        width: 280px !important; /* AUMENTADO PARA CABER OS NOMES */
+        width: 280px !important; 
     }
     
     .cat-label { 
@@ -63,7 +62,6 @@ st.markdown("""
         letter-spacing: 2px; text-align: left; padding-left: 10px;
     }
 
-    /* PAD DOS CAMPEONATOS SEM QUEBRA DE LINHA */
     .stButton > button {
         background-color: rgba(26, 36, 45, 0.4) !important; 
         color: #a0aec0 !important; 
@@ -73,15 +71,13 @@ st.markdown("""
         height: 28px !important;
         border-radius: 0px 4px 4px 0px !important; 
         text-transform: uppercase; 
-        font-size: 7px !important; /* TAMANHO AJUSTADO */
+        font-size: 8px !important; /* Ajustado para melhor leitura */
         width: 100% !important; 
         margin-bottom: 2px !important; 
         text-align: left !important;
-        padding-left: 8px !important;
+        padding-left: 10px !important;
         transition: 0.3s;
-        white-space: nowrap !important; /* IMPEDE QUEBRA DE LINHA */
-        overflow: hidden !important;
-        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
     }
     
     .stButton > button[kind="primary"] {
@@ -95,7 +91,7 @@ st.markdown("""
         background-color: rgba(240, 90, 34, 0.05) !important;
     }
 
-    /* CARDS DE RESULTADOS */
+    /* --- ÁREA DE RESULTADO --- */
     .card-principal { 
         background-color: #1a242d; padding: 15px; border-radius: 12px; 
         border-bottom: 4px solid #f05a22; text-align: center; 
@@ -106,43 +102,43 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- 3. LÓGICA DE ESTADO ---
+# --- 3. LOGICA DE ESTADO ---
 if 'liga_ativa' not in st.session_state: 
     st.session_state.update(liga_ativa='BRA_A', nome_liga='SÉRIE A')
 
-# --- 4. BARRA LATERAL (ORGANIZAÇÃO SOLICITADA) ---
+# --- 4. BARRA LATERAL (LIMPEZA DE TEXTO SOLICITADA) ---
 with st.sidebar:
-    def s_btn(label, vid):
-        if st.button(label, key=f"s_{vid}", type="primary" if st.session_state.liga_ativa == vid else "secondary"):
+    def s_btn(display_name, full_name, vid):
+        if st.button(display_name, key=f"s_{vid}", type="primary" if st.session_state.liga_ativa == vid else "secondary"):
             st.session_state.liga_ativa = vid
-            st.session_state.nome_liga = label
+            st.session_state.nome_liga = full_name
             st.rerun()
 
     st.markdown('<p class="cat-label">BRASILEIRÃO</p>', unsafe_allow_html=True)
     c1, c2 = st.columns(2)
-    with c1: s_btn("SÉRIE A", "BRA_A"); s_btn("SÉRIE C", "BRA_C")
-    with c2: s_btn("SÉRIE B", "BRA_B"); s_btn("SÉRIE D", "BRA_D")
+    with c1: s_btn("SÉRIE A", "BRASILEIRÃO SÉRIE A", "BRA_A"); s_btn("SÉRIE C", "BRASILEIRÃO SÉRIE C", "BRA_C")
+    with c2: s_btn("SÉRIE B", "BRASILEIRÃO SÉRIE B", "BRA_B"); s_btn("SÉRIE D", "BRASILEIRÃO SÉRIE D", "BRA_D")
 
     st.markdown('<p class="cat-label">COPAS NACIONAIS</p>', unsafe_allow_html=True)
     c3, c4 = st.columns(2)
-    with c3: s_btn("COPA DO BRASIL", "CDB")
-    with c4: s_btn("COPA NORDESTE", "CNE")
-    s_btn("SUPERCOPA", "SUPER") # Removido BR para não quebrar
+    with c3: s_btn("BRASIL", "COPA DO BRASIL", "CDB") # Nome limpo
+    with c4: s_btn("NORDESTE", "COPA DO NORDESTE", "CNE") # Nome limpo
+    s_btn("SUPERCOPA", "SUPERCOPA", "SUPER")
 
     st.markdown('<p class="cat-label">ESTADUAIS</p>', unsafe_allow_html=True)
     c5, c6 = st.columns(2)
-    with c5: s_btn("PAULISTÃO", "SP"); s_btn("MINEIRO", "MG")
-    with c6: s_btn("CARIOCA", "RJ"); s_btn("GAÚCHO", "RS")
+    with c5: s_btn("PAULISTÃO", "CAMPEONATO PAULISTA", "SP"); s_btn("MINEIRO", "CAMPEONATO MINEIRO", "MG")
+    with c6: s_btn("CARIOCA", "CAMPEONATO CARIOCA", "RJ"); s_btn("GAÚCHO", "CAMPEONATO GAÚCHO", "RS")
 
     st.markdown('<p class="cat-label">CONTINENTAIS</p>', unsafe_allow_html=True)
     c7, c8 = st.columns(2)
-    with c7: s_btn("LIBERTADORES", "LIB")
-    with c8: s_btn("SUL-AMERICANA", "SUL") # Nome ajustado
+    with c7: s_btn("LIBERTADORES", "COPA LIBERTADORES", "LIB")
+    with c8: s_btn("SUL-AMERICANA", "COPA SUL-AMERICANA", "SUL")
 
-    st.markdown('<p class="cat-label">LIGAS EUROPEIAS</p>', unsafe_allow_html=True)
+    st.markdown('<p class="cat-label">EUROPA</p>', unsafe_allow_html=True)
     c9, c10 = st.columns(2)
-    with c9: s_btn("PREMIER LEAGUE", "E0"); s_btn("BUNDESLIGA", "D1")
-    with c10: s_btn("LA LIGA", "SP1"); s_btn("SERIE A", "I1")
+    with c9: s_btn("PREMIER LEAGUE", "PREMIER LEAGUE", "E0"); s_btn("BUNDESLIGA", "BUNDESLIGA", "D1")
+    with c10: s_btn("LA LIGA", "LA LIGA", "SP1"); s_btn("SERIE A", "SERIE A TIM", "I1")
 
 # --- 5. ÁREA PRINCIPAL ---
 st.markdown("""
@@ -157,8 +153,8 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# Seleção
-times = ['Palmeiras', 'Flamengo', 'Corinthians', 'Vasco', 'Santos', 'Bahia', 'Botafogo', 'Inter']
+# Seleção de Times
+times = ['Flamengo', 'Palmeiras', 'Bahia', 'Corinthians', 'Vasco', 'Santos', 'Botafogo', 'Inter']
 col_a, col_b, col_c = st.columns([3, 3, 2.5])
 with col_a: t_casa = st.selectbox("Mandante", sorted(times), label_visibility="collapsed")
 with col_b: t_fora = st.selectbox("Visitante", sorted([t for t in times if t != t_casa]), label_visibility="collapsed")
