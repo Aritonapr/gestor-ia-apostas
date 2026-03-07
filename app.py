@@ -4,105 +4,87 @@ import numpy as np
 from scipy.stats import poisson
 
 # --- 1. CONFIGURAÇÃO DA PÁGINA ---
-st.set_page_config(page_title="GESTOR IA APOSTAS", layout="wide", page_icon="⚽")
+st.set_page_config(page_title="GESTOR IA - ELITE", layout="wide", page_icon="⚽")
 
-# --- 2. ESTILO VISUAL BETANO (CSS MELHORADO) ---
+# --- 2. ESTILO VISUAL BETANO (CSS) ---
 st.markdown("""
     <style>
-    /* Fundo principal */
     .main { background-color: #0b1218; color: #e4e6eb; }
+    [data-testid="stSidebar"] { background-color: #1a242d; border-right: 2px solid #f05a22; min-width: 300px; }
     
-    /* Barra Lateral */
-    [data-testid="stSidebar"] { 
-        background-color: #1a242d; 
-        border-right: 2px solid #f05a22; 
-        min-width: 300px !important;
-    }
-
-    /* Título do Cabeçalho */
     .header-container {
-        background-color: #1a242d;
-        padding: 25px;
-        border-bottom: 4px solid #f05a22;
-        text-align: center;
-        border-radius: 0 0 20px 20px;
-        margin-bottom: 30px;
+        background-color: #1a242d; padding: 25px; border-bottom: 4px solid #f05a22;
+        text-align: center; border-radius: 0 0 20px 20px; margin-bottom: 30px;
     }
-    .header-title { color: #f05a22; font-size: 32px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; }
+    .header-title { color: #f05a22; font-size: 32px; font-weight: 900; text-transform: uppercase; }
 
-    /* PADRONIZAÇÃO DOS BOTÕES (O QUE VOCÊ PEDIU) */
+    /* BOTÕES PADRONIZADOS */
     .stButton > button {
-        background-color: #26323e;
-        color: #ffffff;
-        border: 1px solid #313d49;
-        font-weight: bold;
-        text-transform: uppercase;
-        
-        /* Força todos os botões a serem iguais */
-        width: 100% !important;
-        height: 55px !important;
-        display: block;
-        margin-bottom: 12px !important;
-        border-radius: 8px !important;
-        font-size: 14px !important;
-        transition: all 0.3s ease-in-out;
+        background-color: #26323e; color: white; border: 1px solid #313d49;
+        font-weight: bold; width: 100% !important; height: 50px !important;
+        border-radius: 8px !important; margin-bottom: 10px; transition: 0.3s;
     }
-
-    /* Efeito ao passar o mouse */
-    .stButton > button:hover {
-        border-color: #f05a22 !important;
-        color: #f05a22 !important;
-        background-color: #1a242d !important;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 10px rgba(240, 90, 34, 0.3);
+    .stButton > button:hover { border-color: #f05a22; color: #f05a22; background-color: #1a242d; }
+    
+    .card-analise {
+        background-color: #1a242d; padding: 25px; border-radius: 15px;
+        border-left: 6px solid #f05a22; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
-
-    /* Estilo dos Cards de Resultado */
-    .card-resultado {
-        background-color: #1a242d;
-        padding: 25px;
-        border-radius: 15px;
-        border-left: 6px solid #f05a22;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        margin-top: 20px;
-    }
-    .metric-title { color: #8a949d; font-size: 14px; font-weight: bold; text-transform: uppercase; }
-    .metric-value { color: #f05a22; font-size: 32px; font-weight: 900; }
+    .metric-val { color: #f05a22; font-size: 30px; font-weight: bold; }
     </style>
     """, unsafe_allow_html=True)
 
 # --- 3. CABEÇALHO ---
 st.markdown('<div class="header-container"><span class="header-title">GESTOR IA APOSTAS</span></div>', unsafe_allow_html=True)
 
-# --- 4. LOGICA DE NAVEGAÇÃO ---
-if 'liga_selecionada' not in st.session_state:
-    st.session_state['liga_selecionada'] = 'BRA'
+# --- 4. GERENCIAMENTO DE NAVEGAÇÃO ---
+if 'categoria' not in st.session_state:
+    st.session_state['categoria'] = None
+if 'liga_id' not in st.session_state:
+    st.session_state['liga_id'] = None
 
-# --- 5. BARRA LATERAL (BOTÕES PADRONIZADOS) ---
+# --- 5. BARRA LATERAL (MENU POR CATEGORIAS) ---
 with st.sidebar:
-    st.markdown("<h3 style='text-align: center; color: #f05a22;'>🏆 CAMPEONATOS</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='text-align:center; color:#f05a22;'>🏁 CATEGORIAS</h3>", unsafe_allow_html=True)
     
-    # Criamos os botões. Como definimos width 100% no CSS, eles ficarão todos iguais.
-    if st.button("🇧🇷 BRASILEIRAO SERIE A"): st.session_state['liga_selecionada'] = 'BRA'
-    if st.button("🏴󠁧󠁢󠁥󠁮󠁧󠁿 PREMIER LEAGUE"): st.session_state['liga_selecionada'] = 'E0'
-    if st.button("🇪🇸 LA LIGA ESPANHA"): st.session_state['liga_selecionada'] = 'SP1'
-    if st.button("🇮🇹 SERIE A ITALIA"): st.session_state['liga_selecionada'] = 'I1'
-    if st.button("🇩🇪 BUNDESLIGA"): st.session_state['liga_selecionada'] = 'D1'
-    if st.button("🇫🇷 LIGUE 1 FRANCA"): st.session_state['liga_selecionada'] = 'F1'
-    
-    st.markdown("---")
-    st.caption("Selecione a liga para carregar os times reais.")
+    col_br, col_eu = st.columns(2)
+    if col_br.button("🇧🇷 BRASIL"):
+        st.session_state['categoria'] = 'BRA'
+    if col_eu.button("🇪🇺 EUROPA"):
+        st.session_state['categoria'] = 'EUR'
 
-# --- 6. FUNÇÃO DE DADOS ---
+    st.markdown("---")
+
+    # SUBMENU BRASIL
+    if st.session_state['categoria'] == 'BRA':
+        st.markdown("<p style='text-align:center;'>Ligas Brasileiras</p>", unsafe_allow_html=True)
+        if st.button("SERIE A"): st.session_state['liga_id'] = 'BRA_A'
+        if st.button("SERIE B"): st.session_state['liga_id'] = 'BRA_B'
+
+    # SUBMENU EUROPA
+    elif st.session_state['categoria'] == 'EUR':
+        st.markdown("<p style='text-align:center;'>Ligas Europeias</p>", unsafe_allow_html=True)
+        if st.button("PREMIER LEAGUE"): st.session_state['liga_id'] = 'E0'
+        if st.button("LA LIGA"): st.session_state['liga_id'] = 'SP1'
+        if st.button("SERIE A (ITÁLIA)"): st.session_state['liga_id'] = 'I1'
+        if st.button("BUNDESLIGA"): st.session_state['liga_id'] = 'D1'
+
+# --- 6. ENGINE DE DADOS ---
 @st.cache_data(ttl=3600)
-def load_liga(liga_id):
+def load_data(liga):
     try:
-        if liga_id == 'BRA':
-            url = "https://raw.githubusercontent.com/automacaobrasil/dataset-brasileirao/main/brasileirao_serie_a.csv"
+        if liga == 'BRA_A':
+            # Nova fonte estável para Brasileirão Série A
+            url = "https://raw.githubusercontent.com/adaoduque/brasileirao-dataset/master/data/brasileirao_serie_a.csv"
             df = pd.read_csv(url)
-            df = df.rename(columns={'mandante': 'HomeTeam', 'visitante': 'AwayTeam', 'mandante_placar': 'FTHG', 'visitante_placar': 'FTAG'})
+            # Mapeamento específico para este arquivo
+            df = df.rename(columns={'home_team': 'HomeTeam', 'away_team': 'AwayTeam', 'home_score': 'FTHG', 'away_score': 'FTAG'})
+        elif liga == 'BRA_B':
+            # Exemplo Série B (pode ser ajustado se tiver o link direto)
+            st.warning("Dados da Série B em fase de carregamento...")
+            return pd.DataFrame()
         else:
-            url = f"https://www.football-data.co.uk/mmz4281/2425/{liga_id}.csv"
+            url = f"https://www.football-data.co.uk/mmz4281/2425/{liga}.csv"
             df = pd.read_csv(url)
         
         df['FTHG'] = pd.to_numeric(df['FTHG'], errors='coerce')
@@ -111,64 +93,58 @@ def load_liga(liga_id):
     except:
         return pd.DataFrame()
 
-# --- 7. PROCESSAMENTO IA ---
-def calcular_probabilidades(t1, t2, df_liga):
-    # Pega os últimos 8 jogos para ver a forma atual
-    h_data = df_liga[df_liga['HomeTeam'] == t1].tail(8)
-    a_data = df_liga[df_liga['AwayTeam'] == t2].tail(8)
-    
+# --- 7. CÁLCULO IA ---
+def calcular_odds(t1, t2, df_liga):
+    # Analisa o histórico recente dos times
+    h_data = df_liga[df_liga['HomeTeam'] == t1].tail(10)
+    a_data = df_liga[df_liga['AwayTeam'] == t2].tail(10)
     if len(h_data) < 2 or len(a_data) < 2: return None
     
     m_h, m_a = h_data['FTHG'].mean(), a_data['FTAG'].mean()
     p_h = poisson.pmf(np.arange(0, 6), m_h)
     p_a = poisson.pmf(np.arange(0, 6), m_a)
-    m = np.outer(p_h, p_a)
+    matrix = np.outer(p_h, p_a)
     
     return {
-        'casa': np.sum(np.triu(m, 1)) * 100,
-        'empate': np.trace(m) * 100,
-        'fora': np.sum(np.tril(m, -1)) * 100,
-        'xg_h': m_h, 'xg_a': m_a
+        'casa': np.sum(np.triu(matrix, 1)) * 100,
+        'empate': np.trace(matrix) * 100,
+        'fora': np.sum(np.tril(matrix, -1)) * 100
     }
 
 # --- 8. ÁREA PRINCIPAL ---
-liga_ativa = st.session_state['liga_selecionada']
-df = load_liga(liga_ativa)
-
-if not df.empty:
-    st.markdown(f"### 📍 Analisando agora: <span style='color:#f05a22;'>{liga_ativa}</span>", unsafe_allow_html=True)
+if st.session_state['liga_id']:
+    df = load_data(st.session_state['liga_id'])
     
-    times = sorted(df['HomeTeam'].unique())
-    col_1, col_2 = st.columns(2)
-    casa = col_1.selectbox("Time Mandante", times)
-    fora = col_2.selectbox("Time Visitante", times)
-    
-    if st.button("🔥 CALCULAR ODDS DA IA"):
-        res = calcular_probabilidades(casa, fora, df)
-        if res:
-            st.markdown(f"""
-            <div class="card-resultado">
-                <h2 style='text-align:center;'>{casa} vs {fora}</h2>
-                <div style='display: flex; justify-content: space-around; text-align: center; margin-top: 20px;'>
-                    <div><p class="metric-title">Vitória Casa</p><p class="metric-value">{res['casa']:.1f}%</p></div>
-                    <div><p class="metric-title">Empate</p><p class="metric-value">{res['empate']:.1f}%</p></div>
-                    <div><p class="metric-title">Vitória Fora</p><p class="metric-value">{res['fora']:.1f}%</p></div>
+    if not df.empty:
+        st.markdown(f"### 📍 Campeonato Selecionado: <span style='color:#f05a22;'>{st.session_state['liga_id']}</span>", unsafe_allow_html=True)
+        
+        times = sorted(df['HomeTeam'].unique())
+        c1, c2 = st.columns(2)
+        casa = c1.selectbox("Time Mandante", times)
+        fora = c2.selectbox("Time Visitante", times)
+        
+        if st.button("🔥 ANALISAR PARTIDA"):
+            res = calcular_odds(casa, fora, df)
+            if res:
+                st.markdown(f"""
+                <div class="card-analise">
+                    <h2 style='text-align:center;'>{casa} vs {fora}</h2>
+                    <div style='display:flex; justify-content:space-around; text-align:center; margin-top:20px;'>
+                        <div><p>Vitoria Casa</p><p class="metric-val">{res['casa']:.1f}%</p></div>
+                        <div><p>Empate</p><p class="metric-val">{res['empate']:.1f}%</p></div>
+                        <div><p>Vitoria Fora</p><p class="metric-val">{res['fora']:.1f}%</p></div>
+                    </div>
                 </div>
-            </div>
-            """, unsafe_allow_html=True)
-            
-            # Barras Visuais
-            st.write("")
-            st.write(f"Força do Mandante ({casa}):")
-            st.progress(res['casa'] / 100)
-            
-            if res['casa'] > 65:
-                st.balloons()
-                st.success(f"🚀 ENTRADA DE VALOR: A probabilidade de vitória do {casa} é muito alta!")
-        else:
-            st.warning("Dados insuficientes para gerar a probabilidade destes times.")
+                """, unsafe_allow_html=True)
+                
+                if res['casa'] > 60:
+                    st.success(f"💎 DICA: O {casa} possui grande vantagem estatística!")
+            else:
+                st.info("Dados insuficientes para calcular a probabilidade deste confronto.")
+    else:
+        st.error("Erro ao carregar os dados desta liga. Tente outra opção.")
 else:
-    st.error("Erro ao carregar dados. Por favor, clique em um campeonato na esquerda.")
+    st.info("👋 Bem-vindo! Selecione uma CATEGORIA na barra lateral (Brasil ou Europa) para começar.")
 
 # --- 9. RODAPÉ ---
-st.markdown("<br><hr><p style='text-align:center; color:#8a949d;'>GESTOR IA APOSTAS - Desenvolvido com Inteligência de Dados v2.0</p>", unsafe_allow_html=True)
+st.markdown("<br><hr><p style='text-align:center; opacity:0.6;'>Gestor IA Aposta - Sistema de Elite v3.0</p>", unsafe_allow_html=True)
