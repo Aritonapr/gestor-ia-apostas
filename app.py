@@ -124,9 +124,14 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 times = ['Flamengo', 'Palmeiras', 'Bahia', 'Botafogo', 'Vasco', 'Corinthians', 'Santos', 'Inter']
-col_a, col_b, col_c = st.columns([3, 3, 2.5])
+
+# DEFINIÇÃO DAS COLUNAS (Corrigido col_c para col_btn)
+col_a, col_b, col_btn = st.columns([3, 3, 2.5])
+
 with col_a: t_casa = st.selectbox("Mandante", sorted(times), label_visibility="collapsed")
 with col_b: t_fora = st.selectbox("Visitante", sorted([t for t in times if t != t_casa]), label_visibility="collapsed")
+
+# USO DA COLUNA DO BOTÃO
 with col_btn: executar = st.button("🔥 EXECUTAR ALGORITMO", use_container_width=True, type="primary")
 
 if executar:
