@@ -5,39 +5,50 @@ import hashlib
 
 # --- 1. CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(
-    page_title="GESTOR IA - JARVIS EDITION", 
+    page_title="GESTOR IA - JARVIS PRO", 
     layout="wide", 
     page_icon="⚽",
     initial_sidebar_state="expanded"
 )
 
-# --- 2. BANCO DE DADOS COMPLETO ---
+# --- 2. BANCO DE DADOS GLOBAL COMPLETO ---
 DIC_TIMES = {
     "BRA_A": ["Flamengo", "Palmeiras", "Botafogo", "Fortaleza", "São Paulo", "Bahia", "Cruzeiro", "Internacional", "Atlético-MG", "Vasco", "Corinthians", "Fluminense", "Grêmio", "Athletico-PR", "Vitória", "Juventude", "Criciúma", "Cuiabá", "Atlético-GO", "Bragantino"],
     "BRA_B": ["Santos", "Sport", "Novorizontino", "Mirassol", "Vila Nova", "América-MG", "Ceará", "Coritiba", "Avaí", "Operário-PR", "Amazonas", "Goiás"],
     "BRA_C": ["Náutico", "Remo", "Figueirense", "CSA", "Botafogo-PB", "ABC", "Londrina", "Caxias", "Ferroviária", "São Bernardo", "Volta Redonda", "Ypiranga"],
     "BRA_D": ["Retrô", "Anápolis", "Iguatu", "Itabaiana", "Brasil de Pelotas", "Maringá", "Inter de Limeira", "Treze"],
     "CDB": ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Atlético-MG", "Vasco", "Grêmio", "Bahia", "Internacional", "Fluminense"],
+    "SUPER": ["Palmeiras", "São Paulo", "Flamengo", "Atlético-MG", "Corinthians"],
     "CNE": ["Bahia", "Fortaleza", "Sport", "Ceará", "Vitória", "CRB", "Náutico", "Sampaio Corrêa"],
-    "ENG_P": ["Man. City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man. United", "Newcastle"],
-    "ESP_L": ["Real Madrid", "Barcelona", "Atlético de Madrid", "Girona", "Athletic Bilbao", "Real Sociedad", "Sevilla"],
+    "SP": ["Palmeiras", "Santos", "São Paulo", "Corinthians", "Bragantino", "Novorizontino"],
+    "RJ": ["Flamengo", "Fluminense", "Botafogo", "Vasco", "Nova Iguaçu"],
+    "MG": ["Cruzeiro", "Atlético-MG", "América-MG", "Tombense"],
+    "RS": ["Grêmio", "Internacional", "Juventude", "Caxias"],
+    "ENG_P": ["Man. City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man. United"],
+    "ESP_L": ["Real Madrid", "Barcelona", "Atlético de Madrid", "Girona", "Athletic Bilbao"],
+    "ITA_A": ["Inter de Milão", "Milan", "Juventus", "Atalanta", "Roma", "Napoli"],
+    "GER_B": ["Bayer Leverkusen", "Bayern de Munique", "Stuttgart", "RB Leipzig", "Borussia Dortmund"],
+    "FRA_L": ["PSG", "Monaco", "Lille", "Brest", "Lyon", "Marseille"],
     "UCL": ["Real Madrid", "Man. City", "Bayern", "Arsenal", "Barcelona", "Inter", "PSG"],
+    "EURO_C": ["Espanha", "Inglaterra", "França", "Alemanha", "Portugal", "Itália", "Holanda"],
+    "ELIM_W": ["Brasil", "Argentina", "França", "Inglaterra", "Espanha", "Alemanha"],
+    "SAUDI": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli"],
+    "USA_MLS": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC"],
+    "ARG_L": ["River Plate", "Boca Juniors", "Racing", "Talleres", "Estudiantes"],
     "LIB": ["Flamengo", "Palmeiras", "River Plate", "Botafogo", "São Paulo", "Atlético-MG"],
     "SUL": ["Cruzeiro", "Corinthians", "Fortaleza", "Racing", "Lanús", "Athletico-PR"]
 }
 
-# --- 3. CSS DESIGN SYSTEM JARVIS ---
+# --- 3. CSS "JARVIS" - REDESENHO DOS BOTÕES E LATERAIS ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
     
-    /* REMOVER ÁREA BRANCA E FIXAR SETA LARANJA */
     header[data-testid="stHeader"] { background: transparent !important; }
     button[data-testid="stSidebarCollapse"] svg { color: #f05a22 !important; fill: #f05a22 !important; filter: drop-shadow(0 0 5px #f05a22); }
     .block-container { padding-top: 0.5rem !important; }
     .stApp { background-color: #0b1218; color: #e4e6eb; font-family: 'Inter', sans-serif; }
     
-    /* SIDEBAR PRO DESIGN */
     [data-testid="stSidebar"] { 
         background-color: #0b1218 !important; 
         border-right: 2px solid #f05a22 !important; 
@@ -45,50 +56,50 @@ st.markdown("""
     }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { padding: 0.4rem !important; gap: 0rem !important; }
 
-    /* BOTÕES SIMÉTRICOS (MESMO TAMANHO E ALINHAMENTO) */
+    /* BOTÕES ESTILO PÍLULA SIMÉTRICOS */
     .stButton > button { 
         background: linear-gradient(90deg, rgba(240, 90, 34, 0.1) 0%, rgba(26, 36, 45, 0.9) 25%) !important;
         color: #cbd5e0 !important; 
         font-size: 7.2pt !important; 
-        border-radius: 6px !important; 
-        margin-bottom: 3px !important; 
+        border-radius: 30px !important; /* VOLTA AO ESTILO ARREDONDADO */
+        margin-bottom: 2px !important; 
         border: 1px solid rgba(240, 90, 34, 0.2) !important; 
-        height: 32px !important; 
-        width: 100% !important; /* FORÇA O MESMO TAMANHO */
+        height: 30px !important; 
+        width: 100% !important;
         display: flex !important;
-        justify-content: flex-start !important; /* ÍCONE À ESQUERDA */
+        justify-content: flex-start !important;
         align-items: center !important;
-        padding-left: 10px !important;
+        padding-left: 12px !important;
         white-space: nowrap !important;
-        transition: all 0.2s ease !important;
+        transition: all 0.3s ease !important;
     }
 
-    /* EFEITO HOVER JARVIS */
+    /* EFEITO HOVER LARANJA */
     .stButton > button:hover { 
-        background: rgba(240, 90, 34, 0.3) !important;
+        background: rgba(240, 90, 34, 0.2) !important;
         color: #f05a22 !important; 
         border: 1px solid #f05a22 !important;
         box-shadow: 0 0 10px rgba(240, 90, 34, 0.3) !important;
+        transform: translateX(3px);
     }
 
-    /* BOTÃO ATIVO FIXO */
+    /* BOTÃO ATIVO */
     .stButton > button[kind="primary"] { 
-        background: #f05a22 !important;
+        background: linear-gradient(90deg, #f05a22 0%, #ff8c00 100%) !important;
         color: #ffffff !important; 
         font-weight: 800 !important;
-        box-shadow: 0 0 15px rgba(240, 90, 34, 0.6) !important;
+        box-shadow: 0 0 15px rgba(240, 90, 34, 0.5) !important;
         border: none !important;
     }
 
-    /* CATEGORIAS CABEÇALHO */
     .cat-button > div > button { 
         background: rgba(240, 90, 34, 0.05) !important; 
-        height: 36px !important;
-        font-size: 8pt !important;
+        height: 34px !important;
+        font-size: 7.8pt !important;
         border-bottom: 2px solid #f05a22 !important;
-        border-radius: 4px !important;
+        border-radius: 6px !important;
         margin-top: 5px !important;
-        justify-content: center !important; /* TEXTO CENTRALIZADO NO MESTRE */
+        justify-content: center !important;
         padding-left: 0 !important;
     }
 
@@ -106,7 +117,7 @@ def calcular_engine(casa, fora):
     pc = 35 + (seed % 30); pe = 15 + (seed % 15); pf = 100 - pc - pe
     return pc, pe, pf, 50+(seed%40), 60+(seed%35), 65+(seed%30)
 
-# --- 5. NAVEGAÇÃO SIDEBAR ---
+# --- 5. NAVEGAÇÃO ---
 if 'liga_ativa' not in st.session_state: st.session_state.update(liga_ativa='BRA_A', nome_liga='SÉRIE A')
 if 'menu_aberto' not in st.session_state: st.session_state.menu_aberto = 'BR'
 
@@ -122,32 +133,46 @@ with st.sidebar:
             st.session_state.menu_aberto = menu_id if st.session_state.menu_aberto != menu_id else None; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-    cat_btn("📂 FUTEBOL BRASIL", "BR")
+    # 🇧🇷 BRASIL
+    cat_btn("🇧🇷 FUTEBOL BRASIL", "BR")
     if st.session_state.menu_aberto == "BR":
         c1, c2 = st.columns(2, gap="small")
-        with c1: 
-            s_btn("🔘", "SÉRIE A", "BRASILEIRÃO A", "BRA_A")
-            s_btn("🔘", "SÉRIE C", "BRASILEIRÃO C", "BRA_C")
-            s_btn("🏆", "COPA BR", "COPA DO BRASIL", "CDB")
-        with c2: 
-            s_btn("🔘", "SÉRIE B", "BRASILEIRÃO B", "BRA_B")
-            s_btn("🔘", "SÉRIE D", "BRASILEIRÃO D", "BRA_D")
-            s_btn("☀️", "NORDESTE", "COPA NORDESTE", "CNE")
+        with c1: s_btn("🔘", "SÉRIE A", "BRASILEIRÃO A", "BRA_A"); s_btn("🔘", "SÉRIE C", "BRASILEIRÃO C", "BRA_C"); s_btn("🏆", "COPA BR", "COPA DO BRASIL", "CDB"); s_btn("⭐", "SUPERCOPA", "SUPERCOPA", "SUPER")
+        with c2: s_btn("🔘", "SÉRIE B", "BRASILEIRÃO B", "BRA_B"); s_btn("🔘", "SÉRIE D", "BRASILEIRÃO D", "BRA_D"); s_btn("☀️", "NORDESTE", "COPA NORDESTE", "CNE")
+        st.markdown('<p style="font-size:7px; color:#5a6b79; margin:5px 0;">ESTADUAIS</p>', unsafe_allow_html=True)
+        c3, c4 = st.columns(2, gap="small")
+        with c3: s_btn("🔘", "PAULISTÃO", "PAULISTÃO", "SP"); s_btn("🔘", "MINEIRO", "MINEIRO", "MG")
+        with c4: s_btn("🔘", "CARIOCA", "CARIOCA", "RJ"); s_btn("🔘", "GAÚCHO", "GAÚCHO", "RS")
 
-    cat_btn("🇪🇺 ELITE EUROPA", "EU_L")
-    if st.session_state.menu_aberto == "EU_L":
+    # 🇪🇺 EUROPA
+    cat_btn("🇪🇺 ELITE EUROPA", "EU")
+    if st.session_state.menu_aberto == "EU":
         c1, c2 = st.columns(2, gap="small")
-        with c1: s_btn("🏴", "PREMIER", "PREMIER LEAGUE", "ENG_P"); s_btn("🇮🇹", "SERIE A", "SERIE A TIM", "ITA_A")
-        with c2: s_btn("🇪🇸", "LA LIGA", "LA LIGA", "ESP_L"); s_btn("🇩🇪", "BUNDES", "BUNDESLIGA", "GER_B")
+        with c1: s_btn("🏴", "PREMIER", "PREMIER LEAGUE", "ENG_P"); s_btn("🇮🇹", "SERIE A", "SERIE A TIM", "ITA_A"); s_btn("🇵🇹", "PORTUGAL", "LIGA PORTUGAL", "POR_L")
+        with c2: s_btn("🇪🇸", "LA LIGA", "LA LIGA", "ESP_L"); s_btn("🇩🇪", "BUNDES", "BUNDESLIGA", "GER_B"); s_btn("🇳🇱", "HOLANDA", "EREDIVISIE", "HOL_E")
 
+    # 🌍 UEFA / SELEÇÕES
+    cat_btn("🌍 UEFA & SELEÇÕES", "UEFA")
+    if st.session_state.menu_aberto == "UEFA":
+        s_btn("⭐", "CHAMPIONS LEAGUE", "CHAMPIONS", "UCL")
+        s_btn("🛡️", "EUROCOPA / ELIMIN.", "SELEÇÕES", "EURO_C")
+
+    # ⭐ NOVOS MERCADOS
+    cat_btn("⭐ NOVOS MERCADOS", "NEW")
+    if st.session_state.menu_aberto == "NEW":
+        s_btn("🇸🇦", "SAUDI PRO LEAGUE", "SAUDI", "SAUDI")
+        s_btn("🇺🇸", "MLS USA", "USA_MLS", "USA_MLS")
+        s_btn("🇦🇷", "LIGA ARGENTINA", "ARG_L", "ARG_L")
+
+    # 🔥 AMÉRICA DO SUL
     cat_btn("🔥 AMÉRICA DO SUL", "SAM")
     if st.session_state.menu_aberto == "SAM":
-        s_btn("🏆", "LIBERTADORES", "COPA LIBERTADORES", "LIB")
-        s_btn("🛰️", "SUL-AMERICANA", "COPA SUL-AMERICANA", "SUL")
+        s_btn("🏆", "LIBERTADORES", "LIBERTADORES", "LIB")
+        s_btn("🛰️", "SUL-AMERICANA", "SUL-AMERICANA", "SUL")
 
 # --- 6. CABEÇALHO ---
 st.markdown("""
-    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
         <div style="position: relative; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center;">
             <svg style="position: absolute; width: 100%; height: 100%; filter: drop-shadow(0 0 8px #f05a22);" viewBox="0 0 100 100">
                 <path d="M50 5 L93.3 30 L93.3 80 L50 105 L6.7 80 L6.7 30 Z" fill="none" stroke="#f05a22" stroke-width="5"/>
@@ -155,7 +180,7 @@ st.markdown("""
             </svg>
         </div>
         <div style="color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 2px;">
-            GESTOR IA <span style="color: #ffffff; font-size: 10px; margin-left: 5px; opacity: 0.7;">JARVIS EDITION</span>
+            GESTOR IA <span style="color: #ffffff; font-size: 10px; margin-left: 5px; opacity: 0.7;">JARVIS MARK VII</span>
         </div>
     </div>
 """, unsafe_allow_html=True)
@@ -190,4 +215,4 @@ if executar:
         </div>
     """, unsafe_allow_html=True)
 else:
-    st.markdown("<div style='height:200px; display:flex; align-items:center; justify-content:center; color:#2d3748; font-family:Orbitron; font-size:12px; opacity:0.6;'>PROJETO FINALIZADO. SELECIONE UM CONFRONTO...</div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:200px; display:flex; align-items:center; justify-content:center; color:#2d3748; font-family:Orbitron; font-size:12px; opacity:0.6;'>JARVIS ONLINE: SELECIONE UM CONFRONTO...</div>", unsafe_allow_html=True)
