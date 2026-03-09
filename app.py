@@ -32,84 +32,98 @@ DIC_TIMES = {
     "SUL": ["Cruzeiro", "Corinthians", "Fortaleza", "Racing", "Lanús", "Athletico-PR"]
 }
 
-# --- 3. CSS "ICON-BUTTON" FUTURISTA ---
+# --- 3. CSS REVISADO (FOCO EM ALINHAMENTO E TAMANHO UNIFORME) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
     
     header[data-testid="stHeader"] { background: transparent !important; }
-    button[data-testid="stSidebarCollapse"] svg { color: #f05a22 !important; fill: #f05a22 !important; }
-    .block-container { padding-top: 0.5rem !important; }
     .stApp { background-color: #0b1218; color: #e4e6eb; font-family: 'Inter', sans-serif; }
     
     [data-testid="stSidebar"] { 
         background-color: #0b1218 !important; 
         border-right: 2px solid #f05a22 !important; 
-        width: 260px !important; 
+        min-width: 280px !important; 
     }
 
-    /* REDESENHO DOS BOTÕES INSPIRADO NA IMAGEM */
+    /* ESTILO DOS BOTÕES DAS LIGAS (SUB-BOTÕES) */
     .stButton > button { 
-        background: linear-gradient(90deg, rgba(240, 90, 34, 0.1) 0%, rgba(26, 36, 45, 0.8) 20%) !important;
+        background: linear-gradient(90deg, rgba(240, 90, 34, 0.1) 0%, rgba(26, 36, 45, 0.8) 100%) !important;
         color: #cbd5e0 !important; 
-        font-size: 7.5pt !important; 
-        border-radius: 30px !important; /* Estilo 'Pílula' da imagem */
-        margin-bottom: 4px !important; 
+        font-size: 8.5px !important; 
+        font-weight: 700 !important;
+        border-radius: 30px !important; 
         border: 1px solid rgba(240, 90, 34, 0.2) !important; 
-        height: 32px !important; 
-        transition: all 0.3s ease !important;
+        height: 35px !important; 
+        
+        /* AQUI ESTÁ O SEGREDO DO TAMANHO IGUAL E TEXTO CENTRALIZADO */
+        width: 100% !important;        /* Força a preencher a coluna inteira */
+        display: flex !important;
+        justify-content: center !important; /* Centraliza horizontalmente */
+        align-items: center !important;     /* Centraliza verticalmente */
+        text-align: center !important;
+        padding: 0px !important;
         white-space: nowrap !important;
-        text-align: left !important;
-        padding-left: 15px !important;
-        width: 100% !important;
+        margin-bottom: 2px !important;
     }
 
-    /* EFEITO HOVER LARANJA */
     .stButton > button:hover { 
         background: linear-gradient(90deg, #f05a22 0%, rgba(240, 90, 34, 0.3) 100%) !important;
         color: #ffffff !important; 
         border: 1px solid #f05a22 !important;
-        box-shadow: 0 0 15px rgba(240, 90, 34, 0.4) !important;
-        transform: translateX(5px);
+        box-shadow: 0 0 10px rgba(240, 90, 34, 0.3) !important;
     }
 
-    /* BOTÃO ATIVO */
+    /* BOTÃO ATIVO (COR LARANJA) */
     .stButton > button[kind="primary"] { 
         background: linear-gradient(90deg, #f05a22 0%, #ff8c00 100%) !important;
         color: #ffffff !important; 
-        font-weight: 800 !important;
-        box-shadow: 0 0 20px rgba(240, 90, 34, 0.6) !important;
+        border: 1px solid #ffffff !important;
     }
 
+    /* BOTÃO CATEGORIA (MÃE) */
     .cat-button > div > button { 
         background: rgba(240, 90, 34, 0.05) !important; 
         border-radius: 8px !important;
-        height: 36px !important;
+        height: 40px !important;
         border-bottom: 2px solid #f05a22 !important;
+        justify-content: flex-start !important; /* Categoria alinha à esquerda */
+        padding-left: 15px !important;
+        font-family: 'Orbitron' !important;
+        font-size: 11px !important;
+        color: #f05a22 !important;
     }
 
-    .card-principal { background-color: #161f27; padding: 20px; border-radius: 12px; border-bottom: 4px solid #f05a22; text-align: center; }
-    .stats-flex { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; width: 100%; flex-wrap: nowrap !important; }
-    .mini-card { flex: 1; background-color: #111a21; padding: 15px 5px; border-radius: 10px; border: 1px solid #2d3748; text-align: center; min-width: 0; }
-    .mini-label { color: #ffffff !important; font-size: 10px !important; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; }
-    .mini-val { color: #00ffc3 !important; font-weight: 900; font-size: 24px !important; margin: 0; text-shadow: 0 0 10px rgba(0, 255, 195, 0.4); }
+    /* Ajuste para as colunas da sidebar não terem espaços diferentes */
+    [data-testid="column"] {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
     </style>
 """, unsafe_allow_html=True)
 
-# --- 4. ENGINE ---
+# --- 4. ENGINE DE CÁLCULO ---
 def calcular_engine(casa, fora):
     seed = int(hashlib.sha256((casa + fora).encode()).hexdigest(), 16) % 100
     pc = 35 + (seed % 30); pe = 15 + (seed % 15); pf = 100 - pc - pe
     return pc, pe, pf, 50+(seed%40), 60+(seed%35), 65+(seed%30)
 
-# --- 5. NAVEGAÇÃO ---
+# --- 5. NAVEGAÇÃO E SIDEBAR ---
 if 'liga_ativa' not in st.session_state: st.session_state.update(liga_ativa='BRA_A', nome_liga='SÉRIE A')
 if 'menu_aberto' not in st.session_state: st.session_state.menu_aberto = 'BR'
 
 with st.sidebar:
+    # Logo / Título
+    st.markdown("""
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 25px; padding-left: 10px;">
+            <div style="background: #f05a22; width: 30px; height: 30px; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);"></div>
+            <div style="font-family: 'Orbitron'; color: #f05a22; font-size: 18px; font-weight: 900;">GESTOR IA</div>
+        </div>
+    """, unsafe_allow_html=True)
+
     def s_btn(icon, display, full, vid):
-        # Usando o ícone antes do texto para simular o design da imagem
-        label = f"{icon}  {display}"
+        label = f"{icon} {display}"
         if st.button(label, key=f"s_{vid}", type="primary" if st.session_state.liga_ativa == vid else "secondary"):
             st.session_state.liga_ativa = vid; st.session_state.nome_liga = full; st.rerun()
 
@@ -119,9 +133,10 @@ with st.sidebar:
             st.session_state.menu_aberto = menu_id if st.session_state.menu_aberto != menu_id else None; st.rerun()
         st.markdown('</div>', unsafe_allow_html=True)
 
-    cat_btn("📂 FUTEBOL BRASIL", "BR")
+    # Menu Brasil
+    cat_btn("📁 FUTEBOL BRASIL", "BR")
     if st.session_state.menu_aberto == "BR":
-        c1, c2 = st.columns(2, gap="small")
+        c1, c2 = st.columns(2)
         with c1: 
             s_btn("🔘", "SÉRIE A", "BRASILEIRÃO A", "BRA_A")
             s_btn("🔘", "SÉRIE C", "BRASILEIRÃO C", "BRA_C")
@@ -131,33 +146,22 @@ with st.sidebar:
             s_btn("🔘", "SÉRIE D", "BRASILEIRÃO D", "BRA_D")
             s_btn("☀️", "NORDESTE", "COPA NORDESTE", "CNE")
 
+    # Menu Europa
     cat_btn("🌍 ELITE EUROPA", "EU_L")
     if st.session_state.menu_aberto == "EU_L":
-        c1, c2 = st.columns(2, gap="small")
-        with c1: s_btn("🏴󠁧󠁢󠁥󠁮󠁧󠁿", "PREMIER", "PREMIER LEAGUE", "ENG_P"); s_btn("🇮🇹", "SERIE A", "SERIE A TIM", "ITA_A")
-        with c2: s_btn("🇪🇸", "LA LIGA", "LA LIGA", "ESP_L"); s_btn("🇩🇪", "BUNDES", "BUNDESLIGA", "GER_B")
+        c1, c2 = st.columns(2)
+        with c1: 
+            s_btn("🏴󠁧󠁢󠁥󠁮󠁧󠁿", "PREMIER", "PREMIER LEAGUE", "ENG_P")
+            s_btn("🇮🇹", "SERIE A", "SERIE A TIM", "ITA_A")
+        with c2: 
+            s_btn("🇪🇸", "LA LIGA", "LA LIGA", "ESP_L")
+            s_btn("🇩🇪", "BUNDES", "BUNDESLIGA", "GER_B")
 
-    cat_btn("⭐ UEFA / INTER", "UEFA")
-    if st.session_state.menu_aberto == "UEFA":
-        s_btn("🏆", "CHAMPIONS", "CHAMPIONS LEAGUE", "UCL")
-        s_btn("🛡️", "EUROCOPA", "EUROCOPA", "EURO_C")
-
-    cat_btn("🔥 AMÉRICA DO SUL", "SAM")
-    if st.session_state.menu_aberto == "SAM":
-        s_btn("🏆", "LIBERTADORES", "COPA LIBERTADORES", "LIB")
-        s_btn("🛰️", "SUL-AMERICANA", "COPA SUL-AMERICANA", "SUL")
-
-# --- 6. CABEÇALHO ---
-st.markdown("""
-    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
-        <div style="position: relative; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
-            <svg style="position: absolute; width: 100%; height: 100%; filter: drop-shadow(0 0 8px #f05a22);" viewBox="0 0 100 100">
-                <path d="M50 5 L93.3 30 L93.3 80 L50 105 L6.7 80 L6.7 30 Z" fill="none" stroke="#f05a22" stroke-width="4"/>
-                <path d="M50 20 L76 35 L76 65 L50 80 L24 65 L24 35 Z" fill="#f05a22" opacity="0.4"/>
-            </svg>
-        </div>
-        <div style="color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 2px;">
-            GESTOR IA <span style="color: #ffffff; font-size: 10px; margin-left: 5px; opacity: 0.6;">PRO EDITION</span>
+# --- 6. CABEÇALHO E SELEÇÃO ---
+st.markdown(f"""
+    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+        <div style="color: #f05a22; font-family: 'Orbitron'; font-size: 11px; border-left: 3px solid #f05a22; padding-left: 10px;">
+            ANALISANDO: {st.session_state.nome_liga}
         </div>
     </div>
 """, unsafe_allow_html=True)
@@ -168,28 +172,57 @@ with col1: t_casa = st.selectbox("Mandante", sorted(times_lista), label_visibili
 with col2: t_fora = st.selectbox("Visitante", sorted([t for t in times_lista if t != t_casa]), label_visibility="collapsed")
 with col3: executar = st.button("🔥 PROCESSAR ALGORITMO", use_container_width=True, type="primary")
 
+# --- 7. RESULTADOS ---
 if executar:
     pc, pe, pf, mg, mc, mch = calcular_engine(t_casa, t_fora)
-    st.markdown(f'<div style="font-size:11px; color:#f05a22; font-family:Orbitron; border-left:4px solid #f05a22; padding-left:10px; margin-bottom:12px;">📡 ANALISANDO: {st.session_state.nome_liga}</div>', unsafe_allow_html=True)
     
     st.markdown(f"""
-        <div class="card-principal">
-            <div style="color: #fff; font-family: Orbitron; font-size: 24px; font-weight: 800; margin-bottom: 25px;">{t_casa.upper()} <span style="color:#f05a22">vs</span> {t_fora.upper()}</div>
-            <div style="display: flex; justify-content: space-around;">
-                <div><p style="color:#f05a22; font-size:32px; font-weight:900; margin:0;">{pc}%</p><p style="color:#8a99a8; font-size:11px; font-weight:800;">VITÓRIA CASA</p></div>
-                <div><p style="color:#fff; font-size:32px; font-weight:900; margin:0;">{pe}%</p><p style="color:#8a99a8; font-size:11px; font-weight:800;">EMPATE</p></div>
-                <div><p style="color:#f05a22; font-size:32px; font-weight:900; margin:0;">{pf}%</p><p style="color:#8a99a8; font-size:11px; font-weight:800;">VITÓRIA FORA</p></div>
+        <div style="background: #161f27; padding: 30px; border-radius: 12px; border-bottom: 4px solid #f05a22; text-align: center; margin-top: 20px;">
+            <div style="color: #fff; font-family: Orbitron; font-size: 22px; font-weight: 800; margin-bottom: 30px; letter-spacing: 2px;">
+                {t_casa.upper()} <span style="color:#f05a22">VS</span> {t_fora.upper()}
+            </div>
+            <div style="display: flex; justify-content: space-around; align-items: center;">
+                <div>
+                    <div style="color:#f05a22; font-size:40px; font-weight:900; font-family:Orbitron;">{pc}%</div>
+                    <div style="color:#8a99a8; font-size:12px; font-weight:800; margin-top:5px;">VITÓRIA CASA</div>
+                </div>
+                <div style="border-left: 1px solid #2d3748; border-right: 1px solid #2d3748; padding: 0 40px;">
+                    <div style="color:#fff; font-size:35px; font-weight:900; font-family:Orbitron; opacity:0.8;">{pe}%</div>
+                    <div style="color:#8a99a8; font-size:12px; font-weight:800; margin-top:5px;">EMPATE</div>
+                </div>
+                <div>
+                    <div style="color:#f05a22; font-size:40px; font-weight:900; font-family:Orbitron;">{pf}%</div>
+                    <div style="color:#8a99a8; font-size:12px; font-weight:800; margin-top:5px;">VITÓRIA FORA</div>
+                </div>
             </div>
         </div>
         
-        <div class="stats-flex">
-            <div class="mini-card"><span class="mini-label">⚽ GOLS +2.5</span><p class="mini-val">{mg}%</p></div>
-            <div class="mini-card"><span class="mini-label">🚩 CANTOS +9.5</span><p class="mini-val">{mc}%</p></div>
-            <div class="mini-card"><span class="mini-label">👞 CHUTES +22</span><p class="mini-val">{mch}%</p></div>
-            <div class="mini-card"><span class="mini-label">🎯 NO GOL +8</span><p class="mini-val">{mg-5}%</p></div>
-            <div class="mini-card"><span class="mini-label">⚠️ FALTAS +24</span><p class="mini-val">{mc+10}%</p></div>
-            <div class="mini-card"><span class="mini-label">🟨 CARTÕES +4</span><p class="mini-val">{pe+20}%</p></div>
+        <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 20px;">
+            <div style="background:#111a21; padding:15px; border-radius:10px; border:1px solid #2d3748; text-align:center;">
+                <div style="color:#fff; font-size:9px; font-weight:800; margin-bottom:8px;">⚽ GOLS +2.5</div>
+                <div style="color:#00ffc3; font-size:22px; font-weight:900; font-family:Orbitron;">{mg}%</div>
+            </div>
+            <div style="background:#111a21; padding:15px; border-radius:10px; border:1px solid #2d3748; text-align:center;">
+                <div style="color:#fff; font-size:9px; font-weight:800; margin-bottom:8px;">🚩 CANTOS +9.5</div>
+                <div style="color:#00ffc3; font-size:22px; font-weight:900; font-family:Orbitron;">{mc}%</div>
+            </div>
+            <div style="background:#111a21; padding:15px; border-radius:10px; border:1px solid #2d3748; text-align:center;">
+                <div style="color:#fff; font-size:9px; font-weight:800; margin-bottom:8px;">👞 CHUTES +22</div>
+                <div style="color:#00ffc3; font-size:22px; font-weight:900; font-family:Orbitron;">{mch}%</div>
+            </div>
+            <div style="background:#111a21; padding:15px; border-radius:10px; border:1px solid #2d3748; text-align:center;">
+                <div style="color:#fff; font-size:9px; font-weight:800; margin-bottom:8px;">🎯 NO GOL +8</div>
+                <div style="color:#00ffc3; font-size:22px; font-weight:900; font-family:Orbitron;">{mg-5}%</div>
+            </div>
+            <div style="background:#111a21; padding:15px; border-radius:10px; border:1px solid #2d3748; text-align:center;">
+                <div style="color:#fff; font-size:9px; font-weight:800; margin-bottom:8px;">⚠️ FALTAS +24</div>
+                <div style="color:#00ffc3; font-size:22px; font-weight:900; font-family:Orbitron;">{mc+10}%</div>
+            </div>
+            <div style="background:#111a21; padding:15px; border-radius:10px; border:1px solid #2d3748; text-align:center;">
+                <div style="color:#fff; font-size:9px; font-weight:800; margin-bottom:8px;">🟨 CARTÕES +4</div>
+                <div style="color:#00ffc3; font-size:22px; font-weight:900; font-family:Orbitron;">{pe+20}%</div>
+            </div>
         </div>
     """, unsafe_allow_html=True)
 else:
-    st.markdown("<div style='height:200px; display:flex; align-items:center; justify-content:center; color:#2d3748; font-family:Orbitron; font-size:12px; opacity:0.6;'>SELECIONE UM CONFRONTO...</div>", unsafe_allow_html=True)
+    st.markdown("<div style='height:200px; display:flex; align-items:center; justify-content:center; color:#2d3748; font-family:Orbitron; font-size:12px; opacity:0.6; letter-spacing:3px;'>SELECIONE UM CONFRONTO...</div>", unsafe_allow_html=True)
