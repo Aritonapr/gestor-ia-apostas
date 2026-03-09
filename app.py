@@ -1,8 +1,9 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
 import hashlib
 
-# --- 1. CONFIGURAÇÃO DA PÁGINA (Sidebar um pouco mais larga para caber os nomes) ---
+# --- 1. CONFIGURAÇÃO DA PÁGINA ---
 st.set_page_config(
     page_title="GESTOR IA - PRO EDITION", 
     layout="wide", 
@@ -10,128 +11,149 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- 2. CSS AJUSTADO E PRECISO ---
+# --- 2. BANCO DE DADOS ---
+DIC_TIMES = {
+    "BRA_A": ["Flamengo", "Palmeiras", "Botafogo", "Fortaleza", "São Paulo", "Bahia", "Cruzeiro", "Internacional", "Atlético-MG", "Vasco", "Corinthians", "Fluminense", "Grêmio", "Athletico-PR", "Vitória", "Juventude", "Criciúma", "Cuiabá", "Atlético-GO", "Bragantino"],
+    "BRA_B": ["Santos", "Sport", "Novorizontino", "Mirassol", "Vila Nova", "América-MG", "Ceará", "Coritiba", "Avaí", "Operário-PR", "Amazonas", "Goiás"],
+    "BRA_C": ["Náutico", "Remo", "Figueirense", "CSA", "Botafogo-PB", "ABC", "Londrina", "Caxias", "Ferroviária", "São Bernardo", "Volta Redonda", "Ypiranga"],
+    "BRA_D": ["Retrô", "Anápolis", "Iguatu", "Itabaiana", "Brasil de Pelotas", "Maringá", "Inter de Limeira", "Treze"],
+    "CDB": ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Atlético-MG", "Vasco", "Grêmio", "Bahia", "Internacional", "Fluminense"],
+    "CNE": ["Bahia", "Fortaleza", "Sport", "Ceará", "Vitória", "CRB", "Náutico", "Sampaio Corrêa"],
+    "ENG_P": ["Man. City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man. United", "Newcastle"],
+    "ESP_L": ["Real Madrid", "Barcelona", "Atlético de Madrid", "Girona", "Athletic Bilbao", "Real Sociedad", "Sevilla"],
+    "ITA_A": ["Inter de Milão", "Milan", "Juventus", "Atalanta", "Roma", "Napoli", "Lazio", "Bologna"],
+    "GER_B": ["Bayer Leverkusen", "Bayern de Munique", "Stuttgart", "RB Leipzig", "Borussia Dortmund", "Eintracht Frankfurt"],
+    "FRA_L": ["PSG", "Monaco", "Lille", "Brest", "Nice", "Lyon", "Marseille"],
+    "UCL": ["Real Madrid", "Man. City", "Bayern", "Arsenal", "Barcelona", "Inter", "PSG", "Bayer Leverkusen"],
+    "EURO_C": ["Espanha", "Inglaterra", "França", "Alemanha", "Portugal", "Itália", "Holanda"],
+    "SAUDI": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq"],
+    "USA_MLS": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "Cincinnati"],
+    "LIB": ["Flamengo", "Palmeiras", "River Plate", "Botafogo", "São Paulo", "Atlético-MG"],
+    "SUL": ["Cruzeiro", "Corinthians", "Fortaleza", "Racing", "Lanús", "Athletico-PR"]
+}
+
+# --- 3. CSS "ICON-BUTTON" REVISADO (CORREÇÃO DE LARGURA E TEXTO) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
     
-    /* Forçar largura da Sidebar para não esmagar os botões */
-    [data-testid="stSidebar"] {
-        min-width: 300px !important;
-        max-width: 300px !important;
-        background-color: #0b1218 !important;
-        border-right: 2px solid #f05a22 !important;
-    }
-
-    /* Ajuste global de fontes */
+    header[data-testid="stHeader"] { background: transparent !important; }
+    .block-container { padding-top: 0.5rem !important; }
     .stApp { background-color: #0b1218; color: #e4e6eb; font-family: 'Inter', sans-serif; }
+    
+    /* Aumentar largura da Sidebar para o texto caber */
+    section[data-testid="stSidebar"] { width: 310px !important; }
 
-    /* ESTILO DOS BOTÕES DE LIGA (Série A, Premier, etc) */
-    .stButton > button {
-        width: 100% !important;
-        height: 38px !important;
+    .stButton > button { 
         background: linear-gradient(90deg, rgba(240, 90, 34, 0.1) 0%, rgba(26, 36, 45, 0.8) 100%) !important;
-        color: #cbd5e0 !important;
-        font-size: 10px !important; /* Tamanho otimizado */
+        color: #cbd5e0 !important; 
+        font-size: 8px !important; /* Diminuído levemente para nomes longos */
         font-weight: 700 !important;
-        text-transform: uppercase;
-        border-radius: 8px !important;
-        border: 1px solid rgba(240, 90, 34, 0.2) !important;
-        transition: all 0.2s ease;
-        white-space: nowrap !important;
-        overflow: hidden !important;
-        text-overflow: clip !important;
-        padding: 0px 5px !important; /* Padding mínimo para caber o texto */
+        border-radius: 30px !important;
+        margin-bottom: 4px !important; 
+        border: 1px solid rgba(240, 90, 34, 0.2) !important; 
+        height: 35px !important; 
+        width: 100% !important;
+        padding: 0 5px !important; /* Remove o excesso de espaço nas laterais internas */
+        text-align: left !important;
         display: flex !important;
         align-items: center !important;
-        justify-content: center !important;
+        white-space: nowrap !important; /* Impede quebra de linha */
     }
 
-    /* Efeito ao passar o mouse */
-    .stButton > button:hover {
-        border-color: #f05a22 !important;
-        color: #fff !important;
-        background: #f05a22 !important;
-        transform: scale(1.02);
+    .stButton > button:hover { 
+        background: linear-gradient(90deg, #f05a22 0%, rgba(240, 90, 34, 0.3) 100%) !important;
+        color: #ffffff !important; 
+        border: 1px solid #f05a22 !important;
     }
 
-    /* Botão da Liga Ativa */
-    .stButton > button[kind="primary"] {
-        background: #f05a22 !important;
-        color: white !important;
-        border: 1px solid #fff !important;
-        box-shadow: 0 0 10px rgba(240, 90, 34, 0.5) !important;
+    /* BOTÃO ATIVO */
+    .stButton > button[kind="primary"] { 
+        background: linear-gradient(90deg, #f05a22 0%, #ff8c00 100%) !important;
+        color: #ffffff !important; 
+        font-weight: 800 !important;
     }
 
-    /* BOTÕES MÃE (Categorias: FUTEBOL BRASIL, etc) */
-    .cat-button > div > button {
-        background: rgba(240, 90, 34, 0.05) !important;
+    .cat-button > div > button { 
+        background: rgba(240, 90, 34, 0.05) !important; 
+        border-radius: 8px !important;
+        height: 40px !important;
         border-bottom: 2px solid #f05a22 !important;
-        border-top: none !important;
-        border-left: none !important;
-        border-right: none !important;
-        border-radius: 0px !important;
-        font-family: 'Orbitron', sans-serif !important;
-        font-size: 12px !important;
-        color: #f05a22 !important;
-        justify-content: flex-start !important;
-        padding-left: 10px !important;
-        height: 45px !important;
-        margin-top: 15px !important;
+        font-size: 11px !important;
     }
 
-    /* Ajuste de colunas na sidebar para não apertar */
-    [data-testid="column"] {
-        padding: 0 2px !important;
-    }
+    .card-principal { background-color: #161f27; padding: 20px; border-radius: 12px; border-bottom: 4px solid #f05a22; text-align: center; }
+    .stats-flex { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; width: 100%; }
+    .mini-card { flex: 1; background-color: #111a21; padding: 15px 5px; border-radius: 10px; border: 1px solid #2d3748; text-align: center; }
+    .mini-label { color: #ffffff !important; font-size: 10px !important; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; }
+    .mini-val { color: #00ffc3 !important; font-weight: 900; font-size: 24px !important; margin: 0; }
     </style>
 """, unsafe_allow_html=True)
 
-# --- 3. LOGICA DE NAVEGAÇÃO ---
+# --- 4. ENGINE ---
+def calcular_engine(casa, fora):
+    seed = int(hashlib.sha256((casa + fora).encode()).hexdigest(), 16) % 100
+    pc = 35 + (seed % 30); pe = 15 + (seed % 15); pf = 100 - pc - pe
+    return pc, pe, pf, 50+(seed%40), 60+(seed%35), 65+(seed%30)
+
+# --- 5. NAVEGAÇÃO ---
 if 'liga_ativa' not in st.session_state: st.session_state.update(liga_ativa='BRA_A', nome_liga='SÉRIE A')
 if 'menu_aberto' not in st.session_state: st.session_state.menu_aberto = 'BR'
 
 with st.sidebar:
-    st.markdown(f"<h1 style='color:#f05a22; font-family:Orbitron; font-size:20px; text-align:center;'>⚽ GESTOR IA</h1>", unsafe_allow_html=True)
-    st.write("---")
-
-    def s_btn(icon, display, vid):
-        # Botão de liga individual
+    st.markdown(f"<h2 style='color:#f05a22; font-family:Orbitron; font-size:20px; text-align:center;'>⚽ GESTOR IA</h2>", unsafe_allow_html=True)
+    
+    def s_btn(icon, display, full, vid):
         label = f"{icon} {display}"
         if st.button(label, key=f"s_{vid}", type="primary" if st.session_state.liga_ativa == vid else "secondary"):
-            st.session_state.liga_ativa = vid; st.rerun()
+            st.session_state.liga_ativa = vid; st.session_state.nome_liga = full; st.rerun()
 
-    # Categoria Brasil
-    st.markdown('<div class="cat-button">', unsafe_allow_html=True)
-    if st.button("📁 FUTEBOL BRASIL", key="cat_br"):
-        st.session_state.menu_aberto = "BR" if st.session_state.menu_aberto != "BR" else None; st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
+    def cat_btn(label, menu_id):
+        st.markdown('<div class="cat-button">', unsafe_allow_html=True)
+        if st.button(label, key=f"cat_{menu_id}"):
+            st.session_state.menu_aberto = menu_id if st.session_state.menu_aberto != menu_id else None; st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
 
+    cat_btn("📁 FUTEBOL BRASIL", "BR")
     if st.session_state.menu_aberto == "BR":
-        c1, c2 = st.columns(2)
+        c1, c2 = st.columns(2, gap="small")
         with c1: 
-            s_btn("🔘", "SÉRIE A", "BRA_A")
-            s_btn("🏆", "COPA BR", "CDB")
+            s_btn("🔘", "SÉRIE A", "BRASILEIRÃO A", "BRA_A")
+            s_btn("🔘", "SÉRIE C", "BRASILEIRÃO C", "BRA_C")
+            s_btn("🏆", "COPA BR", "COPA DO BRASIL", "CDB")
         with c2: 
-            s_btn("🔘", "SÉRIE B", "BRA_B")
-            s_btn("☀️", "NORDESTE", "CNE")
+            s_btn("🔘", "SÉRIE B", "BRASILEIRÃO B", "BRA_B")
+            s_btn("🔘", "SÉRIE D", "BRASILEIRÃO D", "BRA_D")
+            s_btn("☀️", "NORDESTE", "COPA NORDESTE", "CNE")
 
-    # Categoria Europa
-    st.markdown('<div class="cat-button">', unsafe_allow_html=True)
-    if st.button("🌍 ELITE EUROPA", key="cat_eu"):
-        st.session_state.menu_aberto = "EU" if st.session_state.menu_aberto != "EU" else None; st.rerun()
-    st.markdown('</div>', unsafe_allow_html=True)
-
-    if st.session_state.menu_aberto == "EU":
-        c1, c2 = st.columns(2)
+    cat_btn("🌍 ELITE EUROPA", "EU_L")
+    if st.session_state.menu_aberto == "EU_L":
+        c1, c2 = st.columns(2, gap="small")
         with c1: 
-            s_btn("🏴󠁧󠁢󠁥󠁮󠁧󠁿", "PREMIER", "ENG_P")
-            s_btn("🇮🇹", "SERIE A", "ITA_A")
+            s_btn("🏴󠁧󠁢󠁥󠁮󠁧󠁿", "PREMIER", "PREMIER LEAGUE", "ENG_P")
+            s_btn("🇮🇹", "SERIE A", "SERIE A TIM", "ITA_A")
         with c2: 
-            s_btn("🇪🇸", "LA LIGA", "ESP_L")
-            s_btn("🇩🇪", "BUNDES", "GER_B")
+            s_btn("🇪🇸", "LA LIGA", "LA LIGA", "ESP_L")
+            s_btn("🇩🇪", "BUNDES", "BUNDESLIGA", "GER_B")
 
-# --- CONTEÚDO PRINCIPAL ---
-st.markdown(f"<h2 style='font-family:Orbitron; color:#f05a22; font-size:18px;'>📊 {st.session_state.liga_ativa.replace('_', ' ')}</h2>", unsafe_allow_html=True)
+# --- 6. ÁREA DE TRABALHO ---
+st.markdown(f"<div style='color: #f05a22; font-family: Orbitron; font-size: 20px; font-weight: 900; margin-bottom:15px;'>📊 {st.session_state.nome_liga}</div>", unsafe_allow_html=True)
 
-# O restante do seu código (selectbox, engine, processar) continua aqui...
+times_lista = DIC_TIMES.get(st.session_state.liga_ativa, ["Selecione..."])
+col1, col2, col3 = st.columns([3, 3, 2.5])
+with col1: t_casa = st.selectbox("Mandante", sorted(times_lista), label_visibility="collapsed")
+with col2: t_fora = st.selectbox("Visitante", sorted([t for t in times_lista if t != t_casa]), label_visibility="collapsed")
+with col3: executar = st.button("🔥 PROCESSAR ALGORITMO", use_container_width=True, type="primary")
+
+if executar:
+    pc, pe, pf, mg, mc, mch = calcular_engine(t_casa, t_fora)
+    st.markdown(f"""
+        <div class="card-principal">
+            <div style="color: #fff; font-family: Orbitron; font-size: 24px; font-weight: 800; margin-bottom: 25px;">{t_casa.upper()} <span style="color:#f05a22">vs</span> {t_fora.upper()}</div>
+            <div style="display: flex; justify-content: space-around;">
+                <div><p style="color:#f05a22; font-size:32px; font-weight:900; margin:0;">{pc}%</p><p style="color:#8a99a8; font-size:11px; font-weight:800;">VITÓRIA CASA</p></div>
+                <div><p style="color:#fff; font-size:32px; font-weight:900; margin:0;">{pe}%</p><p style="color:#8a99a8; font-size:11px; font-weight:800;">EMPATE</p></div>
+                <div><p style="color:#f05a22; font-size:32px; font-weight:900; margin:0;">{pf}%</p><p style="color:#8a99a8; font-size:11px; font-weight:800;">VITÓRIA FORA</p></div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
