@@ -1,171 +1,186 @@
 import streamlit as st
 
-# 1. Configuração da página
-st.set_page_config(page_title="GIAE - PRO EDITION", layout="wide")
+# Configuração da Página
+st.set_page_config(page_title="GESTOR IA - PRO", layout="wide")
 
-# 2. CSS para visual Betano + Sua Identidade
+# --- CSS PARA PADRÃO BETANO + SEU ESBOÇO ---
 st.markdown("""
     <style>
-    /* Fundo Escuro Betano */
+    /* 1. Reset e Fundo */
     .stApp {
-        background-color: #0b1218;
-        color: white;
+        background-color: #f0f2f5; /* Fundo cinza claro da Betano */
     }
 
-    /* BARRA SUPERIOR (NAVBAR) */
+    /* 2. BARRA SUPERIOR (NAVBAR) - EXATO AO SEU DESENHO */
     .navbar {
-        background-color: #1a242d;
-        padding: 10px 30px;
+        background-color: #1a242d; /* Azul escuro Betano */
+        color: white;
+        padding: 0 20px;
         display: flex;
         align-items: center;
-        border-bottom: 2px solid #f64d23;
         position: fixed;
-        top: 0; left: 0; right: 0; z-index: 1000;
-        height: 70px;
+        top: 0; left: 0; right: 0;
+        height: 60px;
+        z-index: 1000;
+        border-bottom: 3px solid #f64d23; /* Linha laranja clássica */
     }
-    .logo-giae {
-        background: linear-gradient(45deg, #f64d23, #ff8c00);
+    .logo-gestor {
+        font-weight: 900;
+        font-size: 22px;
         color: white;
-        font-family: 'Arial Black', sans-serif;
-        font-size: 24px;
-        padding: 5px 15px;
-        border-radius: 8px;
-        margin-right: 30px;
-        font-style: italic;
+        margin-right: 40px;
+        letter-spacing: -1px;
     }
-    .nav-link {
+    .nav-items {
+        display: flex;
+        gap: 25px;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
         color: #adb5bd;
-        margin-right: 25px;
+    }
+    .nav-items span:hover { color: white; cursor: pointer; }
+    
+    .nav-right {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    .btn-registrar {
+        border: 1px solid #adb5bd;
+        padding: 5px 15px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+    }
+    .btn-entrar {
+        background-color: #00cc66; /* Verde Betano */
+        padding: 6px 18px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        border: none;
+    }
+
+    /* 3. SIDEBAR (MENU LATERAL) - CONFORME O PAPEL */
+    [data-testid="stSidebar"] {
+        background-color: white !important;
+        border-right: 1px solid #ddd;
+        padding-top: 80px;
+    }
+    /* Estilo dos botões da sidebar para parecerem lista de menu */
+    .stButton > button {
+        width: 100%;
+        background: none;
+        border: none;
+        border-bottom: 1px solid #f0f2f5;
+        border-radius: 0;
+        color: #1a242d;
+        text-align: left;
+        padding: 12px 10px;
         font-weight: 600;
         font-size: 13px;
         text-transform: uppercase;
-        text-decoration: none;
     }
-    .nav-link:hover { color: white; }
-
-    /* SIDEBAR CUSTOMIZADA */
-    [data-testid="stSidebar"] {
-        background-color: #1a242d;
-        padding-top: 20px;
-    }
-    .sidebar-item {
-        color: #ffffff;
-        padding: 10px;
-        border-bottom: 1px solid #2d3843;
-        font-size: 14px;
-        font-weight: 500;
-        text-transform: uppercase;
-    }
-
-    /* BOTÕES DA SIDEBAR */
-    div.stButton > button {
-        width: 100%;
-        text-align: left;
-        background-color: transparent;
-        color: white;
-        border: none;
-        border-bottom: 1px solid #2d3843;
-        border-radius: 0;
-        padding: 15px 5px;
-        transition: 0.3s;
-        text-transform: uppercase;
-        font-size: 13px;
-    }
-    div.stButton > button:hover {
-        background-color: #2d3843;
+    .stButton > button:hover {
+        background-color: #f6f7f9;
         color: #f64d23;
-        border-left: 4px solid #f64d23;
     }
 
-    /* BOTÃO DE PROCESSAR (LARANJA) */
-    .btn-processar {
-        background-color: #f64d23 !important;
-        color: white !important;
-        font-weight: bold !important;
-        border-radius: 8px !important;
-        margin-top: 10px;
+    /* Espaçamento do conteúdo principal */
+    .main-box {
+        margin-top: 80px;
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
     }
-
-    /* Ajuste de espaço para a Navbar */
-    .main-content { margin-top: 80px; }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. NAVBAR (TOPO)
-st.markdown(f"""
+# --- NAVBAR HTML (TOP BAR) ---
+st.markdown("""
     <div class="navbar">
-        <div class="logo-giae">GIAE</div>
-        <a class="nav-link" href="#">Apostas Esportivas</a>
-        <a class="nav-link" href="#">Apostas ao Vivo</a>
-        <a class="nav-link" href="#">Apostas Encontradas</a>
-        <a class="nav-link" href="#">Assertividade IA</a>
-        <div style="flex-grow: 1;"></div>
-        <button style="background:transparent; border:1px solid #adb5bd; color:white; padding:5px 15px; border-radius:4px; margin-right:10px;">REGISTRAR</button>
-        <button style="background:#f64d23; border:none; color:white; padding:5px 15px; border-radius:4px;">ENTRAR</button>
+        <div class="logo-gestor">GESTOR IA</div>
+        <div class="nav-items">
+            <span>Apostas Esportivas</span>
+            <span>Apostas ao Vivo</span>
+            <span>Apostas Encontradas</span>
+            <span>Assertividade IA</span>
+        </div>
+        <div class="nav-right">
+            <span>🔍</span>
+            <div class="btn-registrar">REGISTRAR</div>
+            <div class="btn-entrar">ENTRAR</div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-# Espaçador para o conteúdo não ficar embaixo da navbar
-st.markdown('<div class="main-content"></div>', unsafe_allow_html=True)
-
-# 4. SIDEBAR (CONFORME SEU PAPEL)
+# --- SIDEBAR (CONTEÚDO DO PAPEL) ---
 with st.sidebar:
-    st.write("") # Espaço
-    # Iniciamos o estado do sistema
-    if 'menu_ativo' not in st.session_state:
-        st.session_state.menu_ativo = "home"
+    # Estado para controlar o que aparece no centro
+    if 'view' not in st.session_state:
+        st.session_state.view = "home"
 
-    if st.button("🚀 PROCESSAR ALGORITMO"):
-        st.session_state.menu_ativo = "processar"
+    if st.button("PROCESSAR ALGORITMO"):
+        st.session_state.view = "processar"
     
-    st.button("📅 Próximos Jogos")
-    st.button("🏆 Vencedores da Competição")
-    st.button("📊 Apostas por Odds")
-    st.button("⚽ Apostas por Gols")
-    st.button("⛳ Apostas por Escanteios")
-    st.button("🟨 Apostas por Cartões")
-    st.button("⚖️ Árbitro da Partida")
+    st.button("PRÓXIMOS JOGOS")
+    st.button("VENCEDORES DA COMPETIÇÃO")
+    st.button("APOSTAS POR ODDS")
+    st.button("APOSTAS POR GOLS")
+    st.button("APOSTAS POR ESCANTEIOS")
+    st.button("APOSTAS POR CARTÕES")
+    st.button("ÁRBITRO DA PARTIDA")
 
-# 5. CONTEÚDO PRINCIPAL DINÂMICO
-if st.session_state.menu_ativo == "home":
-    st.title("Bem-vindo ao GIAE")
-    st.write("Selecione 'Processar Algoritmo' na lateral para iniciar a análise.")
+# --- ÁREA CENTRAL (CONTEÚDO DINÂMICO) ---
+st.markdown('<div class="main-box">', unsafe_allow_html=True)
 
-elif st.session_state.menu_ativo == "processar":
-    st.subheader("🤖 Configuração de Análise IA")
+if st.session_state.view == "home":
+    st.subheader("Bem-vindo ao Gestor IA")
+    st.write("Utilize o menu lateral para iniciar as análises.")
+
+elif st.session_state.view == "processar":
+    st.markdown("### 🏟️ Seleção de Campeonato")
     
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        campeonato = st.selectbox(
-            "Selecione o Campeonato",
-            ["Selecione...", "BRASIL (Todos)", "LA LIGA (Espanha)", "PREMIER (Inglaterra)"]
-        )
+    # Grid de Campeonatos conforme solicitado
+    camp_col = st.selectbox(
+        "Escolha o Campeonato para análise:",
+        ["Selecione...", "BRASIL (Série A, B, C, D)", "LA LIGA (Espanha)", "PREMIER LEAGUE (Inglaterra)"]
+    )
 
-    # Lógica de seleção de times baseada no campeonato
-    if campeonato != "Selecione...":
-        with col2:
-            if "BRASIL" in campeonato:
-                times = ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Galo", "Grêmio"]
-            elif "LA LIGA" in campeonato:
-                times = ["Real Madrid", "Barcelona", "Atlético de Madrid", "Sevilla"]
-            else:
-                times = ["Man City", "Arsenal", "Liverpool", "Man United", "Chelsea"]
-            
-            time_selecionado = st.selectbox("Escolha o Confronto / Time", times)
-        
-        # Área de resultados (vazia por enquanto)
+    if camp_col != "Selecione...":
         st.markdown("---")
-        st.markdown(f"### Analisando: **{time_selecionado}**")
-        st.info("Aguardando definição dos algoritmos de busca e análise...")
+        st.markdown("### ⚽ Escolha os Times")
         
-        # Botão final de execução
-        if st.button("🔥 INICIAR ANÁLISE PROFUNDA"):
-            st.warning("IA em desenvolvimento para este mercado.")
+        col_time_a, col_vs, col_time_b = st.columns([2, 0.5, 2])
+        
+        # Dados fictícios para mostrar a funcionalidade
+        times_map = {
+            "BRASIL (Série A, B, C, D)": ["Flamengo", "Palmeiras", "Santos", "Botafogo", "Amazonas", "América-MG"],
+            "LA LIGA (Espanha)": ["Real Madrid", "Barcelona", "Atlético de Madrid", "Sevilla"],
+            "PREMIER LEAGUE (Inglaterra)": ["Man City", "Arsenal", "Liverpool", "Man United"]
+        }
+        
+        lista_times = times_map.get(camp_col, [])
 
-# Rodapé de Status
+        with col_time_a:
+            time_1 = st.selectbox("Mandante", ["Selecione..."] + lista_times)
+        with col_vs:
+            st.markdown("<h3 style='text-align:center; padding-top:25px;'>VS</h3>", unsafe_allow_html=True)
+        with col_time_b:
+            time_2 = st.selectbox("Visitante", ["Selecione..."] + lista_times)
+
+        if time_1 != "Selecione..." and time_2 != "Selecione...":
+            if st.button("🚀 EXECUTAR ANÁLISE DO CONFRONTO", use_container_width=True):
+                st.success(f"Analisando: {time_1} vs {time_2}. Aguarde o processamento dos algoritmos...")
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+# Rodapé (opcional)
 st.markdown("""
-    <div style="position: fixed; bottom: 10px; right: 20px; color: #666; font-size: 10px;">
-        GIAE PRO v2.0 | Layout Baseado em Betano Interface
+    <div style="text-align: center; color: #999; font-size: 11px; margin-top: 30px;">
+        GESTOR IA - Sistema de Gestão Esportiva Profissional
     </div>
     """, unsafe_allow_html=True)
