@@ -1,158 +1,171 @@
 import streamlit as st
 import pandas as pd
 
-# Configuração da página
-st.set_page_config(page_title="GIAE - Gestor IA", layout="wide")
+# 1. Configuração da Página e Cores Betano
+st.set_page_config(page_title="GIAE - Bet Style", layout="wide")
 
-# --- CSS AVANÇADO (Design, Logo e Fundo) ---
+# CSS para emular a interface da imagem
 st.markdown("""
     <style>
-    /* 1. Fundo da Aplicação */
+    /* Fundo geral e fontes */
     .stApp {
-        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-        color: #ffffff;
+        background-color: #F0F2F5;
+        font-family: 'Segoe UI', sans-serif;
     }
 
-    /* 2. Estilização do Logo "GIAE" */
-    .logo-container {
+    /* Barra Superior Laranja */
+    .header-betano {
+        background-color: #FF4B21;
+        padding: 10px 20px;
         display: flex;
         align-items: center;
-        gap: 15px;
-        margin-bottom: 20px;
-        padding: 10px;
+        justify-content: space-between;
+        margin: -60px -50px 20px -50px;
     }
-    .logo-box {
-        background: linear-gradient(45deg, #3b82f6, #2563eb);
+    .logo-giae {
         color: white;
-        font-family: 'Arial Black', sans-serif;
-        font-size: 35px;
-        padding: 5px 15px;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(59, 130, 246, 0.5);
-        letter-spacing: 2px;
-    }
-    .logo-text {
-        font-size: 28px;
-        font-weight: 800;
-        color: #f8fafc;
-        letter-spacing: 1px;
-        text-transform: uppercase;
+        font-weight: 900;
+        font-size: 30px;
+        font-style: italic;
     }
 
-    /* 3. Botões Personalizados */
-    div.stButton > button {
-        width: 100%;
-        height: 85px;
-        border-radius: 15px;
-        background: rgba(255, 255, 255, 0.05);
-        color: #e2e8f0;
-        font-weight: 700;
-        font-size: 14px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        transition: all 0.3s ease;
-        text-transform: uppercase;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-    div.stButton > button:hover {
-        background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+    /* Cards de Jogos (Destaque) */
+    .highlight-card {
+        background: linear-gradient(135deg, #1A242D 0%, #323F4B 100%);
         color: white;
-        border: none;
-        transform: translateY(-3px);
-        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.4);
-    }
-
-    /* 4. Tabela e Containers */
-    [data-testid="stMetric"] {
-        background: rgba(255, 255, 255, 0.03);
-        padding: 15px;
         border-radius: 15px;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        min-height: 180px;
+        position: relative;
+        border-left: 5px solid #FF4B21;
     }
     
-    /* 5. Títulos de Seção */
-    .section-title {
-        color: #60a5fa;
-        font-size: 14px;
-        font-weight: 700;
-        margin-bottom: 10px;
-        text-transform: uppercase;
-        letter-spacing: 1.5px;
+    /* Botões de Odds */
+    .odd-button {
+        background-color: #E8EDF2;
+        border-radius: 8px;
+        padding: 10px;
+        text-align: center;
+        color: #1A242D;
+        font-weight: bold;
+        border: 1px solid #D1D8E0;
+        cursor: pointer;
+    }
+    .odd-button:hover {
+        background-color: #FF4B21;
+        color: white;
     }
 
-    hr {
-        border: 0;
-        height: 1px;
-        background-image: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,0.5), rgba(255,255,255,0));
-        margin: 30px 0;
+    /* Sidebar Direita (Cupom de Apostas) */
+    .bet-slip {
+        background-color: white;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    /* Ajuste de Botões do Streamlit para o estilo Sidebar */
+    [data-testid="stSidebar"] {
+        background-color: white;
+    }
+    .stButton > button {
+        border-radius: 8px;
+        border: none;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- HEADER COM LOGO ---
+# --- HEADER (TOPO LARANJA) ---
 st.markdown("""
-    <div class="logo-container">
-        <div class="logo-box">GIAE</div>
-        <div class="logo-text">Gestor IA Aposta Esportiva</div>
+    <div class="header-betano">
+        <div class="logo-giae">GIAE</div>
+        <div style="color: white; font-weight: bold;">
+            <span style="margin-right: 20px;">APOSTAS ESPORTIVAS</span>
+            <span style="margin-right: 20px;">AO VIVO</span>
+            <button style="background: transparent; border: 1px solid white; color: white; padding: 5px 15px; border-radius: 5px;">ENTRAR</button>
+            <button style="background: #00CC66; border: none; color: white; padding: 5px 15px; border-radius: 5px; margin-left: 10px;">REGISTRAR</button>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-# --- DADOS FICTÍCIOS ---
-dados = [
-    {"Jogo": "Real Madrid vs Man City", "Liga": "Europa", "IA": "88%", "Odd": 1.95},
-    {"Jogo": "Flamengo vs Palmeiras", "Liga": "America do Sul", "IA": "65%", "Odd": 1.80},
-    {"Jogo": "Brasil vs Argentina", "Liga": "UEFA / INTER", "IA": "72%", "Odd": 2.10},
-]
-df = pd.DataFrame(dados)
+# --- SIDEBAR ESQUERDA (NAVEGAÇÃO) ---
+with st.sidebar:
+    st.markdown("### 🔍 Categorias")
+    st.button("⚽ Próximos Jogos", use_container_width=True)
+    st.button("🏆 Vencedores", use_container_width=True)
+    st.button("🎯 Especiais IA", use_container_width=True)
+    st.divider()
+    st.markdown("### 🌍 Competições")
+    st.caption("Brasileirão Série A")
+    st.caption("Champions League")
+    st.caption("Premier League")
 
-# --- GRID DE COMANDOS ---
-col1, col2, col3, col4 = st.columns([1, 1.2, 1.2, 1])
+# --- CONTEÚDO PRINCIPAL (LAYOUT DE 3 COLUNAS) ---
+col_main, col_right = st.columns([3, 1])
 
-with col1:
-    st.markdown('<p class="section-title">📂 CATEGORIAS</p>', unsafe_allow_html=True)
-    if st.button("🏆 CAMPEONATOS"): pass
+with col_main:
+    # 1. Carrossel de Destaques (Mock)
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("""
+            <div class="highlight-card">
+                <p style="color: #FF4B21; font-weight: bold; margin-bottom:0;">Esta noite • 21:30</p>
+                <h3 style="margin-top:0;">Botafogo vs Barcelona-EQU</h3>
+                <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+                    <div class="odd-button" style="flex:1; margin-right:5px;">1 <br> 2.87</div>
+                    <div class="odd-button" style="flex:1; margin-right:5px;">X <br> 3.60</div>
+                    <div class="odd-button" style="flex:1;">2 <br> 4.10</div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+    
+    with c2:
+        st.markdown("""
+            <div class="highlight-card">
+                <p style="color: #FF4B21; font-weight: bold; margin-bottom:0;">Esta noite • 21:30</p>
+                <h3 style="margin-top:0;">Mirassol vs Santos</h3>
+                <div style="display: flex; justify-content: space-between; margin-top: 30px;">
+                    <div class="odd-button" style="flex:1; margin-right:5px;">1 <br> 1.85</div>
+                    <div class="odd-button" style="flex:1; margin-right:5px;">X <br> 3.70</div>
+                    <div class="odd-button" style="flex:1;">2 <br> 4.70</div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    # 2. Filtros de Esportes (Ícones)
     st.write("")
-    if st.button("🇪🇺 EUROPA"): pass
+    st.markdown("### 🏟️ JUNTE-SE À AÇÃO")
+    tab1, tab2, tab3, tab4 = st.tabs(["⚽ Futebol", "🏀 Basquete", "🎾 Tênis", "🎮 eSports"])
+    
+    with tab1:
+        # Tabela de Jogos Estilo Betano
+        data = {
+            "Hora": ["10/03 21:30", "10/03 21:30"],
+            "Evento": ["⚽ Mirassol vs Santos", "⚽ Botafogo vs Barcelona"],
+            "1": [1.85, 2.87],
+            "X": [3.70, 3.60],
+            "2": [4.70, 4.10]
+        }
+        st.dataframe(pd.DataFrame(data), use_container_width=True, hide_index=True)
+
+# --- SIDEBAR DIREITA (CUPOM / IA) ---
+with col_right:
+    st.markdown("""<div class="bet-slip">
+        <h4 style="text-align: center; color: #323F4B;">MINHAS APOSTAS</h4>
+        <div style="display: flex; justify-content: space-around; border-bottom: 1px solid #EEE; padding-bottom: 10px;">
+            <small style="color: #FF4B21; font-weight: bold;">Em Aberto</small>
+            <small>Resolvidas</small>
+        </div>
+        <br>
+        <p style="text-align: center; color: gray; font-size: 13px;">Não tem apostas em aberto.</p>
+    </div>""", unsafe_allow_html=True)
+    
     st.write("")
-    if st.button("🌍 UEFA / INTER"): pass
-    st.write("")
-    if st.button("🌎 AMERICA DO SUL"): pass
-
-with col2:
-    st.markdown('<p class="section-title">⚡ PROCESSAMENTO</p>', unsafe_allow_html=True)
-    if st.button("🤖 PROCESSAR APOSTAS\nDO DIA"):
-        with st.spinner("Analisando probabilidades..."):
-            st.toast("IA trabalhando nos dados!")
-
-with col3:
-    st.markdown('<p class="section-title">📅 AGENDAMENTO</p>', unsafe_allow_html=True)
-    if st.button("⏭️ APOSTAS DO DIA\nSEGUINTE"): pass
-
-with col4:
-    st.markdown('<p class="section-title">🎯 RESULTADOS</p>', unsafe_allow_html=True)
-    if st.button("💰 OPORTUNIDADES\nENCONTRADAS"):
-        st.balloons()
-    st.write("")
-    if st.button("📋 TABELA\nAUTOMÁTICA"): pass
-
-# --- ÁREA DE DASHBOARD ---
-st.markdown("<hr>", unsafe_allow_html=True)
-
-c1, c2, c3 = st.columns(3)
-with c1:
-    st.metric(label="Jogos Analisados hoje", value="142", delta="+12%")
-with c2:
-    st.metric(label="Confiança Média IA", value="74%", delta="5%")
-with c3:
-    st.metric(label="ROI Estimado", value="12.5%", delta="2.1%")
-
-st.write("")
-st.markdown("### 📋 Melhores Picks Identificadas")
-st.dataframe(df, use_container_width=True, hide_index=True)
-
-# --- RODAPÉ ---
-st.markdown("""
-    <div style="text-align: center; color: #64748b; font-size: 12px; margin-top: 50px;">
-        GIAE Intelligence System &copy; 2023 | Powered by Advanced AI Models
-    </div>
-    """, unsafe_allow_html=True)
+    
+    # Simulação da "BetaniIA" da imagem
+    with st.container(border=True):
+        st.markdown("<h4 style='color: #FF4B21;'>🤖 GIAE Predictor</h4>", unsafe_allow_html=True)
+        valor = st.number_input("Quanto deseja apostar?", value=30)
+        ganho = st.select_slider("Quanto quer ganhar?", options=["R$60-200", "R$200-600", "R$600+"])
+        if st.button("GERAR APOSTA IA", use_container_width=True, type="primary"):
+            st.info("Buscando combinações...")
