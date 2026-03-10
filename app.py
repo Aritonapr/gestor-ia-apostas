@@ -1,171 +1,195 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
+import hashlib
 
-# 1. Configuração da Página e Cores Betano
-st.set_page_config(page_title="GIAE - Bet Style", layout="wide")
+# --- 1. CONFIGURAÇÃO DA PÁGINA ---
+st.set_page_config(
+    page_title="GESTOR IA - PRO EDITION", 
+    layout="wide", 
+    page_icon="⚽",
+    initial_sidebar_state="expanded"
+)
 
-# CSS para emular a interface da imagem
+# --- 2. BANCO DE DADOS ---
+DIC_TIMES = {
+    "BRA_A": ["Flamengo", "Palmeiras", "Botafogo", "Fortaleza", "São Paulo", "Bahia", "Cruzeiro", "Internacional", "Atlético-MG", "Vasco", "Corinthians", "Fluminense", "Grêmio", "Athletico-PR", "Vitória", "Juventude", "Criciúma", "Cuiabá", "Atlético-GO", "Bragantino"],
+    "BRA_B": ["Santos", "Sport", "Novorizontino", "Mirassol", "Vila Nova", "América-MG", "Ceará", "Coritiba", "Avaí", "Operário-PR", "Amazonas", "Goiás"],
+    "BRA_C": ["Náutico", "Remo", "Figueirense", "CSA", "Botafogo-PB", "ABC", "Londrina", "Caxias", "Ferroviária", "São Bernardo", "Volta Redonda", "Ypiranga"],
+    "BRA_D": ["Retrô", "Anápolis", "Iguatu", "Itabaiana", "Brasil de Pelotas", "Maringá", "Inter de Limeira", "Treze"],
+    "CDB": ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Atlético-MG", "Vasco", "Grêmio", "Bahia", "Internacional", "Fluminense"],
+    "CNE": ["Bahia", "Fortaleza", "Sport", "Ceará", "Vitória", "CRB", "Náutico", "Sampaio Corrêa"],
+    "ENG_P": ["Man. City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man. United", "Newcastle"],
+    "ESP_L": ["Real Madrid", "Barcelona", "Atlético de Madrid", "Girona", "Athletic Bilbao", "Real Sociedad", "Sevilla"],
+    "ITA_A": ["Inter de Milão", "Milan", "Juventus", "Atalanta", "Roma", "Napoli", "Lazio", "Bologna"],
+    "GER_B": ["Bayer Leverkusen", "Bayern de Munique", "Stuttgart", "RB Leipzig", "Borussia Dortmund", "Eintracht Frankfurt"],
+    "FRA_L": ["PSG", "Monaco", "Lille", "Brest", "Nice", "Lyon", "Marseille"],
+    "UCL": ["Real Madrid", "Man. City", "Bayern", "Arsenal", "Barcelona", "Inter", "PSG", "Bayer Leverkusen"],
+    "EURO_C": ["Espanha", "Inglaterra", "França", "Alemanha", "Portugal", "Itália", "Holanda"],
+    "SAUDI": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq"],
+    "USA_MLS": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "Cincinnati"],
+    "LIB": ["Flamengo", "Palmeiras", "River Plate", "Botafogo", "São Paulo", "Atlético-MG"],
+    "SUL": ["Cruzeiro", "Corinthians", "Fortaleza", "Racing", "Lanús", "Athletico-PR"]
+}
+
+# --- 3. CSS "ICON-BUTTON" FUTURISTA ---
 st.markdown("""
     <style>
-    /* Fundo geral e fontes */
-    .stApp {
-        background-color: #F0F2F5;
-        font-family: 'Segoe UI', sans-serif;
-    }
-
-    /* Barra Superior Laranja */
-    .header-betano {
-        background-color: #FF4B21;
-        padding: 10px 20px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin: -60px -50px 20px -50px;
-    }
-    .logo-giae {
-        color: white;
-        font-weight: 900;
-        font-size: 30px;
-        font-style: italic;
-    }
-
-    /* Cards de Jogos (Destaque) */
-    .highlight-card {
-        background: linear-gradient(135deg, #1A242D 0%, #323F4B 100%);
-        color: white;
-        border-radius: 15px;
-        padding: 20px;
-        min-height: 180px;
-        position: relative;
-        border-left: 5px solid #FF4B21;
-    }
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
     
-    /* Botões de Odds */
-    .odd-button {
-        background-color: #E8EDF2;
-        border-radius: 8px;
-        padding: 10px;
-        text-align: center;
-        color: #1A242D;
-        font-weight: bold;
-        border: 1px solid #D1D8E0;
-        cursor: pointer;
-    }
-    .odd-button:hover {
-        background-color: #FF4B21;
-        color: white;
+    header[data-testid="stHeader"] { background: transparent !important; }
+    button[data-testid="stSidebarCollapse"] svg { color: #f05a22 !important; fill: #f05a22 !important; }
+    .block-container { padding-top: 0.5rem !important; }
+    .stApp { background-color: #0b1218; color: #e4e6eb; font-family: 'Inter', sans-serif; }
+    
+    [data-testid="stSidebar"] { 
+        background-color: #0b1218 !important; 
+        border-right: 2px solid #f05a22 !important; 
+        width: 260px !important; 
     }
 
-    /* Sidebar Direita (Cupom de Apostas) */
-    .bet-slip {
-        background-color: white;
-        border-radius: 10px;
-        padding: 15px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    /* REDESENHO DOS BOTÕES INSPIRADO NA IMAGEM */
+    .stButton > button { 
+        background: linear-gradient(90deg, rgba(240, 90, 34, 0.1) 0%, rgba(26, 36, 45, 0.8) 20%) !important;
+        color: #cbd5e0 !important; 
+        font-size: 7.5pt !important; 
+        border-radius: 30px !important; /* Estilo 'Pílula' da imagem */
+        margin-bottom: 4px !important; 
+        border: 1px solid rgba(240, 90, 34, 0.2) !important; 
+        height: 32px !important; 
+        transition: all 0.3s ease !important;
+        white-space: nowrap !important;
+        text-align: left !important;
+        padding-left: 15px !important;
+        width: 100% !important;
     }
 
-    /* Ajuste de Botões do Streamlit para o estilo Sidebar */
-    [data-testid="stSidebar"] {
-        background-color: white;
+    /* EFEITO HOVER LARANJA */
+    .stButton > button:hover { 
+        background: linear-gradient(90deg, #f05a22 0%, rgba(240, 90, 34, 0.3) 100%) !important;
+        color: #ffffff !important; 
+        border: 1px solid #f05a22 !important;
+        box-shadow: 0 0 15px rgba(240, 90, 34, 0.4) !important;
+        transform: translateX(5px);
     }
-    .stButton > button {
-        border-radius: 8px;
-        border: none;
+
+    /* BOTÃO ATIVO */
+    .stButton > button[kind="primary"] { 
+        background: linear-gradient(90deg, #f05a22 0%, #ff8c00 100%) !important;
+        color: #ffffff !important; 
+        font-weight: 800 !important;
+        box-shadow: 0 0 20px rgba(240, 90, 34, 0.6) !important;
     }
+
+    .cat-button > div > button { 
+        background: rgba(240, 90, 34, 0.05) !important; 
+        border-radius: 8px !important;
+        height: 36px !important;
+        border-bottom: 2px solid #f05a22 !important;
+    }
+
+    .card-principal { background-color: #161f27; padding: 20px; border-radius: 12px; border-bottom: 4px solid #f05a22; text-align: center; }
+    .stats-flex { display: flex; justify-content: space-between; gap: 10px; margin-top: 25px; width: 100%; flex-wrap: nowrap !important; }
+    .mini-card { flex: 1; background-color: #111a21; padding: 15px 5px; border-radius: 10px; border: 1px solid #2d3748; text-align: center; min-width: 0; }
+    .mini-label { color: #ffffff !important; font-size: 10px !important; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: block; }
+    .mini-val { color: #00ffc3 !important; font-weight: 900; font-size: 24px !important; margin: 0; text-shadow: 0 0 10px rgba(0, 255, 195, 0.4); }
     </style>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
-# --- HEADER (TOPO LARANJA) ---
+# --- 4. ENGINE ---
+def calcular_engine(casa, fora):
+    seed = int(hashlib.sha256((casa + fora).encode()).hexdigest(), 16) % 100
+    pc = 35 + (seed % 30); pe = 15 + (seed % 15); pf = 100 - pc - pe
+    return pc, pe, pf, 50+(seed%40), 60+(seed%35), 65+(seed%30)
+
+# --- 5. NAVEGAÇÃO ---
+if 'liga_ativa' not in st.session_state: st.session_state.update(liga_ativa='BRA_A', nome_liga='SÉRIE A')
+if 'menu_aberto' not in st.session_state: st.session_state.menu_aberto = 'BR'
+
+with st.sidebar:
+    def s_btn(icon, display, full, vid):
+        # Usando o ícone antes do texto para simular o design da imagem
+        label = f"{icon}  {display}"
+        if st.button(label, key=f"s_{vid}", type="primary" if st.session_state.liga_ativa == vid else "secondary"):
+            st.session_state.liga_ativa = vid; st.session_state.nome_liga = full; st.rerun()
+
+    def cat_btn(label, menu_id):
+        st.markdown('<div class="cat-button">', unsafe_allow_html=True)
+        if st.button(label, key=f"cat_{menu_id}"):
+            st.session_state.menu_aberto = menu_id if st.session_state.menu_aberto != menu_id else None; st.rerun()
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    cat_btn("📂 FUTEBOL BRASIL", "BR")
+    if st.session_state.menu_aberto == "BR":
+        c1, c2 = st.columns(2, gap="small")
+        with c1: 
+            s_btn("🔘", "SÉRIE A", "BRASILEIRÃO A", "BRA_A")
+            s_btn("🔘", "SÉRIE C", "BRASILEIRÃO C", "BRA_C")
+            s_btn("🏆", "COPA BR", "COPA DO BRASIL", "CDB")
+        with c2: 
+            s_btn("🔘", "SÉRIE B", "BRASILEIRÃO B", "BRA_B")
+            s_btn("🔘", "SÉRIE D", "BRASILEIRÃO D", "BRA_D")
+            s_btn("☀️", "NORDESTE", "COPA NORDESTE", "CNE")
+
+    cat_btn("🌍 ELITE EUROPA", "EU_L")
+    if st.session_state.menu_aberto == "EU_L":
+        c1, c2 = st.columns(2, gap="small")
+        with c1: s_btn("🏴󠁧󠁢󠁥󠁮󠁧󠁿", "PREMIER", "PREMIER LEAGUE", "ENG_P"); s_btn("🇮🇹", "SERIE A", "SERIE A TIM", "ITA_A")
+        with c2: s_btn("🇪🇸", "LA LIGA", "LA LIGA", "ESP_L"); s_btn("🇩🇪", "BUNDES", "BUNDESLIGA", "GER_B")
+
+    cat_btn("⭐ UEFA / INTER", "UEFA")
+    if st.session_state.menu_aberto == "UEFA":
+        s_btn("🏆", "CHAMPIONS", "CHAMPIONS LEAGUE", "UCL")
+        s_btn("🛡️", "EUROCOPA", "EUROCOPA", "EURO_C")
+
+    cat_btn("🔥 AMÉRICA DO SUL", "SAM")
+    if st.session_state.menu_aberto == "SAM":
+        s_btn("🏆", "LIBERTADORES", "COPA LIBERTADORES", "LIB")
+        s_btn("🛰️", "SUL-AMERICANA", "COPA SUL-AMERICANA", "SUL")
+
+# --- 6. CABEÇALHO ---
 st.markdown("""
-    <div class="header-betano">
-        <div class="logo-giae">GIAE</div>
-        <div style="color: white; font-weight: bold;">
-            <span style="margin-right: 20px;">APOSTAS ESPORTIVAS</span>
-            <span style="margin-right: 20px;">AO VIVO</span>
-            <button style="background: transparent; border: 1px solid white; color: white; padding: 5px 15px; border-radius: 5px;">ENTRAR</button>
-            <button style="background: #00CC66; border: none; color: white; padding: 5px 15px; border-radius: 5px; margin-left: 10px;">REGISTRAR</button>
+    <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px;">
+        <div style="position: relative; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+            <svg style="position: absolute; width: 100%; height: 100%; filter: drop-shadow(0 0 8px #f05a22);" viewBox="0 0 100 100">
+                <path d="M50 5 L93.3 30 L93.3 80 L50 105 L6.7 80 L6.7 30 Z" fill="none" stroke="#f05a22" stroke-width="4"/>
+                <path d="M50 20 L76 35 L76 65 L50 80 L24 65 L24 35 Z" fill="#f05a22" opacity="0.4"/>
+            </svg>
+        </div>
+        <div style="color: #f05a22; font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 2px;">
+            GESTOR IA <span style="color: #ffffff; font-size: 10px; margin-left: 5px; opacity: 0.6;">PRO EDITION</span>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
-# --- SIDEBAR ESQUERDA (NAVEGAÇÃO) ---
-with st.sidebar:
-    st.markdown("### 🔍 Categorias")
-    st.button("⚽ Próximos Jogos", use_container_width=True)
-    st.button("🏆 Vencedores", use_container_width=True)
-    st.button("🎯 Especiais IA", use_container_width=True)
-    st.divider()
-    st.markdown("### 🌍 Competições")
-    st.caption("Brasileirão Série A")
-    st.caption("Champions League")
-    st.caption("Premier League")
+times_lista = DIC_TIMES.get(st.session_state.liga_ativa, ["Selecione..."])
+col1, col2, col3 = st.columns([3, 3, 2.5])
+with col1: t_casa = st.selectbox("Mandante", sorted(times_lista), label_visibility="collapsed")
+with col2: t_fora = st.selectbox("Visitante", sorted([t for t in times_lista if t != t_casa]), label_visibility="collapsed")
+with col3: executar = st.button("🔥 PROCESSAR ALGORITMO", use_container_width=True, type="primary")
 
-# --- CONTEÚDO PRINCIPAL (LAYOUT DE 3 COLUNAS) ---
-col_main, col_right = st.columns([3, 1])
-
-with col_main:
-    # 1. Carrossel de Destaques (Mock)
-    c1, c2 = st.columns(2)
-    with c1:
-        st.markdown("""
-            <div class="highlight-card">
-                <p style="color: #FF4B21; font-weight: bold; margin-bottom:0;">Esta noite • 21:30</p>
-                <h3 style="margin-top:0;">Botafogo vs Barcelona-EQU</h3>
-                <div style="display: flex; justify-content: space-between; margin-top: 30px;">
-                    <div class="odd-button" style="flex:1; margin-right:5px;">1 <br> 2.87</div>
-                    <div class="odd-button" style="flex:1; margin-right:5px;">X <br> 3.60</div>
-                    <div class="odd-button" style="flex:1;">2 <br> 4.10</div>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+if executar:
+    pc, pe, pf, mg, mc, mch = calcular_engine(t_casa, t_fora)
+    st.markdown(f'<div style="font-size:11px; color:#f05a22; font-family:Orbitron; border-left:4px solid #f05a22; padding-left:10px; margin-bottom:12px;">📡 ANALISANDO: {st.session_state.nome_liga}</div>', unsafe_allow_html=True)
     
-    with c2:
-        st.markdown("""
-            <div class="highlight-card">
-                <p style="color: #FF4B21; font-weight: bold; margin-bottom:0;">Esta noite • 21:30</p>
-                <h3 style="margin-top:0;">Mirassol vs Santos</h3>
-                <div style="display: flex; justify-content: space-between; margin-top: 30px;">
-                    <div class="odd-button" style="flex:1; margin-right:5px;">1 <br> 1.85</div>
-                    <div class="odd-button" style="flex:1; margin-right:5px;">X <br> 3.70</div>
-                    <div class="odd-button" style="flex:1;">2 <br> 4.70</div>
-                </div>
+    st.markdown(f"""
+        <div class="card-principal">
+            <div style="color: #fff; font-family: Orbitron; font-size: 24px; font-weight: 800; margin-bottom: 25px;">{t_casa.upper()} <span style="color:#f05a22">vs</span> {t_fora.upper()}</div>
+            <div style="display: flex; justify-content: space-around;">
+                <div><p style="color:#f05a22; font-size:32px; font-weight:900; margin:0;">{pc}%</p><p style="color:#8a99a8; font-size:11px; font-weight:800;">VITÓRIA CASA</p></div>
+                <div><p style="color:#fff; font-size:32px; font-weight:900; margin:0;">{pe}%</p><p style="color:#8a99a8; font-size:11px; font-weight:800;">EMPATE</p></div>
+                <div><p style="color:#f05a22; font-size:32px; font-weight:900; margin:0;">{pf}%</p><p style="color:#8a99a8; font-size:11px; font-weight:800;">VITÓRIA FORA</p></div>
             </div>
-            """, unsafe_allow_html=True)
-
-    # 2. Filtros de Esportes (Ícones)
-    st.write("")
-    st.markdown("### 🏟️ JUNTE-SE À AÇÃO")
-    tab1, tab2, tab3, tab4 = st.tabs(["⚽ Futebol", "🏀 Basquete", "🎾 Tênis", "🎮 eSports"])
-    
-    with tab1:
-        # Tabela de Jogos Estilo Betano
-        data = {
-            "Hora": ["10/03 21:30", "10/03 21:30"],
-            "Evento": ["⚽ Mirassol vs Santos", "⚽ Botafogo vs Barcelona"],
-            "1": [1.85, 2.87],
-            "X": [3.70, 3.60],
-            "2": [4.70, 4.10]
-        }
-        st.dataframe(pd.DataFrame(data), use_container_width=True, hide_index=True)
-
-# --- SIDEBAR DIREITA (CUPOM / IA) ---
-with col_right:
-    st.markdown("""<div class="bet-slip">
-        <h4 style="text-align: center; color: #323F4B;">MINHAS APOSTAS</h4>
-        <div style="display: flex; justify-content: space-around; border-bottom: 1px solid #EEE; padding-bottom: 10px;">
-            <small style="color: #FF4B21; font-weight: bold;">Em Aberto</small>
-            <small>Resolvidas</small>
         </div>
-        <br>
-        <p style="text-align: center; color: gray; font-size: 13px;">Não tem apostas em aberto.</p>
-    </div>""", unsafe_allow_html=True)
-    
-    st.write("")
-    
-    # Simulação da "BetaniIA" da imagem
-    with st.container(border=True):
-        st.markdown("<h4 style='color: #FF4B21;'>🤖 GIAE Predictor</h4>", unsafe_allow_html=True)
-        valor = st.number_input("Quanto deseja apostar?", value=30)
-        ganho = st.select_slider("Quanto quer ganhar?", options=["R$60-200", "R$200-600", "R$600+"])
-        if st.button("GERAR APOSTA IA", use_container_width=True, type="primary"):
-            st.info("Buscando combinações...")
+        
+        <div class="stats-flex">
+            <div class="mini-card"><span class="mini-label">⚽ GOLS +2.5</span><p class="mini-val">{mg}%</p></div>
+            <div class="mini-card"><span class="mini-label">🚩 CANTOS +9.5</span><p class="mini-val">{mc}%</p></div>
+            <div class="mini-card"><span class="mini-label">👞 CHUTES +22</span><p class="mini-val">{mch}%</p></div>
+            <div class="mini-card"><span class="mini-label">🎯 NO GOL +8</span><p class="mini-val">{mg-5}%</p></div>
+            <div class="mini-card"><span class="mini-label">⚠️ FALTAS +24</span><p class="mini-val">{mc+10}%</p></div>
+            <div class="mini-card"><span class="mini-label">🟨 CARTÕES +4</span><p class="mini-val">{pe+20}%</p></div>
+        </div>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown("<div style='height:200px; display:flex; align-items:center; justify-content:center; color:#2d3748; font-family:Orbitron; font-size:12px; opacity:0.6;'>SELECIONE UM CONFRONTO...</div>", unsafe_allow_html=True)
