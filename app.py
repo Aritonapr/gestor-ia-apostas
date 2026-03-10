@@ -152,4 +152,7 @@ st.dataframe(df, use_container_width=True, hide_index=True)
 
 # --- RODAPÉ ---
 st.markdown("""
-    <div style="text-align: center;
+    <div style="text-align: center; color: #64748b; font-size: 12px; margin-top: 50px;">
+        GIAE Intelligence System &copy; 2023 | Powered by Advanced AI Models
+    </div>
+    """, unsafe_allow_html=True)
