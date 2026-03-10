@@ -1,102 +1,113 @@
 import streamlit as st
 
-# 1. Configuração da página - DEVE SER A PRIMEIRA LINHA
+# 1. CONFIGURAÇÃO - DEVE SER A PRIMEIRA LINHA
 st.set_page_config(page_title="GESTOR IA", layout="wide", initial_sidebar_state="expanded")
 
-# 2. CSS COMPLETO E FORÇADO (BETANO STYLE)
+# 2. CSS "BLINDADO" (Força visibilidade total)
 st.markdown("""
     <style>
-    /* Remove o cabeçalho original e a seta */
-    [data-testid="stHeader"] {
+    /* 1. ELIMINAR O TOPO DO STREAMLIT (Seta, Menu, Barra Cinza) */
+    header[data-testid="stHeader"], [data-testid="stHeader"] {
         display: none !important;
+        visibility: hidden !important;
     }
     
-    /* Fundo da tela */
+    /* 2. FUNDO DO SITE */
     .stApp {
         background-color: #f0f2f5 !important;
     }
 
-    /* BARRA DO TOPO (GESTOR IA + MENU SUPERIOR) */
-    .top-navbar {
-        background-color: #1a242d;
-        height: 60px;
-        width: 100%;
+    /* 3. BARRA SUPERIOR CUSTOMIZADA (ESTILO BETANO) */
+    .fixed-header {
         position: fixed;
-        top: 0; left: 0;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 65px;
+        background-color: #1a242d;
+        border-bottom: 4px solid #f64d23;
         display: flex;
         align-items: center;
         padding: 0 20px;
         z-index: 10000;
-        border-bottom: 3px solid #f64d23;
-        color: white;
-        font-family: Arial, sans-serif;
+        color: white !important;
     }
-    .logo {
+    .logo-gestor {
         font-weight: 900;
-        font-size: 24px;
+        font-size: 26px;
         font-style: italic;
         margin-right: 30px;
         color: white !important;
+        font-family: 'Arial Black', sans-serif;
     }
-    .top-links {
+    .top-menu {
         display: flex;
         gap: 20px;
         flex-grow: 1;
-        font-size: 11px;
+    }
+    .top-menu-item {
+        color: #adb5bd !important;
+        font-size: 12px;
         font-weight: bold;
         text-transform: uppercase;
+        text-decoration: none;
     }
+    .top-menu-item:hover { color: white !important; }
+
     .top-right {
         display: flex;
-        gap: 15px;
         align-items: center;
+        gap: 15px;
     }
     .btn-registrar {
         border: 1px solid #adb5bd;
-        padding: 5px 10px;
+        color: white !important;
+        padding: 6px 15px;
         border-radius: 4px;
-        font-size: 11px;
+        font-size: 12px;
+        font-weight: bold;
     }
     .btn-entrar {
         background-color: #00cc66;
-        color: white;
-        padding: 6px 15px;
+        color: white !important;
+        padding: 7px 20px;
         border-radius: 4px;
-        border: none;
         font-weight: bold;
-        font-size: 11px;
+        font-size: 12px;
+        border: none;
     }
 
-    /* MENU LATERAL (SIDEBAR) */
+    /* 4. SIDEBAR (MENU DA ESQUERDA) - FORÇAR VISIBILIDADE */
     [data-testid="stSidebar"] {
         background-color: #ffffff !important;
-        margin-top: 60px !important; /* Começa abaixo da barra azul */
+        margin-top: 65px !important; /* Ajuste para ficar abaixo da barra azul */
         border-right: 1px solid #ddd !important;
+        width: 320px !important;
     }
-
-    /* BOTÕES DA LATERAL (SEU ESBOÇO) */
-    .stButton > button {
-        width: 100% !important;
+    
+    /* Forçar cor dos botões da sidebar para aparecerem */
+    [data-testid="stSidebar"] button {
         background-color: white !important;
-        color: #1a242d !important; /* Letra escura para aparecer */
+        color: #1a242d !important; /* Texto Escuro */
         border: none !important;
-        border-bottom: 1px solid #f0f2f5 !important;
+        border-bottom: 1px solid #eee !important;
         text-align: left !important;
-        padding: 15px 10px !important;
-        font-weight: bold !important;
+        font-weight: 700 !important;
         text-transform: uppercase !important;
-        font-size: 12px !important;
+        font-size: 13px !important;
+        padding: 20px 10px !important;
+        width: 100% !important;
+        display: block !important;
         border-radius: 0px !important;
     }
-    .stButton > button:hover {
-        background-color: #f8f9fa !important;
+    [data-testid="stSidebar"] button:hover {
         color: #f64d23 !important;
-        border-left: 4px solid #f64d23 !important;
+        background-color: #f8f9fa !important;
     }
 
-    /* Espaçamento do conteúdo */
-    .main-content {
-        margin-top: 80px;
+    /* 5. ÁREA DE CONTEÚDO PRINCIPAL */
+    .main-body {
+        margin-top: 85px; /* Não deixar o conteúdo sumir sob a barra */
         padding: 20px;
     }
     </style>
@@ -104,30 +115,30 @@ st.markdown("""
 
 # 3. HTML DA BARRA SUPERIOR (NAVBAR)
 st.markdown("""
-    <div class="top-navbar">
-        <div class="logo">GESTOR IA</div>
-        <div class="top-links">
-            <span>Apostas Esportivas</span>
-            <span>Apostas ao Vivo</span>
-            <span>Apostas Encontradas</span>
-            <span>Assertividade IA</span>
+    <div class="fixed-header">
+        <div class="logo-gestor">GESTOR IA</div>
+        <div class="top-menu">
+            <span class="top-menu-item">Apostas Esportivas</span>
+            <span class="top-menu-item">Apostas ao Vivo</span>
+            <span class="top-menu-item">Apostas Encontradas</span>
+            <span class="top-menu-item">Assertividade IA</span>
         </div>
         <div class="top-right">
-            <span>🔍</span>
+            <span style="font-size: 20px;">🔍</span>
             <div class="btn-registrar">REGISTRAR</div>
             <button class="btn-entrar">ENTRAR</button>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-# 4. MENU LATERAL (Abaixo da Barra)
+# 4. SIDEBAR (ITENS DO SEU PAPEL)
 with st.sidebar:
-    # Usando st.session_state para não perder a página ao clicar
-    if 'page' not in st.session_state:
-        st.session_state.page = 'home'
+    # Controle de navegação
+    if 'opcao' not in st.session_state:
+        st.session_state.opcao = "home"
 
     if st.button("PROCESSAR ALGORITMO"):
-        st.session_state.page = 'processar'
+        st.session_state.opcao = "processar"
     
     st.button("PRÓXIMOS JOGOS")
     st.button("VENCEDORES DA COMPETIÇÃO")
@@ -137,41 +148,42 @@ with st.sidebar:
     st.button("APOSTAS POR CARTÕES")
     st.button("ÁRBITRO DA PARTIDA")
 
-# 5. CONTEÚDO PRINCIPAL
-st.markdown('<div class="main-content">', unsafe_allow_html=True)
+# 5. CONTEÚDO DA TELA
+st.markdown('<div class="main-body">', unsafe_allow_html=True)
 
-if st.session_state.page == 'home':
+if st.session_state.opcao == "home":
     st.title("Bem-vindo ao Gestor IA")
-    st.write("Clique em 'PROCESSAR ALGORITMO' para iniciar a seleção de times.")
+    st.info("👈 Selecione 'PROCESSAR ALGORITMO' para configurar sua análise.")
 
-elif st.session_state.page == 'processar':
-    st.header("⚙️ Configurar Algoritmo")
+elif st.session_state.opcao == "processar":
+    st.header("⚙️ Processar Algoritmo")
     
     # Campo de Seleção conforme seu pedido
-    campeonato = st.selectbox(
+    camp = st.selectbox(
         "Selecione o Campeonato:",
-        ["Selecione...", "BRASIL (Todos)", "LA LIGA (Espanha)", "PREMIER (Inglaterra)"]
+        ["Selecione...", "BRASIL (Todos)", "LA LIGA (Espanha)", "PREMIER (Inglaterra)"],
+        key="camp_select"
     )
 
-    if campeonato != "Selecione...":
+    if camp != "Selecione...":
         col1, col2 = st.columns(2)
         
         # Simulação de times
-        if "BRASIL" in campeonato:
+        if "BRASIL" in camp:
             times = ["Amazonas", "América-MG", "Flamengo", "Palmeiras", "Santos", "Corinthians"]
-        elif "LA LIGA" in campeonato:
+        elif "LA LIGA" in camp:
             times = ["Real Madrid", "Barcelona", "Atlético Madrid", "Sevilla"]
         else:
             times = ["Man City", "Arsenal", "Liverpool", "Chelsea"]
 
         with col1:
-            time_a = st.selectbox("Time Mandante", ["Escolha..."] + times)
+            time_a = st.selectbox("Time Mandante", ["Escolha um time..."] + times)
         with col2:
-            time_b = st.selectbox("Time Visitante", ["Escolha..."] + times)
+            time_b = st.selectbox("Time Visitante", ["Escolha um time..."] + times)
             
-        if time_a != "Escolha..." and time_b != "Escolha...":
-            st.markdown("---")
-            if st.button("🔥 EXECUTAR ANÁLISE IA"):
-                st.success(f"Buscando dados de {time_a} vs {time_b}...")
+        if time_a != "Escolha um time..." and time_b != "Escolha um time...":
+            st.write("---")
+            if st.button("🚀 INICIAR BUSCA E ANÁLISE IA"):
+                st.warning(f"Analisando dados históricos de {time_a} vs {time_b}...")
 
 st.markdown('</div>', unsafe_allow_html=True)
