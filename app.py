@@ -7,16 +7,21 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS FINAL: SUBIDA TOTAL + BOTÃO SHIMMER DE ELITE
+# 2. CSS FINAL: LOGO PULSANTE + BOTÃO SCANNER CIBERNÉTICO
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap');
 
-    /* ANIMAÇÃO DE REFLEXO (SHIMMER) */
-    @keyframes shimmer-sweep {
-        0% { left: -150%; }
-        50% { left: 150%; }
-        100% { left: 150%; }
+    /* ANIMAÇÃO 1: SCANNER LASER */
+    @keyframes laser-scan {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+
+    /* ANIMAÇÃO 2: BRILHO DE PLASMA (RESPIRAÇÃO) */
+    @keyframes plasma-glow {
+        0%, 100% { box-shadow: 0 0 5px #f64d23, 0 0 10px #f64d23; }
+        50% { box-shadow: 0 0 15px #f64d23, 0 0 25px #ff8c00; }
     }
 
     /* ELIMINAR CABEÇALHO PADRÃO */
@@ -30,7 +35,7 @@ st.markdown("""
         font-family: 'Roboto', sans-serif !important;
     }
 
-    /* --- BARRA SUPERIOR FIXA (50px) --- */
+    /* --- BARRA SUPERIOR FIXA --- */
     .betano-header {
         position: fixed;
         top: 0; left: 0; width: 100%; height: 50px;
@@ -38,18 +43,6 @@ st.markdown("""
         border-bottom: 2px solid #f64d23;
         display: flex; align-items: center;
         padding: 0 20px; z-index: 999999;
-    }
-
-    /* LOGO PULSANTE */
-    .pulsing-hex {
-        width: 20px; height: 22px; background: #f64d23; 
-        clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-        animation: pulse-hex 2s infinite ease-in-out;
-        margin-right: 10px;
-    }
-    @keyframes pulse-hex {
-        0%, 100% { transform: scale(0.9); filter: drop-shadow(0 0 2px #f64d23); }
-        50% { transform: scale(1.1); filter: drop-shadow(0 0 10px #f64d23); }
     }
     .logo-text { color: #f64d23; font-weight: 900; font-size: 19px; font-style: italic; }
 
@@ -68,9 +61,9 @@ st.markdown("""
         margin-top: -35px !important;
     }
 
-    /* --- BOTÃO FERRAMENTA (SHIMMER & GLOW) --- */
+    /* --- BOTÃO FERRAMENTA (SCANNER & PLASMA) --- */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button {
-        background: linear-gradient(135deg, #f64d23 0%, #a43a1a 100%) !important;
+        background: #f64d23 !important;
         color: white !important;
         border: none !important;
         border-radius: 30px !important;
@@ -79,34 +72,34 @@ st.markdown("""
         margin: 0px auto 20px 10px !important;
         
         display: flex !important;
-        flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        text-align: center !important;
         padding-left: 35px !important; 
-        padding-right: 5px !important;
         
         font-weight: 900 !important;
         font-size: 10px !important;
         text-transform: uppercase;
         position: relative !important;
-        overflow: hidden !important; /* Essencial para o reflexo não sair do botão */
-        box-shadow: 0 4px 15px rgba(246, 77, 35, 0.3) !important;
+        overflow: hidden !important; /* Trava o laser dentro do botão */
+        
+        /* Efeito de Plasma Pulsante */
+        animation: plasma-glow 3s infinite ease-in-out !important;
     }
 
-    /* EFEITO DE REFLEXO (SHIMMER) */
+    /* O LASER DO SCANNER */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::after {
         content: "" !important;
         position: absolute !important;
         top: 0 !important;
-        left: -150% !important;
-        width: 100% !important;
+        left: -100% !important;
+        width: 40px !important;
         height: 100% !important;
-        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent) !important;
-        animation: shimmer-sweep 3s infinite !important;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important;
+        transform: skewX(-20deg) !important;
+        animation: laser-scan 2.5s infinite linear !important;
     }
 
-    /* CÍRCULO DO ÍCONE */
+    /* CÍRCULO DO ÍCONE COM BORDA NEON */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::before {
         content: '🤖';
         position: absolute;
@@ -121,14 +114,7 @@ st.markdown("""
         justify-content: center;
         font-size: 16px;
         z-index: 2;
-        box-shadow: 0 0 5px rgba(0,0,0,0.2);
-    }
-
-    /* HOVER COM BRILHO NEON */
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button:hover {
-        transform: scale(1.02);
-        box-shadow: 0 0 20px rgba(246, 77, 35, 0.6) !important;
-        filter: brightness(1.1);
+        border: 2px solid #f64d23; /* Borda no ícone para destacar */
     }
 
     /* CATEGORIAS */
@@ -164,7 +150,7 @@ st.markdown("""
 # 3. NAVBAR SUPERIOR
 st.markdown("""
     <div class="betano-header">
-        <div class="pulsing-hex"></div>
+        <div style="width:20px; height:24px; background:#f64d23; clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); margin-right:10px;"></div>
         <div class="logo-text">GESTOR IA</div>
         <div style="display:flex; gap:20px; margin-left:30px; flex-grow:1; color:white; font-size:11px; font-weight:700; text-transform:uppercase;">
             <span>Apostas Esportivas</span>
@@ -191,13 +177,13 @@ with st.sidebar:
     st.button("ÁRBITRO DA PARTIDA")
 
 # 5. CONTEÚDO PRINCIPAL
-st.markdown("### 💠 Cockpit de Gestão IA")
-st.success("Visual 100% finalizado com efeito Shimmer e Glow Neon.")
+st.markdown("### 🤖 Cockpit de Comando Ativado")
+st.write("Efeito de Scanner Laser e Brilho de Plasma aplicados ao botão de ferramenta.")
 
 # 6. RODAPÉ
 st.markdown("""
     <div class="betano-footer">
-        <div>STATUS: ● IA OPERACIONAL | SERVIDOR: PRINCIPAL</div>
+        <div>STATUS: ● IA OPERACIONAL | SCANNER: ATIVO</div>
         <div>GESTOR IA PRO v3.0 | 18+ JOGUE COM RESPONSABILIDADE</div>
     </div>
     """, unsafe_allow_html=True)
