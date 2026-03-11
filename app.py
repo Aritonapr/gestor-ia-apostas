@@ -1,7 +1,7 @@
 import streamlit as st
 import time
 
-# [GUARDIAN UI PROTECTION SYSTEM - GIAE v3.6]
+# [GUARDIAN UI PROTECTION SYSTEM - GIAE v3.7]
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
 # --- CSS DE ALTA FIDELIDADE (TRAVADO E BLINDADO) ---
@@ -28,14 +28,15 @@ st.markdown("""
     [data-testid="stSidebar"] { background-color: #15191d !important; margin-top: 50px !important; border-right: 1px solid #2d3843 !important; width: 260px !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0px !important; padding-top: 0px !important; margin-top: -35px !important; }
     
-    /* BOTÃO FERRAMENTA IA: TEXTO CENTRALIZADO + SCANNER */
+    /* ANIMAÇÕES DE BOTÃO */
     @keyframes laser-scan { 0% { left: -100%; } 100% { left: 100%; } }
     @keyframes plasma-glow { 0%, 100% { box-shadow: 0 0 5px #f64d23; } 50% { box-shadow: 0 0 20px #f64d23; } }
     
+    /* ESTILO DO BOTÃO FERRAMENTA IA (SEM LOGO / CENTRALIZADO) */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button {
         background: #f64d23 !important; color: white !important; border-radius: 30px !important; height: 48px !important; width: 92% !important; margin: 0px auto 20px 10px !important;
         display: flex !important; align-items: center !important; justify-content: center !important;
-        padding-left: 35px !important; font-weight: 900 !important; font-size: 11px !important;
+        font-weight: 900 !important; font-size: 11px !important;
         position: relative !important; overflow: hidden !important; border: none !important;
         text-align: center !important; white-space: nowrap !important;
         animation: plasma-glow 3s infinite ease-in-out !important;
@@ -44,18 +45,27 @@ st.markdown("""
         content: "" !important; position: absolute !important; top: 0 !important; left: -100% !important; width: 50px !important; height: 100% !important;
         background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important; animation: laser-scan 2.5s infinite linear !important;
     }
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::before {
-        content: '🤖'; position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px;
-        background: white !important; color: #f64d23 !important; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; z-index: 2; border: 2px solid #f64d23;
+
+    /* ESTILO DO BOTÃO PROCESSAR ALGORITMO (CENTRAL) */
+    .main div.stButton > button {
+        background: #f64d23 !important; color: white !important; border-radius: 30px !important; height: 48px !important; width: 280px !important;
+        display: flex !important; align-items: center !important; justify-content: center !important;
+        font-weight: 900 !important; font-size: 12px !important;
+        position: relative !important; overflow: hidden !important; border: none !important;
+        animation: plasma-glow 3s infinite ease-in-out !important;
+        text-transform: uppercase !important;
+    }
+    .main div.stButton > button::after {
+        content: "" !important; position: absolute !important; top: 0 !important; left: -100% !important; width: 50px !important; height: 100% !important;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important; animation: laser-scan 2.5s infinite linear !important;
     }
 
     /* BOTÕES DA SIDEBAR */
     [data-testid="stSidebar"] button { background-color: transparent !important; color: #e2e8f0 !important; border: none !important; border-bottom: 1px solid #1e293b !important; text-align: left !important; font-weight: 700 !important; font-size: 11px !important; padding: 12px 15px !important; width: 100% !important; border-radius: 0px !important; text-transform: uppercase; }
     
-    /* CORES DOS TÍTULOS E SUBTÍTULOS */
-    .orange-text { color: #f64d23 !important; font-weight: 900 !important; }
-    .main-title { font-size: 24px !important; margin-bottom: 20px !important; }
-    .sub-title { font-size: 18px !important; margin-top: 10px !important; margin-bottom: 10px !important; }
+    /* CORES DOS TÍTULOS */
+    .orange-text { color: #f64d23 !important; font-weight: 900; font-size: 24px !important; margin-bottom: 20px !important; }
+    .standard-text { color: #e2e8f0 !important; font-weight: 700; font-size: 18px !important; margin-top: 10px !important; margin-bottom: 10px !important; }
 
     .betano-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1a242d; height: 25px; border-top: 1px solid #2d3843; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #94a3b8; z-index: 999999; }
     </style>
@@ -76,32 +86,22 @@ st.markdown(f"""
     </div>
     """, unsafe_allow_html=True)
 
-# --- BANCO DE DADOS GLOBAL (SEM EMOJIS DE PASTAS) ---
+# --- BANCO DE DADOS GLOBAL ---
 db_global = {
     "BR COMPETIÇÕES BRASILEIRAS": {
         "Brasileirão": ["Série A", "Série B", "Série C", "Série D"],
         "Copas Nacionais": ["Copa do Brasil", "Supercopa do Brasil"],
-        "Estaduais": ["Paulistão", "Carioca", "Mineiro", "Gaúcho"],
-        "Regionais": ["Copa do Nordeste", "Copa Verde"]
+        "Estaduais": ["Paulistão", "Carioca", "Mineiro", "Gaúcho"]
     },
     "EU ELITE EUROPEIA (BIG 5)": {
         "Inglaterra": ["Premier League"], "Espanha": ["La Liga"], "Alemanha": ["Bundesliga"], "Itália": ["Serie A"], "França": ["Ligue 1"]
-    },
-    "AMÉRICAS (SUL / CENTRAL)": {
-        "Continental": ["Copa Libertadores", "Copa Sul-Americana"], "Nacionais": ["Liga MX (México)", "Liga Profesional (Argentina)"]
-    },
-    "TORNEIOS INTERNACIONAIS": {
-        "UEFA": ["Champions League", "Europa League"], "Mundial": ["Mundial de Clubes FIFA"]
     }
 }
 
-# --- DICIONÁRIO DE TIMES ---
 times_db = {
-    "Série A": ["Palmeiras", "Flamengo", "Botafogo", "Fortaleza", "São Paulo", "Internacional", "Cruzeiro", "Bahia", "Vasco", "Atlético-MG"],
-    "Carioca": ["Flamengo", "Fluminense", "Vasco", "Botafogo", "Nova Iguaçu", "Boavista"],
-    "Premier League": ["Man City", "Arsenal", "Liverpool", "Chelsea", "Tottenham"],
-    "Champions League": ["Real Madrid", "Man City", "Bayern Munich", "PSG", "Inter de Milão"],
-    "Mundial de Clubes FIFA": ["Real Madrid", "Man City", "Flamengo", "Palmeiras", "Fluminense"]
+    "Série A": ["Palmeiras", "Flamengo", "Botafogo", "Fortaleza", "São Paulo", "Internacional"],
+    "Carioca": ["Flamengo", "Vasco", "Fluminense", "Botafogo"],
+    "Champions League": ["Real Madrid", "Man City", "Bayern Munich"]
 }
 
 # --- SIDEBAR (FERRAMENTA IA) ---
@@ -120,8 +120,8 @@ with st.sidebar:
 if "app_state" not in st.session_state: st.session_state.app_state = "home"
 
 if st.session_state.app_state == "processar":
-    # TÍTULO SEM ÍCONE E COM COR LARANJA
-    st.markdown('<div class="orange-text main-title">PROCESSAR ALGORITMO</div>', unsafe_allow_html=True)
+    # NOVO TÍTULO RENOMEADO
+    st.markdown('<div class="orange-text">ANÁLISE TÁTICA DOS JOGOS</div>', unsafe_allow_html=True)
     
     c1, c2, c3 = st.columns(3)
     with c1: reg_sel = st.selectbox("SELECIONE A REGIÃO", list(db_global.keys()))
@@ -130,8 +130,8 @@ if st.session_state.app_state == "processar":
 
     st.divider()
     
-    # SUBTÍTULO COM COR LARANJA SINCRONIZADA
-    st.markdown(f'<div class="orange-text sub-title">Confronto: {comp_sel}</div>', unsafe_allow_html=True)
+    # TEXTO DE CONFRONTO REVERTIDO PARA PADRÃO ANTERIOR (BRANCO)
+    st.markdown(f'<div class="standard-text">Confronto: {comp_sel}</div>', unsafe_allow_html=True)
     
     elenco = times_db.get(comp_sel, [f"Time A ({comp_sel})", f"Time B ({comp_sel})"])
     
@@ -139,16 +139,13 @@ if st.session_state.app_state == "processar":
     with t1: casa = st.selectbox("TIME CASA", elenco)
     with t2: fora = st.selectbox("TIME FORA", [t for t in elenco if t != casa])
 
-    if st.button("⚡ INICIAR ANÁLISE MILIMÉTRICA"):
+    # BOTÃO RENOMEADO E COM EFEITOS LARANJA
+    if st.button("PROCESSAR ALGORITMO"):
         with st.status("GIAE IA: Processando...", expanded=True) as s:
-            time.sleep(1); s.update(label="ANÁLISE MILIMÉTRICA CONCLUÍDA!", state="complete")
-        
-        st.success(f"🤖 **RESULTADOS IA PRO:** {casa} vs {fora}")
-        r1, r2, r3, r4 = st.columns(4)
-        r1.metric("Vencedor", casa, "68% Conf."); r2.metric("Gols", "+2.5", "Tendência Alta")
-        r3.metric("Escanteios", "Over 10.5", "88% Assert."); r4.metric("Assertividade", "94.2%", "IA Nível 3")
+            time.sleep(1); s.update(label="ANÁLISE TÁTICA CONCLUÍDA!", state="complete")
+        st.success(f"🤖 Resultados para {casa} vs {fora} gerados com sucesso.")
 else:
     st.markdown("### 🤖 Cockpit de Comando Ativado")
 
 # FOOTER
-st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | COR: LARANJA GIAE</div><div>GESTOR IA PRO v3.6 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | DESIGN: V3.7</div><div>GESTOR IA PRO v3.7 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
