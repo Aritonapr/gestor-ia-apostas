@@ -7,21 +7,23 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS FINAL: LOGO PULSANTE + BOTÃO SCANNER CIBERNÉTICO
+# 2. CSS FINAL: SUBIDA TOTAL + BOTÃO SCANNER LASER COM TEXTO CENTRALIZADO
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap');
 
-    /* ANIMAÇÃO 1: SCANNER LASER */
+    /* ANIMAÇÕES */
     @keyframes laser-scan {
         0% { left: -100%; }
         100% { left: 100%; }
     }
-
-    /* ANIMAÇÃO 2: BRILHO DE PLASMA (RESPIRAÇÃO) */
     @keyframes plasma-glow {
         0%, 100% { box-shadow: 0 0 5px #f64d23, 0 0 10px #f64d23; }
         50% { box-shadow: 0 0 15px #f64d23, 0 0 25px #ff8c00; }
+    }
+    @keyframes pulse-hex {
+        0%, 100% { transform: scale(0.9); filter: drop-shadow(0 0 2px #f64d23); }
+        50% { transform: scale(1.1); filter: drop-shadow(0 0 10px #f64d23); }
     }
 
     /* ELIMINAR CABEÇALHO PADRÃO */
@@ -35,7 +37,7 @@ st.markdown("""
         font-family: 'Roboto', sans-serif !important;
     }
 
-    /* --- BARRA SUPERIOR FIXA --- */
+    /* --- BARRA SUPERIOR FIXA (50px) --- */
     .betano-header {
         position: fixed;
         top: 0; left: 0; width: 100%; height: 50px;
@@ -61,7 +63,7 @@ st.markdown("""
         margin-top: -35px !important;
     }
 
-    /* --- BOTÃO FERRAMENTA (SCANNER & PLASMA) --- */
+    /* --- BOTÃO FERRAMENTA (CENTRALIZAÇÃO ABSOLUTA) --- */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button {
         background: #f64d23 !important;
         color: white !important;
@@ -71,18 +73,24 @@ st.markdown("""
         width: 90% !important; 
         margin: 0px auto 20px 10px !important;
         
+        /* CENTRALIZAÇÃO DO TEXTO */
         display: flex !important;
+        flex-direction: column !important; /* Texto em duas linhas */
         align-items: center !important;
         justify-content: center !important;
-        padding-left: 35px !important; 
+        text-align: center !important;
+        
+        /* Compensação do espaço do ícone na esquerda */
+        padding-left: 40px !important; 
+        padding-right: 10px !important;
         
         font-weight: 900 !important;
         font-size: 10px !important;
+        line-height: 1.1 !important;
         text-transform: uppercase;
         position: relative !important;
-        overflow: hidden !important; /* Trava o laser dentro do botão */
+        overflow: hidden !important;
         
-        /* Efeito de Plasma Pulsante */
         animation: plasma-glow 3s infinite ease-in-out !important;
     }
 
@@ -99,12 +107,13 @@ st.markdown("""
         animation: laser-scan 2.5s infinite linear !important;
     }
 
-    /* CÍRCULO DO ÍCONE COM BORDA NEON */
+    /* CÍRCULO DO ÍCONE CENTRALIZADO VERTICALMENTE */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::before {
         content: '🤖';
         position: absolute;
-        left: 4px; top: 50%;
-        transform: translateY(-50%);
+        left: 4px; 
+        top: 50%;
+        transform: translateY(-50%); /* Garante centralização vertical do círculo */
         width: 34px; height: 34px;
         background: white !important;
         color: #f64d23 !important;
@@ -114,7 +123,7 @@ st.markdown("""
         justify-content: center;
         font-size: 16px;
         z-index: 2;
-        border: 2px solid #f64d23; /* Borda no ícone para destacar */
+        border: 2px solid #f64d23;
     }
 
     /* CATEGORIAS */
@@ -150,7 +159,7 @@ st.markdown("""
 # 3. NAVBAR SUPERIOR
 st.markdown("""
     <div class="betano-header">
-        <div style="width:20px; height:24px; background:#f64d23; clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); margin-right:10px;"></div>
+        <div style="width:20px; height:24px; background:#f64d23; clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); margin-right:10px; animation: pulse-hex 2s infinite ease-in-out;"></div>
         <div class="logo-text">GESTOR IA</div>
         <div style="display:flex; gap:20px; margin-left:30px; flex-grow:1; color:white; font-size:11px; font-weight:700; text-transform:uppercase;">
             <span>Apostas Esportivas</span>
@@ -165,7 +174,7 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# 4. SIDEBAR
+# 4. SIDEBAR - COM TEXTO CENTRALIZADO NO BOTÃO
 with st.sidebar:
     st.button("PROCESSAR ALGORITMO")
     st.button("PRÓXIMOS JOGOS")
@@ -178,7 +187,7 @@ with st.sidebar:
 
 # 5. CONTEÚDO PRINCIPAL
 st.markdown("### 🤖 Cockpit de Comando Ativado")
-st.write("Efeito de Scanner Laser e Brilho de Plasma aplicados ao botão de ferramenta.")
+st.write("Configuração visual concluída: Botão ferramenta com scanner laser e texto perfeitamente centralizado.")
 
 # 6. RODAPÉ
 st.markdown("""
