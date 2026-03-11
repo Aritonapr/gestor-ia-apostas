@@ -7,16 +7,15 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS PARA DIFERENCIAR O "PROCESSAR ALGORITMO"
+# 2. CSS PARA A MOLDURA NEON DA FERRAMENTA (SEM QUADRADO SÓLIDO)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap');
 
-    /* ANIMAÇÃO PARA O BOTÃO FERRAMENTA */
-    @keyframes pulse-orange {
-        0% { box-shadow: 0 0 0 0 rgba(246, 77, 35, 0.4); }
-        70% { box-shadow: 0 0 0 10px rgba(246, 77, 35, 0); }
-        100% { box-shadow: 0 0 0 0 rgba(246, 77, 35, 0); }
+    /* ANIMAÇÃO DE SCANNER (LINHA DE LUZ PASSANDO) */
+    @keyframes scanner-light {
+        0% { background-position: -200% 0; }
+        100% { background-position: 200% 0; }
     }
 
     /* ELIMINAR TUDO DO STREAMLIT */
@@ -39,18 +38,6 @@ st.markdown("""
         display: flex; align-items: center;
         padding: 0 20px; z-index: 999999;
     }
-
-    /* LOGO PULSANTE */
-    .gestor-logo-container { display: flex; align-items: center; gap: 12px; }
-    .pulsing-hex {
-        width: 22px; height: 25px; background: #f64d23; 
-        clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-        animation: pulse-hex 2s infinite ease-in-out;
-    }
-    @keyframes pulse-hex {
-        0%, 100% { transform: scale(0.9); filter: drop-shadow(0 0 2px #f64d23); }
-        50% { transform: scale(1.1); filter: drop-shadow(0 0 10px #f64d23); }
-    }
     .logo-text { color: #f64d23; font-weight: 900; font-size: 19px; font-style: italic; }
 
     /* --- SIDEBAR CORRIGIDA --- */
@@ -63,22 +50,38 @@ st.markdown("""
     [data-testid="stSidebarContent"] { padding-top: 0px !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0px !important; padding-top: 0px !important; }
 
-    /* --- ESTILIZAÇÃO DO BOTÃO "FERRAMENTA" (O PRIMEIRO) --- */
-    /* Usamos um seletor para pegar o primeiro botão da sidebar */
+    /* --- ESTILIZAÇÃO DA FERRAMENTA "PROCESSAR" (MOLDURA NEON) --- */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button {
-        background: linear-gradient(90deg, #f64d23 0%, #ff8c00 100%) !important;
-        color: white !important;
-        border: none !important;
+        background: rgba(246, 77, 35, 0.05) !important; /* Fundo quase invisível */
+        color: #f64d23 !important; /* Texto Laranja Neon */
+        border: 1px solid #f64d23 !important; /* Borda fina neon */
         font-weight: 900 !important;
-        font-size: 12px !important;
-        height: 50px !important;
-        margin-bottom: 15px !important; /* Espaço para separar das categorias */
-        box-shadow: 0 4px 15px rgba(246, 77, 35, 0.3) !important;
-        animation: pulse-orange 2s infinite;
-        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        font-size: 11.5px !important;
+        height: 45px !important;
+        margin: 10px 5px 20px 5px !important; /* Espaçamento externo */
+        border-radius: 4px !important;
+        box-shadow: 0 0 10px rgba(246, 77, 35, 0.2) !important; /* Brilho externo sutil */
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
     }
+
+    /* ADICIONANDO O EFEITO DE SCANNER (BRILHO PASSANDO) */
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::after {
+        content: "";
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+        background-size: 200% 100%;
+        animation: scanner-light 3s infinite linear;
+    }
+
+    /* ÍCONE DE ALVO NO PROCESSAR */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::before {
-        content: '⚡ '; /* Ícone de ferramenta/energia */
+        content: '🎯 '; 
+        margin-right: 5px;
     }
 
     /* ESTILO DOS OUTROS BOTÕES (CATEGORIAS) */
@@ -114,11 +117,11 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 3. NAVBAR SUPERIOR
+# 3. NAVBAR SUPERIOR (MANTENDO O LOGO PULSANTE)
 st.markdown("""
     <div class="betano-header">
-        <div class="gestor-logo-container">
-            <div class="pulsing-hex"></div>
+        <div style="display:flex; align-items:center; gap:10px;">
+            <div style="width:20px; height:24px; background:#f64d23; clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); filter: drop-shadow(0 0 5px #f64d23);"></div>
             <div class="logo-text">GESTOR IA</div>
         </div>
         <div style="display:flex; gap:20px; margin-left:30px; flex-grow:1; color:white; font-size:11px; font-weight:700; text-transform:uppercase;">
@@ -128,18 +131,18 @@ st.markdown("""
             <span>Assertividade IA</span>
         </div>
         <div style="margin-left:auto; display:flex; gap:12px; align-items:center;">
-            <div style="border:1px solid #adb5bd; color:white; padding:4px 12px; border-radius:3px; font-size:11px; font-weight:bold; cursor:pointer;">REGISTRAR</div>
+             <div style="border:1px solid #adb5bd; color:white; padding:4px 12px; border-radius:3px; font-size:11px; font-weight:bold; cursor:pointer;">REGISTRAR</div>
             <button style="background:#00cc66; color:white; padding:6px 20px; border-radius:3px; font-weight:bold; border:none; font-size:11px; cursor:pointer;">ENTRAR</button>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-# 4. SIDEBAR - COM DIFERENCIAÇÃO DA FERRAMENTA
+# 4. SIDEBAR - COM MOLDURA NEON NA FERRAMENTA
 with st.sidebar:
-    # O primeiro botão agora herda o estilo "FERRAMENTA"
+    # A Ferramenta (Recebe a moldura neon via CSS)
     st.button("PROCESSAR ALGORITMO")
     
-    # Os demais seguem o estilo "CATEGORIA"
+    # Categorias de Apoio
     st.button("PRÓXIMOS JOGOS")
     st.button("VENCEDORES DA COMPETIÇÃO")
     st.button("APOSTAS POR ODDS")
@@ -149,13 +152,13 @@ with st.sidebar:
     st.button("ÁRBITRO DA PARTIDA")
 
 # 5. CONTEÚDO PRINCIPAL
-st.markdown("### 📊 Dashboard de Análise Profissional")
-st.info("Observe a lateral: O 'PROCESSAR ALGORITMO' agora está destacado como a ferramenta principal do sistema.")
+st.markdown("### 💠 Cockpit de Operação Profissional")
+st.info("A ferramenta 'PROCESSAR ALGORITMO' agora possui uma moldura neon com efeito de scanner, separando o comando das categorias.")
 
 # 6. RODAPÉ
 st.markdown("""
     <div class="betano-footer">
-        <div>STATUS: ● ONLINE | SISTEMA IA ATIVO</div>
+        <div>STATUS: ● IA OPERACIONAL | SERVIDOR: PRINCIPAL</div>
         <div>GESTOR IA PRO v3.0 | 18+ JOGUE COM RESPONSABILIDADE</div>
     </div>
     """, unsafe_allow_html=True)
