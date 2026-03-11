@@ -1,18 +1,17 @@
 import streamlit as st
 import time
 
-# [GUARDIAN UI PROTECTION SYSTEM - GIAE v3.2]
+# [GUARDIAN UI PROTECTION SYSTEM - GIAE v3.3]
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
-# --- CSS DE ALTA FIDELIDADE (RESTAURAÇÃO TOTAL DE EFEITOS E OCULTAÇÃO DE SCROLLBAR) ---
+# --- CSS DE ALTA FIDELIDADE (TRAVADO) ---
 st.markdown("""
     <style>
-    /* RESET E OCULTAÇÃO DE HEADER */
+    /* RESET E OCULTAÇÃO DE ELEMENTOS STREAMLIT */
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] { display: none !important; }
-    
     .stApp { background-color: #0b0e11 !important; color: #e2e8f0 !important; font-family: 'Roboto', sans-serif !important; }
     
-    /* REMOVER BARRA DE ROLAGEM DA SIDEBAR */
+    /* REMOVER BARRA DE ROLAGEM SIDEBAR */
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     [data-testid="stSidebarContent"]::-webkit-scrollbar { display: none !important; }
     
@@ -21,7 +20,7 @@ st.markdown("""
     .logo-text { color: #f64d23; font-weight: 900; font-size: 19px; font-style: italic; }
     .nav-items { display: flex; gap: 20px; margin-left: 30px; flex-grow: 1; color: white; font-size: 11px; font-weight: 700; text-transform: uppercase; }
     
-    /* ANIMAÇÃO PULSO DO LOGO */
+    /* ANIMAÇÃO LOGO PULSANTE */
     @keyframes pulse-hex { 0%, 100% { transform: scale(0.9); filter: drop-shadow(0 0 2px #f64d23); } 50% { transform: scale(1.1); filter: drop-shadow(0 0 10px #f64d23); } }
     .logo-hex { width:20px; height:24px; background:#f64d23; clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); margin-right:10px; animation: pulse-hex 2s infinite ease-in-out; }
 
@@ -29,15 +28,17 @@ st.markdown("""
     [data-testid="stSidebar"] { background-color: #15191d !important; margin-top: 50px !important; border-right: 1px solid #2d3843 !important; width: 260px !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0px !important; padding-top: 0px !important; margin-top: -35px !important; }
     
-    /* BOTÃO FERRAMENTA: RESTAURAÇÃO DE SCANNER E GLOW */
+    /* BOTÃO FERRAMENTA: TEXTO CENTRALIZADO + SCANNER */
     @keyframes laser-scan { 0% { left: -100%; } 100% { left: 100%; } }
     @keyframes plasma-glow { 0%, 100% { box-shadow: 0 0 5px #f64d23; } 50% { box-shadow: 0 0 20px #f64d23; } }
     
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button {
         background: #f64d23 !important; color: white !important; border-radius: 30px !important; height: 48px !important; width: 92% !important; margin: 0px auto 20px 10px !important;
         display: flex !important; align-items: center !important; justify-content: center !important;
-        padding-left: 35px !important; font-weight: 900 !important; font-size: 10px !important;
-        position: relative !important; overflow: hidden !important; border: none !important; 
+        padding-left: 35px !important; /* Espaço do ícone */
+        font-weight: 900 !important; font-size: 10px !important;
+        position: relative !important; overflow: hidden !important; border: none !important;
+        text-align: center !important;
         animation: plasma-glow 3s infinite ease-in-out !important;
     }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::after {
@@ -45,14 +46,12 @@ st.markdown("""
         background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important; animation: laser-scan 2.5s infinite linear !important;
     }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::before {
-        content: '🤖'; position: absolute; left: 6px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px;
+        content: '🤖'; position: absolute; left: 8px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px;
         background: white !important; color: #f64d23 !important; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; z-index: 2; border: 2px solid #f64d23;
     }
 
-    /* BOTÕES DA SIDEBAR */
     [data-testid="stSidebar"] button { background-color: transparent !important; color: #e2e8f0 !important; border: none !important; border-bottom: 1px solid #1e293b !important; text-align: left !important; font-weight: 700 !important; font-size: 11px !important; padding: 12px 15px !important; width: 100% !important; border-radius: 0px !important; text-transform: uppercase; }
     
-    /* FOOTER */
     .betano-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1a242d; height: 25px; border-top: 1px solid #2d3843; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #94a3b8; z-index: 999999; }
     </style>
     """, unsafe_allow_html=True)
@@ -97,28 +96,29 @@ db_global = {
     }
 }
 
-# --- DICIONÁRIO DE TIMES (RESTAURADO E COMPLETO) ---
+# --- DICIONÁRIO DE TIMES (RESTURAÇÃO E ADIÇÃO DO CARIOCA) ---
 times_db = {
     "Série A": ["Palmeiras", "Flamengo", "Botafogo", "Fortaleza", "São Paulo", "Internacional", "Cruzeiro", "Bahia", "Vasco", "Atlético-MG"],
     "Série B": ["Santos", "Sport", "Ceará", "Goiás", "Novorizontino", "Mirassol"],
-    "Série C": ["Náutico", "Remo", "ABC", "CSA", "Figueirense", "Botafogo-PB"],
-    "Série D": ["Santa Cruz", "Maringá", "Brasil de Pelotas", "Anápolis"],
-    "Copa do Brasil": ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Atlético-MG"],
+    "Série C": ["Náutico", "Remo", "ABC", "CSA", "Figueirense"],
+    "Série D": ["Santa Cruz", "Maringá", "Brasil de Pelotas"],
+    "Copa do Brasil": ["Flamengo", "Palmeiras", "São Paulo", "Vasco", "Atlético-MG"],
     "Supercopa do Brasil": ["Palmeiras", "Flamengo", "São Paulo", "Vitória"],
-    "Copa do Nordeste": ["Fortaleza", "Bahia", "Ceará", "Sport", "Vitória", "CRB"],
-    "Copa Verde": ["Cuiabá", "Paysandu", "Vila Nova", "Remo", "Amazonas"],
+    "Copa do Nordeste": ["Fortaleza", "Bahia", "Sport", "Ceará", "Vitória", "CRB"],
+    "Copa Verde": ["Cuiabá", "Paysandu", "Vila Nova", "Remo", "Goiás"],
     "Paulistão": ["Palmeiras", "Santos", "São Paulo", "Corinthians"],
+    "Carioca": ["Flamengo", "Fluminense", "Vasco", "Botafogo", "Nova Iguaçu", "Boavista", "Portuguesa-RJ", "Madureira", "Volta Redonda", "Bangu"],
     "Mineiro": ["Atlético-MG", "Cruzeiro", "América-MG", "Tombense"],
     "Gaúcho": ["Grêmio", "Internacional", "Juventude", "Caxias"],
-    "Premier League": ["Man City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea"],
+    "Premier League": ["Man City", "Arsenal", "Liverpool", "Chelsea", "Tottenham"],
     "La Liga": ["Real Madrid", "Barcelona", "Atlético de Madrid", "Girona"],
-    "Bundesliga": ["Bayer Leverkusen", "Bayern Munich", "Dortmund", "RB Leipzig", "Stuttgart"],
-    "Serie A": ["Inter de Milão", "Milan", "Juventus", "Atalanta", "Bologna", "Roma", "Lazio", "Napoli"],
+    "Bundesliga": ["Bayer Leverkusen", "Bayern Munich", "Dortmund", "RB Leipzig"],
+    "Serie A": ["Inter de Milão", "Milan", "Juventus", "Atalanta", "Roma", "Napoli"],
     "Ligue 1": ["PSG", "Monaco", "Lille", "Brest", "Nice", "Lyon"],
     "Champions League": ["Real Madrid", "Man City", "Bayern Munich", "PSG", "Inter de Milão"],
-    "Europa League": ["Man United", "Tottenham", "Roma", "Porto", "Ajax"],
-    "Copa Libertadores": ["Flamengo", "Palmeiras", "River Plate", "Atlético-MG", "São Paulo"],
-    "Copa Sul-Americana": ["Corinthians", "Cruzeiro", "Fortaleza", "Athletico-PR", "Internacional"],
+    "Europa League": ["Man United", "Tottenham", "Roma", "Porto"],
+    "Copa Libertadores": ["Flamengo", "Palmeiras", "River Plate", "Atlético-MG"],
+    "Copa Sul-Americana": ["Corinthians", "Cruzeiro", "Fortaleza", "Athletico-PR"],
     "Liga MX (México)": ["América", "Cruz Azul", "Tigres", "Monterrey"],
     "Liga Profesional (Argentina)": ["River Plate", "Boca Juniors", "Racing", "Independiente"],
     "Mundial de Clubes FIFA": ["Real Madrid", "Man City", "Flamengo", "Palmeiras"]
@@ -158,11 +158,11 @@ if st.session_state.app_state == "processar":
             time.sleep(1)
             s.update(label="ANÁLISE MILIMÉTRICA CONCLUÍDA!", state="complete")
         
-        # RESULTADOS MILIMÉTRICOS (RESTAURADOS)
+        # RESULTADOS
         st.success(f"🤖 **RESULTADOS IA PRO:** {casa} vs {fora}")
         r1, r2, r3, r4 = st.columns(4)
         r1.metric("Vencedor", casa, "68% Conf.")
-        r2.metric("Gols", "+2.5", "Tendência: HT/FT")
+        r2.metric("Gols", "+2.5", "Tendência Alta")
         r3.metric("Escanteios", "Over 10.5", "88% Assert.")
         r4.metric("Assertividade", "94.2%", "IA Nível 3")
 
@@ -176,4 +176,4 @@ else:
     st.markdown("### 🤖 Cockpit de Comando Ativado")
 
 # FOOTER
-st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | SIDEBAR: SEM SCROLL</div><div>GESTOR IA PRO v3.2 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | TEXTO: CENTRALIZADO</div><div>GESTOR IA PRO v3.3 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
