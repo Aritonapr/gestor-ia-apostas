@@ -7,7 +7,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS "AGRESSIVE LIFT" (SUBIDA TOTAL DA LATERAL)
+# 2. CSS FINAL: SUBIDA TOTAL + CENTRALIZAÇÃO DE TEXTO
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap');
@@ -46,7 +46,7 @@ st.markdown("""
     }
     .logo-text { color: #f64d23; font-weight: 900; font-size: 19px; font-style: italic; }
 
-    /* --- SIDEBAR: CONFIGURAÇÃO DE SUBIDA --- */
+    /* --- SIDEBAR: SUBIDA E ALINHAMENTO --- */
     [data-testid="stSidebar"] {
         background-color: #15191d !important;
         margin-top: 50px !important;
@@ -54,7 +54,6 @@ st.markdown("""
         width: 260px !important;
     }
 
-    /* REMOVER O PADDING E APLICAR MARGEM NEGATIVA PARA SUBIR O TEXTO */
     [data-testid="stSidebarContent"] {
         padding-top: 0px !important;
         overflow-x: hidden !important;
@@ -63,27 +62,33 @@ st.markdown("""
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
         gap: 0px !important;
         padding-top: 0px !important;
-        margin-top: -35px !important; /* PUXÃO PARA CIMA PARA COLAR NO TOPO */
+        margin-top: -35px !important; /* Puxa para cima */
     }
 
-    /* --- BOTÃO FERRAMENTA (CÁPSULA CENTRALIZADA) --- */
+    /* --- BOTÃO FERRAMENTA (TEXTO CENTRALIZADO) --- */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button {
         background: #f64d23 !important;
         color: white !important;
         border: none !important;
         border-radius: 30px !important;
-        height: 42px !important;
+        height: 44px !important;
         width: 90% !important; 
-        margin: 0px auto 20px 10px !important; /* Margem superior zerada */
+        margin: 0px auto 20px 10px !important;
         
-        padding-left: 45px !important; 
-        padding-right: 15px !important;
+        /* CENTRALIZAÇÃO TOTAL DO TEXTO */
         display: flex !important;
+        flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
+        text-align: center !important;
+        
+        /* Compensação do Ícone para o texto parecer centralizado no laranja */
+        padding-left: 35px !important; 
+        padding-right: 5px !important;
         
         font-weight: 900 !important;
         font-size: 10px !important;
+        line-height: 1.1 !important; /* Ajusta o espaçamento entre PROCESSAR e ALGORITMO */
         text-transform: uppercase;
         position: relative;
         box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
@@ -93,7 +98,8 @@ st.markdown("""
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::before {
         content: '🤖';
         position: absolute;
-        left: 4px; top: 4px;
+        left: 4px; top: 50%;
+        transform: translateY(-50%); /* Centraliza o ícone verticalmente */
         width: 34px; height: 34px;
         background: white !important;
         color: #f64d23 !important;
@@ -123,9 +129,7 @@ st.markdown("""
     [data-testid="stSidebar"] button:hover { color: #f64d23 !important; }
 
     /* CONTEÚDO CENTRAL */
-    .main .block-container { 
-        padding-top: 60px !important; /* Mantém o título central alinhado horizontalmente com a sidebar */
-    }
+    .main .block-container { padding-top: 60px !important; }
 
     /* RODAPÉ */
     .betano-footer {
@@ -155,7 +159,7 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# 4. SIDEBAR - COM SUBIDA MÁXIMA
+# 4. SIDEBAR
 with st.sidebar:
     st.button("PROCESSAR ALGORITMO")
     st.button("PRÓXIMOS JOGOS")
@@ -168,7 +172,7 @@ with st.sidebar:
 
 # 5. CONTEÚDO PRINCIPAL
 st.markdown("### 💠 Cockpit de Gestão IA")
-st.write("Ajuste de subida vertical da sidebar concluído. O menu lateral agora inicia no topo absoluto.")
+st.write("Configuração visual finalizada: Texto centralizado, sidebar no topo e logo pulsante ativos.")
 
 # 6. RODAPÉ
 st.markdown("""
