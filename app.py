@@ -1,125 +1,145 @@
 import streamlit as st
 
-# 1. Configuração inicial
-st.set_page_config(page_title="GESTOR IA - PRO", layout="wide", initial_sidebar_state="expanded")
+# 1. Configuração inicial - TRAVA TOTAL DE LAYOUT
+st.set_page_config(
+    page_title="GESTOR IA - TRADING PRO", 
+    layout="wide", 
+    initial_sidebar_state="expanded"
+)
 
-# 2. CSS DE ALTA PERFORMANCE E DESIGN FUTURISTA
+# 2. CSS "BLINDADO" DARK MODE PROFISSIONAL
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap');
 
-    /* CONFIGURAÇÃO GLOBAL - REMOVER SCROLLBARS ONDE POSSÍVEL */
-    html, body, [class*="st-"] {
-        font-family: 'Roboto', sans-serif !important;
-        font-size: 13px !important;
-    }
-    
-    /* ESCONDER SCROLLBAR DA SIDEBAR */
-    [data-testid="stSidebarContent"] {
-        overflow: hidden !important; /* Mata a barra de rolagem lateral */
-        padding-top: 0rem !important; /* Sobe o texto ao limite */
+    /* TEMA DARK PROFISSIONAL - CORES DE TERMINAL */
+    :root {
+        --bg-dark: #0b0e11; /* Cinza quase preto (Fundo) */
+        --bg-sidebar: #15191d; /* Cinza grafite (Sidebar) */
+        --accent-orange: #f64d23; /* Laranja (Marca/Alerta) */
+        --accent-green: #00cc66; /* Verde (Lucro/Entrada) */
+        --text-main: #e2e8f0; /* Branco acinzentado (Leitura) */
+        --text-dim: #94a3b8; /* Cinza (Suporte) */
     }
 
-    /* REMOVER HEADER NATIVO */
-    [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"], header, [data-testid="stHeader"] {
+    /* REMOVER TUDO DO STREAMLIT */
+    header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] {
         display: none !important;
+        visibility: hidden !important;
     }
 
-    .stApp { background-color: #f0f2f5 !important; }
+    /* FUNDO DA APLICAÇÃO */
+    .stApp {
+        background-color: var(--bg-dark) !important;
+        color: var(--text-main) !important;
+        font-family: 'Roboto', sans-serif !important;
+    }
 
-    /* --- NAVBAR SUPERIOR --- */
-    .custom-navbar {
+    /* --- BARRA SUPERIOR (NAVBAR) --- */
+    .pro-navbar {
         position: fixed;
         top: 0; left: 0; width: 100%; height: 50px;
-        background-color: #1a242d;
-        border-bottom: 2px solid #f64d23;
+        background-color: var(--bg-sidebar);
+        border-bottom: 2px solid var(--accent-orange);
         display: flex; align-items: center;
-        padding: 0 15px; z-index: 999999;
+        padding: 0 20px; z-index: 999999;
     }
 
-    /* --- LOGO CYBER-HEXAGON (Efeito Futurista Avançado) --- */
-    .logo-container {
-        display: flex; align-items: center; gap: 12px;
+    /* LOGO CYBER-HEX NEON */
+    .logo-box {
+        display: flex; align-items: center; gap: 10px;
     }
     .cyber-hex {
-        position: relative;
-        width: 32px; height: 32px;
-        background: #f64d23;
+        width: 28px; height: 32px;
+        background: var(--accent-orange);
         clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
         display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 0 15px rgba(246, 77, 35, 0.6);
+        box-shadow: 0 0 15px rgba(246, 77, 35, 0.4);
+        animation: pulse-glow 3s infinite ease-in-out;
     }
-    .cyber-hex::before {
-        content: '';
-        position: absolute;
-        width: 110%; height: 110%;
-        border: 2px solid #f64d23;
-        clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-        animation: rotate-hex 4s linear infinite;
-    }
-    @keyframes rotate-hex {
-        0% { transform: rotate(0deg); opacity: 0.5; }
-        50% { transform: rotate(180deg); opacity: 1; }
-        100% { transform: rotate(360deg); opacity: 0.5; }
+    @keyframes pulse-glow {
+        0%, 100% { filter: drop-shadow(0 0 2px var(--accent-orange)); }
+        50% { filter: drop-shadow(0 0 8px var(--accent-orange)); }
     }
     .hexagon-inner {
-        width: 22px; height: 26px;
-        background-color: #1a242d;
+        width: 18px; height: 22px; background-color: var(--bg-sidebar);
         clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-        display: flex; align-items: center; justify-content: center;
     }
-    .gestor-ia-text {
-        color: #f64d23; font-weight: 900; font-size: 19px;
+    .logo-text {
+        color: var(--accent-orange); font-weight: 900; font-size: 18px;
         letter-spacing: -0.5px; font-style: italic;
-        text-shadow: 0 0 5px rgba(246, 77, 35, 0.3);
     }
 
-    /* --- MENU SUPERIOR COMPACTO --- */
-    .nav-links { display: flex; gap: 15px; flex-grow: 1; margin-left: 20px; }
+    /* LINKS SUPERIORES */
+    .nav-links { display: flex; gap: 20px; margin-left: 30px; flex-grow: 1; }
     .nav-links span {
-        color: #ffffff; font-size: 10.5px; font-weight: 700;
-        text-transform: uppercase; cursor: pointer;
+        color: var(--text-main); font-size: 11px; font-weight: 700;
+        text-transform: uppercase; cursor: pointer; opacity: 0.8;
+    }
+    .nav-links span:hover { opacity: 1; color: var(--accent-orange); }
+
+    /* --- SIDEBAR (ALTA DENSIDADE / SEM ROLAGEM) --- */
+    [data-testid="stSidebar"] {
+        background-color: var(--bg-sidebar) !important;
+        margin-top: 50px !important;
+        border-right: 1px solid #2d3843 !important;
+        width: 240px !important;
+    }
+    [data-testid="stSidebarContent"] {
+        overflow: hidden !important; /* MATA O SCROLL */
+        padding-top: 0px !important;
     }
 
-    /* --- SIDEBAR ULTRA COMPACTA (Symmetry Fix) --- */
-    [data-testid="stSidebar"] {
-        background-color: #ffffff !important; margin-top: 50px !important;
-        border-right: 1px solid #e1e4e8 !important; width: 240px !important;
-    }
-    /* Estilo dos Botões - Redução drástica de padding para subir o texto */
+    /* BOTÕES DA SIDEBAR (ESTILO TERMINAL) */
     [data-testid="stSidebar"] button {
-        background-color: transparent !important; color: #1a242d !important;
-        border: none !important; border-bottom: 1px solid #f8f9fa !important;
-        text-align: left !important; font-weight: 500 !important;
-        font-size: 11.5px !important;
-        padding: 6px 15px !important; /* Reduzi de 8px para 6px */
-        min-height: 38px !important; /* Altura compacta */
-        width: 100% !important; border-radius: 0px !important;
+        background-color: transparent !important;
+        color: var(--text-main) !important;
+        border: none !important;
+        border-bottom: 1px solid #1e293b !important;
+        text-align: left !important;
+        font-weight: 500 !important;
+        font-size: 11px !important; /* Fonte menor para simetria */
+        padding: 8px 15px !important;
+        width: 100% !important;
+        border-radius: 0px !important;
         display: block !important;
+        transition: 0.2s;
+        text-transform: uppercase;
     }
     [data-testid="stSidebar"] button:hover {
-        background-color: #f6f7f9 !important; color: #f64d23 !important;
-        border-left: 3px solid #f64d23 !important;
+        background-color: #1e293b !important;
+        color: var(--accent-orange) !important;
+        border-left: 3px solid var(--accent-orange) !important;
     }
 
-    /* --- CONTEÚDO --- */
-    .main-content { margin-top: 65px; padding: 15px; }
+    /* --- ÁREA PRINCIPAL (COCKPIT) --- */
+    .main-container {
+        margin-top: 70px;
+        padding: 0 25px;
+    }
+    
+    /* Customizando Selectbox e inputs para Dark Mode */
+    .stSelectbox label { color: var(--text-dim) !important; font-size: 10px !important; text-transform: uppercase; }
+    div[data-baseweb="select"] { background-color: #1e293b !important; border-radius: 4px !important; }
 
-    /* --- FOOTER FIXO NO FUNDO --- */
-    .custom-footer {
-        background-color: #1a242d; color: #6b7280;
-        padding: 15px; text-align: center; font-size: 9px;
-        border-top: 1px solid #2d3843;
+    /* --- RODAPÉ (FOOTER) --- */
+    .pro-footer {
+        position: fixed; bottom: 0; left: 0; width: 100%;
+        background-color: var(--bg-sidebar);
+        padding: 5px 20px; border-top: 1px solid #2d3843;
+        display: flex; justify-content: space-between;
+        font-size: 9px; color: var(--text-dim);
+        z-index: 9999;
     }
     </style>
     """, unsafe_allow_html=True)
 
 # 3. HTML DA NAVBAR SUPERIOR
 st.markdown("""
-    <div class="custom-navbar">
-        <div class="logo-container">
-            <div class="cyber-hex"><div class="hexagon-inner"><div style="width:10px; height:12px; background:#f64d23; clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);"></div></div></div>
-            <div class="gestor-ia-text">GESTOR IA</div>
+    <div class="pro-navbar">
+        <div class="logo-box">
+            <div class="cyber-hex"><div class="hexagon-inner"></div></div>
+            <div class="logo-text">GESTOR IA</div>
         </div>
         <div class="nav-links">
             <span>Apostas Esportivas</span>
@@ -127,17 +147,19 @@ st.markdown("""
             <span>Apostas Encontradas</span>
             <span>Assertividade IA</span>
         </div>
-        <div style="margin-left:auto; display:flex; gap:10px; align-items:center;">
-            <div style="border:1px solid #adb5bd; color:white; padding:3px 10px; border-radius:3px; font-size:10px; font-weight:bold; cursor:pointer;">REGISTRAR</div>
-            <button style="background:#00cc66; color:white; padding:4px 15px; border-radius:3px; font-weight:bold; border:none; font-size:10px; cursor:pointer;">ENTRAR</button>
+        <div style="margin-left:auto; display:flex; gap:15px; align-items:center;">
+            <div style="color:var(--text-dim); font-size:14px;">🔍</div>
+            <div style="border:1px solid var(--text-dim); color:white; padding:3px 12px; border-radius:3px; font-size:10px; font-weight:bold; cursor:pointer;">REGISTRAR</div>
+            <button style="background:var(--accent-green); color:white; padding:5px 18px; border-radius:3px; font-weight:bold; border:none; font-size:10px; cursor:pointer;">ENTRAR</button>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-# 4. SIDEBAR - PALAVRAS DO PAPEL SUBIDAS E ENQUADRADAS
+# 4. SIDEBAR - OS 8 ITENS DO SEU PAPEL (ENQUADRADOS)
 with st.sidebar:
-    # A ordem exata do seu papel, com espaçamento reduzido
-    st.button("PROCESSAR ALGORITMO")
+    if 'view' not in st.session_state: st.session_state.view = "home"
+    
+    if st.button("PROCESSAR ALGORITMO"): st.session_state.view = "processar"
     st.button("PRÓXIMOS JOGOS")
     st.button("VENCEDORES DA COMPETIÇÃO")
     st.button("APOSTAS POR ODDS")
@@ -146,21 +168,32 @@ with st.sidebar:
     st.button("APOSTAS POR CARTÕES")
     st.button("ÁRBITRO DA PARTIDA")
 
-# 5. CONTEÚDO PRINCIPAL
-st.markdown('<div class="main-content">', unsafe_allow_html=True)
-st.markdown("### 💠 Interface de Alta Performance Ativada")
-st.info("O conteúdo acima foi comprimido para garantir visibilidade total sem rolagem.")
+# 5. CONTEÚDO PRINCIPAL (DENTRO DA DIV DE MARGEM)
+st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
-col1, col2 = st.columns(2)
-with col1:
-    st.selectbox("Mercado de Análise", ["Escanteios HT", "Gols FT", "Vencedor IA"], label_visibility="collapsed")
-with col2:
-    st.button("INICIAR SCANNER", use_container_width=True)
+if st.session_state.view == "home":
+    st.markdown("<h2 style='color:white; margin-bottom:5px;'>📊 Dashboard de Análise</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#94a3b8;'>Sistema pronto para processamento. Selecione uma opção na lateral.</p>", unsafe_allow_html=True)
+
+elif st.session_state.view == "processar":
+    st.markdown("<h3 style='color:var(--accent-orange);'>🤖 Processar Algoritmo IA</h3>", unsafe_allow_html=True)
+    
+    # Exemplo de Dashboard Compacto (O que virá depois)
+    col1, col2, col3 = st.columns([2, 2, 1])
+    with col1:
+        st.selectbox("CAMPEONATO", ["BRASIL - SÉRIE A", "INGLATERRA - PREMIER LEAGUE"])
+    with col2:
+        st.selectbox("CONFRONTO", ["Flamengo vs Palmeiras", "Man City vs Arsenal"])
+    with col3:
+        st.write("") # Espaçador
+        st.button("ANALISAR", use_container_width=True)
+
 st.markdown('</div>', unsafe_allow_html=True)
 
-# 6. RODAPÉ COMPACTO
+# 6. RODAPÉ FIXO (PADRÃO TRADING)
 st.markdown("""
-    <div class="custom-footer">
-        <p>© 2023 GESTOR IA. PERFORMANCE ANALYTICS. 18+ JOGUE COM RESPONSABILIDADE.</p>
+    <div class="pro-footer">
+        <div>STATUS: <span style="color:var(--accent-green)">● CONECTADO</span> | DADOS: LIVE API | LATÊNCIA: 24ms</div>
+        <div>GESTOR IA v3.0 PRO EDITION © 2023</div>
     </div>
     """, unsafe_allow_html=True)
