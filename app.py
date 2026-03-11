@@ -7,12 +7,12 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS PARA O BOTÃO CÁPSULA AJUSTADO E CENTRALIZADO
+# 2. CSS "AGRESSIVE LIFT" (SUBIDA TOTAL DA LATERAL)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap');
 
-    /* ELIMINAR CABEÇALHO PADRÃO */
+    /* ELIMINAR CABEÇALHO PADRÃO E SETA */
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] {
         display: none !important;
     }
@@ -23,7 +23,7 @@ st.markdown("""
         font-family: 'Roboto', sans-serif !important;
     }
 
-    /* --- BARRA SUPERIOR FIXA --- */
+    /* --- BARRA SUPERIOR FIXA (50px) --- */
     .betano-header {
         position: fixed;
         top: 0; left: 0; width: 100%; height: 50px;
@@ -44,43 +44,49 @@ st.markdown("""
         0%, 100% { transform: scale(0.9); filter: drop-shadow(0 0 2px #f64d23); }
         50% { transform: scale(1.1); filter: drop-shadow(0 0 10px #f64d23); }
     }
+    .logo-text { color: #f64d23; font-weight: 900; font-size: 19px; font-style: italic; }
 
-    /* --- SIDEBAR --- */
+    /* --- SIDEBAR: CONFIGURAÇÃO DE SUBIDA --- */
     [data-testid="stSidebar"] {
         background-color: #15191d !important;
         margin-top: 50px !important;
         border-right: 1px solid #2d3843 !important;
         width: 260px !important;
     }
-    [data-testid="stSidebarContent"] { padding-top: 0px !important; overflow: hidden !important; }
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0px !important; padding-top: 0px !important; }
 
-    /* --- BOTÃO FERRAMENTA (CÁPSULA AJUSTADA) --- */
+    /* REMOVER O PADDING E APLICAR MARGEM NEGATIVA PARA SUBIR O TEXTO */
+    [data-testid="stSidebarContent"] {
+        padding-top: 0px !important;
+        overflow-x: hidden !important;
+    }
+    
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+        gap: 0px !important;
+        padding-top: 0px !important;
+        margin-top: -35px !important; /* PUXÃO PARA CIMA PARA COLAR NO TOPO */
+    }
+
+    /* --- BOTÃO FERRAMENTA (CÁPSULA CENTRALIZADA) --- */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button {
         background: #f64d23 !important;
         color: white !important;
         border: none !important;
         border-radius: 30px !important;
         height: 42px !important;
+        width: 90% !important; 
+        margin: 0px auto 20px 10px !important; /* Margem superior zerada */
         
-        /* AJUSTE DE LARGURA E CENTRALIZAÇÃO */
-        width: 90% !important; /* Não ocupa 100% para não bater na parede */
-        margin: 15px auto 25px 10px !important; /* Margem lateral para centralizar o botão na sidebar */
-        
-        /* AJUSTE DO TEXTO INTERNO */
-        padding-left: 45px !important; /* Espaço para o círculo do robô */
-        padding-right: 15px !important; /* Equilíbrio do lado direito */
+        padding-left: 45px !important; 
+        padding-right: 15px !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        text-align: center !important;
         
         font-weight: 900 !important;
         font-size: 10px !important;
         text-transform: uppercase;
         position: relative;
         box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
-        transition: transform 0.2s ease-in-out;
     }
 
     /* CÍRCULO DO ÍCONE */
@@ -99,13 +105,7 @@ st.markdown("""
         z-index: 2;
     }
 
-    /* EFEITO DE HOVER CONTROLADO */
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button:hover {
-        transform: scale(1.02); /* Crescimento menor para não bater na borda */
-        background-color: #ff5733 !important;
-    }
-
-    /* OUTROS BOTÕES (CATEGORIAS) */
+    /* CATEGORIAS */
     [data-testid="stSidebar"] button {
         background-color: transparent !important;
         color: #e2e8f0 !important;
@@ -120,13 +120,12 @@ st.markdown("""
         border-radius: 0px !important;
         text-transform: uppercase;
     }
-    [data-testid="stSidebar"] button:hover {
-        color: #f64d23 !important;
-        background-color: #1e293b !important;
-    }
+    [data-testid="stSidebar"] button:hover { color: #f64d23 !important; }
 
     /* CONTEÚDO CENTRAL */
-    .main .block-container { padding-top: 65px !important; }
+    .main .block-container { 
+        padding-top: 60px !important; /* Mantém o título central alinhado horizontalmente com a sidebar */
+    }
 
     /* RODAPÉ */
     .betano-footer {
@@ -142,8 +141,8 @@ st.markdown("""
 st.markdown("""
     <div class="betano-header">
         <div class="pulsing-hex"></div>
-        <div style="color:#f64d23; font-weight:900; font-size:19px; font-style:italic; margin-right:30px;">GESTOR IA</div>
-        <div style="display:flex; gap:20px; flex-grow:1; color:white; font-size:11px; font-weight:700; text-transform:uppercase;">
+        <div class="logo-text">GESTOR IA</div>
+        <div style="display:flex; gap:20px; margin-left:30px; flex-grow:1; color:white; font-size:11px; font-weight:700; text-transform:uppercase;">
             <span>Apostas Esportivas</span>
             <span>Apostas ao Vivo</span>
             <span>Apostas Encontradas</span>
@@ -156,10 +155,9 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# 4. SIDEBAR
+# 4. SIDEBAR - COM SUBIDA MÁXIMA
 with st.sidebar:
     st.button("PROCESSAR ALGORITMO")
-    
     st.button("PRÓXIMOS JOGOS")
     st.button("VENCEDORES DA COMPETIÇÃO")
     st.button("APOSTAS POR ODDS")
@@ -170,7 +168,7 @@ with st.sidebar:
 
 # 5. CONTEÚDO PRINCIPAL
 st.markdown("### 💠 Cockpit de Gestão IA")
-st.write("Ajuste de simetria do botão de ferramenta concluído. O texto está centralizado e o botão respeita as bordas.")
+st.write("Ajuste de subida vertical da sidebar concluído. O menu lateral agora inicia no topo absoluto.")
 
 # 6. RODAPÉ
 st.markdown("""
