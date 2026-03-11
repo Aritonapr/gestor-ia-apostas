@@ -7,18 +7,12 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS PARA A MOLDURA NEON DA FERRAMENTA (SEM QUADRADO SÓLIDO)
+# 2. CSS PARA O BOTÃO SEGMENTADO ESTILO "CÁPSULA"
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap');
 
-    /* ANIMAÇÃO DE SCANNER (LINHA DE LUZ PASSANDO) */
-    @keyframes scanner-light {
-        0% { background-position: -200% 0; }
-        100% { background-position: 200% 0; }
-    }
-
-    /* ELIMINAR TUDO DO STREAMLIT */
+    /* ELIMINAR CABEÇALHO PADRÃO */
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] {
         display: none !important;
     }
@@ -38,7 +32,18 @@ st.markdown("""
         display: flex; align-items: center;
         padding: 0 20px; z-index: 999999;
     }
-    .logo-text { color: #f64d23; font-weight: 900; font-size: 19px; font-style: italic; }
+
+    /* LOGO PULSANTE FUTURISTA */
+    .pulsing-hex {
+        width: 20px; height: 22px; background: #f64d23; 
+        clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+        animation: pulse-hex 2s infinite ease-in-out;
+        margin-right: 10px;
+    }
+    @keyframes pulse-hex {
+        0%, 100% { transform: scale(0.9); filter: drop-shadow(0 0 2px #f64d23); }
+        50% { transform: scale(1.1); filter: drop-shadow(0 0 10px #f64d23); }
+    }
 
     /* --- SIDEBAR CORRIGIDA --- */
     [data-testid="stSidebar"] {
@@ -50,41 +55,47 @@ st.markdown("""
     [data-testid="stSidebarContent"] { padding-top: 0px !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0px !important; padding-top: 0px !important; }
 
-    /* --- ESTILIZAÇÃO DA FERRAMENTA "PROCESSAR" (MOLDURA NEON) --- */
+    /* --- BOTÃO "FERRAMENTA" SEGMENTADO (ESTILO IMAGEM ENVIADA) --- */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button {
-        background: rgba(246, 77, 35, 0.05) !important; /* Fundo quase invisível */
-        color: #f64d23 !important; /* Texto Laranja Neon */
-        border: 1px solid #f64d23 !important; /* Borda fina neon */
-        font-weight: 900 !important;
-        font-size: 11.5px !important;
+        background: #f64d23 !important; /* Cor principal */
+        color: white !important;
+        border: none !important;
+        border-radius: 30px !important; /* Formato cápsula */
         height: 45px !important;
-        margin: 10px 5px 20px 5px !important; /* Espaçamento externo */
-        border-radius: 4px !important;
-        box-shadow: 0 0 10px rgba(246, 77, 35, 0.2) !important; /* Brilho externo sutil */
+        margin: 15px 10px 25px 10px !important;
+        padding-left: 45px !important; /* Espaço para o ícone na esquerda */
+        font-weight: 900 !important;
+        font-size: 11px !important;
         text-transform: uppercase;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
         position: relative;
-        overflow: hidden;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+        transition: 0.3s;
     }
 
-    /* ADICIONANDO O EFEITO DE SCANNER (BRILHO PASSANDO) */
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::after {
-        content: "";
-        position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-        background-size: 200% 100%;
-        animation: scanner-light 3s infinite linear;
-    }
-
-    /* ÍCONE DE ALVO NO PROCESSAR */
+    /* CÍRCULO DO ÍCONE (A PARTE BRANCA DA IMAGEM) */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::before {
-        content: '🎯 '; 
-        margin-right: 5px;
+        content: '🤖'; /* Ícone de Robô/IA */
+        position: absolute;
+        left: 5px; top: 5px;
+        width: 35px; height: 35px;
+        background: white !important;
+        color: #f64d23 !important;
+        border-radius: 50%; /* Círculo perfeito */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        z-index: 2;
     }
 
-    /* ESTILO DOS OUTROS BOTÕES (CATEGORIAS) */
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button:hover {
+        transform: scale(1.03);
+        box-shadow: 0 0 15px rgba(246, 77, 35, 0.5) !important;
+    }
+
+    /* OUTROS BOTÕES (CATEGORIAS) */
     [data-testid="stSidebar"] button {
         background-color: transparent !important;
         color: #e2e8f0 !important;
@@ -105,7 +116,7 @@ st.markdown("""
     }
 
     /* CONTEÚDO CENTRAL */
-    .main .block-container { padding-top: 60px !important; }
+    .main .block-container { padding-top: 65px !important; }
 
     /* RODAPÉ */
     .betano-footer {
@@ -117,14 +128,12 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 3. NAVBAR SUPERIOR (MANTENDO O LOGO PULSANTE)
+# 3. NAVBAR SUPERIOR
 st.markdown("""
     <div class="betano-header">
-        <div style="display:flex; align-items:center; gap:10px;">
-            <div style="width:20px; height:24px; background:#f64d23; clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); filter: drop-shadow(0 0 5px #f64d23);"></div>
-            <div class="logo-text">GESTOR IA</div>
-        </div>
-        <div style="display:flex; gap:20px; margin-left:30px; flex-grow:1; color:white; font-size:11px; font-weight:700; text-transform:uppercase;">
+        <div class="pulsing-hex"></div>
+        <div style="color:#f64d23; font-weight:900; font-size:19px; font-style:italic; margin-right:30px;">GESTOR IA</div>
+        <div style="display:flex; gap:20px; flex-grow:1; color:white; font-size:11px; font-weight:700; text-transform:uppercase;">
             <span>Apostas Esportivas</span>
             <span>Apostas ao Vivo</span>
             <span>Apostas Encontradas</span>
@@ -137,12 +146,10 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# 4. SIDEBAR - COM MOLDURA NEON NA FERRAMENTA
+# 4. SIDEBAR - COM O BOTÃO SEGMENTADO
 with st.sidebar:
-    # A Ferramenta (Recebe a moldura neon via CSS)
-    st.button("PROCESSAR ALGORITMO")
+    st.button("PROCESSAR ALGORITMO") # Botão estilo Cápsula Segmentada
     
-    # Categorias de Apoio
     st.button("PRÓXIMOS JOGOS")
     st.button("VENCEDORES DA COMPETIÇÃO")
     st.button("APOSTAS POR ODDS")
@@ -152,8 +159,8 @@ with st.sidebar:
     st.button("ÁRBITRO DA PARTIDA")
 
 # 5. CONTEÚDO PRINCIPAL
-st.markdown("### 💠 Cockpit de Operação Profissional")
-st.info("A ferramenta 'PROCESSAR ALGORITMO' agora possui uma moldura neon com efeito de scanner, separando o comando das categorias.")
+st.markdown("### 💠 Cockpit de Gestão IA")
+st.info("O botão 'PROCESSAR ALGORITMO' foi estilizado no formato de cápsula segmentada com ícone em destaque.")
 
 # 6. RODAPÉ
 st.markdown("""
