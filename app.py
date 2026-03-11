@@ -1,17 +1,17 @@
 import streamlit as st
 import time
 
-# [GUARDIAN UI PROTECTION SYSTEM - GIAE v3.3]
+# [GUARDIAN UI PROTECTION SYSTEM - GIAE v3.4]
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
-# --- CSS DE ALTA FIDELIDADE (TRAVADO) ---
+# --- CSS DE ALTA FIDELIDADE (TRAVADO E BLINDADO) ---
 st.markdown("""
     <style>
     /* RESET E OCULTAÇÃO DE ELEMENTOS STREAMLIT */
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] { display: none !important; }
     .stApp { background-color: #0b0e11 !important; color: #e2e8f0 !important; font-family: 'Roboto', sans-serif !important; }
     
-    /* REMOVER BARRA DE ROLAGEM SIDEBAR */
+    /* REMOÇÃO DE BARRA DE ROLAGEM SIDEBAR */
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     [data-testid="stSidebarContent"]::-webkit-scrollbar { display: none !important; }
     
@@ -28,15 +28,14 @@ st.markdown("""
     [data-testid="stSidebar"] { background-color: #15191d !important; margin-top: 50px !important; border-right: 1px solid #2d3843 !important; width: 260px !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0px !important; padding-top: 0px !important; margin-top: -35px !important; }
     
-    /* BOTÃO FERRAMENTA: TEXTO CENTRALIZADO + SCANNER */
+    /* BOTÃO FERRAMENTA IA: TEXTO CENTRALIZADO + SCANNER */
     @keyframes laser-scan { 0% { left: -100%; } 100% { left: 100%; } }
     @keyframes plasma-glow { 0%, 100% { box-shadow: 0 0 5px #f64d23; } 50% { box-shadow: 0 0 20px #f64d23; } }
     
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button {
         background: #f64d23 !important; color: white !important; border-radius: 30px !important; height: 48px !important; width: 92% !important; margin: 0px auto 20px 10px !important;
         display: flex !important; align-items: center !important; justify-content: center !important;
-        padding-left: 35px !important; /* Espaço do ícone */
-        font-weight: 900 !important; font-size: 10px !important;
+        padding-left: 35px !important; font-weight: 900 !important; font-size: 10px !important;
         position: relative !important; overflow: hidden !important; border: none !important;
         text-align: center !important;
         animation: plasma-glow 3s infinite ease-in-out !important;
@@ -96,7 +95,7 @@ db_global = {
     }
 }
 
-# --- DICIONÁRIO DE TIMES (RESTURAÇÃO E ADIÇÃO DO CARIOCA) ---
+# --- DICIONÁRIO DE TIMES (RESTURAÇÃO TOTAL MANTIDA) ---
 times_db = {
     "Série A": ["Palmeiras", "Flamengo", "Botafogo", "Fortaleza", "São Paulo", "Internacional", "Cruzeiro", "Bahia", "Vasco", "Atlético-MG"],
     "Série B": ["Santos", "Sport", "Ceará", "Goiás", "Novorizontino", "Mirassol"],
@@ -107,7 +106,7 @@ times_db = {
     "Copa do Nordeste": ["Fortaleza", "Bahia", "Sport", "Ceará", "Vitória", "CRB"],
     "Copa Verde": ["Cuiabá", "Paysandu", "Vila Nova", "Remo", "Goiás"],
     "Paulistão": ["Palmeiras", "Santos", "São Paulo", "Corinthians"],
-    "Carioca": ["Flamengo", "Fluminense", "Vasco", "Botafogo", "Nova Iguaçu", "Boavista", "Portuguesa-RJ", "Madureira", "Volta Redonda", "Bangu"],
+    "Carioca": ["Flamengo", "Fluminense", "Vasco", "Botafogo", "Nova Iguaçu", "Boavista", "Portuguesa-RJ", "Madureira"],
     "Mineiro": ["Atlético-MG", "Cruzeiro", "América-MG", "Tombense"],
     "Gaúcho": ["Grêmio", "Internacional", "Juventude", "Caxias"],
     "Premier League": ["Man City", "Arsenal", "Liverpool", "Chelsea", "Tottenham"],
@@ -124,9 +123,11 @@ times_db = {
     "Mundial de Clubes FIFA": ["Real Madrid", "Man City", "Flamengo", "Palmeiras"]
 }
 
-# --- SIDEBAR ---
+# --- SIDEBAR (RENOMEADO: FERRAMENTA IA) ---
 with st.sidebar:
-    if st.button("PROCESSAR ALGORITMO"): st.session_state.app_state = "processar"
+    if st.button("FERRAMENTA IA"): 
+        st.session_state.app_state = "processar"
+    
     st.button("PRÓXIMOS JOGOS")
     st.button("VENCEDORES DA COMPETIÇÃO")
     st.button("APOSTAS POR ODDS")
@@ -139,7 +140,9 @@ with st.sidebar:
 if "app_state" not in st.session_state: st.session_state.app_state = "home"
 
 if st.session_state.app_state == "processar":
-    st.markdown("### 📂 CENTRAL DE INTELIGÊNCIA GIAE")
+    # RENOMEADO: PROCESSAR ALGORITMO
+    st.markdown("### 📂 PROCESSAR ALGORITMO")
+    
     c1, c2, c3 = st.columns(3)
     with c1: reg_sel = st.selectbox("📂 SELECIONE A REGIÃO", list(db_global.keys()))
     with c2: cat_sel = st.selectbox("📁 CATEGORIA", list(db_global[reg_sel].keys()))
@@ -176,4 +179,4 @@ else:
     st.markdown("### 🤖 Cockpit de Comando Ativado")
 
 # FOOTER
-st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | TEXTO: CENTRALIZADO</div><div>GESTOR IA PRO v3.3 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | BOTÃO: FERRAMENTA IA</div><div>GESTOR IA PRO v3.4 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
