@@ -7,11 +7,21 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS DE ALTA PRECISÃO (Ajuste de Simetria e Verticalidade)
+# 2. CSS DE ALTA PRECISÃO (Reset de Margens do Streamlit)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap');
 
+    /* 1. RESET TOTAL DE PADDING DO STREAMLIT (PARA SUBIR O TEXTO) */
+    [data-testid="stAppViewBlockContainer"] {
+        padding-top: 0px !important;
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        margin-top: -30px !important; /* Força a subida para encostar na linha */
+    }
+
+    [data-testid="stHeader"] { display: none !important; }
+    
     /* TEMA DARK PROFISSIONAL */
     :root {
         --bg-dark: #0b0e11;
@@ -20,13 +30,6 @@ st.markdown("""
         --accent-green: #00cc66;
         --text-main: #e2e8f0;
         --text-dim: #94a3b8;
-        --nav-height: 50px;
-        --footer-height: 25px;
-    }
-
-    /* REMOVER TUDO DO STREAMLIT */
-    header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] {
-        display: none !important;
     }
 
     .stApp { 
@@ -38,7 +41,7 @@ st.markdown("""
     /* --- NAVBAR SUPERIOR --- */
     .pro-navbar {
         position: fixed;
-        top: 0; left: 0; width: 100%; height: var(--nav-height);
+        top: 0; left: 0; width: 100%; height: 50px;
         background-color: var(--bg-sidebar);
         border-bottom: 2px solid var(--accent-orange);
         display: flex; align-items: center;
@@ -51,7 +54,6 @@ st.markdown("""
         background: var(--accent-orange);
         clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
         display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 0 15px rgba(246, 77, 35, 0.4);
     }
     .hexagon-inner {
         width: 18px; height: 22px; background-color: var(--bg-sidebar);
@@ -65,7 +67,7 @@ st.markdown("""
     /* --- SIDEBAR CORRIGIDA --- */
     [data-testid="stSidebar"] {
         background-color: var(--bg-sidebar) !important;
-        margin-top: var(--nav-height) !important;
+        margin-top: 50px !important;
         border-right: 1px solid #2d3843 !important;
         width: 260px !important;
     }
@@ -85,7 +87,6 @@ st.markdown("""
         width: 100% !important;
         border-radius: 0px !important;
         display: block !important;
-        text-transform: uppercase;
     }
     [data-testid="stSidebar"] button:hover {
         background-color: #1e293b !important;
@@ -93,30 +94,17 @@ st.markdown("""
         border-left: 3px solid var(--accent-orange) !important;
     }
 
-    /* --- CONTEÚDO PRINCIPAL (AJUSTE DE DISTÂNCIA E SIMETRIA) --- */
+    /* --- ÁREA DE CONTEÚDO (SIMETRIA TOTAL) --- */
     .main-container { 
-        margin-top: 55px; /* Quase encostado na barra superior */
-        padding: 20px 25px;
-        min-height: calc(100vh - 110px); /* Ocupa o espaço até o rodapé */
-        display: flex;
-        flex-direction: column;
-    }
-
-    /* Estilização do Dashboard Title */
-    .dashboard-header {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        margin-bottom: 5px;
-        border-bottom: 1px solid #1e293b;
-        padding-bottom: 10px;
+        margin-top: 60px; /* Alinhado com a sidebar */
+        min-height: calc(100vh - 120px);
     }
 
     /* --- RODAPÉ FIXO --- */
     .pro-footer {
         position: fixed; bottom: 0; left: 0; width: 100%;
         background-color: var(--bg-sidebar);
-        height: var(--footer-height);
+        height: 25px;
         padding: 0 20px; border-top: 1px solid #2d3843;
         display: flex; justify-content: space-between; align-items: center;
         font-size: 9px; color: var(--text-dim);
@@ -149,7 +137,6 @@ st.markdown("""
 # 4. SIDEBAR - OS 8 ITENS DO SEU PAPEL
 with st.sidebar:
     if 'view' not in st.session_state: st.session_state.view = "home"
-    
     if st.button("PROCESSAR ALGORITMO"): st.session_state.view = "processar"
     st.button("PRÓXIMOS JOGOS")
     st.button("VENCEDORES DA COMPETIÇÃO")
@@ -159,34 +146,23 @@ with st.sidebar:
     st.button("APOSTAS POR CARTÕES")
     st.button("ÁRBITRO DA PARTIDA")
 
-# 5. CONTEÚDO PRINCIPAL (COM AJUSTE DE POSICIONAMENTO)
+# 5. CONTEÚDO PRINCIPAL (ENQUADRADO NO TOPO)
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
 if st.session_state.view == "home":
-    # Cabeçalho do Dashboard mais alto e limpo
-    st.markdown("""
-        <div class="dashboard-header">
-            <span style="font-size: 24px;">📊</span>
-            <h2 style="margin: 0; color: white; font-size: 22px;">Dashboard de Análise Profissional</h2>
-        </div>
-    """, unsafe_allow_html=True)
-    
-    st.markdown("<p style='color:#94a3b8; font-size:13px; margin-top: 10px;'>Sistema configurado. Interface simétrica enquadrada entre o cabeçalho e o rodapé.</p>", unsafe_allow_html=True)
-    
-    # Criando uma área vazia que "empurra" o rodapé, mantendo o enquadramento
-    st.write("") 
-    st.write("")
+    st.markdown("<h3 style='margin:0; padding:0; color:white;'>📊 Dashboard de Análise Profissional</h3>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#94a3b8; font-size:13px;'>Conteúdo agora alinhado ao topo, respeitando a linha de navegação.</p>", unsafe_allow_html=True)
 
 elif st.session_state.view == "processar":
-    st.markdown("<h3 style='color:var(--accent-orange); margin-top:0;'>🤖 Processar Algoritmo IA</h3>", unsafe_allow_html=True)
-    # Conteúdo de processamento aqui
+    st.markdown("<h3 style='margin:0; color:var(--accent-orange);'>🤖 Processar Algoritmo IA</h3>", unsafe_allow_html=True)
+    # Conteúdo aqui
 
 st.markdown('</div>', unsafe_allow_html=True)
 
-# 6. RODAPÉ FIXO (ALINHADO AO FUNDO)
+# 6. RODAPÉ FIXO
 st.markdown("""
     <div class="pro-footer">
-        <div>STATUS: <span style="color:var(--accent-green)">● ONLINE</span> | SERVIDOR: PRINCIPAL | DADOS: LIVE</div>
-        <div>GESTOR IA PRO v3.0 | 18+ JOGUE COM RESPONSABILIDADE</div>
+        <div>STATUS: <span style="color:var(--accent-green)">● ONLINE</span> | GESTOR IA PRO v3.0</div>
+        <div>18+ JOGUE COM RESPONSABILIDADE</div>
     </div>
     """, unsafe_allow_html=True)
