@@ -7,16 +7,16 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS "ULTRA-TIGHT" COM LOGO PULSANTE (BREATHING EFFECT)
+# 2. CSS PARA DIFERENCIAR O "PROCESSAR ALGORITMO"
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap');
 
-    /* --- ANIMAÇÃO PULSANTE DO LOGO --- */
-    @keyframes pulse-inner-out {
-        0% { transform: scale(0.9); filter: drop-shadow(0 0 2px #f64d23); opacity: 0.8; }
-        50% { transform: scale(1.1); filter: drop-shadow(0 0 12px #f64d23); opacity: 1; }
-        100% { transform: scale(0.9); filter: drop-shadow(0 0 2px #f64d23); opacity: 0.8; }
+    /* ANIMAÇÃO PARA O BOTÃO FERRAMENTA */
+    @keyframes pulse-orange {
+        0% { box-shadow: 0 0 0 0 rgba(246, 77, 35, 0.4); }
+        70% { box-shadow: 0 0 0 10px rgba(246, 77, 35, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(246, 77, 35, 0); }
     }
 
     /* ELIMINAR TUDO DO STREAMLIT */
@@ -30,7 +30,7 @@ st.markdown("""
         font-family: 'Roboto', sans-serif !important;
     }
 
-    /* --- BARRA SUPERIOR FIXA (50px) --- */
+    /* --- BARRA SUPERIOR FIXA --- */
     .betano-header {
         position: fixed;
         top: 0; left: 0; width: 100%; height: 50px;
@@ -41,44 +41,47 @@ st.markdown("""
     }
 
     /* LOGO PULSANTE */
-    .gestor-logo-container {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-    }
-
+    .gestor-logo-container { display: flex; align-items: center; gap: 12px; }
     .pulsing-hex {
-        width: 25px; 
-        height: 28px; 
-        background: #f64d23; 
+        width: 22px; height: 25px; background: #f64d23; 
         clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
-        animation: pulse-inner-out 2s infinite ease-in-out; /* Efeito pulsar */
+        animation: pulse-hex 2s infinite ease-in-out;
     }
-
-    .logo-text { 
-        color: #f64d23; 
-        font-weight: 900; 
-        font-size: 19px; 
-        font-style: italic;
-        letter-spacing: -0.5px;
+    @keyframes pulse-hex {
+        0%, 100% { transform: scale(0.9); filter: drop-shadow(0 0 2px #f64d23); }
+        50% { transform: scale(1.1); filter: drop-shadow(0 0 10px #f64d23); }
     }
+    .logo-text { color: #f64d23; font-weight: 900; font-size: 19px; font-style: italic; }
 
-    /* --- SIDEBAR: FORÇAR SUBIDA TOTAL --- */
+    /* --- SIDEBAR CORRIGIDA --- */
     [data-testid="stSidebar"] {
         background-color: #15191d !important;
         margin-top: 50px !important;
         border-right: 1px solid #2d3843 !important;
         width: 260px !important;
     }
-
     [data-testid="stSidebarContent"] { padding-top: 0px !important; }
-    
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
-        gap: 0px !important;
-        padding-top: 0px !important;
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0px !important; padding-top: 0px !important; }
+
+    /* --- ESTILIZAÇÃO DO BOTÃO "FERRAMENTA" (O PRIMEIRO) --- */
+    /* Usamos um seletor para pegar o primeiro botão da sidebar */
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button {
+        background: linear-gradient(90deg, #f64d23 0%, #ff8c00 100%) !important;
+        color: white !important;
+        border: none !important;
+        font-weight: 900 !important;
+        font-size: 12px !important;
+        height: 50px !important;
+        margin-bottom: 15px !important; /* Espaço para separar das categorias */
+        box-shadow: 0 4px 15px rgba(246, 77, 35, 0.3) !important;
+        animation: pulse-orange 2s infinite;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    }
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::before {
+        content: '⚡ '; /* Ícone de ferramenta/energia */
     }
 
-    /* ESTILO DOS BOTÕES */
+    /* ESTILO DOS OUTROS BOTÕES (CATEGORIAS) */
     [data-testid="stSidebar"] button {
         background-color: transparent !important;
         color: #e2e8f0 !important;
@@ -96,28 +99,22 @@ st.markdown("""
     [data-testid="stSidebar"] button:hover {
         color: #f64d23 !important;
         background-color: #1e293b !important;
-        border-left: 4px solid #f64d23 !important;
     }
 
-    /* --- CONTEÚDO CENTRAL: SUBIDA TOTAL --- */
-    .main .block-container {
-        padding-top: 60px !important;
-        max-width: 95% !important;
-    }
+    /* CONTEÚDO CENTRAL */
+    .main .block-container { padding-top: 60px !important; }
 
-    /* --- RODAPÉ --- */
+    /* RODAPÉ */
     .betano-footer {
         position: fixed; bottom: 0; left: 0; width: 100%;
-        background-color: #1a242d;
-        height: 25px; border-top: 1px solid #2d3843;
+        background-color: #1a242d; height: 25px; border-top: 1px solid #2d3843;
         display: flex; justify-content: space-between; align-items: center;
-        padding: 0 20px; font-size: 9px; color: #94a3b8;
-        z-index: 999999;
+        padding: 0 20px; font-size: 9px; color: #94a3b8; z-index: 999999;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. NAVBAR SUPERIOR (COM LOGO PULSANTE)
+# 3. NAVBAR SUPERIOR
 st.markdown("""
     <div class="betano-header">
         <div class="gestor-logo-container">
@@ -130,17 +127,19 @@ st.markdown("""
             <span>Apostas Encontradas</span>
             <span>Assertividade IA</span>
         </div>
-        <div style="margin-left:auto; display:flex; gap:15px; align-items:center;">
-            <div style="color:white; font-size:14px; cursor:pointer;">🔍</div>
+        <div style="margin-left:auto; display:flex; gap:12px; align-items:center;">
             <div style="border:1px solid #adb5bd; color:white; padding:4px 12px; border-radius:3px; font-size:11px; font-weight:bold; cursor:pointer;">REGISTRAR</div>
             <button style="background:#00cc66; color:white; padding:6px 20px; border-radius:3px; font-weight:bold; border:none; font-size:11px; cursor:pointer;">ENTRAR</button>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-# 4. SIDEBAR - OS 8 ITENS DO SEU PAPEL (TOTALMENTE SUBIDOS)
+# 4. SIDEBAR - COM DIFERENCIAÇÃO DA FERRAMENTA
 with st.sidebar:
+    # O primeiro botão agora herda o estilo "FERRAMENTA"
     st.button("PROCESSAR ALGORITMO")
+    
+    # Os demais seguem o estilo "CATEGORIA"
     st.button("PRÓXIMOS JOGOS")
     st.button("VENCEDORES DA COMPETIÇÃO")
     st.button("APOSTAS POR ODDS")
@@ -149,14 +148,14 @@ with st.sidebar:
     st.button("APOSTAS POR CARTÕES")
     st.button("ÁRBITRO DA PARTIDA")
 
-# 5. CONTEÚDO PRINCIPAL (REDUZIDO E SUBIDO)
+# 5. CONTEÚDO PRINCIPAL
 st.markdown("### 📊 Dashboard de Análise Profissional")
-st.info("Logo futurista com efeito 'Breathing' (pulsar de dentro para fora) ativado.")
+st.info("Observe a lateral: O 'PROCESSAR ALGORITMO' agora está destacado como a ferramenta principal do sistema.")
 
 # 6. RODAPÉ
 st.markdown("""
     <div class="betano-footer">
-        <div>STATUS: ● ONLINE | SISTEMA: ATIVO</div>
+        <div>STATUS: ● ONLINE | SISTEMA IA ATIVO</div>
         <div>GESTOR IA PRO v3.0 | 18+ JOGUE COM RESPONSABILIDADE</div>
     </div>
     """, unsafe_allow_html=True)
