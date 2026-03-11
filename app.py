@@ -7,17 +7,23 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS "ULTRA-TIGHT" (SUBIDA MÁXIMA)
+# 2. CSS "ULTRA-TIGHT" COM LOGO PULSANTE (BREATHING EFFECT)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap');
+
+    /* --- ANIMAÇÃO PULSANTE DO LOGO --- */
+    @keyframes pulse-inner-out {
+        0% { transform: scale(0.9); filter: drop-shadow(0 0 2px #f64d23); opacity: 0.8; }
+        50% { transform: scale(1.1); filter: drop-shadow(0 0 12px #f64d23); opacity: 1; }
+        100% { transform: scale(0.9); filter: drop-shadow(0 0 2px #f64d23); opacity: 0.8; }
+    }
 
     /* ELIMINAR TUDO DO STREAMLIT */
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] {
         display: none !important;
     }
 
-    /* FUNDO DARK PROFISSIONAL */
     .stApp { 
         background-color: #0b0e11 !important; 
         color: #e2e8f0 !important; 
@@ -33,29 +39,46 @@ st.markdown("""
         display: flex; align-items: center;
         padding: 0 20px; z-index: 999999;
     }
-    .gestor-logo { display: flex; align-items: center; gap: 10px; }
-    .logo-text { color: #f64d23; font-weight: 900; font-size: 19px; font-style: italic; }
+
+    /* LOGO PULSANTE */
+    .gestor-logo-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .pulsing-hex {
+        width: 25px; 
+        height: 28px; 
+        background: #f64d23; 
+        clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+        animation: pulse-inner-out 2s infinite ease-in-out; /* Efeito pulsar */
+    }
+
+    .logo-text { 
+        color: #f64d23; 
+        font-weight: 900; 
+        font-size: 19px; 
+        font-style: italic;
+        letter-spacing: -0.5px;
+    }
 
     /* --- SIDEBAR: FORÇAR SUBIDA TOTAL --- */
     [data-testid="stSidebar"] {
         background-color: #15191d !important;
-        margin-top: 50px !important; /* Exatamente abaixo da barra */
+        margin-top: 50px !important;
         border-right: 1px solid #2d3843 !important;
         width: 260px !important;
     }
 
-    /* REMOVER ESPAÇO NO TOPO DA SIDEBAR */
-    [data-testid="stSidebarContent"] {
-        padding-top: 0px !important; 
-    }
+    [data-testid="stSidebarContent"] { padding-top: 0px !important; }
     
-    /* REMOVER GAP ENTRE BOTÕES NA SIDEBAR */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
         gap: 0px !important;
         padding-top: 0px !important;
     }
 
-    /* ESTILO DOS BOTÕES (COLADOS UM NO OUTRO) */
+    /* ESTILO DOS BOTÕES */
     [data-testid="stSidebar"] button {
         background-color: transparent !important;
         color: #e2e8f0 !important;
@@ -78,7 +101,7 @@ st.markdown("""
 
     /* --- CONTEÚDO CENTRAL: SUBIDA TOTAL --- */
     .main .block-container {
-        padding-top: 60px !important; /* Espaço apenas para não ficar sob o header */
+        padding-top: 60px !important;
         max-width: 95% !important;
     }
 
@@ -94,11 +117,11 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 3. NAVBAR SUPERIOR
+# 3. NAVBAR SUPERIOR (COM LOGO PULSANTE)
 st.markdown("""
     <div class="betano-header">
-        <div class="gestor-logo">
-            <div style="width:25px; height:28px; background:#f64d23; clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); box-shadow: 0 0 10px #f64d23;"></div>
+        <div class="gestor-logo-container">
+            <div class="pulsing-hex"></div>
             <div class="logo-text">GESTOR IA</div>
         </div>
         <div style="display:flex; gap:20px; margin-left:30px; flex-grow:1; color:white; font-size:11px; font-weight:700; text-transform:uppercase;">
@@ -115,7 +138,7 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# 4. SIDEBAR - OS 8 ITENS DO SEU PAPEL (SUBIDOS)
+# 4. SIDEBAR - OS 8 ITENS DO SEU PAPEL (TOTALMENTE SUBIDOS)
 with st.sidebar:
     st.button("PROCESSAR ALGORITMO")
     st.button("PRÓXIMOS JOGOS")
@@ -126,14 +149,14 @@ with st.sidebar:
     st.button("APOSTAS POR CARTÕES")
     st.button("ÁRBITRO DA PARTIDA")
 
-# 5. CONTEÚDO PRINCIPAL
+# 5. CONTEÚDO PRINCIPAL (REDUZIDO E SUBIDO)
 st.markdown("### 📊 Dashboard de Análise Profissional")
-st.info("A lateral esquerda e o título central foram subidos para encostar no cabeçalho.")
+st.info("Logo futurista com efeito 'Breathing' (pulsar de dentro para fora) ativado.")
 
 # 6. RODAPÉ
 st.markdown("""
     <div class="betano-footer">
-        <div>STATUS: ● ONLINE | SERVIDOR: CLOUD-IA</div>
+        <div>STATUS: ● ONLINE | SISTEMA: ATIVO</div>
         <div>GESTOR IA PRO v3.0 | 18+ JOGUE COM RESPONSABILIDADE</div>
     </div>
     """, unsafe_allow_html=True)
