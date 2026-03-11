@@ -7,7 +7,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS PARA O BOTÃO SEGMENTADO ESTILO "CÁPSULA"
+# 2. CSS PARA O BOTÃO CÁPSULA AJUSTADO E CENTRALIZADO
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap');
@@ -33,7 +33,7 @@ st.markdown("""
         padding: 0 20px; z-index: 999999;
     }
 
-    /* LOGO PULSANTE FUTURISTA */
+    /* LOGO PULSANTE */
     .pulsing-hex {
         width: 20px; height: 22px; background: #f64d23; 
         clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
@@ -45,54 +45,64 @@ st.markdown("""
         50% { transform: scale(1.1); filter: drop-shadow(0 0 10px #f64d23); }
     }
 
-    /* --- SIDEBAR CORRIGIDA --- */
+    /* --- SIDEBAR --- */
     [data-testid="stSidebar"] {
         background-color: #15191d !important;
         margin-top: 50px !important;
         border-right: 1px solid #2d3843 !important;
         width: 260px !important;
     }
-    [data-testid="stSidebarContent"] { padding-top: 0px !important; }
+    [data-testid="stSidebarContent"] { padding-top: 0px !important; overflow: hidden !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0px !important; padding-top: 0px !important; }
 
-    /* --- BOTÃO "FERRAMENTA" SEGMENTADO (ESTILO IMAGEM ENVIADA) --- */
+    /* --- BOTÃO FERRAMENTA (CÁPSULA AJUSTADA) --- */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button {
-        background: #f64d23 !important; /* Cor principal */
+        background: #f64d23 !important;
         color: white !important;
         border: none !important;
-        border-radius: 30px !important; /* Formato cápsula */
-        height: 45px !important;
-        margin: 15px 10px 25px 10px !important;
-        padding-left: 45px !important; /* Espaço para o ícone na esquerda */
+        border-radius: 30px !important;
+        height: 42px !important;
+        
+        /* AJUSTE DE LARGURA E CENTRALIZAÇÃO */
+        width: 90% !important; /* Não ocupa 100% para não bater na parede */
+        margin: 15px auto 25px 10px !important; /* Margem lateral para centralizar o botão na sidebar */
+        
+        /* AJUSTE DO TEXTO INTERNO */
+        padding-left: 45px !important; /* Espaço para o círculo do robô */
+        padding-right: 15px !important; /* Equilíbrio do lado direito */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        
         font-weight: 900 !important;
-        font-size: 11px !important;
+        font-size: 10px !important;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
         position: relative;
         box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
-        transition: 0.3s;
+        transition: transform 0.2s ease-in-out;
     }
 
-    /* CÍRCULO DO ÍCONE (A PARTE BRANCA DA IMAGEM) */
+    /* CÍRCULO DO ÍCONE */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::before {
-        content: '🤖'; /* Ícone de Robô/IA */
+        content: '🤖';
         position: absolute;
-        left: 5px; top: 5px;
-        width: 35px; height: 35px;
+        left: 4px; top: 4px;
+        width: 34px; height: 34px;
         background: white !important;
         color: #f64d23 !important;
-        border-radius: 50%; /* Círculo perfeito */
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
-        box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+        font-size: 16px;
         z-index: 2;
     }
 
+    /* EFEITO DE HOVER CONTROLADO */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button:hover {
-        transform: scale(1.03);
-        box-shadow: 0 0 15px rgba(246, 77, 35, 0.5) !important;
+        transform: scale(1.02); /* Crescimento menor para não bater na borda */
+        background-color: #ff5733 !important;
     }
 
     /* OUTROS BOTÕES (CATEGORIAS) */
@@ -140,15 +150,15 @@ st.markdown("""
             <span>Assertividade IA</span>
         </div>
         <div style="margin-left:auto; display:flex; gap:12px; align-items:center;">
-             <div style="border:1px solid #adb5bd; color:white; padding:4px 12px; border-radius:3px; font-size:11px; font-weight:bold; cursor:pointer;">REGISTRAR</div>
+            <div style="border:1px solid #adb5bd; color:white; padding:4px 12px; border-radius:3px; font-size:11px; font-weight:bold; cursor:pointer;">REGISTRAR</div>
             <button style="background:#00cc66; color:white; padding:6px 20px; border-radius:3px; font-weight:bold; border:none; font-size:11px; cursor:pointer;">ENTRAR</button>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-# 4. SIDEBAR - COM O BOTÃO SEGMENTADO
+# 4. SIDEBAR
 with st.sidebar:
-    st.button("PROCESSAR ALGORITMO") # Botão estilo Cápsula Segmentada
+    st.button("PROCESSAR ALGORITMO")
     
     st.button("PRÓXIMOS JOGOS")
     st.button("VENCEDORES DA COMPETIÇÃO")
@@ -160,7 +170,7 @@ with st.sidebar:
 
 # 5. CONTEÚDO PRINCIPAL
 st.markdown("### 💠 Cockpit de Gestão IA")
-st.info("O botão 'PROCESSAR ALGORITMO' foi estilizado no formato de cápsula segmentada com ícone em destaque.")
+st.write("Ajuste de simetria do botão de ferramenta concluído. O texto está centralizado e o botão respeita as bordas.")
 
 # 6. RODAPÉ
 st.markdown("""
