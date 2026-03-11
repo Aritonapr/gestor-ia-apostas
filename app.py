@@ -7,12 +7,19 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. CSS FINAL: SUBIDA TOTAL + CENTRALIZAÇÃO DE TEXTO
+# 2. CSS FINAL: SUBIDA TOTAL + BOTÃO SHIMMER DE ELITE
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap');
 
-    /* ELIMINAR CABEÇALHO PADRÃO E SETA */
+    /* ANIMAÇÃO DE REFLEXO (SHIMMER) */
+    @keyframes shimmer-sweep {
+        0% { left: -150%; }
+        50% { left: 150%; }
+        100% { left: 150%; }
+    }
+
+    /* ELIMINAR CABEÇALHO PADRÃO */
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] {
         display: none !important;
     }
@@ -53,21 +60,17 @@ st.markdown("""
         border-right: 1px solid #2d3843 !important;
         width: 260px !important;
     }
-
-    [data-testid="stSidebarContent"] {
-        padding-top: 0px !important;
-        overflow-x: hidden !important;
-    }
+    [data-testid="stSidebarContent"] { padding-top: 0px !important; overflow-x: hidden !important; }
     
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
         gap: 0px !important;
         padding-top: 0px !important;
-        margin-top: -35px !important; /* Puxa para cima */
+        margin-top: -35px !important;
     }
 
-    /* --- BOTÃO FERRAMENTA (TEXTO CENTRALIZADO) --- */
+    /* --- BOTÃO FERRAMENTA (SHIMMER & GLOW) --- */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button {
-        background: #f64d23 !important;
+        background: linear-gradient(135deg, #f64d23 0%, #a43a1a 100%) !important;
         color: white !important;
         border: none !important;
         border-radius: 30px !important;
@@ -75,23 +78,32 @@ st.markdown("""
         width: 90% !important; 
         margin: 0px auto 20px 10px !important;
         
-        /* CENTRALIZAÇÃO TOTAL DO TEXTO */
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
         text-align: center !important;
-        
-        /* Compensação do Ícone para o texto parecer centralizado no laranja */
         padding-left: 35px !important; 
         padding-right: 5px !important;
         
         font-weight: 900 !important;
         font-size: 10px !important;
-        line-height: 1.1 !important; /* Ajusta o espaçamento entre PROCESSAR e ALGORITMO */
         text-transform: uppercase;
-        position: relative;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
+        position: relative !important;
+        overflow: hidden !important; /* Essencial para o reflexo não sair do botão */
+        box-shadow: 0 4px 15px rgba(246, 77, 35, 0.3) !important;
+    }
+
+    /* EFEITO DE REFLEXO (SHIMMER) */
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::after {
+        content: "" !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: -150% !important;
+        width: 100% !important;
+        height: 100% !important;
+        background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent) !important;
+        animation: shimmer-sweep 3s infinite !important;
     }
 
     /* CÍRCULO DO ÍCONE */
@@ -99,7 +111,7 @@ st.markdown("""
         content: '🤖';
         position: absolute;
         left: 4px; top: 50%;
-        transform: translateY(-50%); /* Centraliza o ícone verticalmente */
+        transform: translateY(-50%);
         width: 34px; height: 34px;
         background: white !important;
         color: #f64d23 !important;
@@ -109,6 +121,14 @@ st.markdown("""
         justify-content: center;
         font-size: 16px;
         z-index: 2;
+        box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    }
+
+    /* HOVER COM BRILHO NEON */
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button:hover {
+        transform: scale(1.02);
+        box-shadow: 0 0 20px rgba(246, 77, 35, 0.6) !important;
+        filter: brightness(1.1);
     }
 
     /* CATEGORIAS */
@@ -172,7 +192,7 @@ with st.sidebar:
 
 # 5. CONTEÚDO PRINCIPAL
 st.markdown("### 💠 Cockpit de Gestão IA")
-st.write("Configuração visual finalizada: Texto centralizado, sidebar no topo e logo pulsante ativos.")
+st.success("Visual 100% finalizado com efeito Shimmer e Glow Neon.")
 
 # 6. RODAPÉ
 st.markdown("""
