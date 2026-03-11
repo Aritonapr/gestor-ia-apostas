@@ -1,88 +1,182 @@
 import streamlit as st
-import time
-import random
 
-# [GUARDIAN UI PROTECTION SYSTEM - GIAE v3.0]
-st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
+# 1. Configuração inicial
+st.set_page_config(
+    page_title="GESTOR IA - TRADING PRO", 
+    layout="wide", 
+    initial_sidebar_state="expanded"
+)
 
-# --- CSS PROTEGIDO (NÃO ALTERAR) ---
+# 2. CSS FINAL: SUBIDA TOTAL + BOTÃO SCANNER LASER COM TEXTO CENTRALIZADO
 st.markdown("""
     <style>
-    header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] { display: none !important; }
-    .stApp { background-color: #0b0e11 !important; color: #e2e8f0 !important; font-family: 'Roboto', sans-serif !important; }
-    
-    .betano-header { position: fixed; top: 0; left: 0; width: 100%; height: 50px; background-color: #1a242d; border-bottom: 2px solid #f64d23; display: flex; align-items: center; padding: 0 20px; z-index: 999999; }
+    @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700;900&display=swap');
+
+    /* ANIMAÇÕES */
+    @keyframes laser-scan {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+    @keyframes plasma-glow {
+        0%, 100% { box-shadow: 0 0 5px #f64d23, 0 0 10px #f64d23; }
+        50% { box-shadow: 0 0 15px #f64d23, 0 0 25px #ff8c00; }
+    }
+    @keyframes pulse-hex {
+        0%, 100% { transform: scale(0.9); filter: drop-shadow(0 0 2px #f64d23); }
+        50% { transform: scale(1.1); filter: drop-shadow(0 0 10px #f64d23); }
+    }
+
+    /* ELIMINAR CABEÇALHO PADRÃO */
+    header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] {
+        display: none !important;
+    }
+
+    .stApp { 
+        background-color: #0b0e11 !important; 
+        color: #e2e8f0 !important; 
+        font-family: 'Roboto', sans-serif !important;
+    }
+
+    /* --- BARRA SUPERIOR FIXA (50px) --- */
+    .betano-header {
+        position: fixed;
+        top: 0; left: 0; width: 100%; height: 50px;
+        background-color: #1a242d;
+        border-bottom: 2px solid #f64d23;
+        display: flex; align-items: center;
+        padding: 0 20px; z-index: 999999;
+    }
     .logo-text { color: #f64d23; font-weight: 900; font-size: 19px; font-style: italic; }
-    
-    /* SIDEBAR ULTRA-SUBIDA (CONFORME ESBOÇO) */
-    [data-testid="stSidebar"] { background-color: #15191d !important; margin-top: 50px !important; border-right: 1px solid #2d3843 !important; width: 260px !important; }
+
+    /* --- SIDEBAR: SUBIDA E ALINHAMENTO --- */
+    [data-testid="stSidebar"] {
+        background-color: #15191d !important;
+        margin-top: 50px !important;
+        border-right: 1px solid #2d3843 !important;
+        width: 260px !important;
+    }
     [data-testid="stSidebarContent"] { padding-top: 0px !important; overflow-x: hidden !important; }
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0px !important; padding-top: 0px !important; margin-top: -35px !important; }
     
-    /* BOTÃO FERRAMENTA: CÁPSULA CENTRALIZADA COM SCANNER */
-    @keyframes laser-scan { 0% { left: -100%; } 100% { left: 100%; } }
-    
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
+        gap: 0px !important;
+        padding-top: 0px !important;
+        margin-top: -35px !important;
+    }
+
+    /* --- BOTÃO FERRAMENTA (CENTRALIZAÇÃO ABSOLUTA) --- */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button {
-        background: #f64d23 !important; color: white !important; border-radius: 30px !important; height: 48px !important; width: 92% !important; margin: 0px auto 20px 10px !important;
-        display: flex !important; align-items: center !important; justify-content: center !important;
-        padding-left: 35px !important; font-weight: 900 !important; font-size: 11px !important;
-        position: relative !important; overflow: hidden !important; border: none !important; text-align: center !important;
+        background: #f64d23 !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 30px !important;
+        height: 44px !important;
+        width: 90% !important; 
+        margin: 0px auto 20px 10px !important;
+        
+        /* CENTRALIZAÇÃO DO TEXTO */
+        display: flex !important;
+        flex-direction: column !important; /* Texto em duas linhas */
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        
+        /* Compensação do espaço do ícone na esquerda */
+        padding-left: 40px !important; 
+        padding-right: 10px !important;
+        
+        font-weight: 900 !important;
+        font-size: 10px !important;
+        line-height: 1.1 !important;
+        text-transform: uppercase;
+        position: relative !important;
+        overflow: hidden !important;
+        
+        animation: plasma-glow 3s infinite ease-in-out !important;
     }
+
+    /* O LASER DO SCANNER */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::after {
-        content: "" !important; position: absolute !important; top: 0 !important; left: -100% !important; width: 50px !important; height: 100% !important;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important; animation: laser-scan 2.5s infinite linear !important;
+        content: "" !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: -100% !important;
+        width: 40px !important;
+        height: 100% !important;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important;
+        transform: skewX(-20deg) !important;
+        animation: laser-scan 2.5s infinite linear !important;
     }
+
+    /* CÍRCULO DO ÍCONE CENTRALIZADO VERTICALMENTE */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::before {
-        content: '🤖'; position: absolute; left: 6px; top: 50%; transform: translateY(-50%); width: 32px; height: 32px;
-        background: white !important; color: #f64d23 !important; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; z-index: 2; border: 2px solid #f64d23;
+        content: '🤖';
+        position: absolute;
+        left: 4px; 
+        top: 50%;
+        transform: translateY(-50%); /* Garante centralização vertical do círculo */
+        width: 34px; height: 34px;
+        background: white !important;
+        color: #f64d23 !important;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        z-index: 2;
+        border: 2px solid #f64d23;
     }
-    
-    /* BOTÕES DE CATEGORIA */
-    [data-testid="stSidebar"] button { background-color: transparent !important; color: #e2e8f0 !important; border: none !important; border-bottom: 1px solid #1e293b !important; text-align: left !important; font-weight: 700 !important; font-size: 11px !important; padding: 12px 15px !important; width: 100% !important; border-radius: 0px !important; text-transform: uppercase; }
-    
-    .betano-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1a242d; height: 25px; border-top: 1px solid #2d3843; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #94a3b8; z-index: 999999; }
+
+    /* CATEGORIAS */
+    [data-testid="stSidebar"] button {
+        background-color: transparent !important;
+        color: #e2e8f0 !important;
+        border: none !important;
+        border-bottom: 1px solid #1e293b !important;
+        text-align: left !important;
+        font-weight: 700 !important;
+        font-size: 11px !important;
+        padding: 10px 15px !important; 
+        min-height: 40px !important;
+        width: 100% !important;
+        border-radius: 0px !important;
+        text-transform: uppercase;
+    }
+    [data-testid="stSidebar"] button:hover { color: #f64d23 !important; }
+
+    /* CONTEÚDO CENTRAL */
+    .main .block-container { padding-top: 60px !important; }
+
+    /* RODAPÉ */
+    .betano-footer {
+        position: fixed; bottom: 0; left: 0; width: 100%;
+        background-color: #1a242d; height: 25px; border-top: 1px solid #2d3843;
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 0 20px; font-size: 9px; color: #94a3b8; z-index: 999999;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-# --- BANCO DE DADOS COMPLETO (SÉRIES A, B, C, D, ESTADUAIS E EUROPA) ---
-db_global = {
-    "🇧🇷 COMPETIÇÕES BRASILEIRAS": {
-        "Brasileirão": ["Série A", "Série B", "Série C", "Série D"],
-        "Copas": ["Copa do Brasil", "Supercopa do Brasil"],
-        "Regionais": ["Copa do Nordeste", "Copa Verde"],
-        "Estaduais": ["Paulistão", "Carioca", "Mineiro", "Gaúcho", "Paranaense", "Catarinense", "Pernambucano", "Baiano"]
-    },
-    "🇪🇺 CAMPEONATOS EUROPA": {
-        "Principais": ["Premier League", "La Liga", "Bundesliga", "Serie A (Itália)", "Ligue 1"],
-        "Secundárias": ["Eredivisie (Holanda)", "Primeira Liga (Portugal)", "Championship (Inglaterra 2)"],
-        "Copas Europeias": ["Champions League", "Europa League", "Conference League"]
-    },
-    "🌎 INTERNACIONAIS (CLUBES BR)": {
-        "Continente": ["Copa Libertadores", "Copa Sul-Americana", "Recopa Sul-Americana"]
-    },
-    "🌍 RESTO DO MUNDO": {
-        "Américas": ["Liga MX (México)", "Liga Profesional (Argentina)", "MLS (EUA)"],
-        "Ásia/Outros": ["Saudi Pro League", "J-League"]
-    }
-}
+# 3. NAVBAR SUPERIOR
+st.markdown("""
+    <div class="betano-header">
+        <div style="width:20px; height:24px; background:#f64d23; clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); margin-right:10px; animation: pulse-hex 2s infinite ease-in-out;"></div>
+        <div class="logo-text">GESTOR IA</div>
+        <div style="display:flex; gap:20px; margin-left:30px; flex-grow:1; color:white; font-size:11px; font-weight:700; text-transform:uppercase;">
+            <span>Apostas Esportivas</span>
+            <span>Apostas ao Vivo</span>
+            <span>Apostas Encontradas</span>
+            <span>Assertividade IA</span>
+        </div>
+        <div style="margin-left:auto; display:flex; gap:12px; align-items:center;">
+            <div style="border:1px solid #adb5bd; color:white; padding:4px 12px; border-radius:3px; font-size:11px; font-weight:bold; cursor:pointer;">REGISTRAR</div>
+            <button style="background:#00cc66; color:white; padding:6px 20px; border-radius:3px; font-weight:bold; border:none; font-size:11px; cursor:pointer;">ENTRAR</button>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
 
-# --- TIMES SINCRONIZADOS POR CAMPEONATO ---
-times_db = {
-    "Série A": ["Palmeiras", "Flamengo", "Botafogo", "Fortaleza", "São Paulo", "Internacional", "Cruzeiro", "Bahia", "Vasco", "Atlético-MG", "Fluminense", "Corinthians", "Grêmio", "Criciúma", "Bragantino", "Juventude", "Vitória", "Athletico-PR", "Cuiabá", "Atlético-GO"],
-    "Série B": ["Santos", "Sport", "Mirassol", "Novorizontino", "Ceará", "Goiás", "Vila Nova", "Coritiba", "Amazonas", "Avaí", "Operário", "Ponte Preta", "CRB", "Chapecoense", "Ituano", "Brusque", "Guarani"],
-    "Premier League": ["Man City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man United", "Newcastle", "Brighton", "West Ham"],
-    "La Liga": ["Real Madrid", "Barcelona", "Atlético de Madrid", "Girona", "Athletic Bilbao", "Real Sociedad", "Real Betis"],
-    "Paulistão": ["Palmeiras", "São Paulo", "Santos", "Corinthians", "Bragantino", "Inter de Limeira", "Mirassol"],
-    "Copa Libertadores": ["Flamengo", "Palmeiras", "River Plate", "Atlético-MG", "Peñarol", "São Paulo", "Fluminense", "Boca Juniors"]
-}
-
-# --- NAVBAR ---
-st.markdown("""<div class="betano-header"><div style="width:20px; height:24px; background:#f64d23; clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); margin-right:10px;"></div><div class="logo-text">GESTOR IA</div></div>""", unsafe_allow_html=True)
-
-# --- SIDEBAR FIXA ---
+# 4. SIDEBAR - COM TEXTO CENTRALIZADO NO BOTÃO
 with st.sidebar:
-    if st.button("PROCESSAR ALGORITMO"):
-        st.session_state.app_state = "processar"
+    st.button("PROCESSAR ALGORITMO")
     st.button("PRÓXIMOS JOGOS")
     st.button("VENCEDORES DA COMPETIÇÃO")
     st.button("APOSTAS POR ODDS")
@@ -91,58 +185,14 @@ with st.sidebar:
     st.button("APOSTAS POR CARTÕES")
     st.button("ÁRBITRO DA PARTIDA")
 
-# --- ÁREA CENTRAL (COCKPIT) ---
-if "app_state" not in st.session_state: st.session_state.app_state = "home"
+# 5. CONTEÚDO PRINCIPAL
+st.markdown("### 🤖 Cockpit de Comando Ativado")
+st.write("Configuração visual concluída: Botão ferramenta com scanner laser e texto perfeitamente centralizado.")
 
-if st.session_state.app_state == "processar":
-    st.markdown("### 🗂️ CENTRAL DE PROCESSAMENTO GIAE")
-    
-    # NAVEGAÇÃO POR PASTAS
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        regiao = st.selectbox("📂 PASTA: REGIÃO", list(db_global.keys()))
-    with col2:
-        categoria = st.selectbox("📂 SUB-PASTA: CATEGORIA", list(db_global[regiao].keys()))
-    with col3:
-        campeonato = st.selectbox("🏆 CAMPEONATO SELECIONADO", db_global[regiao][categoria])
-
-    st.divider()
-    
-    # SELEÇÃO DE TIMES
-    st.markdown(f"#### 🏟️ Análise de Confronto: {campeonato}")
-    t1, t2 = st.columns(2)
-    
-    # Busca os times específicos ou gera genéricos se não estiver no DB ainda
-    lista_times = times_db.get(campeonato, [f"Time A ({campeonato})", f"Time B ({campeonato})", f"Time C ({campeonato})"])
-    
-    with t1:
-        casa = st.selectbox("TIME CASA", lista_times)
-    with t2:
-        fora = st.selectbox("TIME FORA", [t for t in lista_times if t != casa])
-
-    if st.button("🔥 EXECUTAR ANÁLISE MILIMÉTRICA"):
-        with st.status("GIAE IA: Processando dados históricos e internet...", expanded=True) as s:
-            time.sleep(1)
-            st.write("🛰️ Analisando desempenho 1º e 2º tempo...")
-            time.sleep(1)
-            st.write("📊 Verificando scouts de cantos e cartões...")
-            s.update(label="ANÁLISE COMPLETA!", state="complete")
-        
-        # DISPLAY DE RESULTADOS
-        r1, r2, r3 = st.columns(3)
-        r1.metric("Vencedor Provável", casa, "65% Prob.")
-        r2.metric("Gols Previstos", "+2.5", "Alta Relevância")
-        r3.metric("Tempo do Gol", "1º e 2º Tempo", "88% Confiança")
-        
-        st.table({
-            "Métrica Milimétrica": ["Chutes ao Gol", "Escanteios HT", "Escanteios FT", "Cartões"],
-            "Previsão IA": ["7.2", "4.5", "10.2", "4.0"],
-            "Assertividade": ["92%", "89%", "94%", "85%"]
-        })
-
-else:
-    st.markdown("### 🤖 Cockpit de Comando Ativado")
-    st.write("Selecione 'PROCESSAR ALGORITMO' na sidebar para configurar sua análise.")
-
-st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | BANCO DE DADOS: RESTAURADO</div><div>GESTOR IA PRO v3.0 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
+# 6. RODAPÉ
+st.markdown("""
+    <div class="betano-footer">
+        <div>STATUS: ● IA OPERACIONAL | SCANNER: ATIVO</div>
+        <div>GESTOR IA PRO v3.0 | 18+ JOGUE COM RESPONSABILIDADE</div>
+    </div>
+    """, unsafe_allow_html=True)
