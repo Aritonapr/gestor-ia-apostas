@@ -1,115 +1,110 @@
 import streamlit as st
 import time
 
-# [GUARDIAN UI PROTECTION SYSTEM - GIAE v4.1]
+# [GUARDIAN UI PROTECTION SYSTEM - GIAE v5.0]
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
-# --- CSS DE ALTA FIDELIDADE (TRAVADO E BLINDADO) ---
+# --- CSS DE ALTA ESPECIFICIDADE (FORÇA BRUTA CONTRA STREAMLIT DEFAULTS) ---
 st.markdown("""
     <style>
-    /* RESET TOTAL E OCULTAÇÃO DE HEADER */
-    header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"], [data-testid="collapsedControl"] { display: none !important; }
+    /* 1. RESET GERAL E SIDEBAR */
+    header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { display: none !important; }
     .stApp { background-color: #0b0e11 !important; color: #e2e8f0 !important; font-family: 'Roboto', sans-serif !important; }
     
-    /* NAVBAR SUPERIOR FIXA */
-    .betano-header { position: fixed; top: 0; left: 0; width: 100%; height: 50px; background-color: #1a242d; border-bottom: 2px solid #f64d23; display: flex; align-items: center; padding: 0 20px; z-index: 999999; }
-    .logo-text { color: #f64d23; font-weight: 900; font-size: 19px; font-style: italic; }
-    .nav-items { display: flex; gap: 20px; margin-left: 30px; flex-grow: 1; color: white; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-    
-    @keyframes pulse-hex { 0%, 100% { transform: scale(0.9); filter: drop-shadow(0 0 2px #f64d23); } 50% { transform: scale(1.1); filter: drop-shadow(0 0 10px #f64d23); } }
-    .logo-hex { width:20px; height:24px; background:#f64d23; clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); margin-right:10px; animation: pulse-hex 2s infinite ease-in-out; }
-
-    /* SIDEBAR MILIMÉTRICA: 260PX / -35PX TOP / SEM SCROLL */
     [data-testid="stSidebar"] { 
         background-color: #15191d !important; 
         margin-top: 50px !important; 
-        border-right: 1px solid #2d3843 !important; 
         width: 260px !important; 
         min-width: 260px !important;
+        border-right: 1px solid #2d3843 !important;
     }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
-    [data-testid="stSidebarContent"]::-webkit-scrollbar { display: none !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0px !important; padding-top: 0px !important; margin-top: -35px !important; }
-    
-    /* ANIMAÇÕES DE BOTÃO */
-    @keyframes laser-scan { 0% { left: -100%; } 100% { left: 100%; } }
-    @keyframes plasma-glow { 0%, 100% { box-shadow: 0 0 10px #f64d23; } 50% { box-shadow: 0 0 20px #f64d23; } }
-    
-    /* UNIFICAÇÃO DE ESTILO: BOTÕES CÁPSULA (SIDEBAR E CENTRAL) */
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button,
-    .main div.stButton > button {
-        background: #f64d23 !important; 
-        color: white !important; 
-        border-radius: 30px !important; 
-        height: 52px !important; /* Altura aumentada para melhor proporção */
-        width: 95% !important; 
-        display: flex !important; 
-        align-items: center !important; 
-        justify-content: center !important;
-        font-weight: 900 !important; 
-        font-size: 13px !important; /* Texto levemente maior */
-        position: relative !important; 
-        overflow: hidden !important; 
-        border: none !important;
-        text-align: center !important; 
-        padding: 0px !important;
-        animation: plasma-glow 3s infinite ease-in-out !important;
-        white-space: nowrap !important;
-        box-shadow: none !important;
-        outline: none !important;
-    }
 
-    /* REMOÇÃO TOTAL DE EFEITOS DE HOVER (QUADRADOS E ALTERAÇÃO DE COR) */
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button:hover,
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button:active,
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button:focus,
-    .main div.stButton > button:hover,
-    .main div.stButton > button:active,
-    .main div.stButton > button:focus {
-        background: #f64d23 !important;
+    /* 2. NAVBAR SUPERIOR */
+    .betano-header { position: fixed; top: 0; left: 0; width: 100%; height: 50px; background-color: #1a242d; border-bottom: 2px solid #f64d23; display: flex; align-items: center; padding: 0 20px; z-index: 999999; }
+    .logo-text { color: #f64d23; font-weight: 900; font-size: 19px; font-style: italic; }
+    .nav-items { display: flex; gap: 20px; margin-left: 30px; flex-grow: 1; color: white; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    @keyframes pulse-hex { 0%, 100% { transform: scale(0.9); filter: drop-shadow(0 0 2px #f64d23); } 50% { transform: scale(1.1); filter: drop-shadow(0 0 10px #f64d23); } }
+    .logo-hex { width:20px; height:24px; background:#f64d23; clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); margin-right:10px; animation: pulse-hex 2s infinite ease-in-out; }
+
+    /* 3. BOTÕES CÁPSULA (SIDEBAR E CENTRAL) - DESIGN BLINDADO */
+    /* Targetando o botão especificamente para ignorar o hover "quadrado" */
+    div[data-testid="stVerticalBlock"] button, .stButton button {
+        background-color: #f64d23 !important;
         color: white !important;
+        border-radius: 50px !important; /* Arredondamento total */
         border: none !important;
         outline: none !important;
-        box-shadow: 0 0 20px #f64d23 !important; /* Mantém apenas o brilho, sem quadrado */
-        border-radius: 30px !important;
+        font-weight: 900 !important;
+        text-transform: uppercase !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: none !important; /* Remove transições que geram o bug visual */
     }
 
-    /* BOTÃO CENTRAL - LARGURA */
-    .main div.stButton > button { width: 300px !important; margin-top: 20px !important; }
-
-    /* SCANNER LASER */
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::after,
-    .main div.stButton > button::after {
-        content: "" !important; 
-        position: absolute !important; 
-        top: 0 !important; 
-        left: -100% !important; 
-        width: 60px !important; 
-        height: 100% !important;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important; 
-        animation: laser-scan 2.5s infinite linear !important;
+    /* BOTÃO FERRAMENTA IA (SIDEBAR) - GRANDE E PROPORCIONAL */
+    [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div:first-child button {
+        height: 60px !important;
+        width: 95% !important;
+        font-size: 15px !important;
+        margin: 0px auto 25px 10px !important;
+        animation: plasma-glow 3s infinite ease-in-out !important;
     }
 
-    /* BOTÕES SECUNDÁRIOS SIDEBAR */
-    [data-testid="stSidebar"] button { 
-        background-color: transparent !important; 
-        color: #e2e8f0 !important; 
-        border: none !important; 
-        border-bottom: 1px solid #1e293b !important; 
-        text-align: left !important; 
-        font-weight: 700 !important; 
-        font-size: 11px !important; 
-        padding: 12px 15px !important; 
-        width: 100% !important; 
-        border-radius: 0px !important; 
-        text-transform: uppercase; 
+    /* BOTÃO PROCESSAR ALGORITMO (CENTRAL) */
+    .main .stButton button {
+        height: 60px !important;
+        width: 320px !important;
+        font-size: 15px !important;
+        margin-top: 20px !important;
+        animation: plasma-glow 3s infinite ease-in-out !important;
     }
-    
-    /* ESTILOS DE TEXTO */
-    .white-title { color: #e2e8f0 !important; font-weight: 900; font-size: 24px !important; margin-bottom: 20px !important; }
+
+    /* REMOÇÃO TOTAL DO QUADRADO NO HOVER */
+    div[data-testid="stVerticalBlock"] button:hover, 
+    div[data-testid="stVerticalBlock"] button:active,
+    div[data-testid="stVerticalBlock"] button:focus,
+    .stButton button:hover,
+    .stButton button:active,
+    .stButton button:focus {
+        background-color: #f64d23 !important; /* Mantém a mesma cor ao passar o mouse */
+        color: white !important;
+        border-radius: 50px !important;
+        box-shadow: 0 0 20px #f64d23 !important; /* Apenas o brilho, sem quadrado */
+        border: none !important;
+        outline: none !important;
+    }
+
+    /* ANIMAÇÃO SCANNER LASER (UNIFICADA) */
+    @keyframes laser-scan { 0% { left: -100%; } 100% { left: 100%; } }
+    @keyframes plasma-glow { 0%, 100% { box-shadow: 0 0 5px #f64d23; } 50% { box-shadow: 0 0 15px #f64d23; } }
+
+    div[data-testid="stVerticalBlock"] > div:first-child button::after,
+    .stButton button::after {
+        content: "" !important; position: absolute !important; top: 0 !important; left: -100% !important; width: 60px !important; height: 100% !important;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important; animation: laser-scan 2.5s infinite linear !important;
+    }
+
+    /* 4. BOTÕES SECUNDÁRIOS DA SIDEBAR */
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:not(:first-child) button {
+        background-color: transparent !important;
+        color: #e2e8f0 !important;
+        border: none !important;
+        border-bottom: 1px solid #1e293b !important;
+        text-align: left !important;
+        font-weight: 700 !important;
+        font-size: 11px !important;
+        padding: 12px 15px !important;
+        width: 100% !important;
+        border-radius: 0px !important;
+    }
+
+    /* 5. TÍTULOS */
+    .white-title { color: white !important; font-weight: 900; font-size: 26px !important; margin-bottom: 25px !important; }
     .standard-text { color: #e2e8f0 !important; font-weight: 700; font-size: 18px !important; margin-top: 10px !important; }
 
-    /* FOOTER */
     .betano-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1a242d; height: 25px; border-top: 1px solid #2d3843; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #94a3b8; z-index: 999999; }
     </style>
     """, unsafe_allow_html=True)
@@ -178,11 +173,11 @@ if st.session_state.app_state == "processar":
     with t2: fora = st.selectbox("TIME FORA", [t for t in elenco if t != casa])
 
     if st.button("PROCESSAR ALGORITMO"):
-        with st.status("IA: Processando...", expanded=True) as s:
+        with st.status("GIAE IA: Processando...", expanded=True) as s:
             time.sleep(1.2); s.update(label="analise de algoritimo concluida", state="complete")
-        st.success(f"🤖 Análise métrica de {casa} vs {fora} finalizada.")
+        st.success(f"🤖 Análise concluída.")
 else:
     st.markdown("### 🤖 Cockpit de Comando Ativado")
 
 # FOOTER
-st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | HOVER FIX: ON</div><div>GESTOR IA PRO v4.1 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | DESIGN V5.0 BLINDADO</div><div>GESTOR IA PRO v5.0 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
