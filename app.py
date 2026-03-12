@@ -1,7 +1,7 @@
 import streamlit as st
 import time
 
-# [GUARDIAN UI PROTECTION SYSTEM - GIAE v4.0]
+# [GUARDIAN UI PROTECTION SYSTEM - GIAE v4.1]
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
 # --- CSS DE ALTA FIDELIDADE (TRAVADO E BLINDADO) ---
@@ -29,60 +29,55 @@ st.markdown("""
     }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     [data-testid="stSidebarContent"]::-webkit-scrollbar { display: none !important; }
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0px !important; padding-top: 0px !important; margin-top: -35px !important; }
     
-    /* ALINHAMENTO DO CONTEÚDO DA SIDEBAR NO TOPO */
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { 
-        gap: 0px !important; 
-        padding-top: 0px !important; 
-        margin-top: -35px !important; 
-    }
-    
-    /* ANIMAÇÕES UNIFICADAS */
+    /* ANIMAÇÕES DE BOTÃO */
     @keyframes laser-scan { 0% { left: -100%; } 100% { left: 100%; } }
-    @keyframes plasma-glow { 0%, 100% { box-shadow: 0 0 5px #f64d23; } 50% { box-shadow: 0 0 15px #f64d23; } }
+    @keyframes plasma-glow { 0%, 100% { box-shadow: 0 0 10px #f64d23; } 50% { box-shadow: 0 0 20px #f64d23; } }
     
-    /* BOTÃO CÁPSULA: FERRAMENTA IA (LADO ESQUERDO) */
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button {
-        background: #f64d23 !important; 
-        color: white !important; 
-        border-radius: 30px !important; 
-        height: 48px !important; 
-        width: 90% !important; 
-        margin: 0px auto 20px 12px !important; /* Espaçamento de 20px abaixo do botão */
-        display: flex !important; 
-        align-items: center !important; 
-        justify-content: center !important;
-        font-weight: 900 !important; 
-        font-size: 11px !important;
-        position: relative !important; 
-        overflow: hidden !important; 
-        border: none !important;
-        text-align: center !important; 
-        padding: 0px !important; /* Remove paddings que tiram a centralização */
-        animation: plasma-glow 3s infinite ease-in-out !important;
-        white-space: nowrap !important;
-    }
-
-    /* BOTÃO CÁPSULA: PROCESSAR ALGORITMO (CENTRAL) */
+    /* UNIFICAÇÃO DE ESTILO: BOTÕES CÁPSULA (SIDEBAR E CENTRAL) */
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button,
     .main div.stButton > button {
         background: #f64d23 !important; 
         color: white !important; 
         border-radius: 30px !important; 
-        height: 48px !important; 
-        width: 280px !important;
+        height: 52px !important; /* Altura aumentada para melhor proporção */
+        width: 95% !important; 
         display: flex !important; 
         align-items: center !important; 
         justify-content: center !important;
         font-weight: 900 !important; 
-        font-size: 12px !important;
+        font-size: 13px !important; /* Texto levemente maior */
         position: relative !important; 
         overflow: hidden !important; 
         border: none !important;
+        text-align: center !important; 
+        padding: 0px !important;
         animation: plasma-glow 3s infinite ease-in-out !important;
-        text-transform: uppercase !important;
+        white-space: nowrap !important;
+        box-shadow: none !important;
+        outline: none !important;
     }
 
-    /* SCANNER LASER EM AMBOS OS BOTÕES */
+    /* REMOÇÃO TOTAL DE EFEITOS DE HOVER (QUADRADOS E ALTERAÇÃO DE COR) */
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button:hover,
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button:active,
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button:focus,
+    .main div.stButton > button:hover,
+    .main div.stButton > button:active,
+    .main div.stButton > button:focus {
+        background: #f64d23 !important;
+        color: white !important;
+        border: none !important;
+        outline: none !important;
+        box-shadow: 0 0 20px #f64d23 !important; /* Mantém apenas o brilho, sem quadrado */
+        border-radius: 30px !important;
+    }
+
+    /* BOTÃO CENTRAL - LARGURA */
+    .main div.stButton > button { width: 300px !important; margin-top: 20px !important; }
+
+    /* SCANNER LASER */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::after,
     .main div.stButton > button::after {
         content: "" !important; 
@@ -95,7 +90,7 @@ st.markdown("""
         animation: laser-scan 2.5s infinite linear !important;
     }
 
-    /* BOTÕES DE CATEGORIA (LADO ESQUERDO) */
+    /* BOTÕES SECUNDÁRIOS SIDEBAR */
     [data-testid="stSidebar"] button { 
         background-color: transparent !important; 
         color: #e2e8f0 !important; 
@@ -139,8 +134,7 @@ db_global = {
     "BR COMPETIÇÕES BRASILEIRAS": {
         "Brasileirão": ["Série A", "Série B", "Série C", "Série D"],
         "Copas Nacionais": ["Copa do Brasil", "Supercopa do Brasil"],
-        "Estaduais": ["Paulistão", "Carioca", "Mineiro", "Gaúcho"],
-        "Regionais": ["Copa do Nordeste", "Copa Verde"]
+        "Estaduais": ["Paulistão", "Carioca", "Mineiro", "Gaúcho"]
     },
     "EU ELITE EUROPEIA (BIG 5)": {
         "Inglaterra": ["Premier League"], "Espanha": ["La Liga"], "Alemanha": ["Bundesliga"], "Itália": ["Serie A"], "França": ["Ligue 1"]
@@ -186,9 +180,9 @@ if st.session_state.app_state == "processar":
     if st.button("PROCESSAR ALGORITMO"):
         with st.status("IA: Processando...", expanded=True) as s:
             time.sleep(1.2); s.update(label="analise de algoritimo concluida", state="complete")
-        st.success(f"🤖 Análise de {casa} vs {fora} finalizada.")
+        st.success(f"🤖 Análise métrica de {casa} vs {fora} finalizada.")
 else:
     st.markdown("### 🤖 Cockpit de Comando Ativado")
 
 # FOOTER
-st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | UI GUARDIAN: LOCK</div><div>GESTOR IA PRO v4.0 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | HOVER FIX: ON</div><div>GESTOR IA PRO v4.1 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
