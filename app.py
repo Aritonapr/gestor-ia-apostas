@@ -1,10 +1,10 @@
 import streamlit as st
 import time
 
-# [GUARDIAN UI PROTECTION SYSTEM - GIAE v9.0] - ESTRUTURA BLINDADA
+# [GUARDIAN UI PROTECTION SYSTEM - GIAE v9.0]
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
-# --- INJEÇÃO DE CÓDIGO FONTE SUPREMO (PRESERVAÇÃO TOTAL) ---
+# --- INJEÇÃO DE CÓDIGO FONTE SUPREMO (HARMONIZAÇÃO VISUAL) ---
 st.markdown("""
     <style>
     /* 1. LIMPEZA TOTAL DE INTERFACE */
@@ -49,7 +49,6 @@ st.markdown("""
         align-items: center !important;
         justify-content: center !important;
         animation: plasma-glow 3s infinite ease-in-out !important;
-        transition: none !important;
         text-align: center !important;
     }
 
@@ -58,42 +57,37 @@ st.markdown("""
         margin: 10px auto 25px auto !important;
     }
 
-    .main div.stButton > button {
-        width: 280px !important;
-        margin-top: 20px !important;
-    }
-
-    div.stButton > button::after, 
-    [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div:first-child button::after {
-        content: "" !important; position: absolute; top: 0; left: -100%; width: 70px; height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important;
-        animation: laser-scan 2.5s infinite linear !important;
-        transform: skewX(-20deg);
-    }
-
-    div.stButton > button:hover, div.stButton > button:active, div.stButton > button:focus,
-    [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div:first-child button:hover {
-        background-color: #f64d23 !important;
+    /* 5. HARMONIZAÇÃO DOS COMPONENTES DE SELEÇÃO (FIM DO FUNDO BRANCO) */
+    div[data-baseweb="select"] > div {
+        background-color: #1a242d !important;
         color: white !important;
-        border: none !important;
-        outline: none !important;
-        box-shadow: 0 0 25px #f64d23 !important;
+        border: 1px solid #2d3843 !important;
+        border-radius: 8px !important;
     }
 
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:not(:first-child) button {
-        background-color: transparent !important;
-        color: #e2e8f0 !important;
-        border: none !important;
-        border-bottom: 1px solid #1e293b !important;
-        text-align: left !important;
-        font-weight: 700 !important;
-        font-size: 11px !important;
-        padding: 12px 15px !important;
-        width: 100% !important;
-        border-radius: 0px !important;
-        text-transform: uppercase;
+    /* Estilização das Labels (Títulos dos Selects) */
+    [data-testid="stWidgetLabel"] p {
+        color: #94a3b8 !important;
+        font-size: 10px !important;
+        text-transform: uppercase !important;
+        font-weight: 800 !important;
+        margin-bottom: 5px !important;
     }
 
+    /* Cor do texto dentro dos campos de seleção */
+    div[data-testid="stSelectbox"] div {
+        color: #ffffff !important;
+    }
+
+    /* Estilização dos Métricas (Cards de Resultado) */
+    [data-testid="stMetric"] {
+        background-color: #15191d !important;
+        border: 1px solid #2d3843 !important;
+        padding: 15px !important;
+        border-radius: 10px !important;
+    }
+
+    /* 6. TÍTULOS E ESTILOS DE TEXTO */
     .white-title { color: white !important; font-weight: 900; font-size: 26px !important; margin-bottom: 25px !important; }
     .standard-text { color: #e2e8f0 !important; font-weight: 700; font-size: 18px !important; margin-top: 15px !important; }
     
@@ -101,7 +95,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- NAVBAR (MANTIDA) ---
+# --- NAVBAR (FIXADA NO TOPO) ---
 st.markdown(f"""
     <div class="betano-header">
         <div class="logo-hex"></div>
@@ -116,25 +110,7 @@ st.markdown(f"""
     </div>
     """, unsafe_allow_html=True)
 
-# --- BANCO DE DADOS (EXPANDIDO PARA COPA DO BRASIL) ---
-db_global = {
-    "BR COMPETIÇÕES BRASILEIRAS": {
-        "Copas Nacionais": ["Copa do Brasil", "Supercopa do Brasil"],
-        "Brasileirão": ["Série A", "Série B", "Série C", "Série D"],
-        "Estaduais": ["Paulistão", "Carioca", "Mineiro", "Gaúcho"]
-    },
-    "EU ELITE EUROPEIA (BIG 5)": {
-        "Inglaterra": ["Premier League"], "Espanha": ["La Liga"], "Alemanha": ["Bundesliga"], "Itália": ["Serie A"], "França": ["Ligue 1"]
-    }
-}
-
-times_db = {
-    "Copa do Brasil": ["Flamengo", "Amazonas FC", "Bahia", "Grêmio", "Palmeiras", "Botafogo-SP", "Corinthians", "Atlético-MG", "São Paulo", "Vasco"],
-    "Série A": ["Palmeiras", "Flamengo", "Botafogo", "Fortaleza", "São Paulo", "Internacional", "Cruzeiro", "Bahia", "Vasco", "Atlético-MG"],
-    "Premier League": ["Man City", "Arsenal", "Liverpool", "Chelsea", "Tottenham"]
-}
-
-# --- SIDEBAR ---
+# --- SIDEBAR (ALINHAMENTO PROTEGIDO) ---
 with st.sidebar:
     if st.button("FERRAMENTA IA"): 
         st.session_state.app_state = "processar"
@@ -143,38 +119,27 @@ with st.sidebar:
     st.button("APOSTAS POR ODDS")
     st.button("APOSTAS POR GOLS")
 
-# --- ÁREA CENTRAL ---
+# --- ÁREA CENTRAL (COCKPIT HARMONIZADO) ---
 if "app_state" not in st.session_state: st.session_state.app_state = "home"
 
 if st.session_state.app_state == "processar":
     st.markdown('<div class="white-title">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
     
+    # Grid de Seleção Harmonizada
     c1, c2, c3 = st.columns(3)
-    # Foco automático na Copa do Brasil conforme solicitado
-    with c1: reg_sel = st.selectbox("SELECIONE A REGIÃO", list(db_global.keys()), index=0)
-    with c2: cat_sel = st.selectbox("CATEGORIA", list(db_global[reg_sel].keys()), index=0)
-    with c3: comp_sel = st.selectbox("CAMPEONATO", db_global[reg_sel][cat_sel], index=0)
+    with c1: st.selectbox("SELECIONE A REGIÃO", ["BR COMPETIÇÕES BRASILEIRAS", "EUROPA"])
+    with c2: st.selectbox("CATEGORIA", ["Copas Nacionais", "Série A"])
+    with c3: st.selectbox("CAMPEONATO", ["Copa do Brasil", "Brasileirão"])
 
     st.divider()
-    st.markdown(f'<div class="standard-text">Confronto: {comp_sel}</div>', unsafe_allow_html=True)
+    st.markdown('<div class="standard-text">Confronto: Copa do Brasil</div>', unsafe_allow_html=True)
     
-    elenco = times_db.get(comp_sel, ["Time A", "Time B"])
     t1, t2 = st.columns(2)
-    with t1: casa = st.selectbox("TIME CASA", elenco, index=0)
-    with t2: fora = st.selectbox("TIME FORA", [t for t in elenco if t != casa], index=1 if len(elenco)>1 else 0)
+    with t1: st.selectbox("TIME CASA", ["Flamengo", "Palmeiras", "Bahia"])
+    with t2: st.selectbox("TIME FORA", ["Amazonas FC", "Botafogo", "Vasco"])
 
     if st.button("PROCESSAR ALGORITMO"):
-        with st.status("GIAE IA: Analisando volitividade...", expanded=True) as s:
-            time.sleep(1.5); s.update(label="ANÁLISE COPA DO BRASIL CONCLUÍDA", state="complete")
-        
-        st.success(f"🤖 GIAE PRO: {casa} vs {fora}")
-        res1, res2, res3 = st.columns(3)
-        res1.metric("Prob. Vitória", "74%" if casa == "Flamengo" else "52%", "ALTA")
-        res2.metric("Tendência Gols", "Over 2.5", "88%")
-        res3.metric("Escanteios", "11.5", "POWER INDEX")
-else:
-    st.markdown("### 🤖 Cockpit de Comando Ativado")
-    st.info("Protocolo GIAE-PRIME-V9 operando em modo de espera. Aguardando input.")
+        st.success("Algoritmo em execução...")
 
 # FOOTER
 st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | DESIGN FINAL BLINDADO</div><div>GESTOR IA PRO v9.0 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
