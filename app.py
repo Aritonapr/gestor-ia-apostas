@@ -1,219 +1,129 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>GESTOR IA - PROTOCOLO GIAE-PRIME-V9</title>
+import streamlit as st
+
+# ==========================================
+# PROTOCOLO GIAE-PRIME-V9: CONFIGURAÇÃO CORE
+# ==========================================
+
+st.set_page_config(page_title="GESTOR IA - PRIME V9", layout="wide")
+
+# Injeção de CSS para Interface Dark Mode Profissional
+st.markdown(f"""
     <style>
-        /* CONFIGURAÇÕES GLOBAIS - DARK MODE PROFISSIONAL */
-        :root {
-            --sidebar-width: 260px;
-            --primary-orange: #f64d23;
-            --bg-deep: #0a0a0a;
-            --bg-card: #141414;
-            --text-main: #e0e0e0;
-            --laser-glow: rgba(246, 77, 35, 0.5);
-        }
-
-        body, html {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-deep);
-            color: var(--text-main);
-            font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
-            overflow-x: hidden;
-        }
-
-        /* Efeito de Grade HUD ao Fundo */
-        body {
+        /* Reset e Fundo Ultra-Dark */
+        .main {{
+            background-color: #0a0a0a;
+            color: #e0e0e0;
             background-image: 
                 linear-gradient(rgba(246, 77, 35, 0.02) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(246, 77, 35, 0.02) 1px, transparent 1px);
             background-size: 40px 40px;
-        }
+        }}
 
-        /* CONTAINER PRINCIPAL */
-        .app-wrapper {
-            display: flex;
-            min-height: 100vh;
-        }
+        /* Sidebar Customizada - 260px */
+        [data-testid="stSidebar"] {{
+            width: 260px !important;
+            background-color: #000000 !important;
+            border-right: 1px solid #f64d23;
+        }}
 
-        /* SIDEBAR - 260px */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: #000000;
-            border-right: 1px solid var(--primary-orange);
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-            box-sizing: border-box;
-            position: fixed;
-            height: 100vh;
-            z-index: 100;
-        }
-
-        /* CONTEÚDO PRINCIPAL - MARGIN TOP -35px */
-        .main-content {
-            margin-left: var(--sidebar-width);
+        /* Ajuste de Margem Superior -35px */
+        .block-container {{
+            padding-top: 0rem;
             margin-top: -35px;
-            padding: 40px;
-            flex-grow: 1;
-        }
+        }}
 
-        /* BOTÕES GÊMEOS CÁPSULA COM LASER SCAN */
-        .button-group {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .btn-prime {
-            width: 200px;
+        /* Botões Gêmeos Cápsula Laranja #f64d23 */
+        .stButton>button {{
+            width: 100%;
             height: 48px;
-            background-color: var(--primary-orange);
-            color: white;
-            border: none;
-            border-radius: 50px; /* Formato Cápsula */
-            font-weight: 800;
+            background-color: #f64d23 !important;
+            color: white !important;
+            border-radius: 50px !important;
+            border: none !important;
+            font-weight: bold !important;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
+            box-shadow: 0 0 15px rgba(246, 77, 35, 0.4);
             position: relative;
             overflow: hidden;
-            box-shadow: 0 0 15px var(--laser-glow);
-            transition: transform 0.2s;
-        }
+            transition: 0.3s;
+        }}
 
-        .btn-prime:hover {
-            transform: scale(1.03);
-        }
+        /* Efeito Laser Scan Simulation no Hover */
+        .stButton>button:hover {{
+            box-shadow: 0 0 25px rgba(246, 77, 35, 0.8);
+            transform: scale(1.02);
+        }}
 
-        /* Efeito Laser Scan */
-        .btn-prime::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.6),
-                transparent
-            );
-        }
-
-        .btn-prime:hover::after {
-            animation: laserScan 1.5s infinite;
-        }
-
-        @keyframes laserScan {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        /* ÁREA DE ANÁLISE MÉTRICA */
-        .card-analise {
-            background: var(--bg-card);
+        /* Cards de Análise */
+        .card-analise {{
+            background: #141414;
             border: 1px solid rgba(246, 77, 35, 0.3);
-            border-radius: 8px;
-            padding: 25px;
-            margin-top: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        }
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }}
 
-        .metrica-header {
-            border-left: 4px solid var(--primary-orange);
+        .header-analise {{
+            border-left: 5px solid #f64d23;
             padding-left: 15px;
             margin-bottom: 20px;
-        }
-
-        .metrica-header h2 {
-            margin: 0;
-            color: var(--primary-orange);
-            font-size: 1.2rem;
-        }
-
-        .grid-dados {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .dado-item {
-            background: rgba(255,255,255,0.05);
-            padding: 15px;
-            border-radius: 4px;
-            text-align: center;
-        }
-
-        .valor-dado {
-            display: block;
-            font-size: 1.5rem;
+            color: #f64d23;
+            font-size: 20px;
             font-weight: bold;
-            color: #fff;
-        }
-
-        .label-dado {
-            font-size: 0.8rem;
-            color: #888;
-            text-transform: uppercase;
-        }
-
+        }}
     </style>
-</head>
-<body>
+""", unsafe_allow_html=True)
 
-    <div class="app-wrapper">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <h3 style="color: var(--primary-orange);">GIAE PRIME V9</h3>
-            <p style="font-size: 0.7rem; color: #555;">SISTEMA OPERACIONAL ATIVO</p>
-            <nav style="margin-top: 40px;">
-                <div style="color: #888; margin-bottom: 10px;">LIGAS BRASIL</div>
-                <div style="font-size: 0.9rem; line-height: 2;">
-                    • Série A-D<br>
-                    • Estaduais<br>
-                    • Copa do Brasil
-                </div>
-            </nav>
-        </aside>
+# ==========================================
+# ESTRUTURA DA INTERFACE (SIDEBAR)
+# ==========================================
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="button-group">
-                <button class="btn-prime">Análise Ativa</button>
-                <button class="btn-prime">Sincronizar Ligas</button>
-            </div>
+with st.sidebar:
+    st.markdown("<h2 style='color:#f64d23;'>JARVIS GIAE</h2>", unsafe_allow_html=True)
+    st.info("Protocolo PRIME-V9 Ativo")
+    
+    st.markdown("### 🏟️ LIGAS INDEXADAS")
+    st.write("- Brasileirão (Séries A-D)")
+    st.write("- Estaduais (SP, RJ, RS, MG)")
+    st.write("- Copa do Brasil")
+    st.write("- Grandes Ligas Europeias")
+    
+    st.divider()
+    if st.button("SINCRONIZAR BANCO"):
+        st.toast("Sincronizando com Servidores Globais...", icon="🔄")
 
-            <div class="card-analise">
-                <div class="metrica-header">
-                    <h2>ANÁLISE MÉTRICA DOS JOGOS: COPA DO BRASIL</h2>
-                </div>
-                
-                <p>Status: <span style="color: #00ff00;">Aguardando Input de Confronto...</span></p>
+# ==========================================
+# CONTEÚDO PRINCIPAL (MÉTRICA COPA DO BRASIL)
+# ==========================================
 
-                <div class="grid-dados">
-                    <div class="dado-item">
-                        <span class="label-dado">Média de Gols (Copa)</span>
-                        <span class="valor-dado">--</span>
-                    </div>
-                    <div class="dado-item">
-                        <span class="label-dado">Prob. Ambas Marcam</span>
-                        <span class="valor-dado">--%</span>
-                    </div>
-                    <div class="dado-item">
-                        <span class="label-dado">Fator Mandante</span>
-                        <span class="valor-dado">--%</span>
-                    </div>
-                    <div class="dado-item">
-                        <span class="label-dado">Tendência Over 2.5</span>
-                        <span class="valor-dado">--</span>
-                    </div>
-                </div>
-            </div>
-        </main>
+col1, col2 = st.columns(2)
+
+with col1:
+    if st.button("ANÁLISE ATIVA"):
+        st.write("Iniciando varredura de dados...")
+
+with col2:
+    if st.button("RELATÓRIO DE RISCO"):
+        st.write("Calculando volatilidade...")
+
+# Área de Análise Métrica
+st.markdown("""
+    <div class="card-analise">
+        <div class="header-analise">ANÁLISE MÉTRICA DOS JOGOS: COPA DO BRASIL</div>
+        <p style="color: #888;">CONFRONTO SUGERIDO: <b>FLAMENGO vs AMAZONAS</b></p>
     </div>
+""", unsafe_allow_html=True)
 
-</body>
-</html>
+# Grid de Resultados (Exemplo de dados processados)
+m1, m2, m3, m4 = st.columns(4)
+
+with m1:
+    st.metric(label="VITÓRIA MANDANTE", value="82%", delta="Fator Casa")
+with m2:
+    st.metric(label="OVER 2.5 GOLS", value="64%", delta="Tendência")
+with m3:
+    st.metric(label="CANTOS (MÉDIA)", value="10.5", delta="Alta")
+with m4:
+    st.metric(label="AMBAS MARCAM", value="38%", delta="Baixa", delta_color="inverse")
+
+st.success("Comandante, sistema estabilizado e interface renderizada com sucesso.")
