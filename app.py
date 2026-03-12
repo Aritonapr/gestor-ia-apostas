@@ -1,148 +1,173 @@
 import streamlit as st
 
 # ==========================================
-# PROTOCOLO GIAE-PRIME-V9: NÚCLEO DE ESTABILIDADE
+# PROTOCOLO GIAE-PRIME-V9: NÚCLEO ESTÁVEL
 # ==========================================
 
-st.set_page_config(page_title="GESTOR IA - PRIME V9", layout="wide", initial_sidebar_state="expanded")
+st.set_page_config(
+    page_title="GESTOR IA - PRIME V9",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# Injeção de CSS de Alta Prioridade (Force Dark Mode)
+# Injeção de CSS de Alta Performance (Resolução de Conflitos)
 st.markdown("""
     <style>
-        /* 1. Reset Total do Fundo do Streamlit */
-        html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], [data-testid="stMainBlockContainer"] {
+        /* 1. Reset de Cores e Fundo Profundo */
+        [data-testid="stAppViewContainer"] {
             background-color: #0a0a0a !important;
-            color: #e0e0e0 !important;
+            background-image: radial-gradient(circle at 2px 2px, rgba(246, 77, 35, 0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+        
+        [data-testid="stHeader"] {
+            background: rgba(0,0,0,0) !important;
         }
 
-        /* 2. Remoção de Linhas e Bordas do Tema Padrão */
-        footer {visibility: hidden;}
-        header {background-color: rgba(0,0,0,0) !important;}
-
-        /* 3. Sidebar Profissional - 260px */
+        /* 2. Sidebar Profissional - 260px */
         [data-testid="stSidebar"] {
             width: 260px !important;
-            min-width: 260px !important;
             background-color: #000000 !important;
-            border-right: 1px solid #f64d23 !important;
+            border-right: 2px solid #f64d23 !important;
         }
 
-        /* 4. Ajuste de Margem Superior (-35px) */
-        [data-testid="stMainBlockContainer"] {
-            padding-top: 0rem !important;
+        /* 3. Correção de Margem Superior (-35px) */
+        .main .block-container {
+            padding-top: 1rem !important;
             margin-top: -35px !important;
         }
 
-        /* 5. Estilização dos Botões Gêmeos Laranja #f64d23 */
+        /* 4. BOTÕES GÊMEOS CÁPSULA #f64d23 COM LASER SCAN */
         div.stButton > button {
             width: 100% !important;
             height: 50px !important;
-            background-color: #f64d23 !important;
-            color: white !important;
+            background: #f64d23 !important;
+            color: #ffffff !important;
             border-radius: 50px !important;
             border: none !important;
             font-weight: 800 !important;
             text-transform: uppercase !important;
-            box-shadow: 0 0 15px rgba(246, 77, 35, 0.3) !important;
-            transition: all 0.3s ease !important;
+            letter-spacing: 1px !important;
+            box-shadow: 0 0 15px rgba(246, 77, 35, 0.4) !important;
+            position: relative !important;
+            overflow: hidden !important;
+            transition: all 0.3s ease-in-out !important;
         }
 
+        /* Efeito Laser Scan Simulation */
         div.stButton > button:hover {
-            box-shadow: 0 0 25px rgba(246, 77, 35, 0.7) !important;
-            transform: scale(1.02) !important;
+            box-shadow: 0 0 30px rgba(246, 77, 35, 0.8) !important;
+            transform: translateY(-2px) !important;
         }
 
-        /* 6. Card de Análise Métrica */
-        .card-analise {
-            background-color: #151515 !important;
+        div.stButton > button::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
+        }
+
+        div.stButton > button:active::after {
+            left: 100%;
+            transition: 0.5s;
+        }
+
+        /* 5. Card de Análise Métrica */
+        .card-giae {
+            background: #141414 !important;
             border: 1px solid #f64d23 !important;
-            padding: 25px !important;
-            border-radius: 12px !important;
-            margin-bottom: 25px !important;
+            border-radius: 15px !important;
+            padding: 30px !important;
+            margin-top: 20px !important;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5) !important;
         }
 
-        .titulo-card {
+        .titulo-giae {
             color: #f64d23 !important;
-            font-size: 22px !important;
+            font-family: 'Courier New', monospace !important;
+            font-size: 24px !important;
             font-weight: bold !important;
-            border-left: 5px solid #f64d23 !important;
-            padding-left: 15px !important;
-            margin-bottom: 10px !important;
+            border-left: 6px solid #f64d23 !important;
+            padding-left: 20px !important;
+            margin-bottom: 20px !important;
         }
 
-        /* 7. Ajuste dos Métricas (Labels e Valores) */
-        [data-testid="stMetric"] {
-            background-color: #1a1a1a !important;
-            padding: 15px !important;
-            border-radius: 10px !important;
-            border: 1px solid #333 !important;
-        }
-        
+        /* 6. Ajuste de Texto e Métricas */
         [data-testid="stMetricValue"] {
             color: #ffffff !important;
+            font-size: 32px !important;
         }
-
+        
         [data-testid="stMetricLabel"] {
-            color: #888888 !important;
+            color: #f64d23 !important;
+            font-weight: bold !important;
         }
 
+        p, span, label {
+            color: #e0e0e0 !important;
+        }
     </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# INTERFACE SIDEBAR
+# INTERFACE SIDEBAR (JARVIS)
 # ==========================================
 
 with st.sidebar:
-    st.markdown("<h2 style='color:#f64d23;'>JARVIS GIAE</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='color:#555; font-size:12px;'>PROTOCOL PRIME V9</p>", unsafe_allow_html=True)
+    st.markdown("<h1 style='color:#f64d23; margin-bottom:0;'>JARVIS</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#555; margin-top:0;'>SISTEMA GIAE-PRIME V9</p>", unsafe_allow_html=True)
     
-    st.divider()
-    
-    st.markdown("### 🏟️ LIGAS INDEXADAS")
+    st.write("---")
+    st.markdown("### 🏟️ LIGAS EM MEMÓRIA")
     st.markdown("""
-    <div style='font-size:14px; color:#bbb; line-height:2;'>
-    • Brasileirão A, B, C, D<br>
-    • Estaduais (SP, RJ, MG, RS)<br>
-    • Copa do Brasil<br>
-    • Big 5 Europa
-    </div>
-    """, unsafe_allow_html=True)
+    - **BRASIL:** SÉRIES A-D / ESTADUAIS
+    - **COPA:** COPA DO BRASIL
+    - **EUROPA:** ELITE EUROPEIA
+    """)
     
     st.write("")
+    st.write("")
     if st.button("SINCRONIZAR BANCO"):
-        st.toast("Sincronizando Banco de Dados...")
+        st.toast("Acessando Banco de Dados...", icon="🚀")
 
 # ==========================================
-# CONTEÚDO PRINCIPAL
+# CONTEÚDO PRINCIPAL (COMANDO DO COMANDANTE)
 # ==========================================
 
-# Botões Gêmeos Laranja (Layout Superior)
-col_btn1, col_btn2 = st.columns(2)
-with col_btn1:
-    st.button("ANÁLISE ATIVA")
-with col_btn2:
-    st.button("RELATÓRIO DE RISCO")
+# ÁREA DOS BOTÕES GÊMEOS (Layout Superior)
+col_btn_1, col_btn_2 = st.columns(2)
 
-# Card Central de Análise
+with col_btn_1:
+    st.button("🎯 ANÁLISE ATIVA")
+
+with col_btn_2:
+    st.button("📊 RELATÓRIO DE RISCO")
+
+# CARD DE ANÁLISE MÉTRICA
 st.markdown("""
-    <div class="card-analise">
-        <div class="titulo-card">ANÁLISE MÉTRICA DOS JOGOS: COPA DO BRASIL</div>
-        <p style="color: #888; margin-left: 20px;">CONFRONTO: <b>FLAMENGO vs AMAZONAS</b></p>
+    <div class="card-giae">
+        <div class="titulo-giae">ANÁLISE MÉTRICA DOS JOGOS: COPA DO BRASIL</div>
+        <div style="color: #888; margin-bottom: 20px;">
+            Sincronizando dados de confronto: <b style="color:#fff;">FLAMENGO vs AMAZONAS</b>
+        </div>
     </div>
 """, unsafe_allow_html=True)
 
-# Grid de Métricas Customizadas
+# GRID DE DADOS EM TEMPO REAL
 m1, m2, m3, m4 = st.columns(4)
 
 with m1:
-    st.metric(label="VITÓRIA MANDANTE", value="82%", delta="Fator Casa")
+    st.metric("VITÓRIA MANDANTE", "82%", "DOMÍNIO")
 with m2:
-    st.metric(label="OVER 2.5 GOLS", value="64%", delta="Tendência")
+    st.metric("OVER 2.5 GOLS", "64%", "TENDÊNCIA")
 with m3:
-    st.metric(label="CANTOS (MÉDIA)", value="10.5", delta="Alta")
+    st.metric("CANTOS (MÉDIA)", "10.5", "ALTA")
 with m4:
-    st.metric(label="AMBAS MARCAM", value="38%", delta="Baixa", delta_color="inverse")
+    st.metric("AMBAS MARCAM", "38%", "-BAIXA", delta_color="inverse")
 
-st.markdown("<br><br>", unsafe_allow_html=True)
-st.success("Protocolo Estabilizado. Interface Dark Mode Ativa.")
+st.write("---")
+st.info("Status do Sistema: Operacional. Aguardando diretrizes do Comandante.")
