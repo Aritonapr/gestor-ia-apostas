@@ -1,7 +1,7 @@
 import streamlit as st
 import time
 
-# [GUARDIAN UI PROTECTION SYSTEM - GIAE v3.7]
+# [GUARDIAN UI PROTECTION SYSTEM - GIAE v3.8]
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
 # --- CSS DE ALTA FIDELIDADE (TRAVADO E BLINDADO) ---
@@ -32,39 +32,34 @@ st.markdown("""
     @keyframes laser-scan { 0% { left: -100%; } 100% { left: 100%; } }
     @keyframes plasma-glow { 0%, 100% { box-shadow: 0 0 5px #f64d23; } 50% { box-shadow: 0 0 20px #f64d23; } }
     
-    /* ESTILO DO BOTÃO FERRAMENTA IA (SEM LOGO / CENTRALIZADO) */
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button {
-        background: #f64d23 !important; color: white !important; border-radius: 30px !important; height: 48px !important; width: 92% !important; margin: 0px auto 20px 10px !important;
+    /* UNIFICAÇÃO DE ESTILO: BOTÕES CÁPSULA (SIDEBAR E CENTRAL) */
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button,
+    .main div.stButton > button {
+        background: #f64d23 !important; color: white !important; border-radius: 30px !important; 
+        height: 48px !important; width: 92% !important; 
         display: flex !important; align-items: center !important; justify-content: center !important;
         font-weight: 900 !important; font-size: 11px !important;
         position: relative !important; overflow: hidden !important; border: none !important;
         text-align: center !important; white-space: nowrap !important;
         animation: plasma-glow 3s infinite ease-in-out !important;
-    }
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::after {
-        content: "" !important; position: absolute !important; top: 0 !important; left: -100% !important; width: 50px !important; height: 100% !important;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important; animation: laser-scan 2.5s infinite linear !important;
-    }
-
-    /* ESTILO DO BOTÃO PROCESSAR ALGORITMO (CENTRAL) */
-    .main div.stButton > button {
-        background: #f64d23 !important; color: white !important; border-radius: 30px !important; height: 48px !important; width: 280px !important;
-        display: flex !important; align-items: center !important; justify-content: center !important;
-        font-weight: 900 !important; font-size: 12px !important;
-        position: relative !important; overflow: hidden !important; border: none !important;
-        animation: plasma-glow 3s infinite ease-in-out !important;
         text-transform: uppercase !important;
     }
+
+    /* BOTÃO CENTRAL - LARGURA ESPECÍFICA */
+    .main div.stButton > button { width: 280px !important; margin-top: 10px; }
+
+    /* SCANNER LASER UNIFICADO */
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::after,
     .main div.stButton > button::after {
         content: "" !important; position: absolute !important; top: 0 !important; left: -100% !important; width: 50px !important; height: 100% !important;
         background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important; animation: laser-scan 2.5s infinite linear !important;
     }
 
-    /* BOTÕES DA SIDEBAR */
+    /* BOTÕES SECUNDÁRIOS DA SIDEBAR */
     [data-testid="stSidebar"] button { background-color: transparent !important; color: #e2e8f0 !important; border: none !important; border-bottom: 1px solid #1e293b !important; text-align: left !important; font-weight: 700 !important; font-size: 11px !important; padding: 12px 15px !important; width: 100% !important; border-radius: 0px !important; text-transform: uppercase; }
     
-    /* CORES DOS TÍTULOS */
-    .orange-text { color: #f64d23 !important; font-weight: 900; font-size: 24px !important; margin-bottom: 20px !important; }
+    /* ESTILO DOS TÍTULOS */
+    .white-title { color: #e2e8f0 !important; font-weight: 900; font-size: 24px !important; margin-bottom: 20px !important; }
     .standard-text { color: #e2e8f0 !important; font-weight: 700; font-size: 18px !important; margin-top: 10px !important; margin-bottom: 10px !important; }
 
     .betano-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1a242d; height: 25px; border-top: 1px solid #2d3843; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #94a3b8; z-index: 999999; }
@@ -95,13 +90,17 @@ db_global = {
     },
     "EU ELITE EUROPEIA (BIG 5)": {
         "Inglaterra": ["Premier League"], "Espanha": ["La Liga"], "Alemanha": ["Bundesliga"], "Itália": ["Serie A"], "França": ["Ligue 1"]
+    },
+    "🏆 TORNEIOS INTERNACIONAIS": {
+        "UEFA": ["Champions League", "Europa League"],
+        "Continente": ["Copa Libertadores", "Copa Sul-Americana"]
     }
 }
 
 times_db = {
     "Série A": ["Palmeiras", "Flamengo", "Botafogo", "Fortaleza", "São Paulo", "Internacional"],
     "Carioca": ["Flamengo", "Vasco", "Fluminense", "Botafogo"],
-    "Champions League": ["Real Madrid", "Man City", "Bayern Munich"]
+    "Premier League": ["Man City", "Arsenal", "Liverpool", "Chelsea", "Tottenham"]
 }
 
 # --- SIDEBAR (FERRAMENTA IA) ---
@@ -120,8 +119,8 @@ with st.sidebar:
 if "app_state" not in st.session_state: st.session_state.app_state = "home"
 
 if st.session_state.app_state == "processar":
-    # NOVO TÍTULO RENOMEADO
-    st.markdown('<div class="orange-text">ANÁLISE TÁTICA DOS JOGOS</div>', unsafe_allow_html=True)
+    # TÍTULO RENOMEADO E EM BRANCO
+    st.markdown('<div class="white-title">ANÁLISE TÁTICA DOS JOGOS</div>', unsafe_allow_html=True)
     
     c1, c2, c3 = st.columns(3)
     with c1: reg_sel = st.selectbox("SELECIONE A REGIÃO", list(db_global.keys()))
@@ -129,8 +128,6 @@ if st.session_state.app_state == "processar":
     with c3: comp_sel = st.selectbox("CAMPEONATO", db_global[reg_sel][cat_sel])
 
     st.divider()
-    
-    # TEXTO DE CONFRONTO REVERTIDO PARA PADRÃO ANTERIOR (BRANCO)
     st.markdown(f'<div class="standard-text">Confronto: {comp_sel}</div>', unsafe_allow_html=True)
     
     elenco = times_db.get(comp_sel, [f"Time A ({comp_sel})", f"Time B ({comp_sel})"])
@@ -139,13 +136,13 @@ if st.session_state.app_state == "processar":
     with t1: casa = st.selectbox("TIME CASA", elenco)
     with t2: fora = st.selectbox("TIME FORA", [t for t in elenco if t != casa])
 
-    # BOTÃO RENOMEADO E COM EFEITOS LARANJA
+    # BOTÃO CENTRAL IDÊNTICO AO BOTÃO LATERAL
     if st.button("PROCESSAR ALGORITMO"):
         with st.status("GIAE IA: Processando...", expanded=True) as s:
-            time.sleep(1); s.update(label="ANÁLISE TÁTICA CONCLUÍDA!", state="complete")
-        st.success(f"🤖 Resultados para {casa} vs {fora} gerados com sucesso.")
+            time.sleep(1.5); s.update(label="analise de algoritimo concluida", state="complete")
+        st.success(f"🤖 Resultados táticos para {casa} vs {fora} finalizados.")
 else:
     st.markdown("### 🤖 Cockpit de Comando Ativado")
 
 # FOOTER
-st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | DESIGN: V3.7</div><div>GESTOR IA PRO v3.7 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | SINCRONIA: V3.8</div><div>GESTOR IA PRO v3.8 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
