@@ -1,120 +1,138 @@
 import streamlit as st
 
 # ==========================================
-# PROTOCOLO GIAE-PRIME-V9: CONFIGURAÇÃO CORE
+# PROTOCOLO GIAE-PRIME-V9: NÚCLEO DE ESTABILIDADE
 # ==========================================
 
-st.set_page_config(page_title="GESTOR IA - PRIME V9", layout="wide")
+st.set_page_config(page_title="GESTOR IA - PRIME V9", layout="wide", initial_sidebar_state="expanded")
 
-# Injeção de CSS para Interface Dark Mode Profissional
-st.markdown(f"""
+# Injeção de CSS de Alta Prioridade (Force Dark Mode)
+st.markdown("""
     <style>
-        /* Reset e Fundo Ultra-Dark */
-        .main {{
-            background-color: #0a0a0a;
-            color: #e0e0e0;
-            background-image: 
-                linear-gradient(rgba(246, 77, 35, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(246, 77, 35, 0.02) 1px, transparent 1px);
-            background-size: 40px 40px;
-        }}
+        /* 1. Reset Total do Fundo do Streamlit */
+        html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], [data-testid="stMainBlockContainer"] {
+            background-color: #0a0a0a !important;
+            color: #e0e0e0 !important;
+        }
 
-        /* Sidebar Customizada - 260px */
-        [data-testid="stSidebar"] {{
+        /* 2. Remoção de Linhas e Bordas do Tema Padrão */
+        footer {visibility: hidden;}
+        header {background-color: rgba(0,0,0,0) !important;}
+
+        /* 3. Sidebar Profissional - 260px */
+        [data-testid="stSidebar"] {
             width: 260px !important;
+            min-width: 260px !important;
             background-color: #000000 !important;
-            border-right: 1px solid #f64d23;
-        }}
+            border-right: 1px solid #f64d23 !important;
+        }
 
-        /* Ajuste de Margem Superior -35px */
-        .block-container {{
-            padding-top: 0rem;
-            margin-top: -35px;
-        }}
+        /* 4. Ajuste de Margem Superior (-35px) */
+        [data-testid="stMainBlockContainer"] {
+            padding-top: 0rem !important;
+            margin-top: -35px !important;
+        }
 
-        /* Botões Gêmeos Cápsula Laranja #f64d23 */
-        .stButton>button {{
-            width: 100%;
-            height: 48px;
+        /* 5. Estilização dos Botões Gêmeos Laranja #f64d23 */
+        div.stButton > button {
+            width: 100% !important;
+            height: 50px !important;
             background-color: #f64d23 !important;
             color: white !important;
             border-radius: 50px !important;
             border: none !important;
+            font-weight: 800 !important;
+            text-transform: uppercase !important;
+            box-shadow: 0 0 15px rgba(246, 77, 35, 0.3) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        div.stButton > button:hover {
+            box-shadow: 0 0 25px rgba(246, 77, 35, 0.7) !important;
+            transform: scale(1.02) !important;
+        }
+
+        /* 6. Card de Análise Métrica */
+        .card-analise {
+            background-color: #151515 !important;
+            border: 1px solid #f64d23 !important;
+            padding: 25px !important;
+            border-radius: 12px !important;
+            margin-bottom: 25px !important;
+        }
+
+        .titulo-card {
+            color: #f64d23 !important;
+            font-size: 22px !important;
             font-weight: bold !important;
-            text-transform: uppercase;
-            box-shadow: 0 0 15px rgba(246, 77, 35, 0.4);
-            position: relative;
-            overflow: hidden;
-            transition: 0.3s;
-        }}
+            border-left: 5px solid #f64d23 !important;
+            padding-left: 15px !important;
+            margin-bottom: 10px !important;
+        }
 
-        /* Efeito Laser Scan Simulation no Hover */
-        .stButton>button:hover {{
-            box-shadow: 0 0 25px rgba(246, 77, 35, 0.8);
-            transform: scale(1.02);
-        }}
+        /* 7. Ajuste dos Métricas (Labels e Valores) */
+        [data-testid="stMetric"] {
+            background-color: #1a1a1a !important;
+            padding: 15px !important;
+            border-radius: 10px !important;
+            border: 1px solid #333 !important;
+        }
+        
+        [data-testid="stMetricValue"] {
+            color: #ffffff !important;
+        }
 
-        /* Cards de Análise */
-        .card-analise {{
-            background: #141414;
-            border: 1px solid rgba(246, 77, 35, 0.3);
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }}
+        [data-testid="stMetricLabel"] {
+            color: #888888 !important;
+        }
 
-        .header-analise {{
-            border-left: 5px solid #f64d23;
-            padding-left: 15px;
-            margin-bottom: 20px;
-            color: #f64d23;
-            font-size: 20px;
-            font-weight: bold;
-        }}
     </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# ESTRUTURA DA INTERFACE (SIDEBAR)
+# INTERFACE SIDEBAR
 # ==========================================
 
 with st.sidebar:
     st.markdown("<h2 style='color:#f64d23;'>JARVIS GIAE</h2>", unsafe_allow_html=True)
-    st.info("Protocolo PRIME-V9 Ativo")
-    
-    st.markdown("### 🏟️ LIGAS INDEXADAS")
-    st.write("- Brasileirão (Séries A-D)")
-    st.write("- Estaduais (SP, RJ, RS, MG)")
-    st.write("- Copa do Brasil")
-    st.write("- Grandes Ligas Europeias")
+    st.markdown("<p style='color:#555; font-size:12px;'>PROTOCOL PRIME V9</p>", unsafe_allow_html=True)
     
     st.divider()
+    
+    st.markdown("### 🏟️ LIGAS INDEXADAS")
+    st.markdown("""
+    <div style='font-size:14px; color:#bbb; line-height:2;'>
+    • Brasileirão A, B, C, D<br>
+    • Estaduais (SP, RJ, MG, RS)<br>
+    • Copa do Brasil<br>
+    • Big 5 Europa
+    </div>
+    """, unsafe_allow_html=True)
+    
+    st.write("")
     if st.button("SINCRONIZAR BANCO"):
-        st.toast("Sincronizando com Servidores Globais...", icon="🔄")
+        st.toast("Sincronizando Banco de Dados...")
 
 # ==========================================
-# CONTEÚDO PRINCIPAL (MÉTRICA COPA DO BRASIL)
+# CONTEÚDO PRINCIPAL
 # ==========================================
 
-col1, col2 = st.columns(2)
+# Botões Gêmeos Laranja (Layout Superior)
+col_btn1, col_btn2 = st.columns(2)
+with col_btn1:
+    st.button("ANÁLISE ATIVA")
+with col_btn2:
+    st.button("RELATÓRIO DE RISCO")
 
-with col1:
-    if st.button("ANÁLISE ATIVA"):
-        st.write("Iniciando varredura de dados...")
-
-with col2:
-    if st.button("RELATÓRIO DE RISCO"):
-        st.write("Calculando volatilidade...")
-
-# Área de Análise Métrica
+# Card Central de Análise
 st.markdown("""
     <div class="card-analise">
-        <div class="header-analise">ANÁLISE MÉTRICA DOS JOGOS: COPA DO BRASIL</div>
-        <p style="color: #888;">CONFRONTO SUGERIDO: <b>FLAMENGO vs AMAZONAS</b></p>
+        <div class="titulo-card">ANÁLISE MÉTRICA DOS JOGOS: COPA DO BRASIL</div>
+        <p style="color: #888; margin-left: 20px;">CONFRONTO: <b>FLAMENGO vs AMAZONAS</b></p>
     </div>
 """, unsafe_allow_html=True)
 
-# Grid de Resultados (Exemplo de dados processados)
+# Grid de Métricas Customizadas
 m1, m2, m3, m4 = st.columns(4)
 
 with m1:
@@ -126,4 +144,5 @@ with m3:
 with m4:
     st.metric(label="AMBAS MARCAM", value="38%", delta="Baixa", delta_color="inverse")
 
-st.success("Comandante, sistema estabilizado e interface renderizada com sucesso.")
+st.markdown("<br><br>", unsafe_allow_html=True)
+st.success("Protocolo Estabilizado. Interface Dark Mode Ativa.")
