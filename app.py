@@ -1,46 +1,36 @@
 import streamlit as st
 import time
 
-# [GUARDIAN UI PROTECTION SYSTEM - GIAE v7.0]
+# [GUARDIAN UI PROTECTION SYSTEM - GIAE v8.0]
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
-# --- CSS DE ENGENHARIA SUPREMA (BLINDAGEM TOTAL CONTRA ALTERAÇÕES) ---
+# --- INJEÇÃO DE CÓDIGO FONTE (ESTILO SUPREMO) ---
 st.markdown("""
     <style>
-    /* 1. ELIMINAÇÃO DE ELEMENTOS PADRÃO */
+    /* 1. LIMPEZA DE INTERFACE */
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { display: none !important; }
     .stApp { background-color: #0b0e11 !important; color: #e2e8f0 !important; font-family: 'Roboto', sans-serif !important; }
     
-    /* 2. SIDEBAR MILIMÉTRICA (TRAVADA) */
-    [data-testid="stSidebar"] { 
-        background-color: #15191d !important; 
-        margin-top: 50px !important; 
-        width: 260px !important; 
-        min-width: 260px !important;
-        border-right: 1px solid #2d3843 !important;
-    }
+    /* 2. SIDEBAR MILIMÉTRICA */
+    [data-testid="stSidebar"] { background-color: #15191d !important; margin-top: 50px !important; width: 260px !important; min-width: 260px !important; border-right: 1px solid #2d3843 !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     [data-testid="stSidebarContent"]::-webkit-scrollbar { display: none !important; }
-    
-    /* ALINHAMENTO SUPERIOR (-35PX) */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0px !important; padding-top: 0px !important; margin-top: -35px !important; }
 
-    /* 3. NAVBAR SUPERIOR PROFISSIONAL */
+    /* 3. NAVBAR SUPERIOR */
     .betano-header { position: fixed; top: 0; left: 0; width: 100%; height: 50px; background-color: #1a242d; border-bottom: 2px solid #f64d23; display: flex; align-items: center; padding: 0 20px; z-index: 999999; }
     .logo-text { color: #f64d23; font-weight: 900; font-size: 19px; font-style: italic; }
     .nav-items { display: flex; gap: 20px; margin-left: 30px; flex-grow: 1; color: white; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-    @keyframes pulse-hex { 0%, 100% { transform: scale(0.8); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } }
+    @keyframes pulse-hex { 0%, 100% { transform: scale(0.9); } 50% { transform: scale(1.1); } }
     .logo-hex { width:20px; height:24px; background:#f64d23; clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); margin-right:10px; animation: pulse-hex 2s infinite ease-in-out; }
 
-    /* 4. DESIGN DOS BOTÕES GÊMEOS (CÁPSULAS LARANJAS) */
-    /* Este seletor ataca todos os botões principais para garantir que fiquem idênticos */
-    
+    /* 4. OS BOTÕES GÊMEOS (A SOLUÇÃO DEFINITIVA) */
     @keyframes laser-scan { 0% { left: -100%; } 100% { left: 100%; } }
-    @keyframes plasma-glow { 0%, 100% { box-shadow: 0 0 5px #f64d23; } 50% { box-shadow: 0 0 20px #f64d23; } }
+    @keyframes plasma-glow { 0%, 100% { box-shadow: 0 0 5px #f64d23; } 50% { box-shadow: 0 0 15px #f64d23; } }
 
-    /* SELETOR MESTRE PARA OS BOTÕES LARANJAS */
+    /* FORÇA BRUTA: Targetando todos os botões principais para serem LARANJA CÁPSULA */
     [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div:first-child button,
-    .main .stButton button {
+    div.stButton > button {
         background-color: #f64d23 !important;
         color: white !important;
         border-radius: 50px !important;
@@ -57,34 +47,32 @@ st.markdown("""
         align-items: center !important;
         justify-content: center !important;
         animation: plasma-glow 3s infinite ease-in-out !important;
-        margin-bottom: 15px !important;
+        margin: 10px auto !important;
     }
 
-    /* REMOÇÃO ABSOLUTA DO QUADRADO BRANCO/CINZA AO PASSAR O MOUSE */
+    /* REMOVER EFEITO BRANCO/QUADRADO NO HOVER (O SEGREDO) */
     [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div:first-child button:hover,
+    div.stButton > button:hover,
     [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div:first-child button:active,
-    [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div:first-child button:focus,
-    .main .stButton button:hover,
-    .main .stButton button:active,
-    .main .stButton button:focus {
+    div.stButton > button:active {
         background-color: #f64d23 !important;
         color: white !important;
-        border: none !important;
-        outline: none !important;
-        box-shadow: 0 0 30px #f64d23 !important;
         border-radius: 50px !important;
+        border: none !important;
+        box-shadow: 0 0 25px #f64d23 !important;
+        outline: none !important;
     }
 
-    /* SCANNER LASER NOS BOTÕES GÊMEOS */
+    /* SCANNER LASER NOS DOIS BOTÕES */
     [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div:first-child button::after,
-    .main .stButton button::after {
+    div.stButton > button::after {
         content: "" !important; position: absolute; top: 0; left: -100%; width: 80px; height: 100%;
         background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important;
         animation: laser-scan 2.5s infinite linear !important;
-        transform: skewX(-20deg);
+        transform: skewX(-25deg);
     }
 
-    /* 5. BOTÕES DE CATEGORIA (ESTILO MENU) */
+    /* 5. BOTÕES DE CATEGORIA SIDEBAR */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:not(:first-child) button {
         background-color: transparent !important;
         color: #e2e8f0 !important;
@@ -99,7 +87,7 @@ st.markdown("""
         text-transform: uppercase;
     }
 
-    /* 6. TÍTULOS E LABELS */
+    /* 6. TÍTULOS */
     .white-title { color: white !important; font-weight: 900; font-size: 26px !important; margin-bottom: 25px !important; }
     .standard-text { color: #e2e8f0 !important; font-weight: 700; font-size: 18px !important; margin-top: 15px !important; }
     
@@ -107,7 +95,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- NAVBAR (FIXADA) ---
+# --- NAVBAR ---
 st.markdown(f"""
     <div class="betano-header">
         <div class="logo-hex"></div>
@@ -122,7 +110,7 @@ st.markdown(f"""
     </div>
     """, unsafe_allow_html=True)
 
-# --- BANCO DE DADOS INTEGRAL (RESTAURADO) ---
+# --- BANCO DE DADOS (PROTEGIDO) ---
 db_global = {
     "BR COMPETIÇÕES BRASILEIRAS": {
         "Brasileirão": ["Série A", "Série B", "Série C", "Série D"],
@@ -141,19 +129,14 @@ db_global = {
     }
 }
 
-# TIMES SINCRONIZADOS
+# DICIONÁRIO DE TIMES (MAPEAMENTO REAL)
 times_db = {
     "Série A": ["Palmeiras", "Flamengo", "Botafogo", "Fortaleza", "São Paulo", "Internacional", "Cruzeiro", "Bahia", "Vasco", "Atlético-MG"],
     "Série B": ["Santos", "Sport", "Novorizontino", "Mirassol", "Ceará", "Goiás", "Coritiba"],
-    "Série C": ["Náutico", "Remo", "ABC", "CSA", "Figueirense"],
-    "Série D": ["Santa Cruz", "Brasil de Pelotas", "Maringá"],
     "Carioca": ["Flamengo", "Vasco", "Fluminense", "Botafogo"],
-    "Gaúcho": ["Grêmio", "Internacional", "Juventude", "Caxias"],
-    "Copa do Nordeste": ["Fortaleza", "Bahia", "Sport", "Vitória", "Ceará", "CRB"],
     "Premier League": ["Man City", "Arsenal", "Liverpool", "Chelsea", "Tottenham"],
     "Serie A": ["Inter de Milão", "Milan", "Juventus", "Atalanta", "Napoli"],
-    "Bundesliga": ["Bayer Leverkusen", "Bayern Munich", "Dortmund"],
-    "Ligue 1": ["PSG", "Monaco", "Lille", "Nice"]
+    "Champions League": ["Real Madrid", "Man City", "Bayern Munich", "PSG", "Inter de Milão"]
 }
 
 # --- SIDEBAR ---
@@ -186,12 +169,13 @@ if st.session_state.app_state == "processar":
     with t1: casa = st.selectbox("TIME CASA", elenco)
     with t2: fora = st.selectbox("TIME FORA", [t for t in elenco if t != casa])
 
+    # O BOTÃO QUE ESTAVA BRANCO AGORA É FORÇADO A SER LARANJA CÁPSULA
     if st.button("PROCESSAR ALGORITMO"):
-        with st.status("GIAE IA: Processando métricas...", expanded=True) as s:
+        with st.status("GIAE IA: Processando...", expanded=True) as s:
             time.sleep(1.2); s.update(label="analise de algoritimo concluida", state="complete")
-        st.success(f"🤖 Análise métrica de {casa} vs {fora} finalizada.")
+        st.success(f"🤖 Análise concluída.")
 else:
     st.markdown("### 🤖 Cockpit de Comando Ativado")
 
 # FOOTER
-st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | DESIGN GÊMEOS V7.0 BLINDADO</div><div>GESTOR IA PRO v7.0 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | DESIGN GÊMEOS V8.0 BLINDADO</div><div>GESTOR IA PRO v8.0 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
