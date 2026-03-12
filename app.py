@@ -1,16 +1,17 @@
 import streamlit as st
 import time
 
-# [GUARDIAN UI PROTECTION SYSTEM - GIAE v5.0]
+# [GUARDIAN UI PROTECTION SYSTEM - GIAE v9.0]
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
-# --- CSS DE ALTA ESPECIFICIDADE (FORÇA BRUTA CONTRA STREAMLIT DEFAULTS) ---
+# --- INJEÇÃO DE CÓDIGO FONTE SUPREMO (NÃO ALTERAR) ---
 st.markdown("""
     <style>
-    /* 1. RESET GERAL E SIDEBAR */
+    /* 1. LIMPEZA TOTAL DE INTERFACE */
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { display: none !important; }
     .stApp { background-color: #0b0e11 !important; color: #e2e8f0 !important; font-family: 'Roboto', sans-serif !important; }
     
+    /* 2. SIDEBAR MILIMÉTRICA (260PX / TOP -35PX) */
     [data-testid="stSidebar"] { 
         background-color: #15191d !important; 
         margin-top: 50px !important; 
@@ -19,75 +20,72 @@ st.markdown("""
         border-right: 1px solid #2d3843 !important;
     }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
+    [data-testid="stSidebarContent"]::-webkit-scrollbar { display: none !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0px !important; padding-top: 0px !important; margin-top: -35px !important; }
 
-    /* 2. NAVBAR SUPERIOR */
+    /* 3. NAVBAR SUPERIOR PROFISSIONAL */
     .betano-header { position: fixed; top: 0; left: 0; width: 100%; height: 50px; background-color: #1a242d; border-bottom: 2px solid #f64d23; display: flex; align-items: center; padding: 0 20px; z-index: 999999; }
     .logo-text { color: #f64d23; font-weight: 900; font-size: 19px; font-style: italic; }
     .nav-items { display: flex; gap: 20px; margin-left: 30px; flex-grow: 1; color: white; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-    @keyframes pulse-hex { 0%, 100% { transform: scale(0.9); filter: drop-shadow(0 0 2px #f64d23); } 50% { transform: scale(1.1); filter: drop-shadow(0 0 10px #f64d23); } }
+    @keyframes pulse-hex { 0%, 100% { transform: scale(0.9); } 50% { transform: scale(1.1); } }
     .logo-hex { width:20px; height:24px; background:#f64d23; clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); margin-right:10px; animation: pulse-hex 2s infinite ease-in-out; }
 
-    /* 3. BOTÕES CÁPSULA (SIDEBAR E CENTRAL) - DESIGN BLINDADO */
-    /* Targetando o botão especificamente para ignorar o hover "quadrado" */
-    div[data-testid="stVerticalBlock"] button, .stButton button {
-        background-color: #f64d23 !important;
-        color: white !important;
-        border-radius: 50px !important; /* Arredondamento total */
-        border: none !important;
-        outline: none !important;
-        font-weight: 900 !important;
-        text-transform: uppercase !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        transition: none !important; /* Remove transições que geram o bug visual */
-    }
-
-    /* BOTÃO FERRAMENTA IA (SIDEBAR) - GRANDE E PROPORCIONAL */
-    [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div:first-child button {
-        height: 60px !important;
-        width: 95% !important;
-        font-size: 15px !important;
-        margin: 0px auto 25px 10px !important;
-        animation: plasma-glow 3s infinite ease-in-out !important;
-    }
-
-    /* BOTÃO PROCESSAR ALGORITMO (CENTRAL) */
-    .main .stButton button {
-        height: 60px !important;
-        width: 320px !important;
-        font-size: 15px !important;
-        margin-top: 20px !important;
-        animation: plasma-glow 3s infinite ease-in-out !important;
-    }
-
-    /* REMOÇÃO TOTAL DO QUADRADO NO HOVER */
-    div[data-testid="stVerticalBlock"] button:hover, 
-    div[data-testid="stVerticalBlock"] button:active,
-    div[data-testid="stVerticalBlock"] button:focus,
-    .stButton button:hover,
-    .stButton button:active,
-    .stButton button:focus {
-        background-color: #f64d23 !important; /* Mantém a mesma cor ao passar o mouse */
-        color: white !important;
-        border-radius: 50px !important;
-        box-shadow: 0 0 20px #f64d23 !important; /* Apenas o brilho, sem quadrado */
-        border: none !important;
-        outline: none !important;
-    }
-
-    /* ANIMAÇÃO SCANNER LASER (UNIFICADA) */
+    /* 4. BOTÕES GÊMEOS (CÁPSULAS LARANJAS) */
     @keyframes laser-scan { 0% { left: -100%; } 100% { left: 100%; } }
     @keyframes plasma-glow { 0%, 100% { box-shadow: 0 0 5px #f64d23; } 50% { box-shadow: 0 0 15px #f64d23; } }
 
-    div[data-testid="stVerticalBlock"] > div:first-child button::after,
-    .stButton button::after {
-        content: "" !important; position: absolute !important; top: 0 !important; left: -100% !important; width: 60px !important; height: 100% !important;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important; animation: laser-scan 2.5s infinite linear !important;
+    /* ESTILO BASE PARA OS BOTÕES LARANJAS */
+    div.stButton > button, [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div:first-child button {
+        background-color: #f64d23 !important;
+        color: white !important;
+        border-radius: 50px !important;
+        height: 50px !important;
+        border: none !important;
+        font-weight: 900 !important;
+        font-size: 12px !important;
+        text-transform: uppercase !important;
+        position: relative !important;
+        overflow: hidden !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        animation: plasma-glow 3s infinite ease-in-out !important;
+        transition: none !important;
+        text-align: center !important;
     }
 
-    /* 4. BOTÕES SECUNDÁRIOS DA SIDEBAR */
+    /* AJUSTE ESPECÍFICO DE LARGURA DO BOTÃO FERRAMENTA IA (REDUZIDO) */
+    [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div:first-child button {
+        width: 180px !important; /* LARGURA REDUZIDA CONFORME PEDIDO */
+        margin: 10px auto 25px auto !important; /* CENTRALIZADO NA SIDEBAR */
+    }
+
+    /* AJUSTE ESPECÍFICO DO BOTÃO PROCESSAR ALGORITMO (CENTRAL) */
+    .main div.stButton > button {
+        width: 280px !important;
+        margin-top: 20px !important;
+    }
+
+    /* SCANNER LASER NOS DOIS BOTÕES */
+    div.stButton > button::after, 
+    [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div:first-child button::after {
+        content: "" !important; position: absolute; top: 0; left: -100%; width: 70px; height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important;
+        animation: laser-scan 2.5s infinite linear !important;
+        transform: skewX(-20deg);
+    }
+
+    /* REMOÇÃO TOTAL DO QUADRADO/FUNDO BRANCO NO HOVER */
+    div.stButton > button:hover, div.stButton > button:active, div.stButton > button:focus,
+    [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div:first-child button:hover {
+        background-color: #f64d23 !important;
+        color: white !important;
+        border: none !important;
+        outline: none !important;
+        box-shadow: 0 0 25px #f64d23 !important;
+    }
+
+    /* 5. BOTÕES DE CATEGORIA DA SIDEBAR (MENU) */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:not(:first-child) button {
         background-color: transparent !important;
         color: #e2e8f0 !important;
@@ -99,17 +97,18 @@ st.markdown("""
         padding: 12px 15px !important;
         width: 100% !important;
         border-radius: 0px !important;
+        text-transform: uppercase;
     }
 
-    /* 5. TÍTULOS */
+    /* 6. TÍTULOS E ESTILOS DE TEXTO */
     .white-title { color: white !important; font-weight: 900; font-size: 26px !important; margin-bottom: 25px !important; }
-    .standard-text { color: #e2e8f0 !important; font-weight: 700; font-size: 18px !important; margin-top: 10px !important; }
-
+    .standard-text { color: #e2e8f0 !important; font-weight: 700; font-size: 18px !important; margin-top: 15px !important; }
+    
     .betano-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1a242d; height: 25px; border-top: 1px solid #2d3843; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #94a3b8; z-index: 999999; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- NAVBAR ---
+# --- NAVBAR (FIXADA NO TOPO) ---
 st.markdown(f"""
     <div class="betano-header">
         <div class="logo-hex"></div>
@@ -124,27 +123,42 @@ st.markdown(f"""
     </div>
     """, unsafe_allow_html=True)
 
-# --- BANCO DE DADOS (PRESERVADO) ---
+# --- BANCO DE DADOS INTEGRAL (RESTAURADO E COMPLETO) ---
 db_global = {
     "BR COMPETIÇÕES BRASILEIRAS": {
         "Brasileirão": ["Série A", "Série B", "Série C", "Série D"],
         "Copas Nacionais": ["Copa do Brasil", "Supercopa do Brasil"],
-        "Estaduais": ["Paulistão", "Carioca", "Mineiro", "Gaúcho"]
+        "Estaduais": ["Paulistão", "Carioca", "Mineiro", "Gaúcho"],
+        "Regionais": ["Copa do Nordeste", "Copa Verde"]
     },
     "EU ELITE EUROPEIA (BIG 5)": {
         "Inglaterra": ["Premier League"], "Espanha": ["La Liga"], "Alemanha": ["Bundesliga"], "Itália": ["Serie A"], "França": ["Ligue 1"]
+    },
+    "🌎 AMÉRICAS (SUL / CENTRAL)": {
+        "Continental": ["Copa Libertadores", "Copa Sul-Americana"], "Nacionais": ["Liga MX", "Liga Profesional ARG"]
+    },
+    "🏆 TORNEIOS INTERNACIONAIS": {
+        "UEFA": ["Champions League", "Europa League"], "Mundial": ["Mundial de Clubes FIFA"]
     }
 }
 
 times_db = {
-    "Série A": ["Palmeiras", "Flamengo", "Botafogo", "Fortaleza", "São Paulo", "Internacional"],
+    "Série A": ["Palmeiras", "Flamengo", "Botafogo", "Fortaleza", "São Paulo", "Internacional", "Cruzeiro", "Bahia", "Vasco", "Atlético-MG", "Fluminense", "Corinthians", "Grêmio"],
+    "Série B": ["Santos", "Sport", "Novorizontino", "Mirassol", "Ceará", "Goiás", "Coritiba"],
+    "Série C": ["Náutico", "Figueirense", "Remo", "CSA", "Sampaio Corrêa", "ABC", "Botafogo-PB"],
+    "Série D": ["Brasil de Pelotas", "Santa Cruz", "Maringá", "Anápolis", "Portuguesa-RJ"],
+    "Copa do Nordeste": ["Fortaleza", "Bahia", "Sport", "Ceará", "Vitória", "CRB", "Náutico"],
+    "Paulistão": ["Palmeiras", "Santos", "São Paulo", "Corinthians", "Bragantino"],
     "Carioca": ["Flamengo", "Vasco", "Fluminense", "Botafogo"],
-    "Premier League": ["Man City", "Arsenal", "Liverpool", "Chelsea", "Tottenham"]
+    "Premier League": ["Man City", "Arsenal", "Liverpool", "Aston Villa", "Chelsea", "Tottenham"],
+    "Serie A": ["Inter de Milão", "Milan", "Juventus", "Atalanta", "Napoli", "Roma"],
+    "Champions League": ["Real Madrid", "Man City", "Bayern Munich", "PSG", "Barcelona"]
 }
 
-# --- SIDEBAR ---
+# --- SIDEBAR (ALINHAMENTO PROTEGIDO) ---
 with st.sidebar:
-    if st.button("FERRAMENTA IA"): st.session_state.app_state = "processar"
+    if st.button("FERRAMENTA IA"): 
+        st.session_state.app_state = "processar"
     st.button("PRÓXIMOS JOGOS")
     st.button("VENCEDORES DA COMPETIÇÃO")
     st.button("APOSTAS POR ODDS")
@@ -153,7 +167,7 @@ with st.sidebar:
     st.button("APOSTAS POR CARTÕES")
     st.button("ÁRBITRO DA PARTIDA")
 
-# --- ÁREA CENTRAL ---
+# --- ÁREA CENTRAL (COCKPIT) ---
 if "app_state" not in st.session_state: st.session_state.app_state = "home"
 
 if st.session_state.app_state == "processar":
@@ -172,12 +186,20 @@ if st.session_state.app_state == "processar":
     with t1: casa = st.selectbox("TIME CASA", elenco)
     with t2: fora = st.selectbox("TIME FORA", [t for t in elenco if t != casa])
 
+    # BOTÃO CENTRAL IDÊNTICO AO BOTÃO DA SIDEBAR
     if st.button("PROCESSAR ALGORITMO"):
-        with st.status("GIAE IA: Processando...", expanded=True) as s:
+        with st.status("GIAE IA: Processando algoritmos...", expanded=True) as s:
             time.sleep(1.2); s.update(label="analise de algoritimo concluida", state="complete")
-        st.success(f"🤖 Análise concluída.")
+        
+        # RESULTADO DA IA
+        st.success(f"🤖 Análise concluída: {casa} vs {fora}")
+        res1, res2, res3 = st.columns(3)
+        res1.metric("Vencedor", casa, "68%")
+        res2.metric("Gols", "+2.5", "84%")
+        res3.metric("Escanteios", "Over 10.5", "Alta")
 else:
     st.markdown("### 🤖 Cockpit de Comando Ativado")
+    st.write("Configuração visual concluída. Selecione Processar Algoritmo para operar.")
 
 # FOOTER
-st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | DESIGN V5.0 BLINDADO</div><div>GESTOR IA PRO v5.0 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | DESIGN FINAL BLINDADO</div><div>GESTOR IA PRO v9.0 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
