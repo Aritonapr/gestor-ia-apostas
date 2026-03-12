@@ -1,7 +1,7 @@
 import streamlit as st
 import time
 
-# [GUARDIAN UI PROTECTION SYSTEM - GIAE v3.8]
+# [GUARDIAN UI PROTECTION SYSTEM - GIAE v3.9]
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
 # --- CSS DE ALTA FIDELIDADE (TRAVADO E BLINDADO) ---
@@ -32,7 +32,7 @@ st.markdown("""
     @keyframes laser-scan { 0% { left: -100%; } 100% { left: 100%; } }
     @keyframes plasma-glow { 0%, 100% { box-shadow: 0 0 5px #f64d23; } 50% { box-shadow: 0 0 20px #f64d23; } }
     
-    /* UNIFICAÇÃO DE ESTILO: BOTÕES CÁPSULA (SIDEBAR E CENTRAL) */
+    /* UNIFICAÇÃO DE ESTILO: BOTÕES CÁPSULA LARANJA #f64d23 */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button,
     .main div.stButton > button {
         background: #f64d23 !important; color: white !important; border-radius: 30px !important; 
@@ -45,20 +45,20 @@ st.markdown("""
         text-transform: uppercase !important;
     }
 
-    /* BOTÃO CENTRAL - LARGURA ESPECÍFICA */
-    .main div.stButton > button { width: 280px !important; margin-top: 10px; }
+    /* LARGURA E MARGEM DO BOTÃO CENTRAL */
+    .main div.stButton > button { width: 280px !important; margin-top: 15px; }
 
-    /* SCANNER LASER UNIFICADO */
+    /* SCANNER LASER NOS BOTÕES LARANJAS */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child button::after,
     .main div.stButton > button::after {
         content: "" !important; position: absolute !important; top: 0 !important; left: -100% !important; width: 50px !important; height: 100% !important;
         background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important; animation: laser-scan 2.5s infinite linear !important;
     }
 
-    /* BOTÕES SECUNDÁRIOS DA SIDEBAR */
+    /* BOTÕES SECUNDÁRIOS SIDEBAR */
     [data-testid="stSidebar"] button { background-color: transparent !important; color: #e2e8f0 !important; border: none !important; border-bottom: 1px solid #1e293b !important; text-align: left !important; font-weight: 700 !important; font-size: 11px !important; padding: 12px 15px !important; width: 100% !important; border-radius: 0px !important; text-transform: uppercase; }
     
-    /* ESTILO DOS TÍTULOS */
+    /* TÍTULOS */
     .white-title { color: #e2e8f0 !important; font-weight: 900; font-size: 24px !important; margin-bottom: 20px !important; }
     .standard-text { color: #e2e8f0 !important; font-weight: 700; font-size: 18px !important; margin-top: 10px !important; margin-bottom: 10px !important; }
 
@@ -90,10 +90,6 @@ db_global = {
     },
     "EU ELITE EUROPEIA (BIG 5)": {
         "Inglaterra": ["Premier League"], "Espanha": ["La Liga"], "Alemanha": ["Bundesliga"], "Itália": ["Serie A"], "França": ["Ligue 1"]
-    },
-    "🏆 TORNEIOS INTERNACIONAIS": {
-        "UEFA": ["Champions League", "Europa League"],
-        "Continente": ["Copa Libertadores", "Copa Sul-Americana"]
     }
 }
 
@@ -105,22 +101,18 @@ times_db = {
 
 # --- SIDEBAR (FERRAMENTA IA) ---
 with st.sidebar:
-    if st.button("FERRAMENTA IA"): 
-        st.session_state.app_state = "processar"
-    st.button("PRÓXIMOS JOGOS")
-    st.button("VENCEDORES DA COMPETIÇÃO")
-    st.button("APOSTAS POR ODDS")
-    st.button("APOSTAS POR GOLS")
-    st.button("APOSTAS POR ESCANTEIOS")
-    st.button("APOSTAS POR CARTÕES")
+    if st.button("FERRAMENTA IA"): st.session_state.app_state = "processar"
+    st.button("PRÓXIMOS JOGOS"); st.button("VENCEDORES DA COMPETIÇÃO")
+    st.button("APOSTAS POR ODDS"); st.button("APOSTAS POR GOLS")
+    st.button("APOSTAS POR ESCANTEIOS"); st.button("APOSTAS POR CARTÕES")
     st.button("ÁRBITRO DA PARTIDA")
 
-# --- ÁREA CENTRAL ---
+# --- ÁREA CENTRAL (COCKPIT) ---
 if "app_state" not in st.session_state: st.session_state.app_state = "home"
 
 if st.session_state.app_state == "processar":
-    # TÍTULO RENOMEADO E EM BRANCO
-    st.markdown('<div class="white-title">ANÁLISE TÁTICA DOS JOGOS</div>', unsafe_allow_html=True)
+    # TÍTULO RENOMEADO PARA ANÁLISE MÉTRICA DOS JOGOS
+    st.markdown('<div class="white-title">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
     
     c1, c2, c3 = st.columns(3)
     with c1: reg_sel = st.selectbox("SELECIONE A REGIÃO", list(db_global.keys()))
@@ -131,18 +123,17 @@ if st.session_state.app_state == "processar":
     st.markdown(f'<div class="standard-text">Confronto: {comp_sel}</div>', unsafe_allow_html=True)
     
     elenco = times_db.get(comp_sel, [f"Time A ({comp_sel})", f"Time B ({comp_sel})"])
-    
     t1, t2 = st.columns(2)
     with t1: casa = st.selectbox("TIME CASA", elenco)
     with t2: fora = st.selectbox("TIME FORA", [t for t in elenco if t != casa])
 
-    # BOTÃO CENTRAL IDÊNTICO AO BOTÃO LATERAL
+    # BOTÃO CENTRAL LARANJA COM MESMA COR DO BOTAO FERRAMENTA IA
     if st.button("PROCESSAR ALGORITMO"):
         with st.status("GIAE IA: Processando...", expanded=True) as s:
-            time.sleep(1.5); s.update(label="analise de algoritimo concluida", state="complete")
-        st.success(f"🤖 Resultados táticos para {casa} vs {fora} finalizados.")
+            time.sleep(1.2); s.update(label="analise de algoritimo concluida", state="complete")
+        st.success(f"🤖 Análise métrica de {casa} vs {fora} finalizada.")
 else:
     st.markdown("### 🤖 Cockpit de Comando Ativado")
 
 # FOOTER
-st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | SINCRONIA: V3.8</div><div>GESTOR IA PRO v3.8 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | COR: LARANJA GIAE</div><div>GESTOR IA PRO v3.9 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
