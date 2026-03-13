@@ -2,8 +2,8 @@ import streamlit as st
 import time
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v18.0 - PROTOCOLO CRIZAL FINAL REFINEMENT]
-# ESTADO: ATIVO (SIDEBAR RESTAURADA | FOOTER AZUL ROYAL | REGISTRAR BOTÃO)
+# [GIAE KERNEL SHIELD v18.0 - PROTOCOLO CRIZAL ROYAL HEADER]
+# ESTADO: ATIVO (HEADER: AZUL ROYAL | SIDEBAR: GRAFITE | LOGO: ROXO)
 # CHAVE DE RECONHECIMENTO: GIAE-V17-ELITE-RECOVERY
 # ==============================================================================
 
@@ -25,11 +25,11 @@ st.markdown("""
     .stApp { background-color: #0b0e11 !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; padding-top: 0px !important; }
 
-    /* [02] NAVBAR SUPERIOR (TEXTOS BRANCOS / LOGO ROXO) */
+    /* [02] NAVBAR SUPERIOR (AZUL ROYAL - SOLICITADO) */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 55px; 
-        background-color: #0d0d12 !important; 
-        border-bottom: 1px solid #1e293b !important; 
+        background-color: #002366 !important; /* FUNDO AZUL ROYAL NO MENU */
+        border-bottom: 1px solid rgba(255,255,255,0.1) !important; 
         display: flex; align-items: center; 
         padding: 0 40px !important; 
         z-index: 999999; 
@@ -44,21 +44,20 @@ st.markdown("""
         display: flex; gap: 20px; flex-grow: 1; 
         color: #ffffff !important; 
         font-size: 10px !important; 
-        font-weight: 600 !important;
+        font-weight: 700 !important;
         text-transform: uppercase; 
         letter-spacing: 0.8px; 
     }
 
-    /* ELEMENTOS DA DIREITA */
+    /* ELEMENTOS DA DIREITA NO CABEÇALHO AZUL */
     .header-right { display: flex; align-items: center; gap: 15px; }
-    .search-icon { color: #ffffff; cursor: pointer; font-size: 14px; margin-right: 5px; }
+    .search-icon { color: #ffffff; cursor: pointer; font-size: 14px; }
     
-    /* BOTÃO REGISTRAR (CIRCULAR/ARREDONDADO) */
     .registrar-btn { 
         color: #ffffff; font-size: 10px; font-weight: 700; 
         text-transform: uppercase; cursor: pointer;
         border: 1px solid #ffffff; padding: 6px 15px; 
-        border-radius: 20px; /* EFEITO CIRCULAR */
+        border-radius: 20px; /* BOTÃO CIRCULAR */
         white-space: nowrap;
     }
     .entrar-btn {
@@ -68,14 +67,14 @@ st.markdown("""
         text-transform: uppercase;
     }
 
-    /* [03] SIDEBAR (ORGANIZAÇÃO ANTERIOR RESTAURADA - SEM QUEBRA) */
+    /* [03] SIDEBAR (ESTRUTURA ORIGINAL GRAFITE PRESERVADA) */
     [data-testid="stSidebar"] { 
         background-color: #11151a !important; 
         border-right: 1px solid #1e293b !important;
         margin-top: 50px !important;
     }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { 
-        margin-top: -65px !important; /* TRAVAMENTO DE POSIÇÃO */
+        margin-top: -65px !important; 
         gap: 0px !important; 
     }
     [data-testid="stSidebar"] button {
@@ -97,7 +96,7 @@ st.markdown("""
         border-left: 4px solid #6d28d9 !important; 
     }
 
-    /* [04] ÁREA CENTRAL */
+    /* [04] CONTEÚDO CENTRAL */
     section.main div.stButton > button {
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
         color: #ffffff !important;
@@ -111,19 +110,19 @@ st.markdown("""
         margin-top: 15px !important;
     }
 
-    /* [05] FOOTER (AZUL ROYAL - SOLICITADO) */
+    /* [05] FOOTER (FUNDO ESCURO PADRÃO) */
     .betano-footer { 
         position: fixed; bottom: 0; left: 0; width: 100%; 
-        background-color: #002366 !important; /* AZUL ROYAL */
+        background-color: #0d0d12 !important; 
         height: 25px; border-top: 1px solid #1e293b; 
         display: flex; justify-content: space-between; 
         align-items: center; padding: 0 20px; 
-        font-size: 9px; color: #ffffff; z-index: 999999; 
+        font-size: 9px; color: #475569; z-index: 999999; 
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- ESTRUTURA NAVBAR ---
+# --- ESTRUTURA CABEÇALHO (AZUL ROYAL) ---
 st.markdown(f"""
     <div class="betano-header">
         <div class="logo-text">GESTOR IA</div>
@@ -143,7 +142,7 @@ st.markdown(f"""
     </div>
     """, unsafe_allow_html=True)
 
-# --- SIDEBAR (ORGANIZAÇÃO RESTAURADA) ---
+# --- SIDEBAR (GRAFITE ORIGINAL) ---
 with st.sidebar:
     st.button("JOGOS DO DIA")
     st.button("PRÓXIMOS JOGOS")
@@ -154,7 +153,7 @@ with st.sidebar:
     st.button("APOSTAS POR CARTÕES")
     st.button("ÁRBITRO DA PARTIDA")
 
-# --- CONTEÚDO CENTRAL ---
+# --- CONTEÚDO PRINCIPAL ---
 st.markdown('<div style="height: 60px;"></div>', unsafe_allow_html=True)
 st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:5px; letter-spacing: -1px;">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
 st.markdown('<div style="color:#ffffff; font-size:10px; font-weight:700; margin-bottom:25px; text-transform:uppercase;">Protocolo de Análise Crizal Active</div>', unsafe_allow_html=True)
@@ -167,16 +166,14 @@ with c3: st.selectbox("CAMPEONATO", ["Série A", "Série B"])
 
 st.markdown("<hr style='border: 0.1px solid #1e293b; margin: 20px 0;'>", unsafe_allow_html=True)
 
-# Times
+# Seleção de Times
 t1, t2 = st.columns(2)
 with t1: st.selectbox("TIME CASA", ["Palmeiras", "Flamengo", "Botafogo"])
 with t2: st.selectbox("TIME FORA", ["Flamengo", "Vasco", "Palmeiras"])
 
 # Executar
 if st.button("EXECUTAR ALGORITMO GIAE"):
-    st.toast("Analisando kernels...", icon="🚀")
-    time.sleep(1)
-    st.success("Concluído")
+    st.success("🤖 Análise Crizal Finalizada")
 
-# FOOTER AZUL ROYAL
-st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v18.0 | RODAPÉ ROYAL BLUE</div></div>""", unsafe_allow_html=True)
+# FOOTER PADRÃO
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v18.0 | ROYAL HEADER EDITION</div></div>""", unsafe_allow_html=True)
