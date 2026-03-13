@@ -1,105 +1,102 @@
 import streamlit as st
 import time
 
-# [GIAE PROTOCOLO SOBERANO v16.0 - DISTRIBUIÇÃO DE ESPAÇO ELITE]
+# [GIAE PROTOCOLO SOBERANO v17.0 - CORREÇÃO DE ESTRUTURA E ALINHAMENTO]
 st.set_page_config(
     page_title="GESTOR IA - TRADING PRO", 
     layout="wide", 
     initial_sidebar_state="expanded"
 )
 
-# --- BLOCO DE SEGURANÇA E ALINHAMENTO DE MARGEM ---
+# --- BLOCO DE SEGURANÇA CSS (BLINDAGEM TOTAL) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
 
-    /* 1. RESET E BLINDAGEM */
+    /* 1. RESET E OCULTAR ELEMENTOS NATIVOS */
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { display: none !important; }
     .stApp { background-color: #0b0e11 !important; }
 
-    /* 2. NAVBAR ESTILO "CONTAINER LARGO" (IGUAL A BETANO) */
+    /* 2. NAVBAR SUPERIOR (FIXANDO LOGO EM 1 LINHA E GAP PROPORCIONAL) */
     .betano-header { 
-        position: fixed; top: 0; left: 0; width: 100%; height: 55px; 
+        position: fixed; top: 0; left: 0; width: 100%; height: 50px; 
         background-color: #121212 !important; 
         border-bottom: 1px solid #2d3843 !important; 
         display: flex; align-items: center; 
-        /* O SEGREDO DO ESPAÇO: PADDING LATERAL DE 100PX */
-        padding: 0 100px !important; 
+        padding: 0 40px !important; /* Respiro lateral como a Betano */
         z-index: 999999; 
     }
     .logo-text { 
-        color: #ffffff !important; font-weight: 900; font-size: 22px; 
-        text-transform: uppercase; margin-right: 50px; letter-spacing: -1.2px; 
+        color: #ffffff !important; font-weight: 900; font-size: 20px; 
+        text-transform: uppercase; margin-right: 40px; 
+        white-space: nowrap !important; /* IMPEDE QUEBRA DO LOGO */
+        letter-spacing: -1px; 
     }
     .nav-items { 
-        display: flex; 
-        /* GAP AMPLIADO PARA DAR SENSAÇÃO DE LARGURA */
-        gap: 35px !important; 
-        flex-grow: 1; 
-        color: #ffffff !important; 
-        font-size: 12px !important; 
-        font-weight: 400 !important; 
-        text-transform: uppercase; 
-        letter-spacing: 0.8px; 
+        display: flex; gap: 25px; flex-grow: 1; 
+        color: #ffffff !important; font-size: 11px !important; 
+        font-weight: 400 !important; text-transform: uppercase; 
+        letter-spacing: 0.8px; white-space: nowrap !important;
     }
 
-    /* BOTÕES DA NAVBAR (ESTILO REFINADO) */
-    .btn-registrar { border: 1px solid #475569; color: white; padding: 6px 15px; border-radius: 4px; font-size: 11px; font-weight: 700; cursor: pointer; }
-    .btn-entrar { background: #00cc66 !important; color: white !important; padding: 8px 22px; border-radius: 4px; font-weight: 800; border: none; font-size: 11px; cursor: pointer; }
-
-    /* 3. SIDEBAR (SUBIDA MÁXIMA E LIMPEZA) */
+    /* 3. SIDEBAR (LIMPANDO FUNDO LARANJA E VOLTANDO ESTILO LISTA) */
     [data-testid="stSidebar"] { 
         background-color: #11151a !important; 
         border-right: 1px solid #2d3843 !important;
-        margin-top: 55px !important;
+        margin-top: 50px !important;
     }
     [data-testid="stSidebarContent"] { overflow: hidden !important; padding-top: 0px !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { 
         margin-top: -65px !important; /* PUXA JOGOS DO DIA PARA O TOPO */
         gap: 0px !important; 
     }
+
+    /* MATANDO O FUNDO LARANJA NA SIDEBAR */
     [data-testid="stSidebar"] button {
-        background-color: transparent !important;
-        color: #94a3b8 !important;
+        background-color: transparent !important; /* FUNDO TOTALMENTE TRANSPARENTE */
+        background: transparent !important;
+        color: #adb5bd !important;
         border: none !important;
         border-bottom: 1px solid #1e293b !important;
         border-radius: 0px !important;
         text-align: left !important;
+        justify-content: flex-start !important;
         width: 100% !important;
         padding: 12px 20px !important;
         font-weight: 400 !important;
         font-size: 11px !important;
         text-transform: uppercase !important;
-        letter-spacing: 0.8px;
+        box-shadow: none !important;
     }
-    [data-testid="stSidebar"] button:hover { color: #f64d23 !important; border-left: 3px solid #f64d23 !important; }
+    [data-testid="stSidebar"] button:hover { 
+        color: #f64d23 !important; 
+        background-color: #1a242d !important; 
+        border-left: 3px solid #f64d23 !important; 
+    }
 
-    /* 4. CONTEÚDO CENTRAL (ELEVAÇÃO MÁXIMA ITEM 1) */
+    /* 4. ÁREA CENTRAL (EXECUTAR ALGORITMO - O ÚNICO LARANJA) */
     [data-testid="stAppViewBlockContainer"] { 
-        padding-top: 10px !important; /* ENCOSTA O TÍTULO NA NAVBAR */
-        padding-left: 5rem !important; 
-        padding-right: 5rem !important; 
+        padding-top: 10px !important; 
+        padding-left: 3rem !important; 
+        padding-right: 3rem !important; 
     }
 
-    /* 5. BOTÃO EXECUTAR ALGORITMO (REFORÇO LARANJA - ITEM 3) */
-    /* Usei seletores mais fortes para garantir a cor da sua foto */
-    div.stButton > button {
-        background-color: #f64d23 !important; /* LARANJA OBRIGATÓRIO */
-        background: #f64d23 !important; 
-        color: #ffffff !important; 
+    /* ESTILIZANDO APENAS O BOTÃO DA ÁREA CENTRAL */
+    section.main div.stButton > button {
+        background-color: #f64d23 !important;
+        color: #ffffff !important;
         border-radius: 50px !important;
-        height: 42px !important; 
-        width: 240px !important; 
-        font-weight: 800 !important;
+        height: 40px !important; 
+        width: 220px !important; 
+        font-weight: 700 !important;
         font-size: 12px !important;
         text-transform: uppercase !important;
         border: none !important;
-        box-shadow: 0 4px 12px rgba(246, 77, 35, 0.4) !important;
-        visibility: visible !important;
-        display: flex !important;
+        margin-top: 15px !important;
+        box-shadow: 0 4px 12px rgba(246, 77, 35, 0.2) !important;
     }
 
-    /* 6. SELECTBOXES DARK */
+    /* 5. SELECTBOXES DARK PROFISSIONAIS */
     div[data-baseweb="select"] > div { background-color: #1a242d !important; border: 1px solid #2d3843 !important; }
     div[data-baseweb="select"] * { color: #e2e8f0 !important; font-weight: 400 !important; }
 
@@ -108,7 +105,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- NAVBAR (IDENTIDADE BETANO) ---
+# --- NAVBAR (FIXADA E ALINHADA) ---
 st.markdown(f"""
     <div class="betano-header">
         <div class="logo-text">GESTOR IA</div>
@@ -120,14 +117,14 @@ st.markdown(f"""
             <span>Mercado Probabilístico</span>
             <span>Assertividade IA</span>
         </div>
-        <div style="margin-left:auto; display:flex; gap:15px; align-items:center;">
-            <div class="btn-registrar">REGISTRAR</div>
-            <div class="btn-entrar">ENTRAR</div>
+        <div style="margin-left:auto; display:flex; gap:12px; align-items:center;">
+            <div style="border:1px solid #475569; color:white; padding:5px 15px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:700;">REGISTRAR</div>
+            <div style="background:#00cc66; color:white; padding:7px 20px; border-radius:4px; font-weight:800; font-size:11px; cursor:pointer;">ENTRAR</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-# --- SIDEBAR (TOTALMENTE ELEVADA) ---
+# --- SIDEBAR (SUBIDA MÁXIMA E SEM FUNDO LARANJA) ---
 with st.sidebar:
     st.button("JOGOS DO DIA")
     st.button("PRÓXIMOS JOGOS")
@@ -138,8 +135,8 @@ with st.sidebar:
     st.button("APOSTAS POR CARTÕES")
     st.button("ÁRBITRO DA PARTIDA")
 
-# --- ÁREA CENTRAL (ENCOSTADA NO TOPO) ---
-st.markdown('<div style="color:white; font-weight:900; font-size:24px; margin-bottom:15px;">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
+# --- ÁREA CENTRAL ---
+st.markdown('<div style="color:white; font-weight:900; font-size:24px; margin-bottom:15px; letter-spacing: -0.5px;">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
 
 c1, c2, c3 = st.columns(3)
 with c1: st.selectbox("SELECIONE A REGIÃO", ["BR COMPETIÇÕES BRASILEIRAS", "EUROPA"])
@@ -153,11 +150,11 @@ t1, t2 = st.columns(2)
 with t1: st.selectbox("TIME CASA", ["Palmeiras", "Flamengo", "Botafogo"])
 with t2: st.selectbox("TIME FORA", ["Flamengo", "Vasco", "Palmeiras"])
 
-# BOTÃO EXECUTAR (AGORA OBRIGATORIAMENTE LARANJA)
+# BOTÃO EXECUTAR (ÚNICO BOTÃO LARANJA DO APP)
 if st.button("EXECUTAR ALGORITMO"):
     with st.status("GIAE IA: Processando...", expanded=False):
         time.sleep(1)
-    st.success("🤖 Análise pronta!")
+    st.success("🤖 Concluído!")
 
 # FOOTER
-st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | DESIGN V16.0</div><div>GESTOR IA PRO v16.0 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | DESIGN V17.0</div><div>GESTOR IA PRO v17.0 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
