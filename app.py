@@ -1,59 +1,67 @@
 import streamlit as st
 import time
 
-# [GIAE PROTOCOLO SOBERANO v17.0 - CORREÇÃO DE ESTRUTURA E ALINHAMENTO]
+# ==============================================================================
+# [GIAE KERNEL SHIELD v18.0 - PROTOCOLO DE PRESERVAÇÃO TOTAL]
+# ESTADO: BLOQUEADO (LADO ESQUERDO: LISTA / TOPO: GRAFITE / AÇÃO: LARANJA)
+# CHAVE DE RECONHECIMENTO: GIAE-V17-ELITE-RECOVERY
+# ==============================================================================
+
 st.set_page_config(
     page_title="GESTOR IA - TRADING PRO", 
     layout="wide", 
     initial_sidebar_state="expanded"
 )
 
-# --- BLOCO DE SEGURANÇA CSS (BLINDAGEM TOTAL) ---
+# --- BLOCO DE SEGURANÇA CSS (INDEXADO PARA NÃO ALTERAÇÃO) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
 
-    /* 1. RESET E OCULTAR ELEMENTOS NATIVOS */
-    header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { display: none !important; }
+    /* [INDEX 01] - REMOÇÃO DE ELEMENTOS NATIVOS E PROTEÇÃO DE SCROLL */
+    header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { 
+        display: none !important; visibility: hidden !important; 
+    }
     .stApp { background-color: #0b0e11 !important; }
+    [data-testid="stSidebarContent"] { overflow: hidden !important; padding-top: 0px !important; }
 
-    /* 2. NAVBAR SUPERIOR (FIXANDO LOGO EM 1 LINHA E GAP PROPORCIONAL) */
+    /* [INDEX 02] - NAVBAR SUPERIOR GRAFITE (ESTRUTURA TRAVADA) */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 50px; 
         background-color: #121212 !important; 
         border-bottom: 1px solid #2d3843 !important; 
         display: flex; align-items: center; 
-        padding: 0 40px !important; /* Respiro lateral como a Betano */
+        padding: 0 40px !important; 
         z-index: 999999; 
     }
     .logo-text { 
         color: #ffffff !important; font-weight: 900; font-size: 20px; 
         text-transform: uppercase; margin-right: 40px; 
-        white-space: nowrap !important; /* IMPEDE QUEBRA DO LOGO */
+        white-space: nowrap !important; /* PROTEÇÃO: NÃO QUEBRAR LINHA */
         letter-spacing: -1px; 
     }
     .nav-items { 
         display: flex; gap: 25px; flex-grow: 1; 
         color: #ffffff !important; font-size: 11px !important; 
-        font-weight: 400 !important; text-transform: uppercase; 
+        font-weight: 400 !important; /* PROTEÇÃO: NÃO USAR NEGRITO */
+        text-transform: uppercase; 
         letter-spacing: 0.8px; white-space: nowrap !important;
     }
 
-    /* 3. SIDEBAR (LIMPANDO FUNDO LARANJA E VOLTANDO ESTILO LISTA) */
+    /* [INDEX 03] - SIDEBAR BLINDADA (ESTILO LISTA - FUNDO BRANCO PROIBIDO) */
     [data-testid="stSidebar"] { 
         background-color: #11151a !important; 
         border-right: 1px solid #2d3843 !important;
         margin-top: 50px !important;
     }
-    [data-testid="stSidebarContent"] { overflow: hidden !important; padding-top: 0px !important; }
+    /* ELEVAÇÃO MÁXIMA LATERAL */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { 
-        margin-top: -65px !important; /* PUXA JOGOS DO DIA PARA O TOPO */
+        margin-top: -65px !important; 
         gap: 0px !important; 
     }
-
-    /* MATANDO O FUNDO LARANJA NA SIDEBAR */
+    /* PROTEÇÃO DE BOTÕES DA SIDEBAR (LISTA TRANSPARENTE) */
     [data-testid="stSidebar"] button {
-        background-color: transparent !important; /* FUNDO TOTALMENTE TRANSPARENTE */
+        background-color: transparent !important;
         background: transparent !important;
         color: #adb5bd !important;
         border: none !important;
@@ -67,6 +75,7 @@ st.markdown("""
         font-size: 11px !important;
         text-transform: uppercase !important;
         box-shadow: none !important;
+        margin: 0px !important;
     }
     [data-testid="stSidebar"] button:hover { 
         color: #f64d23 !important; 
@@ -74,16 +83,16 @@ st.markdown("""
         border-left: 3px solid #f64d23 !important; 
     }
 
-    /* 4. ÁREA CENTRAL (EXECUTAR ALGORITMO - O ÚNICO LARANJA) */
+    /* [INDEX 04] - ÁREA CENTRAL E BOTÃO DE AÇÃO (O ÚNICO LARANJA) */
     [data-testid="stAppViewBlockContainer"] { 
         padding-top: 10px !important; 
         padding-left: 3rem !important; 
         padding-right: 3rem !important; 
     }
-
-    /* ESTILIZANDO APENAS O BOTÃO DA ÁREA CENTRAL */
+    /* BLINDAGEM DO BOTÃO EXECUTAR (PROPORCIONAL E VISÍVEL) */
     section.main div.stButton > button {
         background-color: #f64d23 !important;
+        background: #f64d23 !important;
         color: #ffffff !important;
         border-radius: 50px !important;
         height: 40px !important; 
@@ -94,18 +103,19 @@ st.markdown("""
         border: none !important;
         margin-top: 15px !important;
         box-shadow: 0 4px 12px rgba(246, 77, 35, 0.2) !important;
+        display: flex !important;
     }
 
-    /* 5. SELECTBOXES DARK PROFISSIONAIS */
+    /* [INDEX 05] - SELECTBOXES DARK (PADRÃO IA) */
     div[data-baseweb="select"] > div { background-color: #1a242d !important; border: 1px solid #2d3843 !important; }
     div[data-baseweb="select"] * { color: #e2e8f0 !important; font-weight: 400 !important; }
 
-    /* FOOTER */
+    /* FOOTER SISTÊMICO */
     .betano-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #121212; height: 25px; border-top: 1px solid #2d3843; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #64748b; z-index: 999999; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- NAVBAR (FIXADA E ALINHADA) ---
+# --- ESTRUTURA NAVBAR ---
 st.markdown(f"""
     <div class="betano-header">
         <div class="logo-text">GESTOR IA</div>
@@ -118,13 +128,13 @@ st.markdown(f"""
             <span>Assertividade IA</span>
         </div>
         <div style="margin-left:auto; display:flex; gap:12px; align-items:center;">
-            <div style="border:1px solid #475569; color:white; padding:5px 15px; border-radius:4px; font-size:11px; cursor:pointer; font-weight:700;">REGISTRAR</div>
+            <div style="border:1px solid #475569; color:white; padding:5px 15px; border-radius:4px; font-size:11px; cursor:pointer;">REGISTRAR</div>
             <div style="background:#00cc66; color:white; padding:7px 20px; border-radius:4px; font-weight:800; font-size:11px; cursor:pointer;">ENTRAR</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-# --- SIDEBAR (SUBIDA MÁXIMA E SEM FUNDO LARANJA) ---
+# --- SIDEBAR (INDEXADO: PROTEÇÃO DE LISTA) ---
 with st.sidebar:
     st.button("JOGOS DO DIA")
     st.button("PRÓXIMOS JOGOS")
@@ -135,7 +145,7 @@ with st.sidebar:
     st.button("APOSTAS POR CARTÕES")
     st.button("ÁRBITRO DA PARTIDA")
 
-# --- ÁREA CENTRAL ---
+# --- ÁREA CENTRAL (INDEXADO: ELEVAÇÃO E AÇÃO) ---
 st.markdown('<div style="color:white; font-weight:900; font-size:24px; margin-bottom:15px; letter-spacing: -0.5px;">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
 
 c1, c2, c3 = st.columns(3)
@@ -150,11 +160,11 @@ t1, t2 = st.columns(2)
 with t1: st.selectbox("TIME CASA", ["Palmeiras", "Flamengo", "Botafogo"])
 with t2: st.selectbox("TIME FORA", ["Flamengo", "Vasco", "Palmeiras"])
 
-# BOTÃO EXECUTAR (ÚNICO BOTÃO LARANJA DO APP)
+# BOTÃO DE AÇÃO ÚNICO
 if st.button("EXECUTAR ALGORITMO"):
     with st.status("GIAE IA: Processando...", expanded=False):
         time.sleep(1)
     st.success("🤖 Concluído!")
 
-# FOOTER
-st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | DESIGN V17.0</div><div>GESTOR IA PRO v17.0 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
+# FOOTER PROTEGIDO
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v18.0 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
