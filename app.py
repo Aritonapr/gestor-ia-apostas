@@ -3,7 +3,7 @@ import time
 
 # ==============================================================================
 # [GIAE KERNEL SHIELD v18.0 - PROTOCOLO DE PRESERVAÇÃO TOTAL]
-# ESTADO: ATIVO (PURPLE MENU EDITION)
+# ESTADO: RESTAURADO (LADO ESQUERDO: GRAFITE / CABEÇALHO: ROXO PURPLE)
 # CHAVE DE RECONHECIMENTO: GIAE-V17-ELITE-RECOVERY
 # ==============================================================================
 
@@ -13,19 +13,19 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- BLOCO DE SEGURANÇA CSS (CORRIGIDO) ---
+# --- BLOCO DE SEGURANÇA CSS (BLINDAGEM TOTAL) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
 
-    /* [INDEX 01] - RESET E FUNDO GERAL */
+    /* [01] RESET E FUNDO GERAL */
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { 
         display: none !important; visibility: hidden !important; 
     }
     .stApp { background-color: #0b0e11 !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; padding-top: 0px !important; }
 
-    /* [INDEX 02] - NAVBAR SUPERIOR */
+    /* [02] NAVBAR SUPERIOR (TEXTOS EM ROXO RESTAURADOS) */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 50px; 
         background-color: #121212 !important; 
@@ -36,13 +36,23 @@ st.markdown("""
     }
     .logo-text { 
         color: #ffffff !important; font-weight: 900; font-size: 20px; 
-        text-transform: uppercase; letter-spacing: -1px; 
+        text-transform: uppercase; margin-right: 40px; 
+        white-space: nowrap !important;
+        letter-spacing: -1px; 
+    }
+    .nav-items { 
+        display: flex; gap: 25px; flex-grow: 1; 
+        color: #8833ff !important; /* COR ROXA NOS MENUS SUPERIORES */
+        font-size: 11px !important; 
+        font-weight: 700 !important;
+        text-transform: uppercase; 
+        letter-spacing: 0.8px; white-space: nowrap !important;
     }
 
-    /* [INDEX 03] - MENU LATERAL ROXO PROFUNDO */
+    /* [03] SIDEBAR (RESTAURADO PARA GRAFITE ORIGINAL) */
     [data-testid="stSidebar"] { 
-        background-color: #1a1033 !important; 
-        border-right: 1px solid #2d1a4d !important;
+        background-color: #11151a !important; 
+        border-right: 1px solid #2d3843 !important;
         margin-top: 50px !important;
     }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { 
@@ -51,64 +61,58 @@ st.markdown("""
     }
     [data-testid="stSidebar"] button {
         background-color: transparent !important;
-        color: #e2e8f0 !important; 
+        color: #adb5bd !important;
         border: none !important;
-        border-bottom: 1px solid #261a4d !important;
+        border-bottom: 1px solid #1e293b !important;
         border-radius: 0px !important;
         text-align: left !important;
         justify-content: flex-start !important;
         width: 100% !important;
-        padding: 15px 20px !important;
+        padding: 12px 20px !important;
         font-size: 11px !important;
         text-transform: uppercase !important;
+        margin: 0px !important;
     }
     [data-testid="stSidebar"] button:hover { 
-        color: #ffffff !important; 
-        background-color: #2d1a4d !important; 
-        border-left: 4px solid #8833ff !important; 
+        color: #8833ff !important; 
+        background-color: #1a142d !important; 
+        border-left: 3px solid #8833ff !important; 
     }
 
-    /* [INDEX 04] - BOTÃO DE AÇÃO ROXO NEON */
+    /* [04] BOTÃO EXECUTAR (BRANCO CONFORME IMAGEM) */
     section.main div.stButton > button {
-        background-color: #8833ff !important;
-        color: #ffffff !important;
-        border-radius: 50px !important;
-        height: 42px !important; 
-        width: 240px !important; 
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        border-radius: 4px !important;
+        height: 40px !important; 
+        width: 200px !important; 
         font-weight: 700 !important;
         font-size: 12px !important;
         text-transform: uppercase !important;
         border: none !important;
-        box-shadow: 0 4px 15px rgba(136, 51, 255, 0.4) !important;
-        display: flex !important;
+        margin-top: 15px !important;
     }
 
-    /* [INDEX 05] - SELECTBOXES */
-    div[data-baseweb="select"] > div { 
-        background-color: #1a242d !important; 
-        border: 1px solid #2d3843 !important; 
-    }
+    /* [05] SELECTBOXES DARK */
+    div[data-baseweb="select"] > div { background-color: #1a242d !important; border: 1px solid #2d3843 !important; }
     div[data-baseweb="select"] * { color: #e2e8f0 !important; }
+    label { color: #64748b !important; font-size: 10px !important; text-transform: uppercase !important; font-weight: 700 !important; }
 
-    /* FOOTER SISTÊMICO */
-    .betano-footer { 
-        position: fixed; bottom: 0; left: 0; width: 100%; 
-        background-color: #121212; height: 25px; 
-        border-top: 1px solid #2d3843; 
-        display: flex; justify-content: space-between; 
-        align-items: center; padding: 0 20px; 
-        font-size: 9px; color: #64748b; z-index: 999999; 
-    }
+    /* FOOTER */
+    .betano-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #121212; height: 25px; border-top: 1px solid #2d3843; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #64748b; z-index: 999999; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- ESTRUTURA NAVBAR ---
+# --- ESTRUTURA NAVBAR (MENUS RESTAURADOS E ROXOS) ---
 st.markdown(f"""
     <div class="betano-header">
         <div class="logo-text">GESTOR IA</div>
-        <div style="margin-left: 40px; display: flex; gap: 20px; color: #ffffff; font-size: 11px; text-transform: uppercase; letter-spacing: 0.8px;">
+        <div class="nav-items">
             <span>Apostas Esportivas</span>
             <span>Apostas ao Vivo</span>
+            <span>Apostas Encontradas</span>
+            <span>Estatísticas Avançadas</span>
+            <span>Mercado Probabilístico</span>
             <span>Assertividade IA</span>
         </div>
         <div style="margin-left:auto; display:flex; gap:12px; align-items:center;">
@@ -117,7 +121,7 @@ st.markdown(f"""
     </div>
     """, unsafe_allow_html=True)
 
-# --- SIDEBAR (CONTEÚDO) ---
+# --- SIDEBAR (CONFORME SUA IMAGEM ORIGINAL) ---
 with st.sidebar:
     st.button("JOGOS DO DIA")
     st.button("PRÓXIMOS JOGOS")
@@ -137,17 +141,17 @@ with c1: st.selectbox("REGIÃO", ["BR COMPETIÇÕES BRASILEIRAS", "EUROPA"])
 with c2: st.selectbox("CATEGORIA", ["Brasileirão", "Copa do Brasil"])
 with c3: st.selectbox("CAMPEONATO", ["Série A", "Série B"])
 
-st.markdown("<hr style='border: 0.1px solid #2d3843; opacity: 0.2; margin: 15px 0;'>", unsafe_allow_html=True)
+st.markdown("<br>", unsafe_allow_html=True)
 
 t1, t2 = st.columns(2)
 with t1: st.selectbox("TIME CASA", ["Palmeiras", "Flamengo", "Botafogo"])
 with t2: st.selectbox("TIME FORA", ["Flamengo", "Vasco", "Palmeiras"])
 
-# BOTÃO DE AÇÃO
+# BOTÃO DE AÇÃO (BRANCO)
 if st.button("EXECUTAR ALGORITMO"):
     with st.status("GIAE IA: Processando...", expanded=False):
         time.sleep(1)
-    st.success("🤖 Análise Concluída com Sucesso!")
+    st.success("🤖 Análise Concluída!")
 
 # FOOTER PROTEGIDO
-st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v18.0 | PURPLE UI ACTIVE</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v18.0 | DESIGN ORIGINAL RESTAURADO</div></div>""", unsafe_allow_html=True)
