@@ -2,8 +2,8 @@ import streamlit as st
 import time
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v18.0 - PROTOCOLO CRIZAL REFINED]
-# ESTADO: ATIVO (LOGO ROXO | NAVBAR COMPLETA | SUBTITULO BRANCO)
+# [GIAE KERNEL SHIELD v18.0 - PROTOCOLO CRIZAL FINAL REFINEMENT]
+# ESTADO: ATIVO (SIDEBAR RESTAURADA | FOOTER AZUL ROYAL | REGISTRAR BOTÃO)
 # CHAVE DE RECONHECIMENTO: GIAE-V17-ELITE-RECOVERY
 # ==============================================================================
 
@@ -13,7 +13,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- BLOCO DE SEGURANÇA CSS (PALETA CRIZAL ATUALIZADA) ---
+# --- BLOCO DE SEGURANÇA CSS ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
@@ -25,7 +25,7 @@ st.markdown("""
     .stApp { background-color: #0b0e11 !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; padding-top: 0px !important; }
 
-    /* [02] NAVBAR SUPERIOR (ESTRUTURA COMPLETA) */
+    /* [02] NAVBAR SUPERIOR (TEXTOS BRANCOS / LOGO ROXO) */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 55px; 
         background-color: #0d0d12 !important; 
@@ -34,9 +34,8 @@ st.markdown("""
         padding: 0 40px !important; 
         z-index: 999999; 
     }
-    /* LOGO GESTOR IA EM ROXO HARMÔNICO (CRIZAL) */
     .logo-text { 
-        color: #9d54ff !important; 
+        color: #9d54ff !important; /* ROXO HARMÔNICO */
         font-weight: 900; font-size: 20px; 
         text-transform: uppercase; margin-right: 40px; 
         letter-spacing: -1px; 
@@ -50,27 +49,34 @@ st.markdown("""
         letter-spacing: 0.8px; 
     }
 
-    /* ELEMENTOS DA DIREITA (LUPA, REGISTRAR, ENTRAR) */
-    .header-right {
-        display: flex; align-items: center; gap: 20px;
-    }
-    .search-icon { color: #ffffff; cursor: pointer; font-size: 16px; }
-    .registrar-text { 
-        color: #ffffff; font-size: 11px; font-weight: 700; 
+    /* ELEMENTOS DA DIREITA */
+    .header-right { display: flex; align-items: center; gap: 15px; }
+    .search-icon { color: #ffffff; cursor: pointer; font-size: 14px; margin-right: 5px; }
+    
+    /* BOTÃO REGISTRAR (CIRCULAR/ARREDONDADO) */
+    .registrar-btn { 
+        color: #ffffff; font-size: 10px; font-weight: 700; 
         text-transform: uppercase; cursor: pointer;
+        border: 1px solid #ffffff; padding: 6px 15px; 
+        border-radius: 20px; /* EFEITO CIRCULAR */
+        white-space: nowrap;
     }
     .entrar-btn {
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%);
-        color: white; padding: 8px 22px; border-radius: 4px;
+        color: white; padding: 7px 20px; border-radius: 4px;
         font-weight: 800; font-size: 11px; cursor: pointer;
         text-transform: uppercase;
     }
 
-    /* [03] SIDEBAR (GRAFITE PROTEGIDO) */
+    /* [03] SIDEBAR (ORGANIZAÇÃO ANTERIOR RESTAURADA - SEM QUEBRA) */
     [data-testid="stSidebar"] { 
         background-color: #11151a !important; 
         border-right: 1px solid #1e293b !important;
         margin-top: 50px !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { 
+        margin-top: -65px !important; /* TRAVAMENTO DE POSIÇÃO */
+        gap: 0px !important; 
     }
     [data-testid="stSidebar"] button {
         background-color: transparent !important;
@@ -81,17 +87,17 @@ st.markdown("""
         text-align: left !important;
         justify-content: flex-start !important;
         width: 100% !important;
-        padding: 15px 20px !important;
+        padding: 15px 25px !important;
         font-size: 11px !important;
         text-transform: uppercase !important;
     }
     [data-testid="stSidebar"] button:hover { 
         color: #ffffff !important; 
-        background: linear-gradient(90deg, rgba(109,40,217,0.2) 0%, rgba(6,182,212,0.1) 100%) !important;
+        background-color: #1a242d !important;
         border-left: 4px solid #6d28d9 !important; 
     }
 
-    /* [04] BOTÃO EXECUTAR (CRIZAL GRADIENTE) */
+    /* [04] ÁREA CENTRAL */
     section.main div.stButton > button {
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
         color: #ffffff !important;
@@ -102,19 +108,22 @@ st.markdown("""
         font-size: 12px !important;
         text-transform: uppercase !important;
         border: none !important;
-        box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important;
+        margin-top: 15px !important;
     }
 
-    /* SELECTS */
-    div[data-baseweb="select"] > div { background-color: #1a1b23 !important; border: 1px solid #2d3843 !important; }
-    div[data-baseweb="select"] * { color: #e2e8f0 !important; }
-
-    /* FOOTER */
-    .betano-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
+    /* [05] FOOTER (AZUL ROYAL - SOLICITADO) */
+    .betano-footer { 
+        position: fixed; bottom: 0; left: 0; width: 100%; 
+        background-color: #002366 !important; /* AZUL ROYAL */
+        height: 25px; border-top: 1px solid #1e293b; 
+        display: flex; justify-content: space-between; 
+        align-items: center; padding: 0 20px; 
+        font-size: 9px; color: #ffffff; z-index: 999999; 
+    }
     </style>
     """, unsafe_allow_html=True)
 
-# --- ESTRUTURA NAVBAR ATUALIZADA ---
+# --- ESTRUTURA NAVBAR ---
 st.markdown(f"""
     <div class="betano-header">
         <div class="logo-text">GESTOR IA</div>
@@ -128,13 +137,13 @@ st.markdown(f"""
         </div>
         <div class="header-right">
             <div class="search-icon">🔍</div>
-            <div class="registrar-text">REGISTRAR</div>
+            <div class="registrar-btn">REGISTRAR</div>
             <div class="entrar-btn">ENTRAR</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-# --- SIDEBAR (CONTEÚDO) ---
+# --- SIDEBAR (ORGANIZAÇÃO RESTAURADA) ---
 with st.sidebar:
     st.button("JOGOS DO DIA")
     st.button("PRÓXIMOS JOGOS")
@@ -145,11 +154,10 @@ with st.sidebar:
     st.button("APOSTAS POR CARTÕES")
     st.button("ÁRBITRO DA PARTIDA")
 
-# --- ÁREA CENTRAL ---
+# --- CONTEÚDO CENTRAL ---
 st.markdown('<div style="height: 60px;"></div>', unsafe_allow_html=True)
 st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:5px; letter-spacing: -1px;">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
-# MANTIDO EM BRANCO CONFORME SOLICITADO
-st.markdown('<div style="color:#ffffff; font-size:10px; font-weight:700; margin-bottom:25px; text-transform:uppercase; opacity: 0.8;">Protocolo de Análise Crizal Active</div>', unsafe_allow_html=True)
+st.markdown('<div style="color:#ffffff; font-size:10px; font-weight:700; margin-bottom:25px; text-transform:uppercase;">Protocolo de Análise Crizal Active</div>', unsafe_allow_html=True)
 
 # Filtros
 c1, c2, c3 = st.columns(3)
@@ -159,16 +167,16 @@ with c3: st.selectbox("CAMPEONATO", ["Série A", "Série B"])
 
 st.markdown("<hr style='border: 0.1px solid #1e293b; margin: 20px 0;'>", unsafe_allow_html=True)
 
-# Seleção de Times
+# Times
 t1, t2 = st.columns(2)
 with t1: st.selectbox("TIME CASA", ["Palmeiras", "Flamengo", "Botafogo"])
 with t2: st.selectbox("TIME FORA", ["Flamengo", "Vasco", "Palmeiras"])
 
-# Botão Executar
+# Executar
 if st.button("EXECUTAR ALGORITMO GIAE"):
-    st.toast("Calculando Probabilidades Crizal...", icon="🔮")
+    st.toast("Analisando kernels...", icon="🚀")
     time.sleep(1)
-    st.success("Análise Metrics Concluída!")
+    st.success("Concluído")
 
-# FOOTER PROTEGIDO
-st.markdown("""<div class="betano-footer"><div>STATUS: <span style="color:#06b6d4;">● IA OPERACIONAL</span> | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v18.0 | CRIZAL HARMONY DESIGN</div></div>""", unsafe_allow_html=True)
+# FOOTER AZUL ROYAL
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v18.0 | RODAPÉ ROYAL BLUE</div></div>""", unsafe_allow_html=True)
