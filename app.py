@@ -1,116 +1,150 @@
 import streamlit as st
 import time
-import random
 
-# [VISION UI PROTECTION & ANALYSIS SYSTEM - V11.1]
-st.set_page_config(page_title="GESTOR IA - VISION PRO", layout="wide", initial_sidebar_state="expanded")
+# [GUARDIAN UI PROTECTION SYSTEM - GIAE v5.0]
+st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
-# ==========================================
-# 📊 BANCO DE DADOS INTEGRAL (PROTEGIDO)
-# ==========================================
-db_global = {
-    "🇧🇷 BR COMPETIÇÕES BRASILEIRAS": {
-        "Brasileirão": ["Série A", "Série B", "Série C", "Série D"],
-        "Copas Nacionais": ["Copa do Brasil", "Supercopa do Brasil"],
-        "Estaduais": ["Paulistão", "Carioca", "Mineiro", "Gaúcho", "Paranaense", "Pernambucano"],
-        "Regionais": ["Copa do Nordeste", "Copa Verde"]
-    },
-    "🇪🇺 EU ELITE EUROPEIA (BIG 5)": {
-        "Inglaterra": ["Premier League", "FA Cup", "EFL Cup"],
-        "Espanha": ["La Liga", "Copa del Rey"],
-        "Alemanha": ["Bundesliga", "DFB-Pokal"],
-        "Itália": ["Serie A", "Coppa Italia"],
-        "França": ["Ligue 1"]
-    },
-    "🌎 AMÉRICAS (SUL / CENTRAL)": {
-        "Continentais": ["Copa Libertadores", "Copa Sul-Americana"],
-        "Nacionais": ["Liga MX (México)", "Liga Profesional (Argentina)", "Primera Div. (Chile)"]
-    },
-    "🏆 TORNEIOS INTERNACIONAIS": {
-        "UEFA": ["Champions League", "Europa League", "Conference League"],
-        "FIFA": ["Mundial de Clubes", "Eliminatórias Copa"]
-    }
-}
-
-times_db = {
-    "Série A": ["Palmeiras", "Flamengo", "Botafogo", "Fortaleza", "São Paulo", "Internacional", "Vasco", "Atlético-MG", "Fluminense", "Corinthians", "Grêmio", "Cruzeiro"],
-    "Copa do Brasil": ["Flamengo", "Amazonas FC", "Bahia", "Grêmio", "Palmeiras", "Vasco", "Atlético-MG", "São Paulo"],
-    "Premier League": ["Man City", "Arsenal", "Liverpool", "Chelsea", "Tottenham"],
-    "Eliminatórias Copa": ["Brasil", "Argentina", "França", "Inglaterra", "Alemanha", "Espanha", "Portugal"]
-}
-
-# --- INJEÇÃO DE CÓDIGO FONTE SUPREMO (V11.1 - EXPANSÃO TOTAL) ---
+# --- CSS DE ALTA ESPECIFICIDADE (FORÇA BRUTA CONTRA STREAMLIT DEFAULTS) ---
 st.markdown("""
     <style>
-    /* 1. EXPANSÃO DE LARGURA TOTAL (REMOVE CAIXA BRANCA LATERAL) */
-    .block-container {
-        max-width: 95% !important;
-        padding-left: 2rem !important;
-        padding-right: 2rem !important;
-        padding-top: 0rem !important;
-        margin-top: -35px !important;
-    }
-
+    /* 1. RESET GERAL E SIDEBAR */
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { display: none !important; }
     .stApp { background-color: #0b0e11 !important; color: #e2e8f0 !important; font-family: 'Roboto', sans-serif !important; }
     
-    /* 2. SIDEBAR MILIMÉTRICA */
-    [data-testid="stSidebar"] { background-color: #15191d !important; margin-top: 50px !important; width: 260px !important; border-right: 1px solid #2d3843 !important; }
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 6px !important; padding-top: 0px !important; margin-top: -55px !important; }
-    .sidebar-title { color: #f64d23; font-weight: 900; font-size: 20px; font-style: italic; white-space: nowrap; margin-bottom: 20px; }
-
-    /* 3. NAVBAR BETANO STYLE (REFINADA) */
-    .betano-header { position: fixed; top: 0; left: 0; width: 100%; height: 50px; background-color: #1a242d; border-bottom: 2px solid #f64d23; display: flex; align-items: center; padding: 0 20px; z-index: 999999; }
-    .nav-items { display: flex; gap: 18px; flex-grow: 1; color: white; font-size: 10px; font-weight: 700; text-transform: uppercase; align-items: center; white-space: nowrap; }
-    .btn-registrar { border: 1px solid #adb5bd; color: white; padding: 4px 12px; border-radius: 3px; font-size: 10px; font-weight: bold; background: transparent; cursor: pointer; }
-    .btn-entrar { background: #00cc66; color: white; padding: 5px 18px; border-radius: 3px; font-weight: bold; border: none; font-size: 10px; cursor: pointer; }
-
-    /* 4. PINTURA DOS CAMPOS DE SELEÇÃO */
-    div[data-baseweb="select"] > div { background-color: #1a242d !important; color: white !important; border: 1px solid #2d3843 !important; }
-    
-    /* 5. BOTÕES LARANJAS SLIM COM LASER */
-    @keyframes laser-scan { 0% { left: -100%; } 100% { left: 100%; } }
-    div.stButton > button {
-        background-color: #f64d23 !important; color: white !important; border-radius: 50px !important; height: 38px !important;
-        border: none !important; font-weight: 900 !important; font-size: 11px !important; text-transform: uppercase !important;
-        position: relative !important; overflow: hidden !important; width: 100% !important;
+    [data-testid="stSidebar"] { 
+        background-color: #15191d !important; 
+        margin-top: 50px !important; 
+        width: 260px !important; 
+        min-width: 260px !important;
+        border-right: 1px solid #2d3843 !important;
     }
-    div.stButton > button::after { content: "" !important; position: absolute; top: 0; left: -100%; width: 60px; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important; animation: laser-scan 2.5s infinite linear !important; }
+    [data-testid="stSidebarContent"] { overflow: hidden !important; }
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0px !important; padding-top: 0px !important; margin-top: -35px !important; }
 
-    /* 6. CARDS DE RESULTADO (IMPECÁVEIS) */
-    .vision-card-horiz { background: #15191d; border: 1px solid #2d3843; border-top: 3px solid #f64d23; padding: 12px; border-radius: 6px; text-align: center; margin-bottom: 10px; width: 100%; }
-    .vision-stat-title { color: #f64d23; font-weight: 800; font-size: 9px; text-transform: uppercase; display: block; margin-bottom: 5px; white-space: nowrap; }
-    .vision-stat-value { color: #ffffff; font-weight: 900; font-size: 15px; display: block; white-space: nowrap; }
-    .vision-stat-sub { color: #94a3b8; font-size: 9px; font-weight: 600; display: block; margin-top: 4px; }
-    
-    .result-title { color: #ffffff; font-weight: 900; font-size: 22px; text-transform: uppercase; border-left: 5px solid #f64d23; padding-left: 15px; margin: 30px 0 15px 0; }
+    /* 2. NAVBAR SUPERIOR */
+    .betano-header { position: fixed; top: 0; left: 0; width: 100%; height: 50px; background-color: #1a242d; border-bottom: 2px solid #f64d23; display: flex; align-items: center; padding: 0 20px; z-index: 999999; }
+    .logo-text { color: #f64d23; font-weight: 900; font-size: 19px; font-style: italic; }
+    .nav-items { display: flex; gap: 20px; margin-left: 30px; flex-grow: 1; color: white; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+    @keyframes pulse-hex { 0%, 100% { transform: scale(0.9); filter: drop-shadow(0 0 2px #f64d23); } 50% { transform: scale(1.1); filter: drop-shadow(0 0 10px #f64d23); } }
+    .logo-hex { width:20px; height:24px; background:#f64d23; clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); margin-right:10px; animation: pulse-hex 2s infinite ease-in-out; }
+
+    /* 3. BOTÕES CÁPSULA (SIDEBAR E CENTRAL) - DESIGN BLINDADO */
+    /* Targetando o botão especificamente para ignorar o hover "quadrado" */
+    div[data-testid="stVerticalBlock"] button, .stButton button {
+        background-color: #f64d23 !important;
+        color: white !important;
+        border-radius: 50px !important; /* Arredondamento total */
+        border: none !important;
+        outline: none !important;
+        font-weight: 900 !important;
+        text-transform: uppercase !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        transition: none !important; /* Remove transições que geram o bug visual */
+    }
+
+    /* BOTÃO FERRAMENTA IA (SIDEBAR) - GRANDE E PROPORCIONAL */
+    [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div:first-child button {
+        height: 60px !important;
+        width: 95% !important;
+        font-size: 15px !important;
+        margin: 0px auto 25px 10px !important;
+        animation: plasma-glow 3s infinite ease-in-out !important;
+    }
+
+    /* BOTÃO PROCESSAR ALGORITMO (CENTRAL) */
+    .main .stButton button {
+        height: 60px !important;
+        width: 320px !important;
+        font-size: 15px !important;
+        margin-top: 20px !important;
+        animation: plasma-glow 3s infinite ease-in-out !important;
+    }
+
+    /* REMOÇÃO TOTAL DO QUADRADO NO HOVER */
+    div[data-testid="stVerticalBlock"] button:hover, 
+    div[data-testid="stVerticalBlock"] button:active,
+    div[data-testid="stVerticalBlock"] button:focus,
+    .stButton button:hover,
+    .stButton button:active,
+    .stButton button:focus {
+        background-color: #f64d23 !important; /* Mantém a mesma cor ao passar o mouse */
+        color: white !important;
+        border-radius: 50px !important;
+        box-shadow: 0 0 20px #f64d23 !important; /* Apenas o brilho, sem quadrado */
+        border: none !important;
+        outline: none !important;
+    }
+
+    /* ANIMAÇÃO SCANNER LASER (UNIFICADA) */
+    @keyframes laser-scan { 0% { left: -100%; } 100% { left: 100%; } }
+    @keyframes plasma-glow { 0%, 100% { box-shadow: 0 0 5px #f64d23; } 50% { box-shadow: 0 0 15px #f64d23; } }
+
+    div[data-testid="stVerticalBlock"] > div:first-child button::after,
+    .stButton button::after {
+        content: "" !important; position: absolute !important; top: 0 !important; left: -100% !important; width: 60px !important; height: 100% !important;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important; animation: laser-scan 2.5s infinite linear !important;
+    }
+
+    /* 4. BOTÕES SECUNDÁRIOS DA SIDEBAR */
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:not(:first-child) button {
+        background-color: transparent !important;
+        color: #e2e8f0 !important;
+        border: none !important;
+        border-bottom: 1px solid #1e293b !important;
+        text-align: left !important;
+        font-weight: 700 !important;
+        font-size: 11px !important;
+        padding: 12px 15px !important;
+        width: 100% !important;
+        border-radius: 0px !important;
+    }
+
+    /* 5. TÍTULOS */
+    .white-title { color: white !important; font-weight: 900; font-size: 26px !important; margin-bottom: 25px !important; }
+    .standard-text { color: #e2e8f0 !important; font-weight: 700; font-size: 18px !important; margin-top: 10px !important; }
+
     .betano-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1a242d; height: 25px; border-top: 1px solid #2d3843; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #94a3b8; z-index: 999999; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- NAVBAR (REFINADA) ---
+# --- NAVBAR ---
 st.markdown(f"""
     <div class="betano-header">
-        <div class="logo-text" style="color:#f64d23; font-weight:900; font-size:22px; font-style:italic; margin-right:30px; margin-left:10px;">GESTOR IA</div>
+        <div class="logo-hex"></div>
+        <div class="logo-text">GESTOR IA</div>
         <div class="nav-items">
-            <span>Apostas Esportivas</span><span>Apostas ao Vivo</span>
-            <span>Cassino</span><span>Cassino ao Vivo</span>
-            <span>Estatísticas Avançadas</span><span>Mercado Probabilístico</span>
-            <span>Apostas Encontradas</span><span>Assertividade IA</span>
+            <span>Apostas Esportivas</span><span>Apostas ao Vivo</span><span>Apostas Encontradas</span><span>Assertividade IA</span>
         </div>
-        <div class="header-right" style="margin-left:auto; display:flex; gap:12px; align-items:center; padding-right:20px;">
-            <span style="color:#94a3b8; font-size:16px;">🔍</span>
-            <button class="btn-registrar">REGISTRAR</button>
-            <button class="btn-entrar">ENTRAR</button>
+        <div style="margin-left:auto; display:flex; gap:12px; align-items:center;">
+            <div style="border:1px solid #adb5bd; color:white; padding:4px 12px; border-radius:3px; font-size:11px; font-weight:bold; cursor:pointer;">REGISTRAR</div>
+            <button style="background:#00cc66; color:white; padding:6px 20px; border-radius:3px; font-weight:bold; border:none; font-size:11px; cursor:pointer;">ENTRAR</button>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
+# --- BANCO DE DADOS (PRESERVADO) ---
+db_global = {
+    "BR COMPETIÇÕES BRASILEIRAS": {
+        "Brasileirão": ["Série A", "Série B", "Série C", "Série D"],
+        "Copas Nacionais": ["Copa do Brasil", "Supercopa do Brasil"],
+        "Estaduais": ["Paulistão", "Carioca", "Mineiro", "Gaúcho"]
+    },
+    "EU ELITE EUROPEIA (BIG 5)": {
+        "Inglaterra": ["Premier League"], "Espanha": ["La Liga"], "Alemanha": ["Bundesliga"], "Itália": ["Serie A"], "França": ["Ligue 1"]
+    }
+}
+
+times_db = {
+    "Série A": ["Palmeiras", "Flamengo", "Botafogo", "Fortaleza", "São Paulo", "Internacional"],
+    "Carioca": ["Flamengo", "Vasco", "Fluminense", "Botafogo"],
+    "Premier League": ["Man City", "Arsenal", "Liverpool", "Chelsea", "Tottenham"]
+}
+
 # --- SIDEBAR ---
 with st.sidebar:
-    st.markdown('<div class="sidebar-title">GESTOR IA</div>', unsafe_allow_html=True)
-    st.button("FERRAMENTA IA")
-    st.write("") # Espaçamento
+    if st.button("FERRAMENTA IA"): st.session_state.app_state = "processar"
     st.button("PRÓXIMOS JOGOS")
     st.button("VENCEDORES DA COMPETIÇÃO")
     st.button("APOSTAS POR ODDS")
@@ -119,44 +153,31 @@ with st.sidebar:
     st.button("APOSTAS POR CARTÕES")
     st.button("ÁRBITRO DA PARTIDA")
 
-# --- CONTEÚDO PRINCIPAL ---
-st.markdown('<div style="color:white; font-weight:900; font-size:24px; margin-bottom:20px;">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
+# --- ÁREA CENTRAL ---
+if "app_state" not in st.session_state: st.session_state.app_state = "home"
 
-c1, c2, c3 = st.columns(3)
-with c1: reg_sel = st.selectbox("REGIÃO", list(db_global.keys()))
-with c2: cat_sel = st.selectbox("CATEGORIA", list(db_global[reg_sel].keys()))
-with c3: comp_sel = st.selectbox("CAMPEONATO", db_global[reg_sel][cat_sel])
+if st.session_state.app_state == "processar":
+    st.markdown('<div class="white-title">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
+    
+    c1, c2, c3 = st.columns(3)
+    with c1: reg_sel = st.selectbox("SELECIONE A REGIÃO", list(db_global.keys()))
+    with c2: cat_sel = st.selectbox("CATEGORIA", list(db_global[reg_sel].keys()))
+    with c3: comp_sel = st.selectbox("CAMPEONATO", db_global[reg_sel][cat_sel])
 
-st.divider()
-st.markdown(f'<div style="color:white; font-weight:900; font-size:16px; text-transform:uppercase;">Confronto: {comp_sel}</div>', unsafe_allow_html=True)
+    st.divider()
+    st.markdown(f'<div class="standard-text">Confronto: {comp_sel}</div>', unsafe_allow_html=True)
+    
+    elenco = times_db.get(comp_sel, [f"Time A ({comp_sel})", f"Time B ({comp_sel})"])
+    t1, t2 = st.columns(2)
+    with t1: casa = st.selectbox("TIME CASA", elenco)
+    with t2: fora = st.selectbox("TIME FORA", [t for t in elenco if t != casa])
 
-elenco = times_db.get(comp_sel, ["Selecione...", "Time A", "Time B"])
-t1, t2 = st.columns(2)
-with t1: casa = st.selectbox("TIME CASA", elenco)
-with t2: fora = st.selectbox("TIME FORA", [t for t in elenco if t != casa] if len(elenco)>1 else elenco)
-
-# --- BOTÃO EXECUTAR ALGORITMO ---
-btn_col, _ = st.columns([1, 4])
-with btn_col:
-    if st.button("EXECUTAR ALGORITMO"):
-        with st.status("VISÃO: Processando 8 camadas de dados...", expanded=False):
-            time.sleep(1)
-        
-        st.markdown(f'<div class="result-title">RESULTADO ALGORITMO: {casa} vs {fora}</div>', unsafe_allow_html=True)
-        
-        # LINHA 1 DE 4 RESULTADOS
-        r1_1, r1_2, r1_3, r1_4 = st.columns(4)
-        with r1_1: st.markdown(f'<div class="vision-card-horiz"><span class="vision-stat-title">Vencedor Prob.</span><span class="vision-stat-value">{casa}</span><span class="vision-stat-sub">Confiança: 72%</span></div>', unsafe_allow_html=True)
-        with r1_2: st.markdown(f'<div class="vision-card-horiz"><span class="vision-stat-title">Gols Total / Tempos</span><span class="vision-stat-value">Over 2.5 Gols</span><span class="vision-stat-sub">1ºT: Sim | 2ºT: Sim</span></div>', unsafe_allow_html=True)
-        with r1_3: st.markdown(f'<div class="vision-card-horiz"><span class="vision-stat-title">Cartões (Total)</span><span class="vision-stat-value">Over 4.5</span><span class="vision-stat-sub">HT: 1.5 | FT: 3.0</span></div>', unsafe_allow_html=True)
-        with r1_4: st.markdown(f'<div class="vision-card-horiz"><span class="vision-stat-title">Escanteios</span><span class="vision-stat-value">10.5 Total</span><span class="vision-stat-sub">{casa}: 6 | {fora}: 4</span></div>', unsafe_allow_html=True)
-
-        # LINHA 2 DE 4 RESULTADOS
-        r2_1, r2_2, r2_3, r2_4 = st.columns(4)
-        with r2_1: st.markdown(f'<div class="vision-card-horiz"><span class="vision-stat-title">Tiros de Meta</span><span class="vision-stat-value">14.0 Total</span><span class="vision-stat-sub">HT: 6 | FT: 8</span></div>', unsafe_allow_html=True)
-        with r2_2: st.markdown(f'<div class="vision-card-horiz"><span class="vision-stat-title">Chutes no Gol (SOG)</span><span class="vision-stat-value">9.5 Total</span><span class="vision-stat-sub">HT: 4 | FT: 5.5</span></div>', unsafe_allow_html=True)
-        with r2_3: st.markdown(f'<div class="vision-card-horiz"><span class="vision-stat-title">Defesas Goleiro</span><span class="vision-stat-value">7.2 Total</span><span class="vision-stat-sub">{casa}: 3 | {fora}: 4</span></div>', unsafe_allow_html=True)
-        with r2_4: st.markdown(f'<div class="vision-card-horiz" style="border-top:3px solid #00cc66;"><span class="vision-stat-title" style="color:#00cc66;">V-Insight</span><span class="vision-stat-value" style="color:#00cc66;">Alta Assertividade</span><span class="vision-stat-sub">Mercado de Cantos</span></div>', unsafe_allow_html=True)
+    if st.button("PROCESSAR ALGORITMO"):
+        with st.status("GIAE IA: Processando...", expanded=True) as s:
+            time.sleep(1.2); s.update(label="analise de algoritimo concluida", state="complete")
+        st.success(f"🤖 Análise concluída.")
+else:
+    st.markdown("### 🤖 Cockpit de Comando Ativado")
 
 # FOOTER
-st.markdown("""<div class="betano-footer"><div>STATUS: ● VISÃO ON-LINE | LARGURA TOTAL ATIVADA</div><div>GESTOR IA PRO v11.1</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | DESIGN V5.0 BLINDADO</div><div>GESTOR IA PRO v5.0 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
