@@ -1,101 +1,94 @@
 import streamlit as st
 import time
 
-# [GUARDIAN UI PROTECTION SYSTEM - GIAE v6.3]
+# [GUARDIAN UI PROTECTION SYSTEM - GIAE v6.4]
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
-# --- CSS DE ALTA ESPECIFICIDADE ---
+# --- CSS REFINADO (VISUAL BLINDADO) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
 
-    /* 1. RESET E TIPOGRAFIA GLOBAL */
+    /* 1. RESET E ESTRUTURA GERAL */
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { display: none !important; }
-    .stApp { 
-        background-color: #0b0e11 !important; 
-        color: #e2e8f0 !important; 
-        font-family: 'Inter', sans-serif !important; 
-    }
+    .stApp { background-color: #0b0e11 !important; color: #e2e8f0 !important; font-family: 'Inter', sans-serif !important; }
     
-    /* Ajuste de margem para o conteúdo não ser coberto pela Navbar */
+    /* Padding para evitar sobreposição da Navbar */
     .main .block-container { padding-top: 60px !important; }
 
-    /* Ajuste da Sidebar para a altura do Header */
+    /* SIDEBAR */
     [data-testid="stSidebar"] { 
         background-color: #15191d !important; 
         margin-top: 50px !important; 
         border-right: 1px solid #2d3843 !important;
     }
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 0px !important; padding-top: 0px !important; }
 
-    /* 2. NAVBAR SUPERIOR (FUNDO LARANJA) */
+    /* 2. NAVBAR SUPERIOR (ESTILO BETANO LARANJA) */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 50px; 
         background-color: #f64d23; 
         display: flex; align-items: center; padding: 0 25px; z-index: 999999; 
     }
+    .logo-text { color: white !important; font-weight: 900; font-size: 20px; letter-spacing: -1px; text-transform: uppercase; margin-right: 30px; }
+    .nav-items { display: flex; gap: 15px; flex-grow: 1; color: white; font-size: 10px; font-weight: 700; text-transform: uppercase; }
+
+    /* BOTÕES DA NAVBAR */
+    .btn-registrar { border: 1px solid white; color: white; padding: 5px 12px; border-radius: 3px; font-size: 11px; font-weight: bold; cursor: pointer; }
+    .btn-entrar { background: #00cc66; color: white; padding: 6px 20px; border-radius: 3px; font-weight: bold; border: none; font-size: 11px; cursor: pointer; }
+
+    /* 3. ESTILIZAÇÃO DE BOTÕES (O COMANDO QUE VOCÊ PEDIU) */
     
-    .logo-text { 
-        color: #ffffff !important; 
-        font-weight: 900 !important; 
-        font-size: 22px !important; 
-        letter-spacing: -1px !important;
-        text-transform: uppercase;
-        margin-right: 35px;
+    /* BOTÕES PRIMÁRIOS (CÁPSULA LARANJA): FERRAMENTA IA E PROCESSAR ALGORITMO */
+    /* Targetando o primeiro botão da sidebar e o botão da área central */
+    [data-testid="stSidebar"] div[data-testid="stVerticalBlock"] > div:first-child button, 
+    .main .stButton button {
+        background-color: #f64d23 !important;
+        color: white !important;
+        border-radius: 50px !important;
+        height: 55px !important;
+        width: 90% !important;
+        margin: 15px auto !important;
+        font-weight: 900 !important;
+        text-transform: uppercase !important;
+        border: none !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
-    /* MENU DE NAVEGAÇÃO */
-    .nav-items { 
-        display: flex; gap: 20px; flex-grow: 1; 
-        color: white; font-size: 11px; font-weight: 700; 
-        text-transform: uppercase; 
-        letter-spacing: 0.3px;
+    /* BOTÕES SECUNDÁRIOS (ESTILO MENU LATERAL ESQUERDO) */
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:not(:first-child) button {
+        background-color: transparent !important;
+        color: #adb5bd !important;
+        border: none !important;
+        border-bottom: 1px solid #1e293b !important;
+        text-align: left !important;
+        justify-content: flex-start !important;
+        font-weight: 700 !important;
+        font-size: 11px !important;
+        padding: 15px 20px !important;
+        width: 100% !important;
+        border-radius: 0px !important;
     }
-
-    /* 3. BOTÕES DA NAVBAR */
-    .btn-registrar { 
-        border: 1px solid rgba(255,255,255,0.7); 
-        color: white; padding: 6px 15px; border-radius: 4px; 
-        font-size: 11px; font-weight: 800; cursor: pointer;
-        text-transform: uppercase;
-    }
-    /* BOTÃO ENTRAR VERDE */
-    .btn-entrar { 
-        background: #00cc66; color: white; padding: 8px 22px; 
-        border-radius: 4px; font-weight: 800; border: none; 
-        font-size: 11px; cursor: pointer;
-        text-transform: uppercase;
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:not(:first-child) button:hover {
+        color: #f64d23 !important;
+        background-color: #1a242d !important;
     }
 
     /* 4. SELECTBOXES DARK */
     div[data-baseweb="select"] > div {
         background-color: #1a242d !important;
         border: 1px solid #2d3843 !important;
-        border-radius: 4px !important;
     }
-    div[data-baseweb="select"] div { color: white !important; font-size: 14px !important; }
-    div[data-testid="stSelectbox"] label p {
-        color: #94a3b8 !important;
-        font-size: 11px !important;
-        font-weight: 700 !important;
-        text-transform: uppercase !important;
-    }
-
-    /* 5. BOTÕES CÁPSULA GIAE */
-    div[data-testid="stVerticalBlock"] button, .stButton button {
-        background-color: #f64d23 !important;
-        color: white !important;
-        border-radius: 50px !important;
-        font-weight: 900 !important;
-        text-transform: uppercase !important;
-        border: none !important;
-    }
+    div[data-baseweb="select"] div { color: white !important; }
 
     /* FOOTER */
     .betano-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1a242d; height: 25px; border-top: 1px solid #2d3843; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #94a3b8; z-index: 999999; }
     </style>
     """, unsafe_allow_html=True)
 
-# --- NAVBAR ATUALIZADA ---
+# --- NAVBAR ---
 st.markdown(f"""
     <div class="betano-header">
         <div class="logo-text">GESTOR IA</div>
@@ -108,13 +101,13 @@ st.markdown(f"""
             <span>Assertividade IA</span>
         </div>
         <div style="margin-left:auto; display:flex; gap:12px; align-items:center;">
-            <div class="btn-registrar">Registrar</div>
-            <div class="btn-entrar">Entrar</div>
+            <div class="btn-registrar">REGISTRAR</div>
+            <div class="btn-entrar">ENTRAR</div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-# --- SIDEBAR ---
+# --- SIDEBAR (COMANDO REVERTIDO PARA MENU) ---
 with st.sidebar:
     if st.button("🔥 FERRAMENTA IA"): st.session_state.app_state = "processar"
     st.button("PRÓXIMOS JOGOS")
@@ -131,7 +124,6 @@ if "app_state" not in st.session_state: st.session_state.app_state = "processar"
 if st.session_state.app_state == "processar":
     st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:25px;">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
     
-    # Grid de Seleção
     c1, c2, c3 = st.columns(3)
     with c1: st.selectbox("SELECIONE A REGIÃO", ["BR COMPETIÇÕES BRASILEIRAS", "EUROPA"])
     with c2: st.selectbox("CATEGORIA", ["Brasileirão", "Copa do Brasil"])
@@ -150,4 +142,4 @@ if st.session_state.app_state == "processar":
         st.success("🤖 Análise Concluída!")
 
 # FOOTER
-st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | DESIGN V6.3</div><div>GESTOR IA PRO v6.3 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | DESIGN V6.4</div><div>GESTOR IA PRO v6.4 | 18+ JOGUE COM RESPONSABILIDADE</div></div>""", unsafe_allow_html=True)
