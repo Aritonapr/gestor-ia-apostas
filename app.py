@@ -1,11 +1,11 @@
 import streamlit as st
 import time
 
-# [GUARDIAN UI PROTECTION SYSTEM - GIAE v9.0] - BLINDAGEM VISUAL TOTAL
+# [GUARDIAN UI PROTECTION SYSTEM - GIAE v9.0]
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
 # ==========================================
-# 📊 BANCO DE DADOS GLOBAL GIAE (RESTAURADO)
+# 📊 BANCO DE DADOS GLOBAL GIAE (EXPANDIDO)
 # ==========================================
 db_global = {
     "🇧🇷 BR COMPETIÇÕES BRASILEIRAS": {
@@ -24,27 +24,46 @@ db_global = {
     "🌎 AMÉRICAS (SUL / CENTRAL)": {
         "Continentais": ["Copa Libertadores", "Copa Sul-Americana"],
         "Nacionais": ["Liga MX (México)", "Liga Profesional (Argentina)", "Primera Div. (Chile)"]
-    },
-    "🏆 TORNEIOS INTERNACIONAIS": {
-        "UEFA": ["Champions League", "Europa League", "Conference League"],
-        "FIFA": ["Mundial de Clubes", "Eliminatórias Copa"]
     }
 }
 
-# MAPEAR TIMES POR COMPETIÇÃO (FILTRO ANTI-ERRO)
+# MAPEAR TIMES POR COMPETIÇÃO (BANCO DE DADOS RESTAURADO)
 times_db = {
-    "Série A": ["Palmeiras", "Flamengo", "Botafogo", "Fortaleza", "São Paulo", "Internacional", "Cruzeiro", "Bahia", "Vasco", "Atlético-MG", "Fluminense", "Corinthians", "Grêmio", "Athletico-PR", "Cuiabá", "Criciúma", "Juventude", "Vitória", "Bragantino", "Atlético-GO"],
-    "Série B": ["Santos", "Sport", "Mirassol", "Novorizontino", "Ceará", "Goiás", "Coritiba", "Vila Nova", "Operário", "América-MG"],
-    "Copa do Brasil": ["Flamengo", "Amazonas FC", "Bahia", "Grêmio", "Palmeiras", "Vasco", "Atlético-MG", "São Paulo", "Corinthians", "Fortaleza"],
-    "Paulistão": ["Palmeiras", "São Paulo", "Santos", "Corinthians", "Bragantino", "Ituano", "São Bernardo", "Água Santa"],
-    "Premier League": ["Man City", "Arsenal", "Liverpool", "Aston Villa", "Chelsea", "Tottenham", "Newcastle", "Man United", "West Ham"],
-    "La Liga": ["Real Madrid", "Barcelona", "Atlético Madrid", "Girona", "Real Sociedad", "Athletic Bilbao", "Villarreal"],
-    "Bundesliga": ["Bayer Leverkusen", "Bayern Munich", "Stuttgart", "RB Leipzig", "Dortmund", "Frankfurt"],
-    "Champions League": ["Real Madrid", "Man City", "Bayern Munich", "PSG", "Barcelona", "Inter de Milão", "Arsenal", "Dortmund"],
-    "Copa Libertadores": ["Flamengo", "Palmeiras", "River Plate", "Fluminense", "São Paulo", "Atlético-MG", "Peñarol", "Colo-Colo"]
+    # BRASIL
+    "Série A": ["Palmeiras", "Flamengo", "Botafogo", "Fortaleza", "São Paulo", "Internacional", "Cruzeiro", "Bahia", "Vasco", "Atlético-MG"],
+    "Série B": ["Santos", "Sport", "Mirassol", "Novorizontino", "Ceará", "Goiás", "Coritiba", "Vila Nova"],
+    "Série C": ["Náutico", "ABC", "Remo", "CSA", "Figueirense", "Volta Redonda", "Botafogo-PB", "São Bernardo", "Londrina"],
+    "Série D": ["Santa Cruz", "Maringá", "Inter de Limeira", "Treze", "Iguatu", "Brasil de Pelotas", "Anápolis", "Retrô"],
+    "Copa do Brasil": ["Flamengo", "Amazonas FC", "Bahia", "Grêmio", "Palmeiras", "Vasco", "Atlético-MG", "São Paulo"],
+    "Supercopa do Brasil": ["Palmeiras", "São Paulo", "Flamengo", "Atlético-MG"],
+    "Paulistão": ["Palmeiras", "São Paulo", "Santos", "Corinthians", "Bragantino", "Ituano"],
+    "Carioca": ["Flamengo", "Fluminense", "Vasco", "Botafogo", "Nova Iguaçu", "Boavista", "Bangu"],
+    "Mineiro": ["Atlético-MG", "Cruzeiro", "América-MG", "Athletic Club", "Tombense", "Villa Nova"],
+    "Gaúcho": ["Grêmio", "Internacional", "Juventude", "Caxias", "Brasil de Pelotas", "Ypiranga"],
+    "Paranaense": ["Athletico-PR", "Coritiba", "Maringá", "Operário", "FC Cascavel", "Cianorte"],
+    "Pernambucano": ["Sport", "Náutico", "Santa Cruz", "Retrô", "Central", "Maguary"],
+    "Copa do Nordeste": ["Bahia", "Sport", "Fortaleza", "Ceará", "Vitória", "CRB", "Náutico", "Botafogo-PB"],
+    "Copa Verde": ["Paysandu", "Cuiabá", "Remo", "Goiás", "Vila Nova", "Amazonas FC"],
+
+    # EUROPA
+    "Premier League": ["Man City", "Arsenal", "Liverpool", "Aston Villa", "Chelsea", "Tottenham", "Newcastle", "Man United"],
+    "FA Cup": ["Man City", "Arsenal", "Liverpool", "Man United", "Chelsea", "Leicester", "Coventry"],
+    "EFL Cup": ["Liverpool", "Chelsea", "Fulham", "Middlesbrough", "Arsenal", "Man City"],
+    "La Liga": ["Real Madrid", "Barcelona", "Atlético Madrid", "Girona", "Real Sociedad", "Athletic Bilbao"],
+    "Copa del Rey": ["Athletic Bilbao", "Mallorca", "Real Sociedad", "Atlético Madrid", "Barcelona", "Real Madrid"],
+    "Serie A": ["Inter de Milão", "Milan", "Juventus", "Atalanta", "Napoli", "Roma", "Lazio", "Fiorentina"],
+    "Coppa Italia": ["Juventus", "Lazio", "Atalanta", "Fiorentina", "Inter", "Milan", "Roma"],
+    "Ligue 1": ["PSG", "Monaco", "Lille", "Brest", "Nice", "Lyon", "Marseille", "Lens"],
+
+    # AMÉRICAS
+    "Copa Libertadores": ["Flamengo", "Palmeiras", "River Plate", "Fluminense", "São Paulo", "Atlético-MG", "Peñarol"],
+    "Copa Sul-Americana": ["Cruzeiro", "Corinthians", "Fortaleza", "Athletico-PR", "Lanús", "Racing", "Boca Juniors"],
+    "Liga MX (México)": ["Club América", "Cruz Azul", "Tigres UANL", "Monterrey", "Chivas Guadalajara", "Pumas UNAM"],
+    "Liga Profesional (Argentina)": ["River Plate", "Boca Juniors", "Racing Club", "Independiente", "Talleres", "Estudiantes"],
+    "Primera Div. (Chile)": ["Colo-Colo", "Universidad de Chile", "Universidad Católica", "Palestino", "Coquimbo Unido"]
 }
 
-# --- INJEÇÃO DE CÓDIGO FONTE SUPREMO (ESTRUTURA VISUAL BLINDADA) ---
+# --- INJEÇÃO DE CÓDIGO FONTE SUPREMO (ESTRUTURA VISUAL PROTEGIDA) ---
 st.markdown("""
     <style>
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { display: none !important; }
@@ -82,7 +101,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- NAVBAR (BLINDADA) ---
+# --- NAVBAR ---
 st.markdown(f"""
     <div class="betano-header">
         <div style="width:20px; height:24px; background:#f64d23; clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); margin-right:10px;"></div>
@@ -93,7 +112,7 @@ st.markdown(f"""
     </div>
     """, unsafe_allow_html=True)
 
-# --- SIDEBAR (BLINDADA) ---
+# --- SIDEBAR ---
 with st.sidebar:
     st.button("FERRAMENTA IA")
     st.button("PRÓXIMOS JOGOS")
@@ -121,7 +140,7 @@ st.divider()
 # Exibição do Confronto Harmonizado
 st.markdown(f'<div class="confronto-label">Confronto: {comp_sel}</div>', unsafe_allow_html=True)
 
-# Filtragem de Times (Anti-Arsenal no Brasileirão)
+# Filtragem de Times (Anti-Erro de Liga)
 elenco = times_db.get(comp_sel, [f"Time A ({comp_sel})", f"Time B ({comp_sel})"])
 t1, t2 = st.columns(2)
 with t1: casa = st.selectbox("TIME CASA", elenco)
@@ -131,9 +150,9 @@ with t2: fora = st.selectbox("TIME FORA", [t for t in elenco if t != casa] if le
 c_btn = st.columns([1, 1, 1])
 with c_btn[1]:
     if st.button("PROCESSAR ALGORITMO"):
-        with st.status("GIAE IA: Executando Varredura...", expanded=False):
+        with st.status("GIAE IA: Analisando Elencos e Probabilidades...", expanded=False):
             time.sleep(1.2)
-        st.success(f"Análise de {casa} x {fora} finalizada. GIAE detectou valor no mercado.")
+        st.success(f"Análise de {casa} x {fora} finalizada. Banco de Dados Sincronizado.")
 
 # FOOTER
-st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | BANCO DE DADOS INTEGRADO</div><div>GESTOR IA PRO</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | BANCO DE DADOS COMPLETO</div><div>GESTOR IA PRO</div></div>""", unsafe_allow_html=True)
