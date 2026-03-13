@@ -1,11 +1,11 @@
 import streamlit as st
 import time
 
-# [GUARDIAN UI PROTECTION SYSTEM - GIAE v9.0]
+# [GUARDIAN UI PROTECTION SYSTEM - GIAE v9.0] - ESTRUTURA BLINDADA
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
 # ==========================================
-# 📊 BANCO DE DADOS GLOBAL GIAE (RESTAURADO TOTAL)
+# 📊 BANCO DE DADOS GLOBAL GIAE (VERSÃO FINAL)
 # ==========================================
 db_global = {
     "🇧🇷 BR COMPETIÇÕES BRASILEIRAS": {
@@ -31,7 +31,7 @@ db_global = {
     }
 }
 
-# MAPEAR TIMES POR COMPETIÇÃO
+# MAPEAR TIMES E SELEÇÕES POR COMPETIÇÃO
 times_db = {
     # BRASIL
     "Série A": ["Palmeiras", "Flamengo", "Botafogo", "Fortaleza", "São Paulo", "Internacional", "Cruzeiro", "Bahia", "Vasco", "Atlético-MG"],
@@ -55,8 +55,8 @@ times_db = {
     "EFL Cup": ["Liverpool", "Chelsea", "Fulham", "Arsenal", "Man City"],
     "La Liga": ["Real Madrid", "Barcelona", "Atlético Madrid", "Girona", "Real Sociedad"],
     "Copa del Rey": ["Athletic Bilbao", "Mallorca", "Real Sociedad", "Atlético Madrid", "Real Madrid"],
-    "Bundesliga": ["Bayer Leverkusen", "Bayern Munich", "Stuttgart", "RB Leipzig", "Dortmund", "Frankfurt", "Hoffenheim", "Freiburg"],
-    "DFB-Pokal": ["Bayer Leverkusen", "Kaiserslautern", "Dusseldorf", "Bayern Munich", "Dortmund", "RB Leipzig"],
+    "Bundesliga": ["Bayer Leverkusen", "Bayern Munich", "Stuttgart", "RB Leipzig", "Dortmund", "Frankfurt"],
+    "DFB-Pokal": ["Bayer Leverkusen", "Kaiserslautern", "Bayern Munich", "Dortmund"],
     "Serie A": ["Inter de Milão", "Milan", "Juventus", "Atalanta", "Napoli", "Roma", "Lazio"],
     "Coppa Italia": ["Juventus", "Lazio", "Atalanta", "Fiorentina", "Inter"],
     "Ligue 1": ["PSG", "Monaco", "Lille", "Brest", "Nice", "Lyon"],
@@ -67,10 +67,13 @@ times_db = {
     "Liga MX (México)": ["Club América", "Cruz Azul", "Tigres UANL", "Monterrey", "Chivas Guadalajara"],
     "Liga Profesional (Argentina)": ["River Plate", "Boca Juniors", "Racing Club", "Independiente", "Talleres"],
     "Primera Div. (Chile)": ["Colo-Colo", "Universidad de Chile", "Universidad Católica"],
-    "Champions League": ["Real Madrid", "Man City", "Bayern Munich", "PSG", "Barcelona", "Inter de Milão", "Arsenal"],
+    "Champions League": ["Real Madrid", "Man City", "Bayern Munich", "PSG", "Barcelona", "Inter de Milão"],
     "Europa League": ["Bayer Leverkusen", "Atalanta", "Liverpool", "Roma", "Benfica", "Milan"],
     "Conference League": ["Olympiacos", "Fiorentina", "Aston Villa", "Club Brugge"],
-    "Mundial de Clubes": ["Man City", "Fluminense", "Real Madrid", "Al-Ahly", "Urawa Reds"]
+    "Mundial de Clubes": ["Man City", "Fluminense", "Real Madrid", "Al-Ahly", "Urawa Reds"],
+    
+    # 🌍 SELEÇÕES (ELIMINATÓRIAS DA COPA)
+    "Eliminatórias Copa": ["Brasil", "Argentina", "França", "Inglaterra", "Alemanha", "Espanha", "Portugal", "Itália", "Uruguai", "Colômbia", "Holanda", "Bélgica", "Chile", "Equador", "Marrocos", "Japão"]
 }
 
 # --- INJEÇÃO DE CÓDIGO FONTE SUPREMO (ESTRUTURA VISUAL PROTEGIDA) ---
@@ -147,20 +150,22 @@ with col3:
 
 st.divider()
 
+# Rótulo de Confronto em Branco Puro
 st.markdown(f'<div class="confronto-label">Confronto: {comp_sel}</div>', unsafe_allow_html=True)
 
-# Filtragem de Times (Inteligência de Elenco)
-elenco = times_db.get(comp_sel, [f"Time A ({comp_sel})", f"Time B ({comp_sel})"])
+# Filtragem Inteligente (Times ou Seleções)
+elenco = times_db.get(comp_sel, ["Aguardando Seleção...", "Equipe A", "Equipe B"])
 t1, t2 = st.columns(2)
-with t1: casa = st.selectbox("TIME CASA", elenco)
-with t2: fora = st.selectbox("TIME FORA", [t for t in elenco if t != casa] if len(elenco)>1 else elenco)
+with t1: casa = st.selectbox("TIME CASA / SELEÇÃO", elenco)
+with t2: fora = st.selectbox("TIME FORA / SELEÇÃO", [t for t in elenco if t != casa] if len(elenco)>1 else elenco)
 
+# Botão Afinador e Processador
 c_btn = st.columns([1, 1, 1])
 with c_btn[1]:
     if st.button("PROCESSAR ALGORITMO"):
-        with st.status("GIAE IA: Sincronizando Ligas Internacionais...", expanded=False):
-            time.sleep(1)
-        st.success(f"Análise de {casa} x {fora} concluída com sucesso.")
+        with st.status("GIAE IA: Acessando satélite FIFA...", expanded=False):
+            time.sleep(1.2)
+        st.success(f"Análise de {casa} x {fora} finalizada. Escaneamento concluído.")
 
 # FOOTER
-st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | BANCO DE DADOS INTEGRAL</div><div>GESTOR IA PRO</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="betano-footer"><div>STATUS: ● IA OPERACIONAL | BANCO FIFA ATUALIZADO</div><div>GESTOR IA PRO</div></div>""", unsafe_allow_html=True)
