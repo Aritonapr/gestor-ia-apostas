@@ -2,7 +2,7 @@ import streamlit as st
 import time
 import random
 
-# [VISION UI PROTECTION & ANALYSIS SYSTEM - V9.7]
+# [VISION UI PROTECTION & ANALYSIS SYSTEM - V9.8]
 st.set_page_config(page_title="GESTOR IA - VISION PRO", layout="wide", initial_sidebar_state="expanded")
 
 # --- BANCO DE DADOS INTEGRAL (BLINDADO) ---
@@ -44,6 +44,7 @@ st.markdown("""
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { display: none !important; }
     .stApp { background-color: #0b0e11 !important; color: #e2e8f0 !important; font-family: 'Roboto', sans-serif !important; }
     
+    /* SIDEBAR BLINDADA */
     [data-testid="stSidebar"] { background-color: #15191d !important; margin-top: 50px !important; width: 260px !important; border-right: 1px solid #2d3843 !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { gap: 6px !important; padding-top: 0px !important; margin-top: -55px !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:first-child { margin-bottom: 35px !important; }
@@ -55,6 +56,7 @@ st.markdown("""
     @keyframes laser-scan { 0% { left: -100%; } 100% { left: 100%; } }
     @keyframes plasma-glow { 0%, 100% { box-shadow: 0 0 5px #f64d23; } 50% { box-shadow: 0 0 15px #f64d23; } }
 
+    /* BOTÕES LARANJAS SLIM */
     div.stButton > button {
         background-color: #f64d23 !important; color: white !important; border-radius: 50px !important; height: 38px !important;
         border: none !important; font-weight: 900 !important; font-size: 11px !important; text-transform: uppercase !important;
@@ -62,38 +64,38 @@ st.markdown("""
     }
     div.stButton > button::after { content: "" !important; position: absolute; top: 0; left: -100%; width: 60px; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent) !important; animation: laser-scan 2.5s infinite linear !important; }
 
+    /* BOTÕES DA SIDEBAR */
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] > div:not(:first-child) button {
         background-color: transparent !important; color: #94a3b8 !important; border: none !important; border-left: 2px solid transparent !important;
         text-align: left !important; font-weight: 700 !important; font-size: 10px !important; padding: 8px 15px !important; height: 32px !important;
         width: 100% !important; border-radius: 0px !important;
     }
     
+    /* SELECTBOXES DARK */
     div[data-baseweb="select"] > div { background-color: #1a242d !important; color: white !important; border: 1px solid #2d3843 !important; }
     .confronto-label { color: #ffffff !important; font-weight: 900 !important; font-size: 16px !important; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
     
-    /* REFORMULAÇÃO DOS CARDS HORIZONTAIS */
-    .vision-container { display: flex; gap: 10px; justify-content: space-between; margin-top: 10px; }
+    /* DESIGN DOS CARDS DE RESULTADO (LARGURA TOTAL) */
     .vision-card-horiz {
         background: #15191d; 
         border: 1px solid #2d3843;
         border-top: 3px solid #f64d23; 
-        padding: 10px; 
-        border-radius: 4px; 
-        flex: 1;
+        padding: 15px; 
+        border-radius: 6px; 
         text-align: center;
-        min-width: 140px;
+        margin-bottom: 10px;
     }
-    .vision-stat-title { color: #f64d23; font-weight: 800; font-size: 9px; text-transform: uppercase; display: block; margin-bottom: 5px; white-space: nowrap; }
-    .vision-stat-value { color: #ffffff; font-weight: 900; font-size: 14px; display: block; }
-    .vision-stat-sub { color: #94a3b8; font-size: 9px; font-weight: 600; display: block; margin-top: 4px; }
+    .vision-stat-title { color: #f64d23; font-weight: 800; font-size: 10px; text-transform: uppercase; display: block; margin-bottom: 5px; }
+    .vision-stat-value { color: #ffffff; font-weight: 900; font-size: 18px; display: block; }
+    .vision-stat-sub { color: #94a3b8; font-size: 10px; font-weight: 600; display: block; margin-top: 4px; }
     
-    .result-title { color: #ffffff; font-weight: 900; font-size: 20px; text-transform: uppercase; border-left: 4px solid #f64d23; padding-left: 15px; margin: 20px 0; }
+    .result-title { color: #ffffff; font-weight: 900; font-size: 22px; text-transform: uppercase; border-left: 5px solid #f64d23; padding-left: 15px; margin: 30px 0 15px 0; }
     .betano-footer { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #1a242d; height: 25px; border-top: 1px solid #2d3843; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #94a3b8; z-index: 999999; }
     </style>
     """, unsafe_allow_html=True)
 
 # --- NAVBAR ---
-st.markdown(f"""<div class="betano-header"><div style="width:20px; height:24px; background:#f64d23; clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); margin-right:10px;"></div><div class="logo-text">GESTOR IA (VISÃO)</div><div class="nav-items"><span>Análise Estatística</span><span>Mercado de Probabilidades</span></div></div>""", unsafe_allow_html=True)
+st.markdown(f"""<div class="betano-header"><div style="width:20px; height:24px; background:#f64d23; clip-path:polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); margin-right:10px;"></div><div class="logo-text">GESTOR IA (VISÃO)</div><div class="nav-items"><span>Análise de Mercado</span><span>Algoritmos de Alta Frequência</span></div></div>""", unsafe_allow_html=True)
 
 # --- SIDEBAR ---
 with st.sidebar:
@@ -109,54 +111,56 @@ with st.sidebar:
 # --- CONTEÚDO PRINCIPAL ---
 st.markdown('<div style="color:white; font-weight:900; font-size:24px; margin-bottom:20px;">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns(3)
-with col1: reg_sel = st.selectbox("REGIÃO", list(db_global.keys()))
-with col2: cat_sel = st.selectbox("CATEGORIA", list(db_global[reg_sel].keys()))
-with col3: comp_sel = st.selectbox("CAMPEONATO", db_global[reg_sel][cat_sel])
+# Seletores de Competição
+c_sel1, c_sel2, c_sel3 = st.columns(3)
+with c_sel1: reg_sel = st.selectbox("REGIÃO", list(db_global.keys()))
+with c_sel2: cat_sel = st.selectbox("CATEGORIA", list(db_global[reg_sel].keys()))
+with c_sel3: comp_sel = st.selectbox("CAMPEONATO", db_global[reg_sel][cat_sel])
 
 st.divider()
 st.markdown(f'<div class="confronto-label">Confronto: {comp_sel}</div>', unsafe_allow_html=True)
 
+# Seletores de Times
 elenco = times_db.get(comp_sel, ["Equipe A", "Equipe B"])
-t1, t2 = st.columns(2)
-with t1: casa = st.selectbox("TIME CASA", elenco)
-with t2: fora = st.selectbox("TIME FORA", [t for t in elenco if t != casa] if len(elenco)>1 else elenco)
+t_col1, t_col2 = st.columns(2)
+with t_col1: casa = st.selectbox("TIME CASA", elenco)
+with t_col2: fora = st.selectbox("TIME FORA", [t for t in elenco if t != casa] if len(elenco)>1 else elenco)
 
 # ==========================================
-# 🚀 RESULTADO ALGORITMO (GRID HORIZONTAL CORRIGIDO)
+# 🚀 AÇÃO DO BOTÃO (DESLOCADO PARA A ESQUERDA)
 # ==========================================
-c_btn = st.columns([1, 1, 1])
-with c_btn[1]:
-    if st.button("PROCESSAR ALGORITMO"):
-        with st.status("VISÃO: Sincronizando variáveis...", expanded=False):
-            time.sleep(1)
-        
-        st.markdown(f'<div class="result-title">RESULTADO ALGORITMO: {casa} vs {fora}</div>', unsafe_allow_html=True)
-        
-        # Simulação de Resultados
-        venc = random.choice([casa, fora, "Empate"])
-        
-        # LINHA 1 DE RESULTADOS
-        r1_col1, r1_col2, r1_col3, r1_col4 = st.columns(4)
-        with r1_col1:
-            st.markdown(f"""<div class="vision-card-horiz"><span class="vision-stat-title">Probabilidade</span><span class="vision-stat-value">{venc}</span><span class="vision-stat-sub">Confiança: 74%</span></div>""", unsafe_allow_html=True)
-        with r1_col2:
-            st.markdown(f"""<div class="vision-card-horiz"><span class="vision-stat-title">Gols (Total)</span><span class="vision-stat-value">Over 2.5</span><span class="vision-stat-sub">1ºT: Sim | 2ºT: Sim</span></div>""", unsafe_allow_html=True)
-        with r1_col3:
-            st.markdown(f"""<div class="vision-card-horiz"><span class="vision-stat-title">Cartões</span><span class="vision-stat-value">Over 4.5</span><span class="vision-stat-sub">HT: 1.5 | FT: 3.0</span></div>""", unsafe_allow_html=True)
-        with r1_col4:
-            st.markdown(f"""<div class="vision-card-horiz"><span class="vision-stat-title">Escanteios</span><span class="vision-stat-value">10.5 Total</span><span class="vision-stat-sub">{casa}: 6 | {fora}: 4</span></div>""", unsafe_allow_html=True)
+btn_col1, btn_col2, btn_col3 = st.columns([1, 1, 1])
+with btn_col1: # BOTÃO AGORA NA ESQUERDA TOTAL
+    processar = st.button("PROCESSAR ALGORITMO")
 
-        # LINHA 2 DE RESULTADOS
-        r2_col1, r2_col2, r2_col3, r2_col4 = st.columns(4)
-        with r2_col1:
-            st.markdown(f"""<div class="vision-card-horiz"><span class="vision-stat-title">Tiros de Meta</span><span class="vision-stat-value">14.0 Total</span><span class="vision-stat-sub">HT: 6 | FT: 8</span></div>""", unsafe_allow_html=True)
-        with r2_col2:
-            st.markdown(f"""<div class="vision-card-horiz"><span class="vision-stat-title">Chutes no Gol</span><span class="vision-stat-value">9.0 SOG</span><span class="vision-stat-sub">HT: 4 | FT: 5</span></div>""", unsafe_allow_html=True)
-        with r2_col3:
-            st.markdown(f"""<div class="vision-card-horiz"><span class="vision-stat-title">Defesas Goleiro</span><span class="vision-stat-value">7.5 Total</span><span class="vision-stat-sub">{casa}: 3 | {fora}: 4</span></div>""", unsafe_allow_html=True)
-        with r2_col4:
-            st.markdown(f"""<div class="vision-card-horiz" style="border-top:3px solid #00cc66;"><span class="vision-stat-title" style="color:#00cc66;">Insight</span><span class="vision-stat-value">Valor em Cantos</span><span class="vision-stat-sub">Alta Volatilidade</span></div>""", unsafe_allow_html=True)
+if processar:
+    with st.status("VISÃO: Sincronizando dados...", expanded=False):
+        time.sleep(1)
+    
+    # Título do Resultado ocupa a largura total
+    st.markdown(f'<div class="result-title">RESULTADO ALGORITMO: {casa} vs {fora}</div>', unsafe_allow_html=True)
+    
+    # LINHA 1 DE RESULTADOS (LARGURA TOTAL)
+    r1_1, r1_2, r1_3, r1_4 = st.columns(4)
+    with r1_1:
+        st.markdown(f"""<div class="vision-card-horiz"><span class="vision-stat-title">Vencedor</span><span class="vision-stat-value">{casa}</span><span class="vision-stat-sub">Probabilidade: 72%</span></div>""", unsafe_allow_html=True)
+    with r1_2:
+        st.markdown(f"""<div class="vision-card-horiz"><span class="vision-stat-title">Gols Total</span><span class="vision-stat-value">Over 2.5 Gols</span><span class="vision-stat-sub">HT: Sim | FT: Sim</span></div>""", unsafe_allow_html=True)
+    with r1_3:
+        st.markdown(f"""<div class="vision-card-horiz"><span class="vision-stat-title">Cartões</span><span class="vision-stat-value">4.5 Total</span><span class="vision-stat-sub">HT: 1.5 | FT: 3.0</span></div>""", unsafe_allow_html=True)
+    with r1_4:
+        st.markdown(f"""<div class="vision-card-horiz"><span class="vision-stat-title">Escanteios</span><span class="vision-stat-value">10.5 Total</span><span class="vision-stat-sub">{casa}: 6 | {fora}: 4</span></div>""", unsafe_allow_html=True)
+
+    # LINHA 2 DE RESULTADOS (LARGURA TOTAL)
+    r2_1, r2_2, r2_3, r2_4 = st.columns(4)
+    with r2_1:
+        st.markdown(f"""<div class="vision-card-horiz"><span class="vision-stat-title">Tiros de Meta</span><span class="vision-stat-value">14.0 Total</span><span class="vision-stat-sub">HT: 6 | FT: 8</span></div>""", unsafe_allow_html=True)
+    with r2_2:
+        st.markdown(f"""<div class="vision-card-horiz"><span class="vision-stat-title">Chutes no Gol</span><span class="vision-stat-value">9.5 Total</span><span class="vision-stat-sub">HT: 4 | FT: 5.5</span></div>""", unsafe_allow_html=True)
+    with r2_3:
+        st.markdown(f"""<div class="vision-card-horiz"><span class="vision-stat-title">Defesas Goleiro</span><span class="vision-stat-value">7.2 Total</span><span class="vision-stat-sub">{casa}: 3 | {fora}: 4</span></div>""", unsafe_allow_html=True)
+    with r2_4:
+        st.markdown(f"""<div class="vision-card-horiz" style="border-top:3px solid #00cc66;"><span class="vision-stat-title" style="color:#00cc66;">V-Insight</span><span class="vision-stat-value" style="color:#00cc66;">Valor em Cantos</span><span class="vision-stat-sub">Alta Confiança</span></div>""", unsafe_allow_html=True)
 
 # FOOTER
-st.markdown("""<div class="betano-footer"><div>STATUS: ● VISÃO ON-LINE | LAYOUT CORRIGIDO</div><div>GESTOR IA PRO v9.7</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="betano-footer"><div>STATUS: ● VISÃO ON-LINE | EXPANSÃO DE GRID CONCLUÍDA</div><div>GESTOR IA PRO v9.8</div></div>""", unsafe_allow_html=True)
