@@ -2,8 +2,9 @@ import streamlit as st
 import time
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v18.0 - PROTOCOLO DE PRESERVAÇÃO DEFINITIVA]
-# ESTADO: BLINDADO (RESTAURAÇÃO TOTAL DE MENUS E SIDEBAR)
+# [GIAE KERNEL SHIELD v18.0 - PROTOCOLO JARVIS REFINED]
+# ESTADO: ATIVO (ESTRUTURA TRAVADA E PROTEGIDA)
+# ALTERAÇÕES: LOGO SPACED / RENOMEAR SIDEBAR / FONT-WEIGHT ADJUST
 # CHAVE DE SEGURANÇA: GIAE-V17-ELITE-RECOVERY
 # ==============================================================================
 
@@ -17,10 +18,10 @@ st.set_page_config(
 if 'aba_navegacao' not in st.session_state:
     st.session_state.aba_navegacao = "home"
 
-# --- BLOCO DE SEGURANÇA CSS (PROTEÇÃO CONTRA QUEBRAS) ---
+# --- BLOCO DE SEGURANÇA CSS (PROTEÇÃO JARVIS) ---
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
 
     /* [01] RESET TOTAL ANTI-QUEBRA */
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { 
@@ -29,7 +30,7 @@ st.markdown("""
     .stApp { background-color: #0b0e11 !important; overflow: hidden !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; padding-top: 0px !important; }
 
-    /* [02] NAVBAR SUPERIOR (AZUL ROYAL - TODOS OS NOMES RESTAURADOS) */
+    /* [02] NAVBAR SUPERIOR (AZUL ROYAL) */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 55px; 
         background-color: #002366 !important; 
@@ -37,27 +38,37 @@ st.markdown("""
         display: flex; align-items: center; justify-content: space-between;
         padding: 0 25px !important; z-index: 999999; 
     }
-    .logo-text { color: #9d54ff !important; font-weight: 900; font-size: 17px; text-transform: uppercase; letter-spacing: -1px; margin-right: 15px; }
+    
+    /* AJUSTE 1: LOGO COM MAIOR ESPAÇAMENTO */
+    .logo-text { 
+        color: #9d54ff !important; font-weight: 900; font-size: 17px; 
+        text-transform: uppercase; letter-spacing: 2px !important; /* ESPAÇO ADICIONADO */
+        margin-right: 25px; 
+    }
 
-    .nav-items { display: flex; gap: 15px; align-items: center; }
+    .nav-items { display: flex; gap: 18px; align-items: center; }
+    
+    /* AJUSTE 3: REMOÇÃO DE NEGRITO DOS ITENS ESPECÍFICOS */
     .nav-items span { 
-        color: #ffffff; font-size: 8.5px; font-weight: 700; text-transform: uppercase; 
+        color: #ffffff; font-size: 9px; 
+        font-weight: 400 !important; /* SUAVIZAÇÃO DA FONTE (SEM NEGRITO) */
+        text-transform: uppercase; 
         cursor: pointer; white-space: nowrap !important; transition: 0.2s;
     }
     .nav-items span:hover { color: #9d54ff; }
 
-    .header-right { display: flex; align-items: center; gap: 10px; }
+    .header-right { display: flex; align-items: center; gap: 12px; }
     .registrar-pill { 
         color: #ffffff; font-size: 9px; font-weight: 700; text-transform: uppercase; 
-        border: 1px solid #ffffff; padding: 5px 12px; border-radius: 20px; cursor: pointer;
+        border: 1px solid #ffffff; padding: 5px 15px; border-radius: 20px; cursor: pointer;
     }
     .entrar-grad {
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%);
-        color: white; padding: 6px 15px; border-radius: 4px;
+        color: white; padding: 6px 18px; border-radius: 4px;
         font-weight: 800; font-size: 10px; cursor: pointer; text-transform: uppercase;
     }
 
-    /* [03] SIDEBAR (GRAFITE - RECUO LATERAL E TOPO PROTEGIDO) */
+    /* [03] SIDEBAR (GRAFITE - ANTI-QUEBRA) */
     [data-testid="stSidebar"] { 
         background-color: #11151a !important; border-right: 1px solid #1e293b !important; 
         min-width: 260px !important;
@@ -70,13 +81,13 @@ st.markdown("""
         background-color: transparent !important; color: #94a3b8 !important; border: none !important;
         border-bottom: 1px solid #1a202c !important; border-radius: 0px !important;
         text-align: left !important; justify-content: flex-start !important;
-        width: 100% !important; padding: 14px 25px 14px 20px !important; /* RECUO DE SEGURANÇA */
+        width: 100% !important; padding: 14px 25px 14px 20px !important; 
         font-size: 10px !important; text-transform: uppercase !important; 
-        white-space: nowrap !important; overflow: hidden;
+        white-space: nowrap !important;
     }
     [data-testid="stSidebar"] button:hover { color: #ffffff !important; border-left: 4px solid #6d28d9 !important; background: #1a242d !important; }
 
-    /* [04] DASHBOARD E CARDS */
+    /* [04] DASHBOARD CENTRAL */
     .dashboard-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; }
     
     section.main div.stButton > button {
@@ -89,11 +100,11 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- CABEÇALHO (AZUL ROYAL - TODOS OS NOMES VOLTARAM) ---
+# --- CABEÇALHO (AZUL ROYAL - AJUSTES JARVIS) ---
 st.markdown(f"""
     <div class="betano-header">
         <div style="display:flex; align-items:center;">
-            <div class="logo-text">GESTOR IA</div>
+            <div class="logo-text">GESTOR &nbsp; IA</div>
             <div class="nav-items">
                 <span>Apostas Esportivas</span>
                 <span>Apostas ao Vivo</span>
@@ -111,17 +122,17 @@ st.markdown(f"""
     </div>
     """, unsafe_allow_html=True)
 
-# --- SIDEBAR (RESTAURADO E PROTEGIDO) ---
+# --- SIDEBAR (AJUSTE 2: RENOMEAR LOCALIZAR APOSTA) ---
 with st.sidebar:
-    st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True) # Espaço para não sumir o primeiro item
-    if st.button("📊 APOSTAS ESPORTIVAS"):
+    st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True) 
+    if st.button("📊 LOCALIZAR APOSTA"): # NOME ATUALIZADO
         st.session_state.aba_navegacao = "analise"
     if st.button("🏠 HOME / DASHBOARD"):
         st.session_state.aba_navegacao = "home"
     
-    st.button("📅 JOGOS DO DIA") # RESTAURADO
+    st.button("📅 JOGOS DO DIA")
     st.button("⏰ PRÓXIMOS JOGOS")
-    st.button("🏆 VENCEDORES DA COMPETIÇÃO") # COM RECUO PARA NÃO ENCOSTAR
+    st.button("🏆 VENCEDORES DA COMPETIÇÃO")
     st.button("📈 APOSTAS POR ODDS")
     st.button("⚽ APOSTAS POR GOLS")
     st.button("🚩 APOSTAS POR ESCANTEIOS")
@@ -142,8 +153,8 @@ if st.session_state.aba_navegacao == "home":
 elif st.session_state.aba_navegacao == "analise":
     st.markdown('<div style="color:white; font-weight:900; font-size:24px; margin-bottom:5px;">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
     st.markdown('<div style="color:#ffffff; font-size:10px; font-weight:700; margin-bottom:25px; text-transform:uppercase;">Protocolo de Análise Crizal Active</div>', unsafe_allow_html=True)
-    # [Filtros e Seletores permanecem blindados aqui]
+    # Filtros e botão "Executar" protegidos aqui
     st.button("EXECUTAR ALGORITMO GIAE")
 
-# --- FOOTER RESTAURADO ---
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v18.0 | STRUCTURE SHIELD PROTECTED</div></div>""", unsafe_allow_html=True)
+# --- FOOTER ---
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v18.0 | JARVIS OPTIMIZED</div></div>""", unsafe_allow_html=True)
