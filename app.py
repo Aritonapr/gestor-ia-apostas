@@ -150,4 +150,35 @@ if st.session_state.aba_ativa == "home":
             <div style="color:#64748b; font-size:9px; text-transform:uppercase;">IA Education</div>
             <div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">GESTÃO 3%</div>
             <div style="color:#9d54ff; font-size:10px; margin-top:5px;">PRESERVE SEU CAPITAL</div>
-            <div
+            <div class="conf-bar-bg"><div class="conf-bar-fill" style="width:100%;"></div></div>
+        </div>""", unsafe_allow_html=True)
+
+    st.markdown('<div style="height:15px;"></div>', unsafe_allow_html=True)
+
+    c4, c5, c6 = st.columns(3)
+    with c4: 
+        st.markdown(f"""<div class="highlight-card">
+            <div style="color:#64748b; font-size:9px; text-transform:uppercase;">Tendência de Valor</div>
+            <div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">ODDS DESAJUSTADAS</div>
+            <div style="color:#facc15; font-size:10px; margin-top:5px;">PREMIER LEAGUE - LIVE</div>
+            <div class="conf-bar-bg"><div class="conf-bar-fill" style="width:75%;"></div></div>
+        </div>""", unsafe_allow_html=True)
+    with c5: 
+        st.markdown(f"""<div class="highlight-card">
+            <div style="color:#64748b; font-size:9px; text-transform:uppercase;"><span class="pulse-dot"></span>Scanner de Cantos</div>
+            <div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">ALTA PRESSÃO (HT)</div>
+            <div style="color:#fb7185; font-size:10px; margin-top:5px;">7 PARTIDAS ENCONTRADAS</div>
+            <div class="conf-bar-bg"><div class="conf-bar-fill" style="width:60%;"></div></div>
+        </div>""", unsafe_allow_html=True)
+    with c6: 
+        st.markdown(f"""<div class="highlight-card">
+            <div style="color:#64748b; font-size:9px; text-transform:uppercase;">Performance Semanal</div>
+            <div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">ASSERTIVIDADE 92%</div>
+            <div style="color:#22c55e; font-size:10px; margin-top:5px;">PROTOCOLO CRIZAL ACTIVE</div>
+            <div class="conf-bar-bg"><div class="conf-bar-fill" style="width:92%;"></div></div>
+        </div>""", unsafe_allow_html=True)
+
+elif st.session_state.aba_active == "analise":
+    st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:5px;">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
+
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v18.0 | JARVIS PROTECT V21</div></div>""", unsafe_allow_html=True)
