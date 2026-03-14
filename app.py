@@ -1,91 +1,105 @@
 import streamlit as st
 
-# --- CONFIGURAÇÃO DA PÁGINA (DEVE SER A PRIMEIRA LINHA) ---
-st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide")
+# 1. Configuração de Página (Sempre no topo)
+st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
-# --- PROTOCOLO OMEGA V22: INJEÇÃO DE INTERFACE BLINDADA ---
+# 2. Injeção de CSS Blindado (Protocolo Omega V22)
 st.markdown(
     """
     <style>
-        /* 1. Cores da Estrutura */
-        header[data-testid="stHeader"] {
-            background-color: #002366 !important; /* Azul Royal */
-        }
-        
-        section[data-testid="stSidebar"] {
-            background-color: #383838 !important; /* Grafite */
-            width: 280px !important;
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        /* 2. Ajuste da Sidebar (Largura Fixa) */
-        [data-testid="stSidebar"][aria-expanded="true"] {
+        /* Fundo da Sidebar (Grafite) e Largura Fixa (280px) */
+        [data-testid="stSidebar"] {
+            background-color: #383838 !important;
             min-width: 280px !important;
             max-width: 280px !important;
         }
 
-        /* 3. Estilização do Logo Roxo (22px) */
-        .logo-text {
-            font-size: 22px !important;
-            color: #8A2BE2 !important; /* Roxo */
-            font-weight: bold;
-            padding-left: 10px;
-            margin-bottom: 20px;
-            display: block;
-        }
-
-        /* 4. Menu Lateral (11px) e Correção de Corte de Texto */
-        [data-testid="stSidebarNav"] ul {
+        /* Topo da Sidebar (Onde fica o logo) */
+        [data-testid="stSidebar"] [data-testid="stVerticalBlock"] {
             padding-top: 20px;
         }
 
-        /* Alvo específico para os links do menu */
-        [data-testid="stSidebarNav"] li div span {
+        /* Header (Azul Royal) */
+        header[data-testid="stHeader"] {
+            background-color: #002366 !important;
+            color: white !important;
+        }
+
+        /* Estilização do Logo Roxo (22px) */
+        .logo-custom {
+            font-size: 22px !important;
+            color: #8A2BE2 !important;
+            font-weight: 800;
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            padding-left: 10px;
+        }
+
+        /* Ajuste dos Itens do Menu (11px) e Correção do Corte de Texto */
+        /* Alvo: Botões e Textos na Sidebar */
+        .stButton button, .menu-item {
             font-size: 11px !important;
-            color: #FFFFFF !important;
+            text-transform: uppercase;
+            background-color: transparent !important;
+            color: #E0E0E0 !important;
+            border: none !important;
+            width: 100% !important;
+            text-align: left !important;
+            padding: 10px 15px 10px 10px !important; /* Padding direito para não cortar */
             white-space: normal !important; /* Permite quebra de linha */
-            word-wrap: break-word !important;
-            padding-right: 25px !important; /* Margem de segurança da linha vertical */
-            line-height: 1.4 !important;
+            line-height: 1.3 !important;
+            display: flex;
+            align-items: center;
         }
 
-        /* 5. Ajuste Geral de Margens do Menu */
-        [data-testid="stSidebarNav"] {
-            max-height: none !important;
-            padding-bottom: 100px;
+        /* Efeito de Hover no Menu */
+        .stButton button:hover {
+            color: #8A2BE2 !important;
+            background-color: rgba(255, 255, 255, 0.05) !important;
         }
 
-        /* Estilização para icones da Sidebar se houver */
-        [data-testid="stSidebarNav"] li svg {
-            width: 16px !important;
-            height: 16px !important;
+        /* Linha Vertical Divisora - Ajuste de Margem */
+        [data-testid="stSidebar"] > div:first-child {
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
         }
+
+        /* Esconder ícones padrão de navegação se necessário */
+        [data-testid="stSidebarNav"] {display: none;}
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# --- ESTRUTURA VISUAL DA SIDEBAR (JARVIS SHIELD) ---
+# 3. Estrutura de Conteúdo da Sidebar
 with st.sidebar:
-    st.markdown('<div class="logo-text">GESTOR IA</div>', unsafe_allow_html=True)
+    # Logo Roxo
+    st.markdown('<div class="logo-custom">GESTOR IA</div>', unsafe_allow_html=True)
     
-    # Aqui os itens do menu serão gerados automaticamente se você usar arquivos na pasta /pages
-    # Ou manualmente como abaixo:
-    st.write("---")
-    st.markdown("### Navegação")
+    # Itens do Menu (Simulando sua estrutura da imagem 1)
+    # Adicionamos um ícone básico para cada
+    st.button("📊 LOCALIZAR APOSTA")
+    st.button("📅 JOGOS DO DIA")
+    st.button("🎯 PRÓXIMOS JOGOS")
+    
+    # O ITEM COM PROBLEMA: Agora com segurança de espaço
+    st.button("🏆 VENCEDORES DA COMPETIÇÃO") 
+    
+    st.button("📈 APOSTAS POR ODDS")
+    st.button("⚽ APOSTAS POR GOLS")
+    st.button("🚩 APOSTAS POR ESCANTEIOS")
+    st.button("⚖️ ÁRBITRO DA PARTIDA")
 
-# --- CONTEÚDO PRINCIPAL (Exemplo de Dashboard) ---
+# 4. Área Principal (Main Content)
 st.title("PROJETO GESTOR IA")
 st.subheader("Protocolo de Sincronização Omega V22 Ativo")
 
+# Exemplo de Dashboard
 col1, col2, col3 = st.columns(3)
 with col1:
-    st.info("Status: IA OPERACIONAL")
+    st.metric("Status", "IA OPERACIONAL")
 with col2:
-    st.success("Chave: GIAE-V17-ELITE-RECOVERY")
+    st.metric("Chave", "GIAE-V17-ELITE")
 with col3:
-    st.warning("Interface: Blindada (280px)")
+    st.metric("Sidebar", "280px FIXED")
 
-# Mensagem de Log do Sistema
-st.write("---")
-st.code("LOG: Ajuste de padding-right aplicado ao menu lateral para evitar colisão de borda.")
+st.info("Log: Correção de padding aplicada. O texto 'Vencedores da Competição' agora possui margem interna de segurança.")
