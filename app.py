@@ -2,9 +2,9 @@ import streamlit as st
 import time
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v23.0 - PROTOCOLO JARVIS SUPREME]
-# ESTADO: AJUSTE ESTRUTURAL FINO
-# FIX: SIDEBAR LARGA (320PX), SEM SCROLLBAR, LOGO DISTANCIADO
+# [GIAE KERNEL SHIELD v24.0 - PROTOCOLO JARVIS SUPREME]
+# ESTADO: AJUSTE DE POSICIONAMENTO E REATIVAÇÃO DE INTERATIVIDADE
+# FIX: RESTAURAÇÃO DE HOVER (HEADER) E ALINHAMENTO SUPERIOR MÁXIMO
 # CHAVE DE SEGURANÇA: GIAE-V17-ELITE-RECOVERY
 # ==============================================================================
 
@@ -27,13 +27,17 @@ st.markdown("""
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { display: none !important; visibility: hidden !important; }
     .stApp { background-color: #0b0e11 !important; }
     
-    /* SIDEBAR LOCK (AUMENTADA PARA 320PX E SEM SCROLLBAR) */
+    /* REDUÇÃO DE PADDING SUPERIOR DO STREAMLIT PARA SUBIR O CONTEÚDO */
+    [data-testid="stMainBlockContainer"] {
+        padding-top: 0rem !important;
+        padding-bottom: 1rem !important;
+    }
+
+    /* SIDEBAR LOCK (320PX E SEM SCROLLBAR) */
     [data-testid="stSidebar"] { 
         min-width: 320px !important; max-width: 320px !important; width: 320px !important;
         background-color: #11151a !important; border-right: 1px solid #1e293b !important; 
     }
-    
-    /* REMOVER BARRA DE ROLAGEM DA SIDEBAR (TODOS OS BROWSERS) */
     [data-testid="stSidebarContent"] { 
         overflow: hidden !important; 
         padding-top: 0px !important;
@@ -44,7 +48,7 @@ st.markdown("""
     [data-testid="stSidebarResizer"] { display: none !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
 
-    /* [02] NAVBAR SUPERIOR (CORREÇÃO DE ESPAÇAMENTO DO LOGO) */
+    /* [02] NAVBAR SUPERIOR (RESTAURAÇÃO DE EFEITOS) */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #002366 !important; 
@@ -53,11 +57,10 @@ st.markdown("""
         padding: 0 40px !important; z-index: 999999; 
     }
     
-    /* LOGO COM MARGEM MAIOR PARA NÃO ENCOSTAR NO MENU */
     .logo-text { 
         color: #9d54ff !important; font-weight: 900; font-size: 22px !important;
         text-transform: uppercase; letter-spacing: 1.5px !important; 
-        margin-right: 60px !important; /* ESPAÇO AMPLIADO AQUI */
+        margin-right: 60px !important;
         white-space: nowrap; cursor: pointer;
     }
 
@@ -68,28 +71,34 @@ st.markdown("""
     }
     .nav-items span:hover { color: #9d54ff; text-shadow: 0 0 10px #9d54ff; }
 
+    /* RESTAURAÇÃO DE EFEITOS LUPA, REGISTRAR E ENTRAR */
     .header-right { display: flex; align-items: center; gap: 20px; }
+    
     .search-icon { color: #ffffff !important; cursor: pointer !important; font-size: 18px !important; transition: 0.3s !important; }
+    .search-icon:hover { color: #9d54ff !important; transform: scale(1.2) !important; }
     
     .registrar-pill { 
         color: #ffffff !important; font-size: 10px !important; font-weight: 700 !important; text-transform: uppercase !important; 
         border: 1px solid #ffffff !important; padding: 7px 20px !important; border-radius: 20px !important; cursor: pointer !important; transition: 0.3s !important;
     }
+    .registrar-pill:hover { background: #ffffff !important; color: #002366 !important; transform: translateY(-1px); }
+
     .entrar-grad {
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
         color: white !important; padding: 8px 25px !important; border-radius: 4px !important;
         font-weight: 800 !important; font-size: 11px !important; cursor: pointer !important; text-transform: uppercase !important;
-        transition: 0.2s !important;
+        transition: 0.3s !important; box-shadow: 0 4px 10px rgba(0,0,0,0.3) !important;
     }
+    .entrar-grad:hover { filter: brightness(1.2) !important; box-shadow: 0 0 15px rgba(109, 40, 217, 0.4) !important; transform: translateY(-1px); }
 
-    /* [03] SIDEBAR BOTÕES (TEXTO EM LINHA ÚNICA E EFEITO HOVER) */
+    /* [03] SIDEBAR BOTÕES */
     [data-testid="stSidebar"] button {
         background-color: transparent !important; color: #94a3b8 !important; border: none !important;
         border-bottom: 1px solid #1a202c !important; border-radius: 0px !important;
         text-align: left !important; justify-content: flex-start !important;
         width: 100% !important; padding: 18px 25px !important; 
         font-size: 10px !important; text-transform: uppercase !important; 
-        white-space: nowrap !important; /* GARANTE UMA ÚNICA LINHA */
+        white-space: nowrap !important;
         transition: 0.3s !important;
     }
     [data-testid="stSidebar"] button:hover { 
@@ -98,14 +107,14 @@ st.markdown("""
         background: rgba(26, 36, 45, 0.8) !important;
     }
 
-    /* [04] DASHBOARD CARDS */
+    /* [04] CONTEÚDO E CARDS */
     .news-ticker {
         background: rgba(0, 35, 102, 0.2); border: 1px solid #1e293b; padding: 10px;
-        color: #06b6d4; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 25px;
+        color: #06b6d4; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 20px;
     }
     .highlight-card {
         background: #11151a; border: 1px solid #1e293b; padding: 25px; border-radius: 8px;
-        text-align: center; height: 170px;
+        text-align: center; height: 160px;
     }
 
     /* FOOTER */
@@ -135,7 +144,7 @@ st.markdown(f"""
     </div>
     """, unsafe_allow_html=True)
 
-# --- [LOCK] SIDEBAR (LARGA E LIMPA) ---
+# --- [LOCK] SIDEBAR ---
 with st.sidebar:
     st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True) 
     
@@ -150,12 +159,13 @@ with st.sidebar:
     st.button("🚩 APOSTAS POR ESCANTEIOS")
     st.button("⚖️ ÁRBITRO DA PARTIDA")
 
-# --- CONTEÚDO CENTRAL ---
-st.markdown('<div style="height: 85px;"></div>', unsafe_allow_html=True)
+# --- CONTEÚDO CENTRAL (POSICIONAMENTO AJUSTADO) ---
+# Reduzi o espaçador para o conteúdo subir mais
+st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
 # MODO DASHBOARD (PADRÃO)
 if st.session_state.aba_ativa == "home":
-    st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px; letter-spacing:-1px;">HOME / DASHBOARD</div>', unsafe_allow_html=True)
+    st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:10px; letter-spacing:-1px;">HOME / DASHBOARD</div>', unsafe_allow_html=True)
     st.markdown('<div class="news-ticker">● LIVE: IA DETECTA ALTA PROBABILIDADE EM MERCADO DE GOLS HOJE ● ALERTA: ODDS EM QUEDA ● DICA: GESTÃO DE BANCA ATUALIZADA</div>', unsafe_allow_html=True)
     
     c1, c2, c3 = st.columns(3)
