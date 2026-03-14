@@ -2,9 +2,9 @@ import streamlit as st
 import time
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v27.0 - PROTOCOLO JARVIS SUPREME]
-# ESTADO: REPARAÇÃO TOTAL DE CABEÇALHO E GRID 3x2
-# FIX: ALINHAMENTO HORIZONTAL DO HEADER E RESTAURAÇÃO DA LUPA
+# [GIAE KERNEL SHIELD v28.0 - PROTOCOLO JARVIS SUPREME]
+# ESTADO: NAVEGAÇÃO OTIMIZADA E LOGO INTERATIVA
+# FIX: LOGO COM FUNÇÃO "HOME" E LIMPEZA DE SIDEBAR
 # CHAVE DE SEGURANÇA: GIAE-V17-ELITE-RECOVERY
 # ==============================================================================
 
@@ -14,6 +14,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# --- CONTROLE DE NAVEGAÇÃO ---
 if 'aba_ativa' not in st.session_state:
     st.session_state.aba_ativa = "home"
 
@@ -27,7 +28,7 @@ st.markdown("""
     .stApp { background-color: #0b0e11 !important; }
     [data-testid="stMainBlockContainer"] { padding-top: 0rem !important; padding-bottom: 1rem !important; }
 
-    /* [02] SIDEBAR LOCK (320PX / SEM SCROLL) */
+    /* [02] SIDEBAR LOCK (320PX) */
     [data-testid="stSidebar"] { 
         min-width: 320px !important; max-width: 320px !important; width: 320px !important;
         background-color: #11151a !important; border-right: 1px solid #1e293b !important; 
@@ -36,19 +37,27 @@ st.markdown("""
     [data-testid="stSidebarContent"]::-webkit-scrollbar { display: none !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
 
-    /* [03] NAVBAR SUPERIOR AZUL ROYAL (FIX TOTAL) */
+    /* [03] NAVBAR SUPERIOR AZUL ROYAL */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #002366 !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; 
         display: flex; align-items: center; justify-content: space-between; padding: 0 30px !important; z-index: 999999; 
     }
     .header-left { display: flex; align-items: center; }
-    .logo-text { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; letter-spacing: 1px; margin-right: 40px; }
+    
+    /* ESTILO DO LOGO COMO LINK */
+    .logo-link { 
+        color: #9d54ff !important; font-weight: 900; font-size: 20px !important; 
+        text-transform: uppercase; letter-spacing: 1px; margin-right: 40px; 
+        text-decoration: none !important; cursor: pointer !important; transition: 0.3s;
+    }
+    .logo-link:hover { text-shadow: 0 0 15px #9d54ff; filter: brightness(1.2); }
+
     .nav-items { display: flex; gap: 15px; }
     .nav-items span { color: #ffffff; font-size: 10px !important; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: 0.2s; }
     .nav-items span:hover { color: #9d54ff; }
 
-    /* FIX BOTÕES E LUPA */
+    /* HEADER DIREITO */
     .header-right { display: flex; align-items: center; gap: 15px; min-width: 250px; justify-content: flex-end; }
     .search-icon { color: #ffffff !important; cursor: pointer !important; font-size: 16px !important; transition: 0.3s !important; }
     .search-icon:hover { color: #9d54ff !important; transform: scale(1.2); }
@@ -75,7 +84,7 @@ st.markdown("""
     }
     [data-testid="stSidebar"] button:hover { color: #ffffff !important; border-left: 4px solid #6d28d9 !important; background: rgba(26, 36, 45, 0.8) !important; }
 
-    /* [05] CARDS E DASHBOARD */
+    /* [05] DASHBOARD CARDS */
     .news-ticker { background: rgba(0, 35, 102, 0.2); border: 1px solid #1e293b; padding: 10px; color: #06b6d4; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; }
     .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; transition: 0.3s; }
     .highlight-card:hover { border-color: #6d28d9; transform: translateY(-3px); }
@@ -90,11 +99,12 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- [LOCK] CABEÇALHO (FIX TOTAL) ---
-st.markdown("""
+# --- [LOCK] CABEÇALHO COM LOGO CLICÁVEL ---
+# O link da logo limpa a query string para resetar o estado se necessário, ou apenas recarrega
+st.markdown(f"""
     <div class="betano-header">
         <div class="header-left">
-            <div class="logo-text">GESTOR IA</div>
+            <a href="/" target="_self" class="logo-link">GESTOR IA</a>
             <div class="nav-items">
                 <span>Apostas Esportivas</span>
                 <span>Apostas ao Vivo</span>
@@ -112,11 +122,15 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# --- [LOCK] SIDEBAR ---
+# --- [LOCK] SIDEBAR (LIMPA) ---
 with st.sidebar:
     st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True) 
-    if st.button("📊 LOCALIZAR APOSTA"): st.session_state.aba_ativa = "analise"
-    if st.button("🏠 IR PARA O INÍCIO"): st.session_state.aba_ativa = "home"
+    
+    # Único botão de gatilho principal mantido
+    if st.button("📊 LOCALIZAR APOSTA"): 
+        st.session_state.aba_ativa = "analise"
+    
+    # Botões de utilitários
     st.button("📅 JOGOS DO DIA")
     st.button("⏰ PRÓXIMOS JOGOS")
     st.button("🏆 VENCEDORES DA COMPETIÇÃO")
@@ -132,7 +146,7 @@ if st.session_state.aba_ativa == "home":
     st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:10px; letter-spacing:-1px;">HOME / DASHBOARD</div>', unsafe_allow_html=True)
     st.markdown('<div class="news-ticker">● LIVE: IA DETECTA ALTA PROBABILIDADE EM MERCADO DE GOLS HOJE ● ALERTA: ODDS EM QUEDA ● DICA: GESTÃO DE BANCA ATUALIZADA</div>', unsafe_allow_html=True)
     
-    # GRID 3x2
+    # GRID 3x2 MASTER
     c1, c2, c3 = st.columns(3)
     with c1: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform:uppercase;"><span class="pulse-dot"></span>Destaque Live</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">FLAMENGO x PALMEIRAS</div><div style="color:#06b6d4; font-size:10px; margin-top:5px;">BRASILEIRÃO - AO VIVO</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:90%;"></div></div></div>', unsafe_allow_html=True)
     with c2: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform:uppercase;">Sugestão de Mercado</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">OVER 2.5 GOLS</div><div style="color:#00cc66; font-size:10px; margin-top:5px;">CONFIDÊNCIA: 88%</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:88%;"></div></div></div>', unsafe_allow_html=True)
