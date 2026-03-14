@@ -2,9 +2,9 @@ import streamlit as st
 import time
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v18.0 - PROTOCOLO JARVIS DEFINITIVO]
-# ESTADO: BLINDADO (ESTRUTURA TRAVADA: HEADER / SIDEBAR / LOGO / MENU)
-# CONTEÚDO: RESTAURAÇÃO TOTAL DO DASHBOARD CENTRAL
+# [GIAE KERNEL SHIELD v18.0 - PROTOCOLO JARVIS FINAL]
+# ESTADO: TOTALMENTE BLINDADO (ESTRUTURA IMUTÁVEL)
+# LÓGICA: NAVEGAÇÃO POR CAMADAS (HOME -> ANÁLISE)
 # CHAVE DE SEGURANÇA: GIAE-V17-ELITE-RECOVERY
 # ==============================================================================
 
@@ -14,11 +14,11 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- INICIALIZAÇÃO DE ESTADO ---
-if 'aba_navegacao' not in st.session_state:
-    st.session_state.aba_navegacao = "home"
+# --- INICIALIZAÇÃO DO COFRE DE NAVEGAÇÃO ---
+if 'navegacao_jarvis' not in st.session_state:
+    st.session_state.navegacao_jarvis = "home"
 
-# --- [LOCK] BLOCO DE SEGURANÇA CSS (NÃO ALTERAR) ---
+# --- [LOCK] BLOCO DE SEGURANÇA CSS (ESTRUTURA PRESERVADA) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
@@ -43,20 +43,20 @@ st.markdown("""
         text-transform: uppercase; letter-spacing: 1px !important; margin-right: 30px; white-space: nowrap;
     }
 
-    /* MENU SUPERIOR 11PX CLEAN (TRAVADO) */
+    /* MENU SUPERIOR 11PX CLEAN SEM NEGRITO (TRAVADO) */
     .nav-items { display: flex; gap: 20px; align-items: center; }
     .nav-items span { 
         color: #ffffff; font-size: 11px !important; font-weight: 400 !important; 
         text-transform: uppercase; letter-spacing: 0.5px !important; cursor: pointer; 
         white-space: nowrap !important; transition: 0.2s;
     }
-    .nav-items span:hover { color: #9d54ff; text-shadow: 0 0 10px #9d54ff; }
+    .nav-items span:hover { color: #9d54ff; }
 
     /* BOTÕES DA DIREITA */
     .header-right { display: flex; align-items: center; gap: 15px; }
     .registrar-pill { 
         color: #ffffff; font-size: 10px; font-weight: 700; text-transform: uppercase; 
-        border: 1px solid #ffffff; padding: 6px 18px; border-radius: 20px; cursor: pointer; transition: 0.3s;
+        border: 1px solid #ffffff; padding: 6px 18px; border-radius: 20px; cursor: pointer;
     }
     .registrar-pill:hover { background: #ffffff; color: #002366; }
     .entrar-grad {
@@ -77,18 +77,17 @@ st.markdown("""
     }
     [data-testid="stSidebar"] button:hover { color: #ffffff !important; border-left: 4px solid #6d28d9 !important; background: #1a242d !important; }
 
-    /* DASHBOARD CENTRAL CARDS */
+    /* ESTILOS DO MEIO DA TELA (HOME) */
     .news-ticker {
         background: rgba(0, 35, 102, 0.2); border: 1px solid #1e293b; padding: 10px;
         color: #06b6d4; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 25px;
     }
     .highlight-card {
         background: #11151a; border: 1px solid #1e293b; padding: 25px; border-radius: 8px;
-        text-align: center; height: 170px; transition: 0.3s;
+        text-align: center; height: 170px;
     }
-    .highlight-card:hover { border-color: #9d54ff; background: #161b22; }
 
-    /* BOTÃO EXECUTAR */
+    /* BOTÃO EXECUTAR (BRANCO) */
     section.main div.stButton > button {
         background: #ffffff !important; color: #000000 !important; border-radius: 4px !important;
         height: 40px !important; width: 220px !important; font-weight: 800 !important;
@@ -100,7 +99,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- [HEADER LOCK] ---
+# --- [LOCK] CABEÇALHO AZUL ROYAL ---
 st.markdown(f"""
     <div class="betano-header">
         <div style="display:flex; align-items:center;">
@@ -122,13 +121,16 @@ st.markdown(f"""
     </div>
     """, unsafe_allow_html=True)
 
-# --- [SIDEBAR LOCK] ---
+# --- [LOCK] SIDEBAR GRAFITE ---
 with st.sidebar:
     st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True) 
+    # BOTÃO GATILHO PARA A FERRAMENTA
     if st.button("📊 LOCALIZAR APOSTA"):
-        st.session_state.aba_navegacao = "analise"
+        st.session_state.navegacao_jarvis = "analise"
+    
+    # BOTÃO PARA RETORNAR À HOME
     if st.button("🏠 HOME / DASHBOARD"):
-        st.session_state.aba_navegacao = "home"
+        st.session_state.navegacao_jarvis = "home"
     
     st.button("📅 JOGOS DO DIA")
     st.button("⏰ PRÓXIMOS JOGOS")
@@ -138,30 +140,29 @@ with st.sidebar:
     st.button("🚩 APOSTAS POR ESCANTEIOS")
     st.button("⚖️ ÁRBITRO DA PARTIDA")
 
-# --- CONTEÚDO CENTRAL ---
+# --- ÁREA CENTRAL DINÂMICA (PROTOCOLO DE SEGURANÇA) ---
 st.markdown('<div style="height: 85px;"></div>', unsafe_allow_html=True)
 
-# [CENÁRIO HOME - RESTAURADO]
-if st.session_state.aba_navegacao == "home":
-    st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">DASHBOARD DE TENDÊNCIAS IA</div>', unsafe_allow_html=True)
-    
+# [CAMADA 1] - APARECE AO ABRIR (HOME)
+if st.session_state.navegacao_jarvis == "home":
     # News Ticker
-    st.markdown('<div class="news-ticker">● LIVE: IA DETECTA PADRÃO DE GOLS NO BRASILEIRÃO SÉRIE A ● ALERTA: ODDS EM QUEDA PARA EMPATE NO JOGO DO FLAMENGO ● DICA: GESTÃO DE BANCA ATUALIZADA</div>', unsafe_allow_html=True)
+    st.markdown('<div class="news-ticker">● LIVE: IA DETECTA ALTA PROBABILIDADE EM MERCADO DE GOLS HOJE ● ALERTA: ODDS EM QUEDA ● DICA: GESTÃO DE BANCA ATUALIZADA</div>', unsafe_allow_html=True)
     
-    # Cards Centrais
+    # 3 Cards de Destaque
     c1, c2, c3 = st.columns(3)
     with c1:
         st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform:uppercase;">Destaque do Dia</div><div style="color:white; font-size:18px; font-weight:900; margin-top:15px;">FLAMENGO x PALMEIRAS</div><div style="color:#06b6d4; font-size:11px; margin-top:8px;">BRASILEIRÃO - 21:30h</div></div>', unsafe_allow_html=True)
     with c2:
-        st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform:uppercase;">Probabilidade Premium</div><div style="color:white; font-size:18px; font-weight:900; margin-top:15px;">AMBOS MARCAM</div><div style="color:#00cc66; font-size:11px; margin-top:8px;">CONFIDÊNCIA: 91.2%</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform:uppercase;">Sugestão de Mercado</div><div style="color:white; font-size:18px; font-weight:900; margin-top:15px;">OVER 2.5 GOLS</div><div style="color:#00cc66; font-size:11px; margin-top:8px;">CONFIDÊNCIA: 88%</div></div>', unsafe_allow_html=True)
     with c3:
-        st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform:uppercase;">IA Intelligence</div><div style="color:white; font-size:18px; font-weight:900; margin-top:15px;">MÉTODO UNDER 3.5</div><div style="color:#9d54ff; font-size:11px; margin-top:8px;">ALTA ASSERTIVIDADE</div></div>', unsafe_allow_html=True)
+        st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform:uppercase;">IA Education</div><div style="color:white; font-size:18px; font-weight:900; margin-top:15px;">GESTÃO 3%</div><div style="color:#9d54ff; font-size:11px; margin-top:8px;">PRESERVE SEU CAPITAL</div></div>', unsafe_allow_html=True)
 
-# [CENÁRIO ANÁLISE - BLINDADO]
-elif st.session_state.aba_navegacao == "analise":
+# [CAMADA 2] - APARECE SOMENTE APÓS CLIQUE EM 'LOCALIZAR APOSTA'
+elif st.session_state.navegacao_jarvis == "analise":
     st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:5px;">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
     st.markdown('<div style="color:#ffffff; font-size:10px; font-weight:700; margin-bottom:25px; text-transform:uppercase;">Protocolo de Análise Crizal Active</div>', unsafe_allow_html=True)
     
+    # Filtros (Só aparecem aqui)
     col1, col2, col3 = st.columns(3)
     with col1: st.selectbox("REGIÃO", ["BRASIL", "EUROPA"])
     with col2: st.selectbox("CATEGORIA", ["Brasileirão"])
@@ -174,8 +175,15 @@ elif st.session_state.aba_navegacao == "analise":
     with t2: st.selectbox("TIME FORA", ["Palmeiras", "Vasco"])
     
     st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Botão Executar com Efeito de Transição Skeleton
     if st.button("EXECUTAR ALGORITMO GIAE"):
-        st.success("🤖 Análise Crizal Concluída!")
+        with st.status("🤖 IA GIAE: Sincronizando dados...", expanded=True):
+            time.sleep(1.5)
+            st.write("Analisando métricas históricas...")
+            time.sleep(1)
+            st.write("Processando Probabilidade Poisson...")
+        st.success("Análise Finalizada com Sucesso!")
 
-# --- [FOOTER LOCK] ---
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v18.0 | JARVIS SHIELD SECURED</div></div>""", unsafe_allow_html=True)
+# --- [LOCK] FOOTER ---
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v18.0 | JARVIS LAYERED SECURITY</div></div>""", unsafe_allow_html=True)
