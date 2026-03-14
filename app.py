@@ -3,9 +3,9 @@ import time
 import random
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v32.0 - PROTOCOLO JARVIS ULTIMATE]
-# ESTADO: RESTAURAÇÃO TOTAL E SISTEMA DE NAVEGAÇÃO POR CATEGORIAS
-# FIX: BOTÃO VOLTAR, PASTAS DE LIGAS E PROTEÇÃO DE DESIGN
+# [GIAE KERNEL SHIELD v33.0 - PROTOCOLO JARVIS ELITE]
+# ESTADO: DESIGN PREMIUM RESTAURADO | SISTEMA DE PASTAS ESTILIZADO
+# FIX: NEWS TICKER, HEADER SPACING, GLASS-CARD BUTTONS
 # CHAVE DE SEGURANÇA: GIAE-JARVIS-ULTIMATE-RECOVERY
 # ==============================================================================
 
@@ -15,17 +15,17 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- [LOCK] CONTROLE DE ESTADO (MEMÓRIA DO SISTEMA) ---
+# --- [LOCK] CONTROLE DE ESTADO ---
 if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
 if 'cat_selecionada' not in st.session_state: st.session_state.cat_selecionada = None
 if 'liga_selecionada' not in st.session_state: st.session_state.liga_selecionada = None
 
-# --- [LOCK] BLOCO DE SEGURANÇA CSS (NÃO ALTERAR) ---
+# --- [LOCK] BLOCO DE SEGURANÇA CSS (NUNCA ALTERAR) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
 
-    /* [01] RESET E FUNDO */
+    /* [01] RESET E BLINDAGEM */
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { display: none !important; visibility: hidden !important; }
     .stApp { background-color: #0b0e11 !important; }
     [data-testid="stMainBlockContainer"] { padding-top: 0rem !important; padding-bottom: 1rem !important; }
@@ -36,41 +36,56 @@ st.markdown("""
         background-color: #11151a !important; border-right: 1px solid #1e293b !important; 
     }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
-    [data-testid="stSidebarContent"]::-webkit-scrollbar { display: none !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
 
-    /* [03] NAVBAR SUPERIOR AZUL ROYAL */
+    /* [03] NAVBAR SUPERIOR AZUL ROYAL (TRAVADA) */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #002366 !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; 
-        display: flex; align-items: center; justify-content: space-between; padding: 0 30px !important; z-index: 999999; 
+        display: flex; align-items: center; justify-content: space-between; padding: 0 40px !important; z-index: 999999; 
     }
     .header-left { display: flex; align-items: center; }
-    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; text-decoration: none !important; cursor: pointer !important; transition: 0.3s; margin-right: 40px;}
-    .logo-link:hover { text-shadow: 0 0 15px #9d54ff; filter: brightness(1.2); }
-    .nav-items span { color: #ffffff; font-size: 10px !important; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: 0.2s; margin-right: 15px; }
-    .nav-items span:hover { color: #9d54ff; }
+    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 22px !important; text-transform: uppercase; text-decoration: none !important; cursor: pointer; margin-right: 50px; }
+    .nav-items { display: flex; gap: 20px; }
+    .nav-items span { color: #ffffff; font-size: 11px !important; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: 0.2s; }
+    .nav-items span:hover { color: #9d54ff; text-shadow: 0 0 10px #9d54ff; }
 
     /* HEADER DIREITO */
-    .header-right { display: flex; align-items: center; gap: 15px; min-width: 250px; justify-content: flex-end; }
-    .search-icon { color: #ffffff !important; cursor: pointer !important; font-size: 16px !important; transition: 0.3s !important; }
-    .registrar-pill { color: #ffffff !important; font-size: 10px !important; font-weight: 700 !important; border: 1px solid #ffffff !important; padding: 6px 15px !important; border-radius: 20px !important; cursor: pointer !important; transition: 0.3s; }
-    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 20px !important; border-radius: 4px !important; font-weight: 800 !important; font-size: 10px !important; cursor: pointer !important; transition: 0.3s; }
+    .header-right { display: flex; align-items: center; gap: 20px; }
+    .search-icon { color: #ffffff !important; cursor: pointer !important; font-size: 18px !important; transition: 0.3s !important; }
+    .registrar-pill { color: #ffffff !important; font-size: 10px !important; font-weight: 700 !important; border: 1px solid #ffffff !important; padding: 7px 20px !important; border-radius: 20px !important; cursor: pointer !important; }
+    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 8px 25px !important; border-radius: 4px !important; font-weight: 800 !important; font-size: 11px !important; cursor: pointer !important; }
 
     /* [04] SIDEBAR BOTÕES */
-    [data-testid="stSidebar"] button { background-color: transparent !important; color: #94a3b8 !important; border: none !important; border-bottom: 1px solid #1a202c !important; border-radius: 0px !important; text-align: left !important; width: 100% !important; padding: 18px 25px !important; font-size: 10px !important; text-transform: uppercase !important; white-space: nowrap !important; }
+    [data-testid="stSidebar"] button { background-color: transparent !important; color: #94a3b8 !important; border: none !important; border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; padding: 18px 25px !important; font-size: 10px !important; text-transform: uppercase !important; white-space: nowrap !important; }
     [data-testid="stSidebar"] button:hover { color: #ffffff !important; border-left: 4px solid #6d28d9 !important; background: rgba(26, 36, 45, 0.8) !important; }
 
-    /* [05] DASHBOARD ELEMENTS */
-    .news-ticker { background: rgba(0, 35, 102, 0.2); border: 1px solid #1e293b; padding: 10px; color: #06b6d4; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; }
-    .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; transition: 0.3s; }
-    .highlight-card:hover { border-color: #6d28d9; transform: translateY(-3px); }
+    /* [05] DASHBOARD ELEMENTS (RESTAURADOS) */
+    .news-ticker { background: rgba(0, 35, 102, 0.4); border: 1px solid #1e293b; padding: 12px; color: #06b6d4; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 20px; border-radius: 4px; }
+    .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 25px; border-radius: 8px; text-align: center; height: 160px; transition: 0.3s; }
+    .highlight-card:hover { border-color: #6d28d9; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
     .pulse-dot { height: 6px; width: 6px; background-color: #22c55e; border-radius: 50%; display: inline-block; margin-right: 5px; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
-    /* [06] ESTILO DAS "PASTAS" DE LIGAS */
-    .folder-card { background: #11151a; border: 1px solid #1e293b; padding: 25px; border-radius: 12px; text-align: center; transition: 0.3s; cursor: pointer; }
-    .folder-card:hover { border-color: #9d54ff; background: #1a1d23; box-shadow: 0 0 20px rgba(157, 84, 255, 0.2); }
+    /* [06] ESTILIZAÇÃO DAS PASTAS (ELITE FOLDER DESIGN) */
+    div.stButton > button {
+        background: #11151a !important;
+        color: #ffffff !important;
+        border: 1px solid #1e293b !important;
+        border-radius: 8px !important;
+        padding: 20px !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+        transition: 0.3s !important;
+        font-size: 11px !important;
+    }
+    div.stButton > button:hover {
+        border-color: #9d54ff !important;
+        background: #1a1d23 !important;
+        box-shadow: 0 0 15px rgba(157, 84, 255, 0.3) !important;
+        color: #9d54ff !important;
+    }
 
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     </style>
@@ -103,84 +118,78 @@ with st.sidebar:
     st.button("⚽ APOSTAS POR GOLS")
     st.button("🚩 APOSTAS POR ESCANTEIOS")
 
-st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
+st.markdown('<div style="height: 75px;"></div>', unsafe_allow_html=True)
 
-# --- LÓGICA DE NAVEGAÇÃO ---
+# --- NAVEGAÇÃO CENTRAL ---
 
-# 1. TELA HOME (DASHBOARD)
 if st.session_state.aba_ativa == "home":
-    st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:10px;">HOME / DASHBOARD</div>', unsafe_allow_html=True)
+    # Dashboard Restaurado
+    st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:10px; letter-spacing:-1px;">HOME / DASHBOARD</div>', unsafe_allow_html=True)
     st.markdown('<div class="news-ticker">● LIVE: IA DETECTA ALTA PROBABILIDADE EM MERCADO DE GOLS HOJE ● ALERTA: ODDS EM QUEDA ● DICA: GESTÃO DE BANCA ATUALIZADA</div>', unsafe_allow_html=True)
+    
     c1, c2, c3 = st.columns(3)
     with c1: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform:uppercase;"><span class="pulse-dot"></span>Destaque Live</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">FLAMENGO x PALMEIRAS</div><div style="color:#06b6d4; font-size:10px; margin-top:5px;">BRASILEIRÃO - AO VIVO</div></div>', unsafe_allow_html=True)
     with c2: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform:uppercase;">Sugestão</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">OVER 2.5 GOLS</div><div style="color:#00cc66; font-size:10px; margin-top:5px;">88% CONFIDÊNCIA</div></div>', unsafe_allow_html=True)
     with c3: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform:uppercase;">IA Education</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">GESTÃO 3%</div><div style="color:#9d54ff; font-size:10px; margin-top:5px;">PROTEÇÃO DE BANCA</div></div>', unsafe_allow_html=True)
+    
+    st.markdown('<div style="height:15px;"></div>', unsafe_allow_html=True)
+    c4, c5, c6 = st.columns(3)
+    for i in range(4, 7):
+        with eval(f"c{i}"): st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform:uppercase;">Métrica Jarvis</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">EM ANÁLISE...</div></div>', unsafe_allow_html=True)
 
-# 2. TELA LOCALIZAR APOSTA (O SISTEMA DE PASTAS)
 elif st.session_state.aba_ativa == "analise":
     
-    # NÍVEL 1: SELECIONAR "PASTA" (CATEGORIA)
+    # Nível 1: Pastas de Categorias
     if st.session_state.cat_selecionada is None:
         st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:20px;">CATEGORIAS DE COMPETIÇÃO</div>', unsafe_allow_html=True)
         
-        cats = {
-            "🇧🇷 BR COMPETIÇÕES": ["Brasileirão Série A", "Brasileirão Série B", "Brasileirão Série C", "Brasileirão Série D", "Copa do Brasil", "Paulistão", "Carioca", "Mineiro", "Gaúcho", "Supercopa do Brasil", "Copa do Nordeste"],
-            "🌎 CLUBES INTERNACIONAIS (SUL-AM)": ["Copa Libertadores", "Copa Sul-Americana"],
-            "🇪🇺 LIGAS NACIONAIS EUROPA": ["Premier League", "La Liga", "Serie A (Itália)", "Bundesliga", "Ligue 1"],
-            "🏆 COMPETIÇÕES UEFA": ["UEFA Champions League", "UEFA Europa League", "UEFA Conference League"],
-            "📅 INTERNACIONAIS 2025/2026": ["Copa da Inglaterra", "Copa da Liga Inglesa", "Copa do Rei", "Copa da Itália", "Eurocopa"]
-        }
-        
+        cats = ["🇧🇷 BR COMPETIÇÕES", "🌎 CLUBES SUL-AM", "🇪🇺 LIGAS NACIONAIS EUROPA", "🏆 COMPETIÇÕES UEFA", "📅 INTERNACIONAIS 25/26"]
         cols = st.columns(3)
-        for i, (cat_nome, sub_ligas) in enumerate(cats.items()):
+        for i, cat in enumerate(cats):
             with cols[i % 3]:
-                if st.button(cat_nome, use_container_width=True):
-                    st.session_state.cat_selecionada = cat_nome
+                if st.button(cat, use_container_width=True):
+                    st.session_state.cat_selecionada = cat
                     st.rerun()
 
-    # NÍVEL 2: SELECIONAR LIGA DENTRO DA CATEGORIA
+    # Nível 2: Campeonatos dentro da Pasta
     elif st.session_state.liga_selecionada is None:
         st.markdown(f'<div style="color:white; font-weight:900; font-size:26px; margin-bottom:20px;">{st.session_state.cat_selecionada}</div>', unsafe_allow_html=True)
         
-        # O "MAPA" das subpastas
-        cats_data = {
-            "🇧🇷 BR COMPETIÇÕES": ["Brasileirão Série A", "Brasileirão Série B", "Brasileirão Série C", "Brasileirão Série D", "Copa do Brasil", "Paulistão", "Carioca", "Mineiro", "Gaúcho", "Supercopa do Brasil", "Copa do Nordeste"],
-            "🌎 CLUBES INTERNACIONAIS (SUL-AM)": ["Copa Libertadores", "Copa Sul-Americana"],
-            "🇪🇺 LIGAS NACIONAIS EUROPA": ["Premier League", "La Liga", "Serie A (Itália)", "Bundesliga", "Ligue 1"],
-            "🏆 COMPETIÇÕES UEFA": ["UEFA Champions League", "UEFA Europa League", "UEFA Conference League"],
-            "📅 INTERNACIONAIS 2025/2026": ["Copa da Inglaterra", "Copa da Liga Inglesa", "Copa do Rei", "Copa da Itália", "Eurocopa"]
+        ligas_dict = {
+            "🇧🇷 BR COMPETIÇÕES": ["Série A", "Série B", "Série C", "Série D", "Copa do Brasil", "Estaduais", "Copa Nordeste"],
+            "🌎 CLUBES SUL-AM": ["Libertadores", "Sul-Americana"],
+            "🇪🇺 LIGAS NACIONAIS EUROPA": ["Premier League", "La Liga", "Serie A", "Bundesliga", "Ligue 1"],
+            "🏆 COMPETIÇÕES UEFA": ["Champions League", "Europa League", "Conference League"],
+            "📅 INTERNACIONAIS 25/26": ["Copa da Inglaterra", "Eurocopa", "Copa do Rei"]
         }
         
-        ligas_da_vez = cats_data[st.session_state.cat_selecionada]
-        
+        lista = ligas_dict.get(st.session_state.cat_selecionada, [])
         cols = st.columns(3)
-        for i, liga in enumerate(ligas_da_vez):
+        for i, liga in enumerate(lista):
             with cols[i % 3]:
                 if st.button(liga, use_container_width=True):
                     st.session_state.liga_selecionada = liga
                     st.rerun()
         
-        if st.button("⬅ VOLTAR PARA CATEGORIAS"):
+        st.markdown("<br>", unsafe_allow_html=True)
+        if st.button("⬅ VOLTAR PARA CATEGORIAS", use_container_width=False):
             st.session_state.cat_selecionada = None
             st.rerun()
 
-    # NÍVEL 3: SELEÇÃO DE TIMES E ANÁLISE
+    # Nível 3: Seleção de Times
     else:
-        st.markdown(f'<div style="color:white; font-weight:900; font-size:26px;">{st.session_state.liga_selecionada}</div>', unsafe_allow_html=True)
-        st.markdown('<div style="color:#6d28d9; font-size:11px; font-weight:700; margin-bottom:20px;">CONFIGURAÇÃO DE PARTIDA</div>', unsafe_allow_html=True)
-        
+        st.markdown(f'<div style="color:white; font-weight:900; font-size:26px; margin-bottom:20px;">{st.session_state.liga_selecionada}</div>', unsafe_allow_html=True)
         col1, col2 = st.columns(2)
-        time_a = col1.selectbox("MANDANTE", ["Selecione...", "Time A", "Time B"])
-        time_b = col2.selectbox("VISITANTE", ["Selecione...", "Time C", "Time D"])
+        with col1: mandante = st.selectbox("TIME MANDANTE", ["Escolha...", "Flamengo", "Real Madrid", "Man. City"])
+        with col2: visitante = st.selectbox("TIME VISITANTE", ["Escolha...", "Palmeiras", "Barcelona", "Arsenal"])
         
+        st.markdown("<br>", unsafe_allow_html=True)
         c_btn1, c_btn2 = st.columns([1, 4])
-        with c_btn1:
-            if st.button("⚡ EXECUTAR GIAE"):
-                st.info("Calculando métricas...")
-        with c_btn2:
+        with c_btn1: st.button("⚡ EXECUTAR GIAE")
+        with c_btn2: 
             if st.button("⬅ TROCAR CAMPEONATO"):
                 st.session_state.liga_selecionada = None
                 st.rerun()
 
 # --- [LOCK] FOOTER ---
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v32.0 | JARVIS PROTECT V32</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v33.0 | JARVIS PROTECT V33</div></div>""", unsafe_allow_html=True)
