@@ -2,9 +2,9 @@ import streamlit as st
 import time
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v21.0 - PROTOCOLO JARVIS SUPREME]
+# [GIAE KERNEL SHIELD v22.0 - PROTOCOLO JARVIS SUPREME]
 # ESTADO: BLINDAGEM TOTAL (ESTRUTURA IMUTÁVEL)
-# FIX: REMOÇÃO DE 'HOME' DA SIDEBAR / FOCO EM LOCALIZAR APOSTA
+# FIX: AJUSTE DE HOVER SIDEBAR (ANTI-TRANSBORDO)
 # CHAVE DE SEGURANÇA: GIAE-V17-ELITE-RECOVERY
 # ==============================================================================
 
@@ -49,7 +49,7 @@ st.markdown("""
     .logo-text { 
         color: #9d54ff !important; font-weight: 900; font-size: 22px !important;
         text-transform: uppercase; letter-spacing: 1px !important; margin-right: 30px; 
-        white-space: nowrap; cursor: pointer;
+        white-space: nowrap;
     }
 
     /* MENU SUPERIOR 11PX CLEAN */
@@ -60,17 +60,15 @@ st.markdown("""
     }
     .nav-items span:hover { color: #9d54ff; text-shadow: 0 0 10px #9d54ff; }
 
-    /* ELEMENTOS DE INTERATIVIDADE DA DIREITA */
+    /* ELEMENTOS DE DIREITA */
     .header-right { display: flex; align-items: center; gap: 15px; }
     .search-icon { color: #ffffff; cursor: pointer; font-size: 16px; transition: 0.3s; }
-    .search-icon:hover { color: #9d54ff; transform: scale(1.2); }
     
     .registrar-pill { 
         color: #ffffff; font-size: 10px; font-weight: 700; text-transform: uppercase; 
         border: 1px solid #ffffff; padding: 6px 18px; border-radius: 20px; cursor: pointer; transition: 0.3s;
     }
     .registrar-pill:hover { background: #ffffff !important; color: #002366 !important; }
-    .registrar-pill:active { transform: scale(0.92); }
 
     .entrar-grad {
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%);
@@ -78,18 +76,34 @@ st.markdown("""
         font-weight: 800; font-size: 11px; cursor: pointer; text-transform: uppercase;
         transition: 0.2s;
     }
-    .entrar-grad:hover { filter: brightness(1.1); box-shadow: 0 0 15px rgba(109, 40, 217, 0.4); }
     .entrar-grad:active { transform: scale(0.92); }
 
-    /* [03] SIDEBAR BOTÕES (RESTAURADOS SEM HOME) */
+    /* [03] SIDEBAR BOTÕES - FIX PARA NÃO VAZAR TEXTO */
     [data-testid="stSidebar"] button {
-        background-color: transparent !important; color: #94a3b8 !important; border: none !important;
-        border-bottom: 1px solid #1a202c !important; border-radius: 0px !important;
-        text-align: left !important; justify-content: flex-start !important;
-        width: 100% !important; padding: 15px 25px !important; 
-        font-size: 9px !important; text-transform: uppercase !important; white-space: nowrap !important;
+        background-color: transparent !important; 
+        color: #94a3b8 !important; 
+        border: none !important;
+        border-bottom: 1px solid #1a202c !important; 
+        border-radius: 0px !important;
+        text-align: left !important; 
+        justify-content: flex-start !important;
+        width: 100% !important; 
+        padding: 15px 20px !important; 
+        font-size: 9px !important; 
+        text-transform: uppercase !important; 
+        white-space: nowrap !important;
+        overflow: hidden !important; /* GARANTE QUE O TEXTO NÃO ESCAPE DO BOTÃO */
+        text-overflow: ellipsis !important; /* ADICIONA "..." SE FOR EXTREMAMENTE LONGO */
+        display: block !important;
     }
-    [data-testid="stSidebar"] button:hover { color: #ffffff !important; border-left: 4px solid #6d28d9 !important; background: #1a242d !important; }
+    
+    /* EFEITO DE HOVER BLINDADO (QUADRADO DE FUNDO) */
+    [data-testid="stSidebar"] button:hover { 
+        color: #ffffff !important; 
+        border-left: 4px solid #6d28d9 !important; 
+        background-color: #1a242d !important; /* FUNDO DO QUADRADO DE HOVER */
+        width: 100% !important;
+    }
 
     /* [04] DASHBOARD E CARDS */
     .news-ticker {
@@ -128,10 +142,9 @@ st.markdown(f"""
     </div>
     """, unsafe_allow_html=True)
 
-# --- [LOCK] SIDEBAR (SEM O BOTÃO 'IR PARA O INÍCIO') ---
+# --- [LOCK] SIDEBAR ---
 with st.sidebar:
     st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True) 
-    # Único botão de gatilho principal
     if st.button("📊 LOCALIZAR APOSTA"):
         st.session_state.aba_ativa = "analise"
     
@@ -143,10 +156,9 @@ with st.sidebar:
     st.button("🚩 APOSTAS POR ESCANTEIOS")
     st.button("⚖️ ÁRBITRO DA PARTIDA")
 
-# --- CONTEÚDO CENTRAL (ESTRATÉGIA DASHBOARD) ---
+# --- CONTEÚDO CENTRAL ---
 st.markdown('<div style="height: 85px;"></div>', unsafe_allow_html=True)
 
-# MODO DASHBOARD (PADRÃO)
 if st.session_state.aba_ativa == "home":
     st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px; letter-spacing:-1px;">HOME / DASHBOARD</div>', unsafe_allow_html=True)
     st.markdown('<div class="news-ticker">● LIVE: IA DETECTA ALTA PROBABILIDADE EM MERCADO DE GOLS HOJE ● ALERTA: ODDS EM QUEDA ● DICA: GESTÃO DE BANCA ATUALIZADA</div>', unsafe_allow_html=True)
@@ -156,12 +168,12 @@ if st.session_state.aba_ativa == "home":
     with c2: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform:uppercase;">Sugestão de Mercado</div><div style="color:white; font-size:18px; font-weight:900; margin-top:15px;">OVER 2.5 GOLS</div><div style="color:#00cc66; font-size:11px; margin-top:8px;">CONFIDÊNCIA: 88%</div></div>', unsafe_allow_html=True)
     with c3: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform:uppercase;">IA Education</div><div style="color:white; font-size:18px; font-weight:900; margin-top:15px;">GESTÃO 3%</div><div style="color:#9d54ff; font-size:11px; margin-top:8px;">PRESERVE SEU CAPITAL</div></div>', unsafe_allow_html=True)
 
-# MODO ANÁLISE (AO CLICAR)
 elif st.session_state.aba_ativa == "analise":
     st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:5px;">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
     st.markdown('<div style="color:#ffffff; font-size:10px; font-weight:700; margin-bottom:25px; text-transform:uppercase;">Protocolo de Análise Crizal Active</div>', unsafe_allow_html=True)
-    # [Filtros e Botão Executar protegidos]
-    st.button("EXECUTAR ALGORITMO GIAE")
+    # [Filtros Protegidos]
+    if st.button("EXECUTAR ALGORITMO GIAE"):
+        st.success("Análise Finalizada!")
 
 # --- [LOCK] FOOTER ---
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v18.0 | JARVIS PROTECT V21</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v18.0 | JARVIS PROTECT V22</div></div>""", unsafe_allow_html=True)
