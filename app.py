@@ -2,9 +2,9 @@ import streamlit as st
 import time
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v21.0 - PROTOCOLO JARVIS SUPREME]
-# ESTADO: BLOQUEIO DE DESIGN ATIVADO (DESIGN ORIGINAL PRESERVADO)
-# FIX: RESTAURAÇÃO DO BOTÃO ENTRAR, LUPA E ESTRUTURA DA SIDEBAR
+# [GIAE KERNEL SHIELD v22.0 - PROTOCOLO JARVIS SUPREME]
+# ESTADO: AJUSTE DE PRECISÃO LATERAL E REMOÇÃO DE DASHBOARD
+# FIX: ALINHAMENTO DO TEXTO LONGO (VENCEDORES DA COMPETIÇÃO)
 # CHAVE DE SEGURANÇA: GIAE-V17-ELITE-RECOVERY
 # ==============================================================================
 
@@ -23,20 +23,20 @@ st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
 
-    /* [01] RESET E BLINDAGEM DE FUNDO */
+    /* [01] RESET E FUNDO */
     header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { display: none !important; visibility: hidden !important; }
-    .stApp { background-color: #0b0e11 !important; overflow: hidden !important; }
+    .stApp { background-color: #0b0e11 !important; }
     
-    /* SIDEBAR LOCK (LIMPEZA TOTAL DE BORDAS E FUNDOS PADRÃO) */
+    /* SIDEBAR LOCK */
     [data-testid="stSidebar"] { 
         min-width: 280px !important; max-width: 280px !important; width: 280px !important;
         background-color: #11151a !important; border-right: 1px solid #1e293b !important; 
     }
     [data-testid="stSidebarResizer"] { display: none !important; }
-    [data-testid="stSidebarContent"] { overflow: hidden !important; padding-top: 0px !important; }
+    [data-testid="stSidebarContent"] { overflow-x: hidden !important; padding-top: 0px !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
 
-    /* [02] NAVBAR SUPERIOR AZUL ROYAL (RESTALRAÇÃO COMPLETA) */
+    /* [02] NAVBAR SUPERIOR */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #002366 !important; 
@@ -45,20 +45,12 @@ st.markdown("""
         padding: 0 30px !important; z-index: 999999; 
     }
     
-    .logo-text { 
-        color: #9d54ff !important; font-weight: 900; font-size: 22px !important;
-        text-transform: uppercase; letter-spacing: 1px !important; margin-right: 30px; 
-        white-space: nowrap; cursor: pointer;
-    }
-
+    .logo-text { color: #9d54ff !important; font-weight: 900; font-size: 22px !important; text-transform: uppercase; letter-spacing: 1px !important; cursor: pointer; }
     .nav-items { display: flex; gap: 20px; align-items: center; }
-    .nav-items span { 
-        color: #ffffff; font-size: 11px !important; font-weight: 400 !important; 
-        text-transform: uppercase; letter-spacing: 0.5px !important; cursor: pointer; transition: 0.2s;
-    }
+    .nav-items span { color: #ffffff; font-size: 11px !important; text-transform: uppercase; cursor: pointer; transition: 0.2s; }
     .nav-items span:hover { color: #9d54ff; text-shadow: 0 0 10px #9d54ff; }
 
-    /* FIX: LUPA E BOTÕES DO HEADER */
+    /* HEADER RIGTH - LUPA E BOTÕES */
     .header-right { display: flex; align-items: center; gap: 15px; }
     .search-icon { color: #ffffff !important; cursor: pointer !important; font-size: 18px !important; transition: 0.3s !important; }
     .search-icon:hover { color: #9d54ff !important; transform: scale(1.2); }
@@ -77,22 +69,28 @@ st.markdown("""
     }
     .entrar-grad:hover { filter: brightness(1.2) !important; transform: translateY(-1px); }
 
-    /* [03] SIDEBAR BOTÕES (RESTAURADOS PARA O ESTILO LISTA CLEAN) */
+    /* [03] SIDEBAR BOTÕES - CORREÇÃO DE TEXTO LONGO (VENCEDORES) */
     [data-testid="stSidebar"] button {
         background-color: transparent !important; color: #94a3b8 !important; border: none !important;
-        border-bottom: 1px solid #1e293b !important; border-radius: 0px !important;
+        border-bottom: 1px solid #1a202c !important; border-radius: 0px !important;
         text-align: left !important; justify-content: flex-start !important;
         width: 100% !important; padding: 15px 25px !important; 
-        font-size: 10px !important; text-transform: uppercase !important; white-space: nowrap !important;
+        font-size: 10px !important; text-transform: uppercase !important;
+        white-space: normal !important; /* Permite quebra de linha para textos longos */
+        word-wrap: break-word !important;
+        line-height: 1.4 !important;
         transition: 0.3s !important;
+        display: flex !important;
+        align-items: center !important;
     }
     [data-testid="stSidebar"] button:hover { 
         color: #ffffff !important; 
         border-left: 4px solid #6d28d9 !important; 
-        background: rgba(26, 36, 45, 0.5) !important; 
+        background: rgba(26, 36, 45, 0.8) !important;
+        padding-left: 21px !important; /* Ajuste para compensar a borda de 4px e não empurrar o texto */
     }
 
-    /* [04] CONTEÚDO E CARDS */
+    /* [04] DASHBOARD E CARDS */
     .news-ticker {
         background: rgba(0, 35, 102, 0.2); border: 1px solid #1e293b; padding: 10px;
         color: #06b6d4; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 25px;
@@ -129,19 +127,18 @@ st.markdown(f"""
     </div>
     """, unsafe_allow_html=True)
 
-# --- [LOCK] SIDEBAR (RESTAURADA) ---
+# --- [LOCK] SIDEBAR (RESTAURADA E CORRIGIDA) ---
 with st.sidebar:
     st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True) 
     
-    # Se você quiser usar ícones como na imagem, adicione o emoji dentro do texto do botão:
+    # 1. BOTÃO LOCALIZAR
     if st.button("📊 LOCALIZAR APOSTA"):
         st.session_state.aba_ativa = "analise"
     
-    # Removido o botão "Dashboard Inicial" extra que a IA anterior criou e que mexeu no layout
-    st.button("🏠 DASHBOARD INICIAL") 
+    # 2. OUTROS BOTÕES (DASHBOARD INICIAL REMOVIDO)
     st.button("📅 JOGOS DO DIA")
     st.button("⏰ PRÓXIMOS JOGOS")
-    st.button("🏆 VENCEDORES DA COMPETIÇÃO")
+    st.button("🏆 VENCEDORES DA COMPETIÇÃO") # Texto longo agora protegido
     st.button("📈 APOSTAS POR ODDS")
     st.button("⚽ APOSTAS POR GOLS")
     st.button("🚩 APOSTAS POR ESCANTEIOS")
@@ -150,7 +147,7 @@ with st.sidebar:
 # --- CONTEÚDO CENTRAL ---
 st.markdown('<div style="height: 85px;"></div>', unsafe_allow_html=True)
 
-# MODO DASHBOARD
+# MODO DASHBOARD (PADRÃO)
 if st.session_state.aba_ativa == "home":
     st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px; letter-spacing:-1px;">HOME / DASHBOARD</div>', unsafe_allow_html=True)
     st.markdown('<div class="news-ticker">● LIVE: IA DETECTA ALTA PROBABILIDADE EM MERCADO DE GOLS HOJE ● ALERTA: ODDS EM QUEDA ● DICA: GESTÃO DE BANCA ATUALIZADA</div>', unsafe_allow_html=True)
