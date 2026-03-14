@@ -4,7 +4,7 @@ import time
 # ==============================================================================
 # [GIAE KERNEL SHIELD v22.0 - PROTOCOLO JARVIS SUPREME]
 # ESTADO: BLINDAGEM TOTAL (ESTRUTURA IMUTÁVEL)
-# FIX: AJUSTE DE HOVER SIDEBAR (ANTI-TRANSBORDO)
+# REGRAS V22: LOGO 22PX / MENU 11PX / HEADER AZUL ROYAL / SIDEBAR 280PX FIXA
 # CHAVE DE SEGURANÇA: GIAE-V17-ELITE-RECOVERY
 # ==============================================================================
 
@@ -14,11 +14,10 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- CONTROLE DE NAVEGAÇÃO INTERNO ---
 if 'aba_ativa' not in st.session_state:
     st.session_state.aba_ativa = "home"
 
-# --- [LOCK] BLOCO DE SEGURANÇA CSS (NÃO ALTERAR) ---
+# --- [LOCK] BLOCO DE SEGURANÇA CSS (BLINDAGEM JARVIS) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
@@ -45,14 +44,11 @@ st.markdown("""
         padding: 0 30px !important; z-index: 999999; 
     }
     
-    /* LOGO ROXO 22PX PROTEGIDA */
     .logo-text { 
         color: #9d54ff !important; font-weight: 900; font-size: 22px !important;
-        text-transform: uppercase; letter-spacing: 1px !important; margin-right: 30px; 
-        white-space: nowrap;
+        text-transform: uppercase; letter-spacing: 1px !important; margin-right: 30px; white-space: nowrap;
     }
 
-    /* MENU SUPERIOR 11PX CLEAN */
     .nav-items { display: flex; gap: 20px; align-items: center; }
     .nav-items span { 
         color: #ffffff; font-size: 11px !important; font-weight: 400 !important; 
@@ -60,9 +56,9 @@ st.markdown("""
     }
     .nav-items span:hover { color: #9d54ff; text-shadow: 0 0 10px #9d54ff; }
 
-    /* ELEMENTOS DE DIREITA */
     .header-right { display: flex; align-items: center; gap: 15px; }
     .search-icon { color: #ffffff; cursor: pointer; font-size: 16px; transition: 0.3s; }
+    .search-icon:hover { color: #9d54ff; transform: scale(1.2); }
     
     .registrar-pill { 
         color: #ffffff; font-size: 10px; font-weight: 700; text-transform: uppercase; 
@@ -76,33 +72,21 @@ st.markdown("""
         font-weight: 800; font-size: 11px; cursor: pointer; text-transform: uppercase;
         transition: 0.2s;
     }
+    .entrar-grad:hover { filter: brightness(1.2); box-shadow: 0 0 15px rgba(109, 40, 217, 0.4); }
     .entrar-grad:active { transform: scale(0.92); }
 
-    /* [03] SIDEBAR BOTÕES - FIX PARA NÃO VAZAR TEXTO */
+    /* [03] SIDEBAR BOTÕES (AJUSTE HOVER V22) */
     [data-testid="stSidebar"] button {
-        background-color: transparent !important; 
-        color: #94a3b8 !important; 
-        border: none !important;
-        border-bottom: 1px solid #1a202c !important; 
-        border-radius: 0px !important;
-        text-align: left !important; 
-        justify-content: flex-start !important;
-        width: 100% !important; 
-        padding: 15px 20px !important; 
-        font-size: 9px !important; 
-        text-transform: uppercase !important; 
-        white-space: nowrap !important;
-        overflow: hidden !important; /* GARANTE QUE O TEXTO NÃO ESCAPE DO BOTÃO */
-        text-overflow: ellipsis !important; /* ADICIONA "..." SE FOR EXTREMAMENTE LONGO */
-        display: block !important;
+        background-color: transparent !important; color: #94a3b8 !important; border: none !important;
+        border-bottom: 1px solid #1a202c !important; border-radius: 0px !important;
+        text-align: left !important; justify-content: flex-start !important;
+        width: 100% !important; padding: 15px 20px !important; font-size: 9px !important; 
+        text-transform: uppercase !important; white-space: nowrap !important;
+        overflow: hidden !important; text-overflow: ellipsis !important; display: block !important;
     }
-    
-    /* EFEITO DE HOVER BLINDADO (QUADRADO DE FUNDO) */
     [data-testid="stSidebar"] button:hover { 
-        color: #ffffff !important; 
-        border-left: 4px solid #6d28d9 !important; 
-        background-color: #1a242d !important; /* FUNDO DO QUADRADO DE HOVER */
-        width: 100% !important;
+        color: #ffffff !important; border-left: 4px solid #6d28d9 !important; 
+        background-color: #1a242d !important; width: 100% !important;
     }
 
     /* [04] DASHBOARD E CARDS */
@@ -120,7 +104,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- [LOCK] CABEÇALHO ---
+# --- HEADER ---
 st.markdown(f"""
     <div class="betano-header">
         <div style="display:flex; align-items:center;">
@@ -142,7 +126,7 @@ st.markdown(f"""
     </div>
     """, unsafe_allow_html=True)
 
-# --- [LOCK] SIDEBAR ---
+# --- SIDEBAR (FIXA 280PX) ---
 with st.sidebar:
     st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True) 
     if st.button("📊 LOCALIZAR APOSTA"):
@@ -156,7 +140,7 @@ with st.sidebar:
     st.button("🚩 APOSTAS POR ESCANTEIOS")
     st.button("⚖️ ÁRBITRO DA PARTIDA")
 
-# --- CONTEÚDO CENTRAL ---
+# --- CONTEÚDO ---
 st.markdown('<div style="height: 85px;"></div>', unsafe_allow_html=True)
 
 if st.session_state.aba_ativa == "home":
@@ -171,9 +155,8 @@ if st.session_state.aba_ativa == "home":
 elif st.session_state.aba_ativa == "analise":
     st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:5px;">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
     st.markdown('<div style="color:#ffffff; font-size:10px; font-weight:700; margin-bottom:25px; text-transform:uppercase;">Protocolo de Análise Crizal Active</div>', unsafe_allow_html=True)
-    # [Filtros Protegidos]
-    if st.button("EXECUTAR ALGORITMO GIAE"):
-        st.success("Análise Finalizada!")
+    # [Restante da Ferramenta]
+    st.button("EXECUTAR ALGORITMO GIAE")
 
-# --- [LOCK] FOOTER ---
+# --- FOOTER ---
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v18.0 | JARVIS PROTECT V22</div></div>""", unsafe_allow_html=True)
