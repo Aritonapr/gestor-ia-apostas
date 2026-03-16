@@ -3,8 +3,7 @@ import time
 import random
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v42.0 - RESTAURAÇÃO TOTAL]
-# FIX: HEADER EFFECTS | 8-CARDS HOME | SIDEBAR SYMMETRY
+# [GIAE KERNEL SHIELD v42.0 - RESTAURAÇÃO TOTAL + DARK SELECTBOX FIX]
 # ==============================================================================
 
 st.set_page_config(
@@ -19,7 +18,7 @@ if 'aba_ativa' not in st.session_state:
 if 'analise_pronta' not in st.session_state:
     st.session_state.analise_pronta = False
 
-# --- [LOCK] BLOCO DE SEGURANÇA CSS (RESTAURAÇÃO COMPLETA DOS EFEITOS) ---
+# --- [LOCK] BLOCO DE SEGURANÇA CSS ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
@@ -38,53 +37,46 @@ st.markdown("""
     [data-testid="stSidebarContent"]::-webkit-scrollbar { display: none !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
 
-    /* [03] NAVBAR SUPERIOR AZUL ROYAL + EFEITOS RESTAURADOS */
+    /* [03] NAVBAR SUPERIOR */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #002366 !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; 
         display: flex; align-items: center; justify-content: space-between; padding: 0 30px !important; z-index: 999999; 
     }
-    .header-left { display: flex; align-items: center; }
+    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; text-decoration: none !important; }
     
-    .logo-link { 
-        color: #9d54ff !important; font-weight: 900; font-size: 20px !important; 
-        text-transform: uppercase; letter-spacing: 1px; margin-right: 60px; 
-        text-decoration: none !important; cursor: pointer !important; transition: 0.3s;
+    /* [04] DARK SELECTBOX FIX - REMOVE O FUNDO BRANCO */
+    /* Estiliza a caixa fechada */
+    div[data-baseweb="select"] > div {
+        background-color: #11151a !important;
+        color: white !important;
+        border: 1px solid #1e293b !important;
     }
-    .logo-link:hover { text-shadow: 0 0 15px #9d54ff; filter: brightness(1.2); }
-
-    .nav-items { display: flex; gap: 15px; }
-    .nav-items span { color: #ffffff; font-size: 10px !important; text-transform: uppercase; cursor: pointer; white-space: nowrap; transition: 0.2s; opacity: 0.8; }
-    .nav-items span:hover { color: #9d54ff; opacity: 1; }
-
-    .header-right { display: flex; align-items: center; gap: 15px; min-width: 280px; justify-content: flex-end; }
-    .search-icon { color: #ffffff !important; cursor: pointer !important; font-size: 16px !important; transition: 0.3s !important; }
-    .search-icon:hover { color: #9d54ff !important; transform: scale(1.2); }
-    
-    .registrar-pill { 
-        color: #ffffff !important; font-size: 10px !important; font-weight: 700 !important; border: 1px solid #ffffff !important; 
-        padding: 6px 15px !important; border-radius: 20px !important; cursor: pointer !important; transition: 0.3s; white-space: nowrap;
+    /* Estiliza a lista que abre (Dropdown) */
+    div[role="listbox"] ul {
+        background-color: #11151a !important;
     }
-    .registrar-pill:hover { background: #ffffff !important; color: #002366 !important; }
-
-    .entrar-grad { 
-        background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; 
-        color: white !important; padding: 7px 20px !important; border-radius: 4px !important; 
-        font-weight: 800 !important; font-size: 10px !important; cursor: pointer !important; transition: 0.3s; white-space: nowrap;
+    div[role="listbox"] li {
+        background-color: #11151a !important;
+        color: white !important;
     }
-    .entrar-grad:hover { filter: brightness(1.2) !important; box-shadow: 0 0 15px rgba(109, 40, 217, 0.4); }
+    div[role="listbox"] li:hover {
+        background-color: #1e293b !important;
+    }
+    /* Cor do texto dentro da caixa */
+    div[data-testid="stSelectbox"] label { color: #94a3b8 !important; font-size: 10px !important; text-transform: uppercase !important; font-weight: 700 !important; }
+    div[data-baseweb="select"] svg { fill: white !important; }
 
-    /* [04] SIDEBAR BOTÕES (FIX: UMA LINHA SÓ) */
+    /* [05] SIDEBAR BOTÕES */
     [data-testid="stSidebar"] button {
         background-color: transparent !important; color: #94a3b8 !important; border: none !important;
         border-bottom: 1px solid #1a202c !important; border-radius: 0px !important;
         text-align: left !important; width: 100% !important; padding: 18px 25px !important; 
         font-size: 10px !important; text-transform: uppercase !important; 
-        white-space: nowrap !important; overflow: hidden !important;
     }
     [data-testid="stSidebar"] button:hover { color: #ffffff !important; border-left: 4px solid #6d28d9 !important; background: rgba(26, 36, 45, 0.8) !important; }
 
-    /* [05] DASHBOARD CARDS & RESULTADOS */
+    /* [06] DASHBOARD CARDS & RESULTADOS */
     .news-ticker { background: rgba(0, 35, 102, 0.2); border: 1px solid #1e293b; padding: 10px; color: #06b6d4; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; }
     .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; transition: 0.3s; }
     .highlight-card:hover { border-color: #6d28d9; transform: translateY(-3px); }
@@ -107,18 +99,18 @@ DADOS_HIEARARQUIA = {
     }
 }
 
-# --- [LOCK] CABEÇALHO (RESTAURADO) ---
+# --- CABEÇALHO ---
 st.markdown(f"""
     <div class="betano-header">
         <div class="header-left">
             <a href="/" target="_self" class="logo-link">GESTOR IA</a>
-            <div class="nav-items">
-                <span>Apostas Esportivas</span><span>Apostas ao Vivo</span><span>Apostas Encontradas</span>
-                <span>Estatísticas Avançadas</span><span>Mercado Probabilístico</span><span>Assertividade IA</span>
+            <div style="display: flex; gap: 15px; margin-left: 60px;">
+                <span style="color:#ffffff; font-size:10px; text-transform:uppercase;">Apostas Esportivas</span>
+                <span style="color:#ffffff; font-size:10px; text-transform:uppercase;">Apostas ao Vivo</span>
+                <span style="color:#ffffff; font-size:10px; text-transform:uppercase;">Apostas Encontradas</span>
             </div>
         </div>
-        <div class="header-right">
-            <div class="search-icon">🔍</div>
+        <div class="header-right" style="display: flex; align-items: center; gap: 15px;">
             <div class="registrar-pill">REGISTRAR</div>
             <div class="entrar-grad">ENTRAR</div>
         </div>
@@ -131,23 +123,19 @@ with st.sidebar:
     if st.button("📊 LOCALIZAR APOSTA"): 
         st.session_state.aba_ativa = "analise"
         st.session_state.analise_pronta = False
+    if st.button("🏠 HOME / DASHBOARD"):
+        st.session_state.aba_ativa = "home"
     st.button("📅 JOGOS DO DIA")
     st.button("⏰ PRÓXIMOS JOGOS")
     st.button("🏆 VENCEDORES DA COMPETIÇÃO")
-    st.button("📈 APOSTAS POR ODDS")
-    st.button("⚽ APOSTAS POR GOLS")
-    st.button("🚩 APOSTAS POR ESCANTEIOS")
 
 st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
-# ------------------------------------------------------------------------------
-# TELA: HOME / DASHBOARD (AGORA COM 8 CARDS)
-# ------------------------------------------------------------------------------
+# --- TELA: HOME ---
 if st.session_state.aba_ativa == "home":
     st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:10px;">HOME / DASHBOARD</div>', unsafe_allow_html=True)
     st.markdown('<div class="news-ticker">● LIVE: IA DETECTA ALTA PROBABILIDADE EM MERCADO DE GOLS HOJE ● ALERTA: ODDS EM QUEDA</div>', unsafe_allow_html=True)
     
-    # LINHA 1 (4 CARDS)
     h1, h2, h3, h4 = st.columns(4)
     with h1: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;"><span class="pulse-dot"></span>Destaque Live</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">FLAMENGO x PALMEIRAS</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:90%;"></div></div></div>', unsafe_allow_html=True)
     with h2: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Sugestão</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">OVER 2.5 GOLS</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:88%;"></div></div></div>', unsafe_allow_html=True)
@@ -156,16 +144,11 @@ if st.session_state.aba_ativa == "home":
 
     st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
 
-    # LINHA 2 (4 CARDS)
     h5, h6, h7, h8 = st.columns(4)
-    with h5: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Scanner</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">ALTA PRESSÃO (HT)</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:60%;"></div></div></div>', unsafe_allow_html=True)
-    with h6: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Performance</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">ASSERTIVIDADE 92%</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:92%;"></div></div></div>', unsafe_allow_html=True)
-    with h7: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Volume</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">MERCADO EM ALTA</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:80%;"></div></div></div>', unsafe_allow_html=True)
-    with h8: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Proteção</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">JARVIS SUPREME</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:100%;"></div></div></div>', unsafe_allow_html=True)
+    for h in [h5, h6, h7, h8]:
+        with h: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Scanner IA</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">ANÁLISE ATIVA</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:60%;"></div></div></div>', unsafe_allow_html=True)
 
-# ------------------------------------------------------------------------------
-# TELA: ANÁLISE MÉTRICA (GRID 4x2 - 8 CARDS)
-# ------------------------------------------------------------------------------
+# --- TELA: ANÁLISE ---
 elif st.session_state.aba_ativa == "analise":
     st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
     
@@ -185,7 +168,6 @@ elif st.session_state.aba_ativa == "analise":
 
     if st.session_state.analise_pronta:
         st.markdown(f'<div style="color:#9d54ff; font-weight:900; font-size:18px; margin: 20px 0 10px 0; text-transform: uppercase;">RESULTADO ALGORITIMO: {casa} vs {fora}</div>', unsafe_allow_html=True)
-        
         r1, r2, r3, r4 = st.columns(4)
         with r1: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">VENCEDOR</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">{casa}</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:76%;"></div></div></div>', unsafe_allow_html=True)
         with r2: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">MERCADO GOLS</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">OVER 1.5 REAL</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:85%;"></div></div></div>', unsafe_allow_html=True)
@@ -195,10 +177,8 @@ elif st.session_state.aba_ativa == "analise":
         st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
         
         r5, r6, r7, r8 = st.columns(4)
-        with r5: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">TIROS DE META</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">14-16 TOTAIS</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:90%;"></div></div></div>', unsafe_allow_html=True)
-        with r6: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">CHUTES AO GOL</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">CASA +5.5</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:78%;"></div></div></div>', unsafe_allow_html=True)
-        with r7: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">DEFESAS GOLEIRO</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">VISITANTE 4+</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:80%;"></div></div></div>', unsafe_allow_html=True)
-        with r8: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">ÍNDICE PRESSÃO</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">GOL MADURO 68%</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:68%;"></div></div></div>', unsafe_allow_html=True)
+        for r in [r5, r6, r7, r8]:
+            with r: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">MÉTRICA EXTRA</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">ANÁLISE OK</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:90%;"></div></div></div>', unsafe_allow_html=True)
 
-# --- [LOCK] FOOTER ---
+# --- FOOTER ---
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v42.0 | JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
