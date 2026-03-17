@@ -4,8 +4,8 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v56.0 - INTEGRITY & BANK MANAGEMENT UPDATE]
-# FIX: BANK CALC | HISTORY TRACKING | UI PRESERVATION | NO SHORTCUTS
+# [GIAE KERNEL SHIELD v56.1 - HISTORY PERSISTENCE UPDATE]
+# FIX: BUTTON CONNECTIVITY | ANALYSIS MEMORY | UI LOCK
 # ==============================================================================
 
 st.set_page_config(
@@ -228,7 +228,7 @@ st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
 # --- [ABA] HOME ---
 if st.session_state.aba_ativa == "home":
-    st.markdown('<div class="news-ticker">● LIVE: IA DETECTA ALTA PROBABILIDADE EM MERCADO DE GOLS HOJE ● ALERTA: ODDS EM QUEDA ● HIERARQUIA v56.0 ATIVA</div>', unsafe_allow_html=True)
+    st.markdown('<div class="news-ticker">● LIVE: IA DETECTA ALTA PROBABILIDADE EM MERCADO DE GOLS HOJE ● ALERTA: ODDS EM QUEDA ● HIERARQUIA v56.1 ATIVA</div>', unsafe_allow_html=True)
     
     h1, h2, h3, h4 = st.columns(4)
     with h1: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;"><span class="pulse-dot"></span>Destaque Live</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">FLAMENGO x PALMEIRAS</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:90%;"></div></div></div>', unsafe_allow_html=True)
@@ -261,7 +261,6 @@ elif st.session_state.aba_ativa == "analise":
         with st.spinner("PROCESSANDO..."):
             time.sleep(1.2)
             st.session_state.analise_pronta = True
-            # Salva os dados para o histórico se o usuário quiser enviar
             st.session_state.ultima_analise = {
                 "time_casa": casa,
                 "time_fora": fora,
@@ -289,9 +288,14 @@ elif st.session_state.aba_ativa == "analise":
         with r7: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">DEFESAS GOLEIRO</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">VISITANTE 4+</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:80%;"></div></div></div>', unsafe_allow_html=True)
         with r8: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">ÍNDICE PRESSÃO</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">GOL MADURO 68%</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:68%;"></div></div></div>', unsafe_allow_html=True)
 
+        st.markdown('<div style="height:20px;"></div>', unsafe_allow_html=True)
         if st.button("📥 ENVIAR PARA HISTÓRICO"):
-            st.session_state.historico_calls.append(st.session_state.ultima_analise)
-            st.success("CALL SALVA NO HISTÓRICO!")
+            if st.session_state.ultima_analise:
+                st.session_state.historico_calls.append(st.session_state.ultima_analise)
+                st.success(f"CALL DE {st.session_state.ultima_analise['time_casa']} vs {st.session_state.ultima_analise['time_fora']} SALVA COM SUCESSO!")
+                time.sleep(1) # Pequena pausa para o usuário ler a mensagem
+            else:
+                st.error("Nenhuma análise encontrada para salvar.")
 
 # --- [ABA] GESTÃO DE BANCA ---
 elif st.session_state.aba_ativa == "gestao":
@@ -342,4 +346,4 @@ elif st.session_state.aba_ativa == "scanner_live":
     st.info("Varrendo mercados em tempo real... Otimizando conexão com servidor de odds.")
 
 # --- FOOTER ---
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | DATABASE v56.0 UNLOCKED</div><div>GESTOR IA PRO v56.0 | JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | DATABASE v56.1 UNLOCKED</div><div>GESTOR IA PRO v56.1 | JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
