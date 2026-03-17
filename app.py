@@ -3,8 +3,8 @@ import time
 import random
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v43.3 - ULTIMATE RESTORATION]
-# FIX: REMOVE SIDEBAR HOME | RESTORE 8-CARDS | LOGO & HEADER ICONS | EMERGING DATA
+# [GIAE KERNEL SHIELD v55.0 - TOTAL HIERARCHY RESTORATION]
+# FIX: REGIONAIS BRASIL | ELITE EUROPE | LATAM EXPANSION | 8-CARDS LOCK
 # ==============================================================================
 
 st.set_page_config(
@@ -77,7 +77,7 @@ st.markdown("""
     }
     .entrar-grad:hover { filter: brightness(1.2) !important; box-shadow: 0 0 15px rgba(109, 40, 217, 0.4); }
 
-    /* [04] SIDEBAR BOTÕES (FIX: UMA LINHA SÓ) */
+    /* [04] SIDEBAR BOTÕES (UMA LINHA SÓ) */
     [data-testid="stSidebar"] button {
         background-color: transparent !important; color: #94a3b8 !important; border: none !important;
         border-bottom: 1px solid #1a202c !important; border-radius: 0px !important;
@@ -97,7 +97,7 @@ st.markdown("""
     .conf-bar-bg { background: #1e293b; height: 4px; width: 80%; border-radius: 10px; margin: 10px auto; overflow: hidden; }
     .conf-bar-fill { background: linear-gradient(90deg, #6d28d9, #06b6d4); height: 100%; }
 
-    /* [06] INPUTS DARK - REMOVER FUNDO BRANCO */
+    /* [06] INPUTS DARK */
     div[data-baseweb="select"] > div, div[data-baseweb="input"] > div, div[data-baseweb="base-input"] {
         background-color: #11151a !important; color: white !important; border: 1px solid #1e293b !important;
     }
@@ -124,48 +124,71 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- BASE DE DADOS HIERÁRQUICA (VERIFICADA E COMPLETA) ---
+# --- BASE DE DADOS HIERÁRQUICA (MASTER DATABASE v55.0) ---
 DADOS_HIEARARQUIA = {
     "BRASIL": {
         "Nacional": {
-            "Brasileirão Série A": ["Flamengo", "Palmeiras", "Botafogo", "São Paulo", "Grêmio", "Atlético-MG", "Fluminense", "Internacional", "Corinthians", "Bahia"],
-            "Brasileirão Série B": ["Santos", "Sport", "Coritiba", "Goiás", "Ceará", "Novorizontino", "Vila Nova", "Amazonas"],
-            "Brasileirão Série C": ["Náutico", "Figueirense", "Remo", "CSA", "Volta Redonda", "Sampaio Corrêa"],
-            "Brasileirão Série D": ["Santa Cruz", "Inter de Limeira", "Anápolis", "Maringá", "Brasil de Pelotas", "Retrô"]
+            "Brasileirão Série A": ["Flamengo", "Palmeiras", "Botafogo", "São Paulo", "Grêmio", "Atlético-MG", "Fluminense", "Internacional", "Corinthians", "Bahia", "Cruzeiro", "Vasco", "Athletico-PR", "Fortaleza", "Cuiabá", "Criciúma", "Juventude", "Vitória", "Bragantino", "Atlético-GO"],
+            "Brasileirão Série B": ["Santos", "Sport", "Coritiba", "Goiás", "Ceará", "Novorizontino", "Vila Nova", "Amazonas", "Operário-PR", "Avaí", "Chapecoense", "Ponte Preta"],
+            "Brasileirão Série C": ["Náutico", "Figueirense", "Remo", "CSA", "Volta Redonda", "Sampaio Corrêa", "ABC", "Botafogo-PB", "Londrina", "Ferroviário"],
+            "Brasileirão Série D": ["Santa Cruz", "Inter de Limeira", "Anápolis", "Maringá", "Brasil de Pelotas", "Retrô", "Iguatu", "Treze", "América-RN"]
+        },
+        "Regionais (Estaduais)": {
+            "Paulistão - A1": ["Palmeiras", "Santos", "São Paulo", "Corinthians", "Bragantino", "Ituano", "São Bernardo", "Ponte Preta", "Novorizontino"],
+            "Paulistão - A2": ["Portuguesa", "Guarani", "São Bento", "XV de Piracicaba", "Taubaté"],
+            "Carioca": ["Flamengo", "Fluminense", "Botafogo", "Vasco", "Nova Iguaçu", "Boavista", "Madureira", "Volta Redonda"],
+            "Mineiro": ["Atlético-MG", "Cruzeiro", "América-MG", "Tombense", "Ipatinga", "Villa Nova"],
+            "Gaúcho": ["Grêmio", "Internacional", "Juventude", "Caxias", "Brasil de Pelotas", "Ypiranga"],
+            "Paranaense": ["Athletico-PR", "Coritiba", "Maringá", "Operário-PR", "Cianorte", "Londrina"],
+            "Catarinense": ["Criciúma", "Avaí", "Figueirense", "Chapecoense", "Brusque", "Marcílio Dias"]
         },
         "Copas": {
-            "Copa do Brasil": ["Vasco", "Flamengo", "São Paulo", "Palmeiras", "Juventude", "Athletico-PR", "Bahia", "Cruzeiro"],
-            "Supercopa do Brasil": ["Palmeiras", "São Paulo", "Flamengo", "Atlético-MG"],
-            "Copa do Nordeste": ["Fortaleza", "Bahia", "Ceará", "Sport", "Vitória", "CRB", "Náutico", "Sampaio Corrêa"]
+            "Copa do Brasil": ["Vasco", "Flamengo", "São Paulo", "Palmeiras", "Juventude", "Athletico-PR", "Bahia", "Cruzeiro", "Corinthians", "Atlético-MG", "Fluminense"],
+            "Copa do Nordeste": ["Fortaleza", "Bahia", "Ceará", "Sport", "Vitória", "CRB", "Náutico", "Sampaio Corrêa", "Treze", "ABC"],
+            "Copa Verde": ["Paysandu", "Vila Nova", "Cuiabá", "Remo", "Goiás", "Amazonas"]
         }
     },
     "EUROPA": {
-        "Internacional": {
-            "UEFA Champions League": ["Real Madrid", "Man. City", "Bayern Munique", "Arsenal", "Barcelona", "Inter de Milão", "PSG", "Dortmund"],
-            "UEFA Europa League": ["Liverpool", "AC Milan", "AS Roma", "Benfica", "Ajax"]
+        "Competições UEFA": {
+            "UEFA Champions League": ["Real Madrid", "Man. City", "Bayern Munique", "Arsenal", "Barcelona", "Inter de Milão", "PSG", "Dortmund", "Juventus", "Bayer Leverkusen", "AC Milan", "Atletico Madrid"],
+            "UEFA Europa League": ["Liverpool", "AC Milan", "AS Roma", "Benfica", "Ajax", "Porto", "Tottenham", "Man. United", "Sporting CP", "Villareal"],
+            "UEFA Conference League": ["Chelsea", "Fiorentina", "Real Betis", "Nice", "Lazio", "Heidenheim"]
         },
         "Ligas Nacionais": {
-            "Premier League": ["Man. City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea"],
-            "La Liga": ["Real Madrid", "Barcelona", "Girona", "Atlético Madrid"]
+            "Premier League": ["Man. City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Newcastle", "Man. United", "West Ham", "Brighton"],
+            "La Liga": ["Real Madrid", "Barcelona", "Girona", "Atlético Madrid", "Athletic Bilbao", "Real Sociedad", "Real Betis", "Valencia"],
+            "Bundesliga": ["Bayer Leverkusen", "Bayern Munique", "Stuttgart", "RB Leipzig", "Dortmund", "Frankfurt", "Hoffenheim"],
+            "Serie A (Itália)": ["Inter de Milão", "AC Milan", "Juventus", "Atalanta", "Bologna", "AS Roma", "Lazio", "Napoli", "Fiorentina"],
+            "Ligue 1 (França)": ["PSG", "Monaco", "Brest", "Lille", "Nice", "Lyon", "Marseille", "Lens"],
+            "Liga Portugal": ["Sporting CP", "Benfica", "Porto", "Braga", "Vitória SC", "Moreirense"]
         }
     },
     "AMÉRICA DO SUL": {
         "Continental": {
-            "Libertadores": ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors", "Fluminense", "Atlético-MG"],
-            "Sul-Americana": ["Internacional", "Cruzeiro", "Corinthians", "Racing Club", "Fortaleza"]
+            "Copa Libertadores": ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors", "Fluminense", "Atlético-MG", "Peñarol", "Colo-Colo", "Nacional", "Talleres", "Bolívar", "LDU Quito"],
+            "Copa Sul-Americana": ["Internacional", "Cruzeiro", "Corinthians", "Racing Club", "Fortaleza", "Lanús", "Athletico-PR", "Ind. Medellín", "Cuiabá", "Libertad"]
+        },
+        "Ligas Locais": {
+            "Liga Profissional (Argentina)": ["River Plate", "Boca Juniors", "Racing Club", "Independiente", "San Lorenzo", "Talleres", "Estudiantes", "Velez Sarsfield"],
+            "Campeonato Chileno": ["Colo-Colo", "Universidad de Chile", "Universidad Católica", "Huachipato"],
+            "Liga BetPlay (Colômbia)": ["Junior", "Millonarios", "Atlético Nacional", "América de Cali", "Santa Fe", "Ind. Medellín"]
         }
     },
     "MERCADOS EMERGENTES": {
         "Arábia Saudita": {
-            "Saudi Pro League": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli"]
+            "Saudi Pro League": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq", "Al-Shabab", "Al-Taawoun"]
         },
         "Estados Unidos": {
-            "MLS": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC"]
+            "MLS": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "Seattle Sounders", "FC Cincinnati", "New York Red Bulls"]
+        },
+        "Ásia": {
+            "J-League (Japão)": ["Vissel Kobe", "Yokohama F. Marinos", "Kawasaki Frontale", "Urawa Reds"],
+            "Qatar Stars League": ["Al-Sadd", "Al-Duhail", "Al-Rayyan", "Al-Gharafa"]
         }
     }
 }
 
-# --- [LOCK] CABEÇALHO (LOGO COM FUNÇÃO HOME E ÍCONES RESTAURADOS) ---
+# --- [LOCK] CABEÇALHO ---
 st.markdown("""
     <div class="betano-header">
         <div class="header-left">
@@ -183,7 +206,7 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# --- SIDEBAR (HOME REMOVIDO / NAVEGAÇÃO LIMPA) ---
+# --- SIDEBAR ---
 with st.sidebar:
     st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True) 
     if st.button("🎯 SCANNER PRÉ-LIVE"): 
@@ -193,16 +216,14 @@ with st.sidebar:
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
     if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
     st.button("📅 JOGOS DO DIA")
-    st.button("🏆 VENCEDORES DA COMPETIÇÃO") # FIX: UMA LINHA SÓ
+    st.button("🏆 VENCEDORES DA COMPETIÇÃO")
     st.button("⚽ APOSTAS POR GOLS")
 
 st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
-# ------------------------------------------------------------------------------
-# TELA: HOME (TÍTULO REMOVIDO)
-# ------------------------------------------------------------------------------
+# --- HOME ---
 if st.session_state.aba_ativa == "home":
-    st.markdown('<div class="news-ticker">● LIVE: IA DETECTA ALTA PROBABILIDADE EM MERCADO DE GOLS HOJE ● ALERTA: ODDS EM QUEDA</div>', unsafe_allow_html=True)
+    st.markdown('<div class="news-ticker">● LIVE: IA DETECTA ALTA PROBABILIDADE EM MERCADO DE GOLS HOJE ● ALERTA: ODDS EM QUEDA ● HIERARQUIA v55.0 ATIVA</div>', unsafe_allow_html=True)
     
     h1, h2, h3, h4 = st.columns(4)
     with h1: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;"><span class="pulse-dot"></span>Destaque Live</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">FLAMENGO x PALMEIRAS</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:90%;"></div></div></div>', unsafe_allow_html=True)
@@ -218,9 +239,7 @@ if st.session_state.aba_ativa == "home":
     with h7: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Volume</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">MERCADO EM ALTA</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:80%;"></div></div></div>', unsafe_allow_html=True)
     with h8: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Proteção</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">JARVIS SUPREME</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:100%;"></div></div></div>', unsafe_allow_html=True)
 
-# ------------------------------------------------------------------------------
-# TELA: SCANNER PRÉ-LIVE (8 CARDS DE RESULTADOS)
-# ------------------------------------------------------------------------------
+# --- SCANNER PRÉ-LIVE ---
 elif st.session_state.aba_ativa == "analise":
     st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">🎯 SCANNER PRÉ-LIVE</div>', unsafe_allow_html=True)
     
@@ -245,7 +264,6 @@ elif st.session_state.aba_ativa == "analise":
         stake = st.session_state.banca_atual * 0.01
         st.markdown(f'<div style="color:#9d54ff; font-weight:900; font-size:18px; margin: 20px 0 10px 0; text-transform: uppercase;">RESULTADO ALGORITIMO: {casa} vs {fora}</div>', unsafe_allow_html=True)
         
-        # LINHA 1 (4 CARDS)
         r1, r2, r3, r4 = st.columns(4)
         with r1: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">VENCEDOR</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">{casa}</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:76%;"></div></div></div>', unsafe_allow_html=True)
         with r2: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">MERCADO GOLS</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">OVER 1.5 REAL</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:85%;"></div></div></div>', unsafe_allow_html=True)
@@ -254,19 +272,16 @@ elif st.session_state.aba_ativa == "analise":
         
         st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
         
-        # LINHA 2 (TOTAL 8 CARDS)
         r5, r6, r7, r8 = st.columns(4)
         with r5: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">TIROS DE META</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">14-16 TOTAIS</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:90%;"></div></div></div>', unsafe_allow_html=True)
         with r6: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">CHUTES AO GOL</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">CASA +5.5</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:78%;"></div></div></div>', unsafe_allow_html=True)
         with r7: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">DEFESAS GOLEIRO</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">VISITANTE 4+</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:80%;"></div></div></div>', unsafe_allow_html=True)
         with r8: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">ÍNDICE PRESSÃO</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">GOL MADURO 68%</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:68%;"></div></div></div>', unsafe_allow_html=True)
 
-# ------------------------------------------------------------------------------
-# TELA: SCANNER LIVE
-# ------------------------------------------------------------------------------
+# --- SCANNER LIVE ---
 elif st.session_state.aba_ativa == "scanner_live":
     st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">📡 SCANNER EM TEMPO REAL</div>', unsafe_allow_html=True)
     st.info("Varrendo mercados em tempo real...")
 
-# --- [LOCK] FOOTER ---
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v43.3 | JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+# --- FOOTER ---
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | DATABASE v55.0 UNLOCKED</div><div>GESTOR IA PRO v55.0 | JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
