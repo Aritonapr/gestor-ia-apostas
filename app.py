@@ -5,7 +5,7 @@ import random
 # ==============================================================================
 # [GIAE KERNEL SHIELD v42.0 - RESTAURAÇÃO TOTAL]
 # FIX: HEADER EFFECTS | 8-CARDS HOME | SIDEBAR SYMMETRY | DARK INPUTS | BTN EFFECT
-# DATA: FULL BRAZILIAN LEAGUES EXPANSION
+# DATA: BRAZIL & EUROPE EXPANSION (MEN'S FOOTBALL)
 # ==============================================================================
 
 st.set_page_config(
@@ -146,7 +146,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- BASE DE DADOS HIERÁRQUICA (EXPANDIDA - BRASIL COMPLETO) ---
+# --- BASE DE DADOS HIERÁRQUICA (BRASIL & EUROPA) ---
 DADOS_HIEARARQUIA = {
     "BRASIL": {
         "Nacional": {
@@ -166,10 +166,25 @@ DADOS_HIEARARQUIA = {
             "Mineiro": ["Atlético-MG", "Cruzeiro", "América-MG", "Tombense", "Ipatinga"],
             "Gaúcho": ["Grêmio", "Internacional", "Juventude", "Caxias", "Brasil de Pelotas"]
         }
+    },
+    "EUROPA": {
+        "Internacional": {
+            "UEFA Champions League": ["Real Madrid", "Man. City", "Bayern", "PSG", "Inter", "Arsenal", "Barcelona", "Dortmund"],
+            "UEFA Europa League": ["Liverpool", "Milan", "Roma", "Leverkusen", "Benfica", "Atalanta", "West Ham"],
+            "UEFA Conference League": ["Aston Villa", "Fiorentina", "Lille", "Fenerbahçe", "Olympiacos"]
+        },
+        "Nacional": {
+            "Premier League (Inglaterra)": ["Man. City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Man. United", "Chelsea"],
+            "La Liga (Espanha)": ["Real Madrid", "Barcelona", "Girona", "Atlético Madrid", "Athletic Bilbao", "Real Sociedad"],
+            "Serie A (Itália)": ["Inter", "Milan", "Juventus", "Bologna", "Roma", "Lazio", "Napoli"],
+            "Bundesliga (Alemanha)": ["Leverkusen", "Bayern", "Stuttgart", "Leipzig", "Dortmund", "Frankfurt"],
+            "Ligue 1 (França)": ["PSG", "Monaco", "Brest", "Lille", "Nice", "Lyon", "Marseille"],
+            "Primeira Liga (Portugal)": ["Sporting", "Benfica", "Porto", "Braga", "Vitória SC", "Moreirense"]
+        }
     }
 }
 
-# --- [LOCK] CABEÇALHO (RESTAURADO) ---
+# --- [LOCK] CABEÇALHO ---
 st.markdown(f"""
     <div class="betano-header">
         <div class="header-left">
@@ -203,13 +218,12 @@ with st.sidebar:
 st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
 # ------------------------------------------------------------------------------
-# TELA: HOME / DASHBOARD (8 CARDS)
+# TELA: HOME / DASHBOARD
 # ------------------------------------------------------------------------------
 if st.session_state.aba_ativa == "home":
     st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:10px;">HOME / DASHBOARD</div>', unsafe_allow_html=True)
     st.markdown('<div class="news-ticker">● LIVE: IA DETECTA ALTA PROBABILIDADE EM MERCADO DE GOLS HOJE ● ALERTA: ODDS EM QUEDA</div>', unsafe_allow_html=True)
     
-    # LINHA 1 (4 CARDS)
     h1, h2, h3, h4 = st.columns(4)
     with h1: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;"><span class="pulse-dot"></span>Destaque Live</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">FLAMENGO x PALMEIRAS</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:90%;"></div></div></div>', unsafe_allow_html=True)
     with h2: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Sugestão</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">OVER 2.5 GOLS</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:88%;"></div></div></div>', unsafe_allow_html=True)
@@ -218,7 +232,6 @@ if st.session_state.aba_ativa == "home":
 
     st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
 
-    # LINHA 2 (4 CARDS)
     h5, h6, h7, h8 = st.columns(4)
     with h5: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Scanner</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">ALTA PRESSÃO (HT)</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:60%;"></div></div></div>', unsafe_allow_html=True)
     with h6: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Performance</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">ASSERTIVIDADE 92%</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:92%;"></div></div></div>', unsafe_allow_html=True)
@@ -226,7 +239,7 @@ if st.session_state.aba_ativa == "home":
     with h8: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Proteção</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">JARVIS SUPREME</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:100%;"></div></div></div>', unsafe_allow_html=True)
 
 # ------------------------------------------------------------------------------
-# TELA: ANÁLISE MÉTRICA (GRID 4x2 - 8 CARDS)
+# TELA: ANÁLISE MÉTRICA
 # ------------------------------------------------------------------------------
 elif st.session_state.aba_ativa == "analise":
     st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
@@ -240,7 +253,6 @@ elif st.session_state.aba_ativa == "analise":
     with t1: casa = st.selectbox("🏠 CASA", DADOS_HIEARARQUIA[pais][tipo][camp])
     with t2: fora = st.selectbox("🚀 VISITANTE", [t for t in DADOS_HIEARARQUIA[pais][tipo][camp] if t != casa])
 
-    # --- BOTÃO COM EFEITO ESPECIAL E NOME ATUALIZADO ---
     if st.button("⚡ EXECUTAR ALGORITIMO"):
         with st.spinner("PROCESSANDO..."):
             time.sleep(1.2)
