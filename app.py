@@ -201,7 +201,8 @@ elif st.session_state.aba_ativa == "analise":
     with t1: casa = st.selectbox("🏠 CASA", DADOS_HIEARARQUIA[pais][tipo][camp])
     with t2: fora = st.selectbox("🚀 VISITANTE", [t for t in DADOS_HIEARARQUIA[pais][tipo][camp] if t != casa])
 
-    if st.button("⚡ RESULTADO ALGORITIMO"):
+    # --- BOTÃO RENOMEADO ---
+    if st.button("⚡ EXECUTAR ALGORITIMO"):
         with st.spinner("PROCESSANDO..."):
             time.sleep(1.2)
             st.session_state.analise_pronta = True
