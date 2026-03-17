@@ -4,8 +4,8 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v56.3 - SYNTAX DEBUG & PERSISTENCE LOCK]
-# FIX: STRING LITERAL ERRORS | TRIPLE QUOTE ISOLATION | HISTORY SYNC
+# [GIAE KERNEL SHIELD v56.4 - ANCHOR MEMORY SYSTEM]
+# FIX: RE-RUN PERSISTENCE | UI FLASH REDUCTION | HISTORY VOLTAGE LOCK
 # ==============================================================================
 
 st.set_page_config(
@@ -25,6 +25,8 @@ if 'historico_calls' not in st.session_state:
     st.session_state.historico_calls = []
 if 'dados_da_analise' not in st.session_state:
     st.session_state.dados_da_analise = {}
+if 'mensagem_sucesso' not in st.session_state:
+    st.session_state.mensagem_sucesso = False
 
 # --- [LOCK] BLOCO DE SEGURANÇA CSS (ESTRUTURA COMPLETA RESTAURADA) ---
 st.markdown("""
@@ -217,6 +219,7 @@ with st.sidebar:
     if st.button("🎯 SCANNER PRÉ-LIVE"): 
         st.session_state.aba_ativa = "analise"
         st.session_state.analise_travada = False
+        st.session_state.mensagem_sucesso = False
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "scanner_live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
     if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
@@ -228,7 +231,7 @@ st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
 # --- [ABA] HOME ---
 if st.session_state.aba_ativa == "home":
-    st.markdown("""<div class="news-ticker">● LIVE: IA DETECTA ALTA PROBABILIDADE EM MERCADO DE GOLS HOJE ● ALERTA: ODDS EM QUEDA ● HIERARQUIA v56.3 ATIVA</div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="news-ticker">● LIVE: IA DETECTA ALTA PROBABILIDADE EM MERCADO DE GOLS HOJE ● ALERTA: ODDS EM QUEDA ● HIERARQUIA v56.4 ATIVA</div>""", unsafe_allow_html=True)
     
     h1, h2, h3, h4 = st.columns(4)
     with h1: st.markdown("""<div class="highlight-card"><div style="color:#64748b; font-size:9px;"><span class="pulse-dot"></span>Destaque Live</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">FLAMENGO x PALMEIRAS</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:90%;"></div></div></div>""", unsafe_allow_html=True)
@@ -259,8 +262,9 @@ elif st.session_state.aba_ativa == "analise":
 
     if st.button("⚡ EXECUTAR ALGORITIMO"):
         with st.spinner("PROCESSANDO..."):
-            time.sleep(1)
+            time.sleep(0.5)
             st.session_state.analise_travada = True
+            st.session_state.mensagem_sucesso = False
             st.session_state.dados_da_analise = {
                 "time_casa": casa, "time_fora": fora, "vencedor": casa,
                 "gols": "OVER 1.5 REAL", "escanteios": "MAIS DE 9.5",
@@ -289,9 +293,19 @@ elif st.session_state.aba_ativa == "analise":
 
         st.markdown("""<div style="height:20px;"></div>""", unsafe_allow_html=True)
         
+        # BOTÃO COM PERSISTÊNCIA REFORÇADA
         if st.button("📥 ENVIAR PARA HISTÓRICO"):
-            st.session_state.historico_calls.append(st.session_state.dados_da_analise)
-            st.success("✅ CALL ENVIADA COM SUCESSO AO HISTÓRICO!")
+            if st.session_state.dados_da_analise not in st.session_state.historico_calls:
+                st.session_state.historico_calls.append(st.session_state.dados_da_analise)
+            st.session_state.mensagem_sucesso = True
+
+        # EXIBIÇÃO DA MENSAGEM FIXA APÓS CLIQUE
+        if st.session_state.mensagem_sucesso:
+            st.markdown(f"""
+                <div style="background: rgba(34, 197, 94, 0.1); border: 1px solid #22c55e; padding: 15px; border-radius: 4px; color: #22c55e; font-weight: 900; text-align: center; margin-bottom: 20px;">
+                    ✅ CALL DE {d['time_casa']} SALVA NO HISTÓRICO COM SUCESSO!
+                </div>
+            """, unsafe_allow_html=True)
 
 # --- [ABA] GESTÃO DE BANCA ---
 elif st.session_state.aba_ativa == "gestao":
@@ -322,4 +336,4 @@ elif st.session_state.aba_ativa == "scanner_live":
     st.info("Varrendo mercados em tempo real...")
 
 # --- FOOTER ---
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | DATABASE v56.3 UNLOCKED</div><div>GESTOR IA PRO v56.3 | JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | DATABASE v56.4 UNLOCKED</div><div>GESTOR IA PRO v56.4 | JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
