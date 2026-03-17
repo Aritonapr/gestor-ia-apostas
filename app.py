@@ -4,7 +4,7 @@ import random
 
 # ==============================================================================
 # [GIAE KERNEL SHIELD v42.0 - RESTAURAÇÃO TOTAL]
-# FIX: HEADER EFFECTS | 8-CARDS HOME | SIDEBAR SYMMETRY
+# FIX: HEADER EFFECTS | 8-CARDS HOME | SIDEBAR SYMMETRY | DARK INPUTS
 # ==============================================================================
 
 st.set_page_config(
@@ -93,6 +93,29 @@ st.markdown("""
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
     .conf-bar-bg { background: #1e293b; height: 4px; width: 80%; border-radius: 10px; margin: 10px auto; overflow: hidden; }
     .conf-bar-fill { background: linear-gradient(90deg, #6d28d9, #06b6d4); height: 100%; }
+
+    /* [06] CUSTOMIZAÇÃO DE INPUTS/SELECTBOX - REMOVER FUNDO BRANCO */
+    div[data-baseweb="select"] > div {
+        background-color: #11151a !important;
+        color: white !important;
+        border: 1px solid #1e293b !important;
+    }
+    div[role="listbox"] {
+        background-color: #11151a !important;
+    }
+    div[role="option"] {
+        background-color: #11151a !important;
+        color: white !important;
+    }
+    div[role="option"]:hover {
+        background-color: #1e293b !important;
+    }
+    .stSelectbox label p {
+        color: #94a3b8 !important;
+        font-size: 10px !important;
+        text-transform: uppercase !important;
+        font-weight: 700 !important;
+    }
 
     /* FOOTER */
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
