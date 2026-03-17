@@ -5,7 +5,7 @@ import random
 # ==============================================================================
 # [GIAE KERNEL SHIELD v42.0 - RESTAURAÇÃO TOTAL]
 # FIX: HEADER EFFECTS | 8-CARDS HOME | SIDEBAR SYMMETRY | DARK INPUTS | BTN EFFECT
-# DATA: GLOBAL EXPANSION (BRAZIL, EUROPE, SOUTH AMERICA, EMERGING MARKETS)
+# REFINEMENT: STRICT COMPETITION-BASED TEAM FILTERING
 # ==============================================================================
 
 st.set_page_config(
@@ -26,7 +26,7 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
 
     /* [01] RESET E FUNDO */
-    header, [data-testid="stHeader"], [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { display: none !important; visibility: hidden !important; }
+    header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { display: none !important; visibility: hidden !important; }
     .stApp { background-color: #0b0e11 !important; font-family: 'Inter', sans-serif; }
     [data-testid="stMainBlockContainer"] { padding-top: 0rem !important; padding-bottom: 1rem !important; }
 
@@ -146,67 +146,67 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- BASE DE DADOS HIERÁRQUICA (EXPANSÃO TOTAL) ---
+# --- BASE DE DADOS HIERÁRQUICA (REFINADA COM FILTRO ESTRITO) ---
 DADOS_HIEARARQUIA = {
     "BRASIL": {
         "Nacional": {
-            "Brasileirão Série A": ["Flamengo", "Palmeiras", "Botafogo", "São Paulo", "Grêmio", "Atlético-MG", "Fluminense"],
-            "Brasileirão Série B": ["Santos", "Sport", "Coritiba", "Goiás", "Ceará", "Amazonas"],
-            "Brasileirão Série C": ["Náutico", "Figueirense", "Remo", "CSA", "Volta Redonda"],
-            "Brasileirão Série D": ["Santa Cruz", "Inter de Limeira", "Anápolis", "Maringá", "Brasil de Pelotas"]
+            "Brasileirão Série A": ["Flamengo", "Palmeiras", "Botafogo", "São Paulo", "Grêmio", "Atlético-MG", "Fluminense", "Internacional", "Corinthians", "Bahia"],
+            "Brasileirão Série B": ["Santos", "Sport", "Coritiba", "Goiás", "Ceará", "Novorizontino", "Vila Nova", "Amazonas"],
+            "Brasileirão Série C": ["Náutico", "Figueirense", "Remo", "CSA", "Volta Redonda", "Sampaio Corrêa"],
+            "Brasileirão Série D": ["Santa Cruz", "Inter de Limeira", "Anápolis", "Maringá", "Brasil de Pelotas", "Retrô"]
         },
         "Copas": {
-            "Copa do Brasil": ["Flamengo", "Palmeiras", "Cruzeiro", "Corinthians", "Athletico-PR", "Vasco"],
+            "Copa do Brasil": ["Vasco", "Flamengo", "São Paulo", "Palmeiras", "Juventude", "Athletico-PR", "Bahia", "Cruzeiro"],
             "Supercopa do Brasil": ["Palmeiras", "São Paulo", "Flamengo", "Atlético-MG"],
-            "Copa do Nordeste": ["Fortaleza", "Bahia", "Ceará", "Sport", "Vitória", "CRB"]
+            "Copa do Nordeste": ["Fortaleza", "Bahia", "Ceará", "Sport", "Vitória", "CRB", "Náutico", "Sampaio Corrêa"]
         },
         "Estaduais": {
-            "Paulistão": ["Palmeiras", "São Paulo", "Corinthians", "Santos", "Bragantino", "Ituano"],
-            "Carioca": ["Flamengo", "Fluminense", "Vasco", "Botafogo", "Nova Iguaçu", "Boavista"],
-            "Mineiro": ["Atlético-MG", "Cruzeiro", "América-MG", "Tombense", "Ipatinga"],
-            "Gaúcho": ["Grêmio", "Internacional", "Juventude", "Caxias", "Brasil de Pelotas"]
+            "Paulistão": ["Palmeiras", "São Paulo", "Corinthians", "Santos", "Bragantino", "Ituano", "Ponte Preta", "São Bernardo"],
+            "Carioca": ["Flamengo", "Fluminense", "Vasco", "Botafogo", "Nova Iguaçu", "Boavista", "Bangu", "Madureira"],
+            "Mineiro": ["Atlético-MG", "Cruzeiro", "América-MG", "Tombense", "Ipatinga", "Villa Nova"],
+            "Gaúcho": ["Grêmio", "Internacional", "Juventude", "Caxias", "Brasil de Pelotas", "Ypiranga"]
         }
     },
     "EUROPA": {
         "Internacional": {
-            "UEFA Champions League": ["Real Madrid", "Man. City", "Bayern", "PSG", "Inter", "Arsenal", "Barcelona", "Dortmund"],
-            "UEFA Europa League": ["Liverpool", "Milan", "Roma", "Leverkusen", "Benfica", "Atalanta", "West Ham"],
-            "UEFA Conference League": ["Aston Villa", "Fiorentina", "Lille", "Fenerbahçe", "Olympiacos"]
+            "UEFA Champions League": ["Real Madrid", "Man. City", "Bayern Munique", "Arsenal", "Barcelona", "Inter de Milão", "PSG", "Dortmund", "Atletico Madrid", "Bayer Leverkusen"],
+            "UEFA Europa League": ["Liverpool", "AC Milan", "AS Roma", "Benfica", "Ajax", "Sporting CP", "Porto", "Tottenham"],
+            "UEFA Conference League": ["Aston Villa", "Fiorentina", "Lille", "Fenerbahçe", "Olympiacos", "Club Brugge"]
         },
         "Ligas Nacionais": {
-            "Premier League (Inglaterra)": ["Man. City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Man. United", "Chelsea"],
-            "La Liga (Espanha)": ["Real Madrid", "Barcelona", "Girona", "Atlético Madrid", "Athletic Bilbao", "Real Sociedad"],
-            "Serie A (Itália)": ["Inter", "Milan", "Juventus", "Bologna", "Roma", "Lazio", "Napoli"],
-            "Bundesliga (Alemanha)": ["Leverkusen", "Bayern", "Stuttgart", "Leipzig", "Dortmund", "Frankfurt"],
-            "Ligue 1 (França)": ["PSG", "Monaco", "Brest", "Lille", "Nice", "Lyon", "Marseille"],
-            "Primeira Liga (Portugal)": ["Sporting", "Benfica", "Porto", "Braga", "Vitória SC", "Moreirense"]
+            "Premier League (Inglaterra)": ["Man. City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Man. United", "Chelsea", "Newcastle", "West Ham"],
+            "La Liga (Espanha)": ["Real Madrid", "Barcelona", "Girona", "Atlético Madrid", "Athletic Bilbao", "Real Sociedad", "Real Betis", "Sevilla"],
+            "Serie A (Itália)": ["Inter de Milão", "AC Milan", "Juventus", "Bologna", "AS Roma", "Lazio", "Napoli", "Atalanta", "Fiorentina"],
+            "Bundesliga (Alemanha)": ["Bayer Leverkusen", "Bayern Munique", "Stuttgart", "RB Leipzig", "Dortmund", "Frankfurt", "Wolfsburg", "Hoffenheim"],
+            "Ligue 1 (França)": ["PSG", "Monaco", "Brest", "Lille", "Nice", "Lyon", "Marseille", "Lens"],
+            "Primeira Liga (Portugal)": ["Sporting CP", "Benfica", "Porto", "Braga", "Vitória SC", "Moreirense", "Famalicão"]
         },
         "Copas Nacionais": {
-            "FA Cup": ["Man. City", "Man. United", "Liverpool", "Chelsea"],
-            "Copa del Rey": ["Real Madrid", "Barcelona", "Atlético Madrid", "Mallorca"],
-            "Coppa Italia": ["Juventus", "Lazio", "Atalanta", "Fiorentina"],
-            "DFB-Pokal": ["Leverkusen", "Bayern", "Dortmund", "Leipzig"]
+            "FA Cup": ["Man. City", "Man. United", "Chelsea", "Coventry City", "Liverpool", "Arsenal"],
+            "Copa del Rey": ["Athletic Bilbao", "Mallorca", "Real Sociedad", "Atlético Madrid", "Real Madrid", "Barcelona"],
+            "Coppa Italia": ["Juventus", "Lazio", "Atalanta", "Fiorentina", "Inter de Milão", "AC Milan"],
+            "DFB-Pokal": ["Bayer Leverkusen", "Kaiserslautern", "Saarbrücken", "Dusseldorf", "Bayern Munique"]
         }
     },
     "AMÉRICA DO SUL": {
         "Continental": {
-            "Libertadores": ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors", "Fluminense", "Atlético-MG", "São Paulo"],
-            "Sul-Americana": ["Internacional", "Cruzeiro", "Corinthians", "Racing", "Lanús", "Boca Juniors"],
+            "Libertadores": ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors", "Fluminense", "Atlético-MG", "São Paulo", "Peñarol", "Nacional", "Colo-Colo"],
+            "Sul-Americana": ["Internacional", "Cruzeiro", "Corinthians", "Racing Club", "Lanús", "Boca Juniors", "Fortaleza", "Athletico-PR"],
             "Recopa Sul-Americana": ["Fluminense", "LDU Quito"]
         },
         "Nacional": {
-            "Liga Argentina": ["River Plate", "Boca Juniors", "Racing", "Independiente", "San Lorenzo", "Talleres"],
-            "Primera División (Chile)": ["Colo-Colo", "Univ. de Chile", "Univ. Católica"],
-            "Categoría Primera A (Colômbia)": ["Atl. Nacional", "Millonarios", "Junior Barranquilla", "América de Cali"],
-            "Primera División (Uruguai)": ["Peñarol", "Nacional", "Defensor"]
+            "Liga Argentina": ["River Plate", "Boca Juniors", "Racing Club", "Independiente", "San Lorenzo", "Talleres", "Estudiantes", "Vélez Sarsfield"],
+            "Primera División (Chile)": ["Colo-Colo", "Univ. de Chile", "Univ. Católica", "Palestino", "Everton VM"],
+            "Categoría Primera A (Colômbia)": ["Atl. Nacional", "Millonarios", "Junior Barranquilla", "América de Cali", "Ind. Santa Fe", "Deportivo Cali"],
+            "Primera División (Uruguai) Peñarol": ["Peñarol", "Nacional", "Defensor Sporting", "Danubio", "Montevideo City Torque"]
         }
     },
     "MERCADOS EMERGENTES": {
         "Arábia Saudita": {
-            "Saudi Pro League": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq"]
+            "Saudi Pro League": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq", "Al-Shabab"]
         },
         "Estados Unidos": {
-            "MLS": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "Seattle Sounders", "NY City FC"]
+            "MLS": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "Seattle Sounders", "NY City FC", "Atlanta United", "Orlando City"]
         }
     }
 }
@@ -272,15 +272,15 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">ANÁLISE MÉTRICA DOS JOGOS</div>', unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns(3)
-    with col1: pais = st.selectbox("🌎 CATEGORIA", list(DADOS_HIEARARQUIA.keys()))
-    with col2: tipo = st.selectbox("📂 TIPO", list(DADOS_HIEARARQUIA[pais].keys()))
-    with col3: camp = st.selectbox("🏆 CAMPEONATO", list(DADOS_HIEARARQUIA[pais][tipo].keys()))
+    with col1: categoria_selecionada = st.selectbox("🌎 CATEGORIA", list(DADOS_HIEARARQUIA.keys()))
+    with col2: tipo_selecionado = st.selectbox("📂 TIPO", list(DADOS_HIEARARQUIA[categoria_selecionada].keys()))
+    with col3: camp_selecionado = st.selectbox("🏆 CAMPEONATO", list(DADOS_HIEARARQUIA[categoria_selecionada][tipo_selecionado].keys()))
     
     t1, t2 = st.columns(2)
-    with t1: casa = st.selectbox("🏠 CASA", DADOS_HIEARARQUIA[pais][tipo][camp])
-    with t2: fora = st.selectbox("🚀 VISITANTE", [t for t in DADOS_HIEARARQUIA[pais][tipo][camp] if t != casa])
+    with t1: casa = st.selectbox("🏠 CASA", DADOS_HIEARARQUIA[categoria_selecionada][tipo_selecionado][camp_selecionado])
+    # O Visitante filtra automaticamente para não mostrar o mesmo time que a Casa
+    with t2: fora = st.selectbox("🚀 VISITANTE", [t for t in DADOS_HIEARARQUIA[categoria_selecionada][tipo_selecionado][camp_selecionado] if t != casa])
 
-    # --- BOTÃO COM EFEITO PULSANTE ---
     if st.button("⚡ EXECUTAR ALGORITIMO"):
         with st.spinner("PROCESSANDO..."):
             time.sleep(1.2)
