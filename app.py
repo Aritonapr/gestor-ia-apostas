@@ -5,6 +5,7 @@ import random
 # ==============================================================================
 # [GIAE KERNEL SHIELD v42.0 - RESTAURAÇÃO TOTAL]
 # FIX: HEADER EFFECTS | 8-CARDS HOME | SIDEBAR SYMMETRY | DARK INPUTS | BTN EFFECT
+# DATA: FULL BRAZILIAN LEAGUES EXPANSION
 # ==============================================================================
 
 st.set_page_config(
@@ -145,23 +146,25 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- BASE DE DADOS HIERÁRQUICA ---
+# --- BASE DE DADOS HIERÁRQUICA (EXPANDIDA - BRASIL COMPLETO) ---
 DADOS_HIEARARQUIA = {
     "BRASIL": {
-        "Estadual": {
-            "Paulistão": ["Palmeiras", "São Paulo", "Corinthians", "Santos"],
-            "Carioca": ["Flamengo", "Fluminense", "Vasco"],
-            "Mineiro": ["Atlético Mineiro", "Cruzeiro", "América Mineiro"],
-            "Gaúcho": ["Grêmio", "Internacional", "Juventude"]
-        },
         "Nacional": {
-            "Brasileirão Série A": ["Flamengo", "Palmeiras", "Botafogo"],
-            "Brasileirão Série B": ["Santos", "Ceará", "Sport"],
-            "Brasileirão Série C": ["Remo", "Paysandu", "Volta Redonda"],
-            "Brasileirão Série D": ["Itabaiana", "Anápolis", "Treze"],
-            "Copa do Brasil": ["Flamengo", "Palmeiras", "Atlético Mineiro", "Corinthians"],
-            "Supercopa do Brasil": ["Flamengo", "Palmeiras"],
-            "Copa do Nordeste": ["Sport", "Bahia", "Fortaleza", "Ceará"]
+            "Brasileirão Série A": ["Flamengo", "Palmeiras", "Botafogo", "São Paulo", "Grêmio", "Atlético-MG", "Fluminense"],
+            "Brasileirão Série B": ["Santos", "Sport", "Coritiba", "Goiás", "Ceará", "Amazonas"],
+            "Brasileirão Série C": ["Náutico", "Figueirense", "Remo", "CSA", "Volta Redonda"],
+            "Brasileirão Série D": ["Santa Cruz", "Inter de Limeira", "Anápolis", "Maringá", "Brasil de Pelotas"]
+        },
+        "Copas": {
+            "Copa do Brasil": ["Flamengo", "Palmeiras", "Cruzeiro", "Corinthians", "Athletico-PR", "Vasco"],
+            "Supercopa do Brasil": ["Palmeiras", "São Paulo", "Flamengo", "Atlético-MG"],
+            "Copa do Nordeste": ["Fortaleza", "Bahia", "Ceará", "Sport", "Vitória", "CRB"]
+        },
+        "Estaduais": {
+            "Paulistão": ["Palmeiras", "São Paulo", "Corinthians", "Santos", "Bragantino", "Ituano"],
+            "Carioca": ["Flamengo", "Fluminense", "Vasco", "Botafogo", "Nova Iguaçu", "Boavista"],
+            "Mineiro": ["Atlético-MG", "Cruzeiro", "América-MG", "Tombense", "Ipatinga"],
+            "Gaúcho": ["Grêmio", "Internacional", "Juventude", "Caxias", "Brasil de Pelotas"]
         }
     }
 }
@@ -200,7 +203,7 @@ with st.sidebar:
 st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
 # ------------------------------------------------------------------------------
-# TELA: HOME / DASHBOARD (AGORA COM 8 CARDS)
+# TELA: HOME / DASHBOARD (8 CARDS)
 # ------------------------------------------------------------------------------
 if st.session_state.aba_ativa == "home":
     st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:10px;">HOME / DASHBOARD</div>', unsafe_allow_html=True)
@@ -237,7 +240,7 @@ elif st.session_state.aba_ativa == "analise":
     with t1: casa = st.selectbox("🏠 CASA", DADOS_HIEARARQUIA[pais][tipo][camp])
     with t2: fora = st.selectbox("🚀 VISITANTE", [t for t in DADOS_HIEARARQUIA[pais][tipo][camp] if t != casa])
 
-    # --- BOTÃO COM EFEITO ESPECIAL ---
+    # --- BOTÃO COM EFEITO ESPECIAL E NOME ATUALIZADO ---
     if st.button("⚡ EXECUTAR ALGORITIMO"):
         with st.spinner("PROCESSANDO..."):
             time.sleep(1.2)
