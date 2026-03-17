@@ -4,7 +4,7 @@ import random
 
 # ==============================================================================
 # [GIAE KERNEL SHIELD v42.0 - RESTAURAÇÃO TOTAL]
-# FIX: HEADER EFFECTS | 8-CARDS HOME | SIDEBAR SYMMETRY | DARK INPUTS
+# FIX: HEADER EFFECTS | 8-CARDS HOME | SIDEBAR SYMMETRY | DARK INPUTS | BTN EFFECT
 # ==============================================================================
 
 st.set_page_config(
@@ -117,6 +117,29 @@ st.markdown("""
         font-weight: 700 !important;
     }
 
+    /* [07] EFEITO ESPECIAL BOTÃO EXECUTAR (SOMENTE ÁREA PRINCIPAL) */
+    [data-testid="stMainBlockContainer"] .stButton > button {
+        background: linear-gradient(90deg, #6d28d9 0%, #4f46e5 100%) !important;
+        color: white !important;
+        border: none !important;
+        font-weight: 900 !important;
+        padding: 10px 25px !important;
+        border-radius: 4px !important;
+        transition: 0.4s all ease-in-out !important;
+        box-shadow: 0 0 10px rgba(109, 40, 217, 0.3) !important;
+        animation: pulse-glow 2s infinite !important;
+    }
+    [data-testid="stMainBlockContainer"] .stButton > button:hover {
+        transform: scale(1.02) !important;
+        box-shadow: 0 0 20px rgba(109, 40, 217, 0.6) !important;
+        filter: brightness(1.2) !important;
+    }
+    @keyframes pulse-glow {
+        0% { box-shadow: 0 0 5px rgba(109, 40, 217, 0.4); }
+        50% { box-shadow: 0 0 15px rgba(109, 40, 217, 0.7); }
+        100% { box-shadow: 0 0 5px rgba(109, 40, 217, 0.4); }
+    }
+
     /* FOOTER */
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     </style>
@@ -201,7 +224,7 @@ elif st.session_state.aba_ativa == "analise":
     with t1: casa = st.selectbox("🏠 CASA", DADOS_HIEARARQUIA[pais][tipo][camp])
     with t2: fora = st.selectbox("🚀 VISITANTE", [t for t in DADOS_HIEARARQUIA[pais][tipo][camp] if t != casa])
 
-    # --- BOTÃO RENOMEADO ---
+    # --- BOTÃO COM EFEITO ESPECIAL ---
     if st.button("⚡ EXECUTAR ALGORITIMO"):
         with st.spinner("PROCESSANDO..."):
             time.sleep(1.2)
