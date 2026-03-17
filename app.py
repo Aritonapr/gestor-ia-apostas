@@ -5,7 +5,7 @@ import random
 # ==============================================================================
 # [GIAE KERNEL SHIELD v42.0 - RESTAURAÇÃO TOTAL]
 # FIX: HEADER EFFECTS | 8-CARDS HOME | SIDEBAR SYMMETRY | DARK INPUTS | BTN EFFECT
-# DATA: BRAZIL & EUROPE EXPANSION (MEN'S FOOTBALL)
+# DATA: GLOBAL EXPANSION (BRAZIL, EUROPE, SOUTH AMERICA, EMERGING MARKETS)
 # ==============================================================================
 
 st.set_page_config(
@@ -26,7 +26,7 @@ st.markdown("""
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
 
     /* [01] RESET E FUNDO */
-    header, [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { display: none !important; visibility: hidden !important; }
+    header, [data-testid="stHeader"], [data-testid="stHeader"], [data-testid="stSidebarCollapseButton"] { display: none !important; visibility: hidden !important; }
     .stApp { background-color: #0b0e11 !important; font-family: 'Inter', sans-serif; }
     [data-testid="stMainBlockContainer"] { padding-top: 0rem !important; padding-bottom: 1rem !important; }
 
@@ -146,7 +146,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- BASE DE DADOS HIERÁRQUICA (BRASIL & EUROPA) ---
+# --- BASE DE DADOS HIERÁRQUICA (EXPANSÃO TOTAL) ---
 DADOS_HIEARARQUIA = {
     "BRASIL": {
         "Nacional": {
@@ -173,13 +173,40 @@ DADOS_HIEARARQUIA = {
             "UEFA Europa League": ["Liverpool", "Milan", "Roma", "Leverkusen", "Benfica", "Atalanta", "West Ham"],
             "UEFA Conference League": ["Aston Villa", "Fiorentina", "Lille", "Fenerbahçe", "Olympiacos"]
         },
-        "Nacional": {
+        "Ligas Nacionais": {
             "Premier League (Inglaterra)": ["Man. City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Man. United", "Chelsea"],
             "La Liga (Espanha)": ["Real Madrid", "Barcelona", "Girona", "Atlético Madrid", "Athletic Bilbao", "Real Sociedad"],
             "Serie A (Itália)": ["Inter", "Milan", "Juventus", "Bologna", "Roma", "Lazio", "Napoli"],
             "Bundesliga (Alemanha)": ["Leverkusen", "Bayern", "Stuttgart", "Leipzig", "Dortmund", "Frankfurt"],
             "Ligue 1 (França)": ["PSG", "Monaco", "Brest", "Lille", "Nice", "Lyon", "Marseille"],
             "Primeira Liga (Portugal)": ["Sporting", "Benfica", "Porto", "Braga", "Vitória SC", "Moreirense"]
+        },
+        "Copas Nacionais": {
+            "FA Cup": ["Man. City", "Man. United", "Liverpool", "Chelsea"],
+            "Copa del Rey": ["Real Madrid", "Barcelona", "Atlético Madrid", "Mallorca"],
+            "Coppa Italia": ["Juventus", "Lazio", "Atalanta", "Fiorentina"],
+            "DFB-Pokal": ["Leverkusen", "Bayern", "Dortmund", "Leipzig"]
+        }
+    },
+    "AMÉRICA DO SUL": {
+        "Continental": {
+            "Libertadores": ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors", "Fluminense", "Atlético-MG", "São Paulo"],
+            "Sul-Americana": ["Internacional", "Cruzeiro", "Corinthians", "Racing", "Lanús", "Boca Juniors"],
+            "Recopa Sul-Americana": ["Fluminense", "LDU Quito"]
+        },
+        "Nacional": {
+            "Liga Argentina": ["River Plate", "Boca Juniors", "Racing", "Independiente", "San Lorenzo", "Talleres"],
+            "Primera División (Chile)": ["Colo-Colo", "Univ. de Chile", "Univ. Católica"],
+            "Categoría Primera A (Colômbia)": ["Atl. Nacional", "Millonarios", "Junior Barranquilla", "América de Cali"],
+            "Primera División (Uruguai)": ["Peñarol", "Nacional", "Defensor"]
+        }
+    },
+    "MERCADOS EMERGENTES": {
+        "Arábia Saudita": {
+            "Saudi Pro League": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq"]
+        },
+        "Estados Unidos": {
+            "MLS": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "Seattle Sounders", "NY City FC"]
         }
     }
 }
@@ -253,6 +280,7 @@ elif st.session_state.aba_ativa == "analise":
     with t1: casa = st.selectbox("🏠 CASA", DADOS_HIEARARQUIA[pais][tipo][camp])
     with t2: fora = st.selectbox("🚀 VISITANTE", [t for t in DADOS_HIEARARQUIA[pais][tipo][camp] if t != casa])
 
+    # --- BOTÃO COM EFEITO PULSANTE ---
     if st.button("⚡ EXECUTAR ALGORITIMO"):
         with st.spinner("PROCESSANDO..."):
             time.sleep(1.2)
