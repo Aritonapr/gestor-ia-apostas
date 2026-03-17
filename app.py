@@ -148,8 +148,21 @@ st.markdown("""
 # --- BASE DE DADOS HIERÁRQUICA ---
 DADOS_HIEARARQUIA = {
     "BRASIL": {
-        "Estadual": {"Paulistão": ["Palmeiras", "São Paulo", "Corinthians", "Santos"], "Carioca": ["Flamengo", "Fluminense", "Vasco"]},
-        "Nacional": {"Brasileirão Série A": ["Flamengo", "Palmeiras", "Botafogo"]}
+        "Estadual": {
+            "Paulistão": ["Palmeiras", "São Paulo", "Corinthians", "Santos"],
+            "Carioca": ["Flamengo", "Fluminense", "Vasco"],
+            "Mineiro": ["Atlético Mineiro", "Cruzeiro", "América Mineiro"],
+            "Gaúcho": ["Grêmio", "Internacional", "Juventude"]
+        },
+        "Nacional": {
+            "Brasileirão Série A": ["Flamengo", "Palmeiras", "Botafogo"],
+            "Brasileirão Série B": ["Santos", "Ceará", "Sport"],
+            "Brasileirão Série C": ["Remo", "Paysandu", "Volta Redonda"],
+            "Brasileirão Série D": ["Itabaiana", "Anápolis", "Treze"],
+            "Copa do Brasil": ["Flamengo", "Palmeiras", "Atlético Mineiro", "Corinthians"],
+            "Supercopa do Brasil": ["Flamengo", "Palmeiras"],
+            "Copa do Nordeste": ["Sport", "Bahia", "Fortaleza", "Ceará"]
+        }
     }
 }
 
