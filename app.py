@@ -3,8 +3,8 @@ import time
 import random
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v43.2 - FINAL RESTORATION]
-# FIX: REMOVE HOME TITLE | RESTORE 8-CARDS GRID | PROTECT CSS KERNEL
+# [GIAE KERNEL SHIELD v43.3 - ULTIMATE RESTORATION]
+# FIX: REMOVE SIDEBAR HOME | RESTORE 8-CARDS | LOGO & HEADER ICONS | EMERGING DATA
 # ==============================================================================
 
 st.set_page_config(
@@ -66,6 +66,7 @@ st.markdown("""
     .registrar-pill { 
         color: #ffffff !important; font-size: 10px !important; font-weight: 700 !important; border: 1px solid #ffffff !important; 
         padding: 6px 15px !important; border-radius: 20px !important; cursor: pointer !important; transition: 0.3s; white-space: nowrap;
+        text-decoration: none !important; display: inline-block;
     }
     .registrar-pill:hover { background: #ffffff !important; color: #002366 !important; }
 
@@ -96,7 +97,7 @@ st.markdown("""
     .conf-bar-bg { background: #1e293b; height: 4px; width: 80%; border-radius: 10px; margin: 10px auto; overflow: hidden; }
     .conf-bar-fill { background: linear-gradient(90deg, #6d28d9, #06b6d4); height: 100%; }
 
-    /* [06] INPUTS DARK */
+    /* [06] INPUTS DARK - REMOVER FUNDO BRANCO */
     div[data-baseweb="select"] > div, div[data-baseweb="input"] > div, div[data-baseweb="base-input"] {
         background-color: #11151a !important; color: white !important; border: 1px solid #1e293b !important;
     }
@@ -109,6 +110,7 @@ st.markdown("""
         background: linear-gradient(90deg, #6d28d9 0%, #4f46e5 100%) !important;
         color: white !important; border: none !important; font-weight: 900 !important;
         padding: 10px 25px !important; border-radius: 4px !important;
+        transition: 0.4s all ease-in-out !important;
         animation: pulse-glow 2s infinite !important;
     }
     @keyframes pulse-glow {
@@ -122,7 +124,7 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- BASE DE DADOS HIERÁRQUICA ---
+# --- BASE DE DADOS HIERÁRQUICA (VERIFICADA E COMPLETA) ---
 DADOS_HIEARARQUIA = {
     "BRASIL": {
         "Nacional": {
@@ -163,11 +165,11 @@ DADOS_HIEARARQUIA = {
     }
 }
 
-# --- [LOCK] CABEÇALHO ---
+# --- [LOCK] CABEÇALHO (LOGO COM FUNÇÃO HOME E ÍCONES RESTAURADOS) ---
 st.markdown("""
     <div class="betano-header">
         <div class="header-left">
-            <div class="logo-link">GESTOR IA</div>
+            <a href="/" target="_self" class="logo-link">GESTOR IA</a>
             <div class="nav-items">
                 <span>Apostas Esportivas</span><span>Apostas ao Vivo</span><span>OPORTUNIDADES IA</span>
                 <span>Estatísticas Avançadas</span><span>PROBABILIDADES REAIS</span><span>Assertividade IA</span>
@@ -181,10 +183,9 @@ st.markdown("""
     </div>
     """, unsafe_allow_html=True)
 
-# --- SIDEBAR ---
+# --- SIDEBAR (HOME REMOVIDO / NAVEGAÇÃO LIMPA) ---
 with st.sidebar:
     st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True) 
-    if st.button("🏠 DASHBOARD HOME"): st.session_state.aba_ativa = "home"
     if st.button("🎯 SCANNER PRÉ-LIVE"): 
         st.session_state.aba_ativa = "analise"
         st.session_state.analise_pronta = False
@@ -192,13 +193,13 @@ with st.sidebar:
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
     if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
     st.button("📅 JOGOS DO DIA")
-    st.button("🏆 VENCEDORES DA COMPETIÇÃO")
+    st.button("🏆 VENCEDORES DA COMPETIÇÃO") # FIX: UMA LINHA SÓ
     st.button("⚽ APOSTAS POR GOLS")
 
 st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
 # ------------------------------------------------------------------------------
-# TELA: HOME (TÍTULO REMOVIDO CONFORME COMANDO)
+# TELA: HOME (TÍTULO REMOVIDO)
 # ------------------------------------------------------------------------------
 if st.session_state.aba_ativa == "home":
     st.markdown('<div class="news-ticker">● LIVE: IA DETECTA ALTA PROBABILIDADE EM MERCADO DE GOLS HOJE ● ALERTA: ODDS EM QUEDA</div>', unsafe_allow_html=True)
@@ -218,7 +219,7 @@ if st.session_state.aba_ativa == "home":
     with h8: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Proteção</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">JARVIS SUPREME</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:100%;"></div></div></div>', unsafe_allow_html=True)
 
 # ------------------------------------------------------------------------------
-# TELA: SCANNER PRÉ-LIVE (RESTAURADA COM 8 CARDS)
+# TELA: SCANNER PRÉ-LIVE (8 CARDS DE RESULTADOS)
 # ------------------------------------------------------------------------------
 elif st.session_state.aba_ativa == "analise":
     st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">🎯 SCANNER PRÉ-LIVE</div>', unsafe_allow_html=True)
@@ -253,7 +254,7 @@ elif st.session_state.aba_ativa == "analise":
         
         st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
         
-        # LINHA 2 (MAIS 4 CARDS - TOTAL 8)
+        # LINHA 2 (TOTAL 8 CARDS)
         r5, r6, r7, r8 = st.columns(4)
         with r5: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">TIROS DE META</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">14-16 TOTAIS</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:90%;"></div></div></div>', unsafe_allow_html=True)
         with r6: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">CHUTES AO GOL</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">CASA +5.5</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:78%;"></div></div></div>', unsafe_allow_html=True)
@@ -261,11 +262,11 @@ elif st.session_state.aba_ativa == "analise":
         with r8: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">ÍNDICE PRESSÃO</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">GOL MADURO 68%</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:68%;"></div></div></div>', unsafe_allow_html=True)
 
 # ------------------------------------------------------------------------------
-# TELA: SCANNER LIVE (SIMULAÇÃO)
+# TELA: SCANNER LIVE
 # ------------------------------------------------------------------------------
 elif st.session_state.aba_ativa == "scanner_live":
     st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">📡 SCANNER EM TEMPO REAL</div>', unsafe_allow_html=True)
-    st.info("Varrendo jogos ao vivo para detectar padrões de pressão...")
+    st.info("Varrendo mercados em tempo real...")
 
 # --- [LOCK] FOOTER ---
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v43.2 | JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | KEY: GIAE-V17-ELITE-RECOVERY</div><div>GESTOR IA PRO v43.3 | JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
