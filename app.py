@@ -4,8 +4,8 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v56.1 - HISTORY PERSISTENCE UPDATE]
-# FIX: BUTTON CONNECTIVITY | ANALYSIS MEMORY | UI LOCK
+# [GIAE KERNEL SHIELD v56.2 - PERSISTENCE LOCK & UI SYNC]
+# FIX: NESTED BUTTON LOGIC | CALC STABILITY | JARVIS THEME ALERTS
 # ==============================================================================
 
 st.set_page_config(
@@ -17,14 +17,14 @@ st.set_page_config(
 # --- CONTROLE DE NAVEGAÇÃO E ESTADO DO SISTEMA ---
 if 'aba_ativa' not in st.session_state:
     st.session_state.aba_ativa = "home"
-if 'analise_pronta' not in st.session_state:
-    st.session_state.analise_pronta = False
+if 'analise_travada' not in st.session_state:
+    st.session_state.analise_travada = False
 if 'banca_atual' not in st.session_state:
     st.session_state.banca_atual = 1000.0
 if 'historico_calls' not in st.session_state:
     st.session_state.historico_calls = []
-if 'ultima_analise' not in st.session_state:
-    st.session_state.ultima_analise = {}
+if 'dados_da_analise' not in st.session_state:
+    st.session_state.dados_da_analise = {}
 
 # --- [LOCK] BLOCO DE SEGURANÇA CSS (ESTRUTURA COMPLETA RESTAURADA) ---
 st.markdown("""
@@ -216,7 +216,7 @@ with st.sidebar:
     st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True) 
     if st.button("🎯 SCANNER PRÉ-LIVE"): 
         st.session_state.aba_ativa = "analise"
-        st.session_state.analise_pronta = False
+        st.session_state.analise_travada = False
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "scanner_live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
     if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
@@ -228,122 +228,7 @@ st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
 # --- [ABA] HOME ---
 if st.session_state.aba_ativa == "home":
-    st.markdown('<div class="news-ticker">● LIVE: IA DETECTA ALTA PROBABILIDADE EM MERCADO DE GOLS HOJE ● ALERTA: ODDS EM QUEDA ● HIERARQUIA v56.1 ATIVA</div>', unsafe_allow_html=True)
+    st.markdown('<div class="news-ticker">● LIVE: IA DETECTA ALTA PROBABILIDADE EM MERCADO DE GOLS HOJE ● ALERTA: ODDS EM QUEDA ● HIERARQUIA v56.2 ATIVA</div>', unsafe_allow_html=True)
     
     h1, h2, h3, h4 = st.columns(4)
-    with h1: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;"><span class="pulse-dot"></span>Destaque Live</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">FLAMENGO x PALMEIRAS</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:90%;"></div></div></div>', unsafe_allow_html=True)
-    with h2: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Sugestão</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">OVER 2.5 GOLS</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:88%;"></div></div></div>', unsafe_allow_html=True)
-    with h3: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">IA Education</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">GESTÃO 3%</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:100%;"></div></div></div>', unsafe_allow_html=True)
-    with h4: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Tendência</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">ODDS EM QUEDA</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:75%;"></div></div></div>', unsafe_allow_html=True)
-
-    st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
-    
-    h5, h6, h7, h8 = st.columns(4)
-    with h5: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Scanner</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">ALTA PRESSÃO (HT)</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:60%;"></div></div></div>', unsafe_allow_html=True)
-    with h6: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Performance</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">ASSERTIVIDADE 92%</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:92%;"></div></div></div>', unsafe_allow_html=True)
-    with h7: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Volume</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">MERCADO EM ALTA</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:80%;"></div></div></div>', unsafe_allow_html=True)
-    with h8: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Proteção</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">JARVIS SUPREME</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:100%;"></div></div></div>', unsafe_allow_html=True)
-
-# --- [ABA] SCANNER PRÉ-LIVE ---
-elif st.session_state.aba_ativa == "analise":
-    st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">🎯 SCANNER PRÉ-LIVE</div>', unsafe_allow_html=True)
-    
-    col1, col2, col3 = st.columns(3)
-    with col1: cat = st.selectbox("🌎 CATEGORIA", list(DADOS_HIEARARQUIA.keys()))
-    with col2: tip = st.selectbox("📂 TIPO", list(DADOS_HIEARARQUIA[cat].keys()))
-    with col3: cmp = st.selectbox("🏆 CAMPEONATO", list(DADOS_HIEARARQUIA[cat][tip].keys()))
-    
-    t1, t2 = st.columns(2)
-    with t1: casa = st.selectbox("🏠 CASA", DADOS_HIEARARQUIA[cat][tip][cmp])
-    with t2: fora = st.selectbox("🚀 VISITANTE", [t for t in DADOS_HIEARARQUIA[cat][tip][cmp] if t != casa])
-
-    if st.button("⚡ EXECUTAR ALGORITIMO"):
-        with st.spinner("PROCESSANDO..."):
-            time.sleep(1.2)
-            st.session_state.analise_pronta = True
-            st.session_state.ultima_analise = {
-                "time_casa": casa,
-                "time_fora": fora,
-                "vencedor": casa,
-                "gols": "OVER 1.5 REAL",
-                "escanteios": "MAIS DE 9.5",
-                "data": datetime.now().strftime("%d/%m %H:%M")
-            }
-
-    if st.session_state.analise_pronta:
-        stake = st.session_state.banca_atual * 0.01
-        st.markdown(f'<div style="color:#9d54ff; font-weight:900; font-size:18px; margin: 20px 0 10px 0; text-transform: uppercase;">RESULTADO ALGORITIMO: {casa} vs {fora}</div>', unsafe_allow_html=True)
-        
-        r1, r2, r3, r4 = st.columns(4)
-        with r1: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">VENCEDOR</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">{casa}</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:76%;"></div></div></div>', unsafe_allow_html=True)
-        with r2: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">MERCADO GOLS</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">OVER 1.5 REAL</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:85%;"></div></div></div>', unsafe_allow_html=True)
-        with r3: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">STAKE RECOMENDADA</div><div style="color:#22c55e; font-size:18px; font-weight:900; margin-top:10px;">R$ {stake:,.2f}</div><div style="color:#475569; font-size:9px;">(Gestão 1%)</div></div>', unsafe_allow_html=True)
-        with r4: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">ESCANTEIOS</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">MAIS DE 9.5</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:82%;"></div></div></div>', unsafe_allow_html=True)
-        
-        st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
-        
-        r5, r6, r7, r8 = st.columns(4)
-        with r5: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">TIROS DE META</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">14-16 TOTAIS</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:90%;"></div></div></div>', unsafe_allow_html=True)
-        with r6: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">CHUTES AO GOL</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">CASA +5.5</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:78%;"></div></div></div>', unsafe_allow_html=True)
-        with r7: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">DEFESAS GOLEIRO</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">VISITANTE 4+</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:80%;"></div></div></div>', unsafe_allow_html=True)
-        with r8: st.markdown(f'<div class="highlight-card"><div style="color:#64748b; font-size:9px;">ÍNDICE PRESSÃO</div><div style="color:white; font-size:14px; font-weight:900; margin-top:10px;">GOL MADURO 68%</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:68%;"></div></div></div>', unsafe_allow_html=True)
-
-        st.markdown('<div style="height:20px;"></div>', unsafe_allow_html=True)
-        if st.button("📥 ENVIAR PARA HISTÓRICO"):
-            if st.session_state.ultima_analise:
-                st.session_state.historico_calls.append(st.session_state.ultima_analise)
-                st.success(f"CALL DE {st.session_state.ultima_analise['time_casa']} vs {st.session_state.ultima_analise['time_fora']} SALVA COM SUCESSO!")
-                time.sleep(1) # Pequena pausa para o usuário ler a mensagem
-            else:
-                st.error("Nenhuma análise encontrada para salvar.")
-
-# --- [ABA] GESTÃO DE BANCA ---
-elif st.session_state.aba_ativa == "gestao":
-    st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">💰 GESTÃO DE BANCA PROFISSIONAL</div>', unsafe_allow_html=True)
-    
-    col_b1, col_b2 = st.columns([1, 2])
-    with col_b1:
-        st.session_state.banca_atual = st.number_input("DEFINIR BANCA TOTAL (R$)", value=st.session_state.banca_atual, step=50.0)
-        st.markdown('<div style="height:20px;"></div>', unsafe_allow_html=True)
-        st.markdown(f"""
-            <div style="background:#11151a; padding:20px; border-radius:8px; border-left:4px solid #6d28d9;">
-                <div style="color:#94a3b8; font-size:12px; font-weight:700;">BANCA ATUAL</div>
-                <div style="color:white; font-size:28px; font-weight:900;">R$ {st.session_state.banca_atual:,.2f}</div>
-            </div>
-        """, unsafe_allow_html=True)
-
-    with col_b2:
-        st.markdown('<div style="color:#94a3b8; font-size:10px; font-weight:700; margin-bottom:10px;">CALCULADORA DE STAKES (RECOMENDAÇÃO IA)</div>', unsafe_allow_html=True)
-        s1, s2, s3 = st.columns(3)
-        with s1: st.markdown(f'<div class="highlight-card"><div style="color:#22c55e; font-size:9px;">Conservador (1%)</div><div style="color:white; font-size:18px; font-weight:900; margin-top:10px;">R$ {st.session_state.banca_atual * 0.01:,.2f}</div></div>', unsafe_allow_html=True)
-        with s2: st.markdown(f'<div class="highlight-card"><div style="color:#eab308; font-size:9px;">Moderado (2.5%)</div><div style="color:white; font-size:18px; font-weight:900; margin-top:10px;">R$ {st.session_state.banca_atual * 0.025:,.2f}</div></div>', unsafe_allow_html=True)
-        with s3: st.markdown(f'<div class="highlight-card"><div style="color:#ef4444; font-size:9px;">Agressivo (5%)</div><div style="color:white; font-size:18px; font-weight:900; margin-top:10px;">R$ {st.session_state.banca_atual * 0.05:,.2f}</div></div>', unsafe_allow_html=True)
-
-# --- [ABA] HISTÓRICO DE CALLS ---
-elif st.session_state.aba_ativa == "historico":
-    st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">📜 HISTÓRICO DE CALLS SALVAS</div>', unsafe_allow_html=True)
-    
-    if not st.session_state.historico_calls:
-        st.info("Nenhuma call salva até o momento. Execute o scanner para gerar entradas.")
-    else:
-        for item in reversed(st.session_state.historico_calls):
-            st.markdown(f"""
-                <div style="background:#11151a; border:1px solid #1e293b; padding:15px; border-radius:8px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-                    <div>
-                        <span style="color:#9d54ff; font-weight:900; font-size:12px;">[{item['data']}]</span>
-                        <span style="color:white; font-weight:700; margin-left:10px;">{item['time_casa']} x {item['time_fora']}</span>
-                    </div>
-                    <div style="display:flex; gap:20px;">
-                        <div style="text-align:center;"><div style="color:#64748b; font-size:8px;">MERCADO</div><div style="color:#06b6d4; font-size:11px; font-weight:700;">{item['gols']}</div></div>
-                        <div style="text-align:center;"><div style="color:#64748b; font-size:8px;">VENCEDOR</div><div style="color:#22c55e; font-size:11px; font-weight:700;">{item['vencedor']}</div></div>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-
-# --- [ABA] SCANNER LIVE ---
-elif st.session_state.aba_ativa == "scanner_live":
-    st.markdown('<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">📡 SCANNER EM TEMPO REAL</div>', unsafe_allow_html=True)
-    st.info("Varrendo mercados em tempo real... Otimizando conexão com servidor de odds.")
-
-# --- FOOTER ---
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | DATABASE v56.1 UNLOCKED</div><div>GESTOR IA PRO v56.1 | JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+    with h1: st.markdown('<div class="highlight-card"><div style="color:#64748b; font-size:9px;"><span class="pulse-dot"></span>Destaque Live</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">FLAMENGO x PALMEIRAS</div><div class="conf-bar-bg"><div
