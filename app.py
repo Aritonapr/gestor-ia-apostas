@@ -4,9 +4,9 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v57.18 - ULTIMATE DATABASE & INTERFACE INTEGRITY]
-# FIX: MAPEAMENTO COMPLETO DE COMPETIÇÕES 2025/2026 (BRASIL E EUROPA)
-# INTEGRITY: NO ABBREVIATIONS | FULL CODE RESTORED | 8-CARD GRID ACTIVE
+# [GIAE KERNEL SHIELD v57.19 - WORLD CUP 2026 UPDATE]
+# FIX: ADIÇÃO DA COPA DO MUNDO 2026 | GRID 8 CARDS SCANNER | DESIGN ELITE
+# INTEGRITY: NO ABBREVIATIONS | FULL CODE RESTORED | INTERFACE LOCKED
 # ==============================================================================
 
 st.set_page_config(
@@ -165,7 +165,7 @@ DADOS_HIEARARQUIA = {
             "Brasileirão Série D": ["Santa Cruz", "Portuguesa", "Treze", "Iguatu", "Brasil de Pelotas", "Anápolis", "Maringá", "Itabuna"]
         },
         "Copas Nacionais": {
-            "Copa do Brasil": ["Time Sorteado A", "Time Sorteado B", "Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Atlético-MG", "Grêmio"],
+            "Copa do Brasil": ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Atlético-MG", "Grêmio", "Bahia", "Internacional"],
             "Supercopa do Brasil": ["Campeão Série A", "Campeão Copa do Brasil"],
             "Copa do Nordeste": ["Bahia", "Vitória", "Fortaleza", "Ceará", "Sport", "Náutico", "CRB", "Sampaio Corrêa"]
         },
@@ -205,8 +205,9 @@ DADOS_HIEARARQUIA = {
         }
     },
     "INTERNACIONAL SELEÇÕES": {
-        "Competições": {
-            "Eurocopa 2024/2028": ["Espanha", "Inglaterra", "França", "Alemanha", "Portugal", "Itália", "Holanda", "Bélgica"]
+        "Competições FIFA": {
+            "Copa do Mundo 2026": ["Brasil", "Argentina", "França", "Alemanha", "Espanha", "Portugal", "Inglaterra", "Itália", "Holanda", "Bélgica", "EUA", "México", "Canadá"],
+            "Eurocopa": ["Espanha", "Inglaterra", "França", "Alemanha", "Portugal", "Itália", "Holanda", "Bélgica"]
         }
     }
 }
@@ -248,7 +249,7 @@ st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
 # --- [ABA: HOME - 8 CARDS] ---
 if st.session_state.aba_ativa == "home":
-    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● HIERARQUIA v57.18 ATIVA</div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● HIERARQUIA v57.19 ATIVA ● COPA 2026 INTEGRADA</div>""", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
     with h1: draw_card("Destaque Live", "FLAMENGO x PALMEIRAS", 90)
     with h2: draw_card("Sugestão", "OVER 2.5 GOLS", 88)
@@ -267,13 +268,11 @@ elif st.session_state.aba_ativa == "analise":
     def area_scanner():
         st.markdown("""<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">🎯 SCANNER PRÉ-LIVE</div>""", unsafe_allow_html=True)
         
-        # Filtros Hierárquicos
         c1, c2, c3 = st.columns(3)
         cat = c1.selectbox("🌎 CATEGORIA", list(DADOS_HIEARARQUIA.keys()))
         tip = c2.selectbox("📂 TIPO", list(DADOS_HIEARARQUIA[cat].keys()))
         cmp = c3.selectbox("🏆 CAMPEONATO", list(DADOS_HIEARARQUIA[cat][tip].keys()))
         
-        # Times
         t1, t2 = st.columns(2)
         casa = t1.selectbox("🏠 CASA", DADOS_HIEARARQUIA[cat][tip][cmp])
         fora = t2.selectbox("🚀 VISITANTE", [x for x in DADOS_HIEARARQUIA[cat][tip][cmp] if x != casa])
@@ -322,9 +321,9 @@ elif st.session_state.aba_ativa == "historico":
                 col_info, col_del = st.columns([0.9, 0.1])
                 with col_info: st.markdown(f"""<div class="history-card-box"><span style="color:#9d54ff; font-weight:900;">[{call['data']}]</span> <span style="color:white; margin-left:15px;">{call['casa']} x {call['fora']}</span><span style="color:#06b6d4; float:right;">{call['gols']}</span></div>""", unsafe_allow_html=True)
                 with col_del: 
-                    if st.button("🗑️", key=f"del_v18_{idx_real}"):
+                    if st.button("🗑️", key=f"del_v19_{idx_real}"):
                         st.session_state.historico_calls.pop(idx_real)
                         st.rerun(scope="fragment")
     render_history_list()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.18 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.19 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
