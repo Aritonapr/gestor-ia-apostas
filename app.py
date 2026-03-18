@@ -4,8 +4,8 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v57.9 - TOTAL INTEGRITY & SIDEBAR ALIGN]
-# FIX: SIDEBAR TEXT NOWRAP | DESIGN PRESERVED | ANTI-FLASH ACTIVE
+# [GIAE KERNEL SHIELD v57.10 - TOTAL INTEGRITY & BUTTON STYLING]
+# FIX: REMOÇÃO DE FUNDO BRANCO NO SCANNER | SIDEBAR NOWRAP | DESIGN PRESERVED
 # ==============================================================================
 
 st.set_page_config(
@@ -27,7 +27,7 @@ def draw_card(title, value, perc):
         </div>
     """, unsafe_allow_html=True)
 
-# --- [LOCK] BLOCO DE SEGURANÇA CSS (NÃO ALTERAR) ---
+# --- [LOCK] BLOCO DE SEGURANÇA CSS (NÃO ALTERAR ESTRUTURA) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
@@ -40,7 +40,7 @@ st.markdown("""
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
     
-    /* AJUSTE SOLICITADO: TEXTO EM UMA LINHA SÓ */
+    /* BOTÕES DA SIDEBAR (TRANSPARENTES E SEM QUEBRA DE LINHA) */
     [data-testid="stSidebar"] button { 
         background-color: transparent !important; 
         color: #94a3b8 !important; 
@@ -51,11 +51,27 @@ st.markdown("""
         padding: 18px 25px !important; 
         font-size: 10px !important; 
         text-transform: uppercase !important;
-        white-space: nowrap !important; /* FORÇA UMA LINHA SÓ */
+        white-space: nowrap !important; 
         display: block !important;
     }
     [data-testid="stSidebar"] button:hover { color: #ffffff !important; border-left: 4px solid #6d28d9 !important; background: rgba(26, 36, 45, 0.8) !important; }
     
+    /* AJUSTE SOLICITADO: TIRAR FUNDO BRANCO DOS BOTÕES DO SCANNER (AREA PRINCIPAL) */
+    div.stButton > button {
+        background: linear-gradient(90deg, #6d28d9 0%, #4c1d95 100%) !important;
+        color: white !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        font-size: 11px !important;
+        transition: 0.3s !important;
+    }
+    div.stButton > button:hover {
+        background: linear-gradient(90deg, #7c3aed 0%, #6d28d9 100%) !important;
+        box-shadow: 0 0 15px rgba(109, 40, 217, 0.4) !important;
+        border-color: #6d28d9 !important;
+    }
+
     /* CABEÇALHO BETANO STYLE */
     .betano-header { position: fixed; top: 0; left: 0; width: 100%; height: 60px; background-color: #002366 !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; display: flex; align-items: center; justify-content: space-between; padding: 0 30px !important; z-index: 999999; }
     .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; letter-spacing: 1px; text-decoration: none !important; margin-right: 40px; }
@@ -115,7 +131,7 @@ st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
 # --- [ABA: HOME] ---
 if st.session_state.aba_ativa == "home":
-    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● HIERARQUIA v57.9 ATIVA</div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● HIERARQUIA v57.10 ATIVA</div>""", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
     with h1: draw_card("Destaque Live", "FLAMENGO x PALMEIRAS", 90)
     with h2: draw_card("Sugestão", "OVER 2.5 GOLS", 88)
@@ -179,9 +195,9 @@ elif st.session_state.aba_ativa == "historico":
                 col_info, col_del = st.columns([0.9, 0.1])
                 with col_info: st.markdown(f"""<div class="history-card-box"><span style="color:#9d54ff; font-weight:900;">[{call['data']}]</span> <span style="color:white; margin-left:15px;">{call['casa']} x {call['fora']}</span><span style="color:#06b6d4; float:right;">{call['gols']}</span></div>""", unsafe_allow_html=True)
                 with col_del: 
-                    if st.button("🗑️", key=f"del_v579_{idx_real}"):
+                    if st.button("🗑️", key=f"del_v5710_{idx_real}"):
                         st.session_state.historico_calls.pop(idx_real)
                         st.rerun(scope="fragment")
     render_history_list()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.9 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.10 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
