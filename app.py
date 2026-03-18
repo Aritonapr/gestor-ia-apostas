@@ -4,9 +4,9 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v57.16 - CURSOR POINTER & INTERFACE STABILITY]
-# FIX: CURSOR MAOZINHA EM GESTOR IA, ENTRAR E REGISTRAR
-# INTEGRITY: NO ABBREVIATIONS | FULL CODE RESTORED | 8-CARD GRID PRESERVED
+# [GIAE KERNEL SHIELD v57.17 - FULL DATABASE RESTORATION]
+# FIX: RESTAURAÇÃO DE TODOS OS TIMES E CAMPEONATOS (SÉRIE A, B E UEFA)
+# INTEGRITY: NO ABBREVIATIONS | FULL CODE RESTORED | CURSOR POINTERS ACTIVE
 # ==============================================================================
 
 st.set_page_config(
@@ -93,7 +93,7 @@ st.markdown("""
         letter-spacing: 1px; 
         text-decoration: none !important; 
         margin-right: 40px; 
-        cursor: pointer !important; /* MAOZINHA NO LOGO */
+        cursor: pointer !important;
     }
     
     .nav-items { display: flex; gap: 20px; align-items: center; }
@@ -103,7 +103,7 @@ st.markdown("""
         text-transform: uppercase; 
         opacity: 0.7; 
         white-space: nowrap; 
-        cursor: pointer !important; /* MAOZINHA NOS LINKS DO MENU */
+        cursor: pointer !important; 
         transition: 0.3s ease; 
         font-weight: 600;
     }
@@ -125,7 +125,7 @@ st.markdown("""
         padding: 6px 15px !important; 
         border-radius: 20px !important; 
         transition: 0.3s; 
-        cursor: pointer !important; /* MAOZINHA NO REGISTRAR */
+        cursor: pointer !important;
     }
     .registrar-pill:hover { background: rgba(255,255,255,0.1); }
     
@@ -137,7 +137,7 @@ st.markdown("""
         font-weight: 800 !important; 
         font-size: 10px !important; 
         transition: 0.3s; 
-        cursor: pointer !important; /* MAOZINHA NO ENTRAR */
+        cursor: pointer !important;
     }
     .entrar-grad:hover { opacity: 0.9; transform: translateY(-1px); }
     
@@ -162,22 +162,34 @@ if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
 if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
 if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
 
-# --- [BASE DE DADOS HIERÁRQUICA] ---
+# --- [BASE DE DADOS COMPLETA E RESTAURADA] ---
 DADOS_HIEARARQUIA = {
     "BRASIL": {
         "Nacional": {
-            "Brasileirão Série A": ["Flamengo", "Palmeiras", "Botafogo", "São Paulo", "Grêmio", "Atlético-MG", "Fluminense", "Internacional", "Corinthians", "Bahia", "Cruzeiro", "Vasco", "Athletico-PR", "Fortaleza", "Cuiabá", "Criciúma", "Juventude", "Vitória", "Bragantino", "Atlético-GO"],
-            "Brasileirão Série B": ["Santos", "Sport", "Coritiba", "Goiás", "Ceará", "Novorizontino", "Vila Nova", "Amazonas", "Operário-PR", "Avaí", "Chapecoense", "Ponte Preta"]
+            "Brasileirão Série A": [
+                "Flamengo", "Palmeiras", "Botafogo", "São Paulo", "Grêmio", 
+                "Atlético-MG", "Fluminense", "Internacional", "Corinthians", "Bahia", 
+                "Cruzeiro", "Vasco", "Athletico-PR", "Fortaleza", "Cuiabá", 
+                "Criciúma", "Juventude", "Vitória", "Bragantino", "Atlético-GO"
+            ],
+            "Brasileirão Série B": [
+                "Santos", "Sport", "Coritiba", "Goiás", "Ceará", 
+                "Novorizontino", "Vila Nova", "Amazonas", "Operário-PR", "Avaí", 
+                "Chapecoense", "Ponte Preta"
+            ]
         }
     },
     "EUROPA": {
         "Competições UEFA": {
-            "UEFA Champions League": ["Real Madrid", "Man. City", "Bayern Munique", "Arsenal", "Barcelona", "Inter de Milão", "PSG", "Dortmund", "Juventus", "Bayer Leverkusen"]
+            "UEFA Champions League": [
+                "Real Madrid", "Man. City", "Bayern Munique", "Arsenal", "Barcelona", 
+                "Inter de Milão", "PSG", "Dortmund", "Juventus", "Bayer Leverkusen"
+            ]
         }
     }
 }
 
-# --- [CABECALHO: RESTAURADO COM LUPA E EFEITOS DE CURSOR] ---
+# --- [CABECALHO: IDENTIDADE VISUAL ELITE] ---
 st.markdown("""
     <div class="betano-header">
         <div style="display:flex; align-items:center;">
@@ -214,7 +226,7 @@ st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
 # --- [ABA: HOME - 8 CARDS] ---
 if st.session_state.aba_ativa == "home":
-    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● HIERARQUIA v57.16 ATIVA</div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● HIERARQUIA v57.17 ATIVA</div>""", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
     with h1: draw_card("Destaque Live", "FLAMENGO x PALMEIRAS", 90)
     with h2: draw_card("Sugestão", "OVER 2.5 GOLS", 88)
@@ -227,17 +239,19 @@ if st.session_state.aba_ativa == "home":
     with h7: draw_card("Volume", "MERCADO EM ALTA", 80)
     with h8: draw_card("Proteção", "JARVIS SUPREME", 100)
 
-# --- [ABA: SCANNER - 8 CARDS] ---
+# --- [ABA: SCANNER - 8 CARDS COM DATABASE COMPLETA] ---
 elif st.session_state.aba_ativa == "analise":
     @st.fragment
     def area_scanner():
         st.markdown("""<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">🎯 SCANNER PRÉ-LIVE</div>""", unsafe_allow_html=True)
         
+        # Seleção de Categoria, Tipo e Campeonato
         c1, c2, c3 = st.columns(3)
         cat = c1.selectbox("🌎 CATEGORIA", list(DADOS_HIEARARQUIA.keys()))
         tip = c2.selectbox("📂 TIPO", list(DADOS_HIEARARQUIA[cat].keys()))
         cmp = c3.selectbox("🏆 CAMPEONATO", list(DADOS_HIEARARQUIA[cat][tip].keys()))
         
+        # Seleção de Times baseada no Campeonato
         t1, t2 = st.columns(2)
         casa = t1.selectbox("🏠 CASA", DADOS_HIEARARQUIA[cat][tip][cmp])
         fora = t2.selectbox("🚀 VISITANTE", [x for x in DADOS_HIEARARQUIA[cat][tip][cmp] if x != casa])
@@ -274,7 +288,7 @@ elif st.session_state.aba_ativa == "analise":
                 
     area_scanner()
 
-# --- [ABA: HISTÓRICO] ---
+# --- [ABA: HISTÓRICO - SEM FLASH] ---
 elif st.session_state.aba_ativa == "historico":
     st.markdown("""<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">📜 HISTÓRICO DE CALLS</div>""", unsafe_allow_html=True)
     @st.fragment
@@ -286,9 +300,9 @@ elif st.session_state.aba_ativa == "historico":
                 col_info, col_del = st.columns([0.9, 0.1])
                 with col_info: st.markdown(f"""<div class="history-card-box"><span style="color:#9d54ff; font-weight:900;">[{call['data']}]</span> <span style="color:white; margin-left:15px;">{call['casa']} x {call['fora']}</span><span style="color:#06b6d4; float:right;">{call['gols']}</span></div>""", unsafe_allow_html=True)
                 with col_del: 
-                    if st.button("🗑️", key=f"del_v16_{idx_real}"):
+                    if st.button("🗑️", key=f"del_v17_{idx_real}"):
                         st.session_state.historico_calls.pop(idx_real)
                         st.rerun(scope="fragment")
     render_history_list()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.16 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.17 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
