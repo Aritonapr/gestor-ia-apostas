@@ -4,8 +4,9 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v57.10 - TOTAL INTEGRITY & BUTTON STYLING]
-# FIX: REMOÇÃO DE FUNDO BRANCO NO SCANNER | SIDEBAR NOWRAP | DESIGN PRESERVED
+# [GIAE KERNEL SHIELD v57.11 - FINAL STABILITY LOCK]
+# FIX: REMOÇÃO DE FUNDO BRANCO SCANNER | SIDEBAR ORIGINAL TRANSPARENTE
+# INTEGRITY: NO ABBREVIATIONS | FULL CODE RESTORED
 # ==============================================================================
 
 st.set_page_config(
@@ -27,7 +28,7 @@ def draw_card(title, value, perc):
         </div>
     """, unsafe_allow_html=True)
 
-# --- [LOCK] BLOCO DE SEGURANÇA CSS (NÃO ALTERAR ESTRUTURA) ---
+# --- [LOCK] BLOCO DE SEGURANÇA CSS (IDENTIDADE VISUAL PRESERVADA) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
@@ -35,13 +36,13 @@ st.markdown("""
     .stApp { background-color: #0b0e11 !important; font-family: 'Inter', sans-serif; }
     [data-testid="stMainBlockContainer"] { padding-top: 0rem !important; padding-bottom: 1rem !important; }
     
-    /* SIDEBAR CONFIGURAÇÃO */
+    /* SIDEBAR: RESTAURAÇÃO DO DESIGN ORIGINAL TRANSPARENTE */
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
     
-    /* BOTÕES DA SIDEBAR (TRANSPARENTES E SEM QUEBRA DE LINHA) */
-    [data-testid="stSidebar"] button { 
+    /* BOTÕES DA SIDEBAR: TRANSPARENTES + LINHA + UMA LINHA SÓ */
+    section[data-testid="stSidebar"] div.stButton > button { 
         background-color: transparent !important; 
         color: #94a3b8 !important; 
         border: none !important; 
@@ -52,24 +53,30 @@ st.markdown("""
         font-size: 10px !important; 
         text-transform: uppercase !important;
         white-space: nowrap !important; 
+        border-radius: 0px !important;
         display: block !important;
     }
-    [data-testid="stSidebar"] button:hover { color: #ffffff !important; border-left: 4px solid #6d28d9 !important; background: rgba(26, 36, 45, 0.8) !important; }
+    section[data-testid="stSidebar"] div.stButton > button:hover { 
+        color: #ffffff !important; 
+        border-left: 4px solid #6d28d9 !important; 
+        background: rgba(26, 36, 45, 0.8) !important; 
+    }
     
-    /* AJUSTE SOLICITADO: TIRAR FUNDO BRANCO DOS BOTÕES DO SCANNER (AREA PRINCIPAL) */
-    div.stButton > button {
+    /* BOTÕES DO SCANNER (ÁREA PRINCIPAL): REMOÇÃO DO BRANCO + GRADIENTE ROXO */
+    [data-testid="stMainBlockContainer"] div.stButton > button {
         background: linear-gradient(90deg, #6d28d9 0%, #4c1d95 100%) !important;
         color: white !important;
         border: 1px solid rgba(255,255,255,0.1) !important;
         font-weight: 700 !important;
         text-transform: uppercase !important;
         font-size: 11px !important;
+        border-radius: 4px !important;
+        padding: 12px 20px !important;
         transition: 0.3s !important;
     }
-    div.stButton > button:hover {
+    [data-testid="stMainBlockContainer"] div.stButton > button:hover {
         background: linear-gradient(90deg, #7c3aed 0%, #6d28d9 100%) !important;
-        box-shadow: 0 0 15px rgba(109, 40, 217, 0.4) !important;
-        border-color: #6d28d9 !important;
+        box-shadow: 0 0 15px rgba(109, 40, 217, 0.3) !important;
     }
 
     /* CABEÇALHO BETANO STYLE */
@@ -87,8 +94,13 @@ st.markdown("""
     .highlight-card:hover { border-color: #6d28d9; }
     .conf-bar-bg { background: #1e293b; height: 4px; width: 80%; border-radius: 10px; margin: 10px auto; overflow: hidden; }
     .conf-bar-fill { background: linear-gradient(90deg, #6d28d9, #06b6d4); height: 100%; }
+    
+    /* HISTÓRICO */
     .history-card-box { background: #161b22 !important; border: 1px solid #30363d !important; padding: 15px !important; border-radius: 8px; margin-bottom: 10px; }
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
+    
+    /* AJUSTE PARA SELECTBOXES NÃO TEREM FUNDO BRANCO */
+    div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; border-color: #30363d !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -131,7 +143,7 @@ st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
 # --- [ABA: HOME] ---
 if st.session_state.aba_ativa == "home":
-    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● HIERARQUIA v57.10 ATIVA</div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● HIERARQUIA v57.11 ATIVA</div>""", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
     with h1: draw_card("Destaque Live", "FLAMENGO x PALMEIRAS", 90)
     with h2: draw_card("Sugestão", "OVER 2.5 GOLS", 88)
@@ -195,9 +207,9 @@ elif st.session_state.aba_ativa == "historico":
                 col_info, col_del = st.columns([0.9, 0.1])
                 with col_info: st.markdown(f"""<div class="history-card-box"><span style="color:#9d54ff; font-weight:900;">[{call['data']}]</span> <span style="color:white; margin-left:15px;">{call['casa']} x {call['fora']}</span><span style="color:#06b6d4; float:right;">{call['gols']}</span></div>""", unsafe_allow_html=True)
                 with col_del: 
-                    if st.button("🗑️", key=f"del_v5710_{idx_real}"):
+                    if st.button("🗑️", key=f"del_v5711_{idx_real}"):
                         st.session_state.historico_calls.pop(idx_real)
                         st.rerun(scope="fragment")
     render_history_list()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.10 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.11 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
