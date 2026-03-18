@@ -4,8 +4,8 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v57.3 - JARVIS NIGHT VISION REFINEMENT]
-# FIX: HISTORY VISIBILITY | NEON CONTRAST | TOTAL LAYOUT PRESERVATION
+# [GIAE KERNEL SHIELD v57.4 - HISTORY MANAGEMENT & DELETE PROTOCOL]
+# FIX: SELECTIVE DELETION | RE-RUN OPTIMIZATION | JARVIS UI PRESERVATION
 # ==============================================================================
 
 st.set_page_config(
@@ -14,14 +14,19 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- [FUNÇÃO DE BACKEND: INJEÇÃO DE DADOS NO HISTÓRICO] ---
+# --- [FUNÇÕES DE BACKEND: PERSISTÊNCIA DE DADOS] ---
+
 def registrar_analise_no_historico():
+    """Carimba a análise atual no banco de dados do histórico."""
     if st.session_state.analise_bloqueada:
-        # Registra no histórico e ativa o aviso de sucesso
         st.session_state.historico_calls.append(st.session_state.analise_bloqueada)
         st.session_state.mostrar_sucesso = True
 
-# --- [NÚCLEO DE MEMÓRIA PERSISTENTE] ---
+def apagar_item_historico(indice):
+    """Remove um item específico do histórico pelo seu índice."""
+    st.session_state.historico_calls.pop(indice)
+
+# --- [NÚCLEO DE MEMÓRIA JARVIS] ---
 if 'aba_ativa' not in st.session_state:
     st.session_state.aba_ativa = "home"
 if 'banca_atual' not in st.session_state:
@@ -33,7 +38,7 @@ if 'analise_bloqueada' not in st.session_state:
 if 'mostrar_sucesso' not in st.session_state:
     st.session_state.mostrar_sucesso = False
 
-# --- [LOCK] BLOCO DE SEGURANÇA CSS (ESTRUTURA INTEGRAL DAS IMAGENS) ---
+# --- [LOCK] BLOCO DE SEGURANÇA CSS (ESTRUTURA INTEGRAL v57.3) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
@@ -84,19 +89,27 @@ st.markdown("""
     .conf-bar-bg { background: #1e293b; height: 4px; width: 80%; border-radius: 10px; margin: 10px auto; overflow: hidden; }
     .conf-bar-fill { background: linear-gradient(90deg, #6d28d9, #06b6d4); height: 100%; }
 
-    /* [06] ESTILIZAÇÃO CARDS DE HISTÓRICO (VISIBILIDADE) */
-    .history-card {
+    /* [06] ESTILIZAÇÃO CARDS DE HISTÓRICO */
+    .history-card-box {
         background: #161b22 !important;
         border: 1px solid #30363d !important;
         padding: 15px !important;
         border-radius: 8px !important;
         margin-bottom: 10px !important;
-        display: flex !important;
-        justify-content: space-between !important;
-        align-items: center !important;
         transition: 0.3s !important;
     }
-    .history-card:hover { border-color: #6d28d9 !important; background: #1c2128 !important; }
+    
+    /* BOTÃO DE APAGAR (LIXEIRA) */
+    .stButton > button[kind="secondary"] {
+        background-color: transparent !important;
+        border: 1px solid rgba(239, 68, 68, 0.2) !important;
+        color: #ef4444 !important;
+        padding: 2px 10px !important;
+    }
+    .stButton > button[kind="secondary"]:hover {
+        background-color: #ef4444 !important;
+        color: white !important;
+    }
 
     /* FOOTER */
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
@@ -141,7 +154,7 @@ st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
 # --- [ABA] HOME (8 CARDS) ---
 if st.session_state.aba_ativa == "home":
-    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● HIERARQUIA v57.3 ATIVA ● JARVIS NIGHT VISION</div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● HIERARQUIA v57.4 ATIVA ● DELETE PROTOCOL UNLOCKED</div>""", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
     with h1: st.markdown("""<div class="highlight-card"><div style="color:#64748b; font-size:9px;"><span class="pulse-dot"></span>Destaque Live</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">FLAMENGO x PALMEIRAS</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:90%;"></div></div></div>""", unsafe_allow_html=True)
     with h2: st.markdown("""<div class="highlight-card"><div style="color:#64748b; font-size:9px;">Sugestão</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">OVER 2.5 GOLS</div><div class="conf-bar-bg"><div class="conf-bar-fill" style="width:88%;"></div></div></div>""", unsafe_allow_html=True)
@@ -193,25 +206,30 @@ elif st.session_state.aba_ativa == "analise":
         if st.session_state.mostrar_sucesso:
             st.success("✅ ANALISE SALVA COM SUCESSO NO HISTÓRICO!")
 
-# --- [ABA] HISTÓRICO (REFINAMENTO VISUAL) ---
+# --- [ABA] HISTÓRICO (COM FUNÇÃO DE APAGAR) ---
 elif st.session_state.aba_ativa == "historico":
     st.markdown("""<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">📜 HISTÓRICO DE CALLS SALVAS</div>""", unsafe_allow_html=True)
     if not st.session_state.historico_calls:
         st.info("Nenhuma call salva até o momento.")
     else:
-        for call in reversed(st.session_state.historico_calls):
-            st.markdown(f"""
-                <div class="history-card">
-                    <div>
-                        <span style="color:#9d54ff; font-weight:900; font-size:13px; letter-spacing:1px;">[{call['data']}]</span>
-                        <span style="color:white; font-weight:800; font-size:15px; margin-left:15px;">{call['casa']} x {call['fora']}</span>
-                    </div>
-                    <div style="display:flex; gap:30px;">
-                        <div style="text-align:right;"><div style="color:#64748b; font-size:9px; text-transform:uppercase;">Mercado</div><div style="color:#06b6d4; font-size:13px; font-weight:900;">{call['gols']}</div></div>
-                        <div style="text-align:right;"><div style="color:#64748b; font-size:9px; text-transform:uppercase;">Win</div><div style="color:#22c55e; font-size:13px; font-weight:900;">{call['vencedor']}</div></div>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
+        # Loop para mostrar as calls com o botão de apagar
+        for i, call in enumerate(reversed(st.session_state.historico_calls)):
+            # Calculando o índice real da lista original (já que usamos reversed)
+            idx_real = len(st.session_state.historico_calls) - 1 - i
+            
+            with st.container():
+                col_info, col_del = st.columns([0.9, 0.1])
+                with col_info:
+                    st.markdown(f"""
+                        <div class="history-card-box">
+                            <span style="color:#9d54ff; font-weight:900; font-size:13px;">[{call['data']}]</span>
+                            <span style="color:white; font-weight:800; font-size:15px; margin-left:15px;">{call['casa']} x {call['fora']}</span>
+                            <span style="color:#06b6d4; font-size:13px; font-weight:900; float:right;">{call['gols']}</span>
+                        </div>
+                    """, unsafe_allow_html=True)
+                with col_del:
+                    st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
+                    st.button("🗑️", key=f"del_{idx_real}", on_click=apagar_item_historico, args=(idx_real,))
 
 # --- [ABA] GESTÃO ---
 elif st.session_state.aba_ativa == "gestao":
@@ -219,4 +237,4 @@ elif st.session_state.aba_ativa == "gestao":
     st.session_state.banca_atual = st.number_input("DEFINIR BANCA TOTAL (R$)", value=st.session_state.banca_atual, step=50.0)
 
 # --- FOOTER ---
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.3 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.4 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
