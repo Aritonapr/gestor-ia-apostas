@@ -4,9 +4,9 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v57.14 - SCANNER GRID RESTORATION]
-# FIX: 8 CARDS NO SCANNER (2 LINHAS) | HEADER E SIDEBAR PRESERVADOS
-# INTEGRITY: NO ABBREVIATIONS | FULL CODE RESTORED | NO WHITE BACKGROUND
+# [GIAE KERNEL SHIELD v57.15 - HEADER EFFECTS & ICON RESTORATION]
+# FIX: LUPA (🔍) NO HEADER | EFEITOS DE HOVER NO MENU | SCANNER GRID (8 CARDS)
+# INTEGRITY: NO ABBREVIATIONS | FULL CODE RESTORED | DESIGN BETANO ELITE
 # ==============================================================================
 
 st.set_page_config(
@@ -77,16 +77,39 @@ st.markdown("""
     }
     [data-testid="stMainBlockContainer"] div.stButton > button:hover {
         background: linear-gradient(90deg, #7c3aed 0%, #6d28d9 100%) !important;
+        box-shadow: 0 0 15px rgba(109, 40, 217, 0.3) !important;
     }
 
-    /* CABEÇALHO (HEADER) COM TEXTOS RESTAURADOS */
+    /* CABEÇALHO (HEADER) COM EFEITOS E LUPA */
     .betano-header { position: fixed; top: 0; left: 0; width: 100%; height: 60px; background-color: #002366 !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; display: flex; align-items: center; justify-content: space-between; padding: 0 30px !important; z-index: 999999; }
     .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; letter-spacing: 1px; text-decoration: none !important; margin-right: 40px; }
-    .nav-items { display: flex; gap: 15px; }
-    .nav-items span { color: #ffffff; font-size: 9px !important; text-transform: uppercase; opacity: 0.8; white-space: nowrap; }
-    .header-right { display: flex; align-items: center; gap: 15px; min-width: 280px; justify-content: flex-end; }
-    .registrar-pill { color: #ffffff !important; font-size: 10px !important; font-weight: 700; border: 1px solid #ffffff !important; padding: 6px 15px !important; border-radius: 20px !important; }
-    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 20px !important; border-radius: 4px !important; font-weight: 800 !important; font-size: 10px !important; }
+    
+    .nav-items { display: flex; gap: 20px; align-items: center; }
+    .nav-items span { 
+        color: #ffffff; 
+        font-size: 9px !important; 
+        text-transform: uppercase; 
+        opacity: 0.7; 
+        white-space: nowrap; 
+        cursor: pointer; 
+        transition: 0.3s ease; 
+        font-weight: 600;
+    }
+    .nav-items span:hover { 
+        opacity: 1; 
+        color: #9d54ff !important; 
+        text-shadow: 0 0 10px rgba(157, 84, 255, 0.5);
+    }
+    
+    .header-right { display: flex; align-items: center; gap: 20px; }
+    .search-icon { color: #ffffff; font-size: 14px; cursor: pointer; opacity: 0.8; transition: 0.3s; }
+    .search-icon:hover { opacity: 1; transform: scale(1.1); }
+    
+    .registrar-pill { color: #ffffff !important; font-size: 10px !important; font-weight: 700; border: 1px solid #ffffff !important; padding: 6px 15px !important; border-radius: 20px !important; transition: 0.3s; }
+    .registrar-pill:hover { background: rgba(255,255,255,0.1); }
+    
+    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 20px !important; border-radius: 4px !important; font-weight: 800 !important; font-size: 10px !important; transition: 0.3s; }
+    .entrar-grad:hover { opacity: 0.9; transform: translateY(-1px); }
     
     /* ESTILIZAÇÃO DOS CARDS E BARRAS DE CONFIANÇA */
     .news-ticker { background: rgba(0, 35, 102, 0.2); border: 1px solid #1e293b; padding: 10px; color: #06b6d4; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; }
@@ -100,7 +123,7 @@ st.markdown("""
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     
     /* REMOÇÃO DE FUNDO BRANCO EM SELECTBOXES */
-    div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; }
+    div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; border-color: #334155 !important; }
     </style>
     """, unsafe_allow_html=True)
 
@@ -124,7 +147,7 @@ DADOS_HIEARARQUIA = {
     }
 }
 
-# --- [CABECALHO: INTEGRIDADE MANTIDA] ---
+# --- [CABECALHO: RESTAURADO COM LUPA E EFEITOS] ---
 st.markdown("""
     <div class="betano-header">
         <div style="display:flex; align-items:center;">
@@ -139,6 +162,7 @@ st.markdown("""
             </div>
         </div>
         <div class="header-right">
+            <div class="search-icon">🔍</div>
             <div class="registrar-pill">REGISTRAR</div>
             <div class="entrar-grad">ENTRAR</div>
         </div>
@@ -160,7 +184,7 @@ st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
 # --- [ABA: HOME - 8 CARDS] ---
 if st.session_state.aba_ativa == "home":
-    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● HIERARQUIA v57.14 ATIVA</div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● HIERARQUIA v57.15 ATIVA</div>""", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
     with h1: draw_card("Destaque Live", "FLAMENGO x PALMEIRAS", 90)
     with h2: draw_card("Sugestão", "OVER 2.5 GOLS", 88)
@@ -173,13 +197,12 @@ if st.session_state.aba_ativa == "home":
     with h7: draw_card("Volume", "MERCADO EM ALTA", 80)
     with h8: draw_card("Proteção", "JARVIS SUPREME", 100)
 
-# --- [ABA: SCANNER - RESTAURAÇÃO DOS 8 QUADROS] ---
+# --- [ABA: SCANNER - 8 CARDS] ---
 elif st.session_state.aba_ativa == "analise":
     @st.fragment
     def area_scanner():
         st.markdown("""<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">🎯 SCANNER PRÉ-LIVE</div>""", unsafe_allow_html=True)
         
-        # Filtros de Seleção
         c1, c2, c3 = st.columns(3)
         cat = c1.selectbox("🌎 CATEGORIA", list(DADOS_HIEARARQUIA.keys()))
         tip = c2.selectbox("📂 TIPO", list(DADOS_HIEARARQUIA[cat].keys()))
@@ -206,7 +229,7 @@ elif st.session_state.aba_ativa == "analise":
             
             st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
             
-            # SEGUNDA LINHA DE 4 QUADROS (RESTAURADA)
+            # SEGUNDA LINHA DE 4 QUADROS
             r5, r6, r7, r8 = st.columns(4)
             with r5: draw_card("TIROS DE META", "14-16 TOTAIS", 40)
             with r6: draw_card("CHUTES AO GOL", "CASA +5.5", 50)
@@ -233,9 +256,9 @@ elif st.session_state.aba_ativa == "historico":
                 col_info, col_del = st.columns([0.9, 0.1])
                 with col_info: st.markdown(f"""<div class="history-card-box"><span style="color:#9d54ff; font-weight:900;">[{call['data']}]</span> <span style="color:white; margin-left:15px;">{call['casa']} x {call['fora']}</span><span style="color:#06b6d4; float:right;">{call['gols']}</span></div>""", unsafe_allow_html=True)
                 with col_del: 
-                    if st.button("🗑️", key=f"del_v14_{idx_real}"):
+                    if st.button("🗑️", key=f"del_v15_{idx_real}"):
                         st.session_state.historico_calls.pop(idx_real)
                         st.rerun(scope="fragment")
     render_history_list()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.14 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.15 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
