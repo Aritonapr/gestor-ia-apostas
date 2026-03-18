@@ -4,9 +4,9 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v57.15 - HEADER EFFECTS & ICON RESTORATION]
-# FIX: LUPA (🔍) NO HEADER | EFEITOS DE HOVER NO MENU | SCANNER GRID (8 CARDS)
-# INTEGRITY: NO ABBREVIATIONS | FULL CODE RESTORED | DESIGN BETANO ELITE
+# [GIAE KERNEL SHIELD v57.16 - CURSOR POINTER & INTERFACE STABILITY]
+# FIX: CURSOR MAOZINHA EM GESTOR IA, ENTRAR E REGISTRAR
+# INTEGRITY: NO ABBREVIATIONS | FULL CODE RESTORED | 8-CARD GRID PRESERVED
 # ==============================================================================
 
 st.set_page_config(
@@ -56,6 +56,7 @@ st.markdown("""
         white-space: nowrap !important; 
         border-radius: 0px !important;
         display: block !important;
+        cursor: pointer !important;
     }
     section[data-testid="stSidebar"] div.stButton > button:hover { 
         color: #ffffff !important; 
@@ -74,15 +75,26 @@ st.markdown("""
         border-radius: 4px !important;
         padding: 12px 20px !important;
         transition: 0.3s !important;
+        cursor: pointer !important;
     }
     [data-testid="stMainBlockContainer"] div.stButton > button:hover {
         background: linear-gradient(90deg, #7c3aed 0%, #6d28d9 100%) !important;
         box-shadow: 0 0 15px rgba(109, 40, 217, 0.3) !important;
     }
 
-    /* CABEÇALHO (HEADER) COM EFEITOS E LUPA */
+    /* CABEÇALHO (HEADER) COM EFEITOS, LUPA E CURSOR MAOZINHA */
     .betano-header { position: fixed; top: 0; left: 0; width: 100%; height: 60px; background-color: #002366 !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; display: flex; align-items: center; justify-content: space-between; padding: 0 30px !important; z-index: 999999; }
-    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; letter-spacing: 1px; text-decoration: none !important; margin-right: 40px; }
+    
+    .logo-link { 
+        color: #9d54ff !important; 
+        font-weight: 900; 
+        font-size: 20px !important; 
+        text-transform: uppercase; 
+        letter-spacing: 1px; 
+        text-decoration: none !important; 
+        margin-right: 40px; 
+        cursor: pointer !important; /* MAOZINHA NO LOGO */
+    }
     
     .nav-items { display: flex; gap: 20px; align-items: center; }
     .nav-items span { 
@@ -91,7 +103,7 @@ st.markdown("""
         text-transform: uppercase; 
         opacity: 0.7; 
         white-space: nowrap; 
-        cursor: pointer; 
+        cursor: pointer !important; /* MAOZINHA NOS LINKS DO MENU */
         transition: 0.3s ease; 
         font-weight: 600;
     }
@@ -102,13 +114,31 @@ st.markdown("""
     }
     
     .header-right { display: flex; align-items: center; gap: 20px; }
-    .search-icon { color: #ffffff; font-size: 14px; cursor: pointer; opacity: 0.8; transition: 0.3s; }
+    .search-icon { color: #ffffff; font-size: 14px; cursor: pointer !important; opacity: 0.8; transition: 0.3s; }
     .search-icon:hover { opacity: 1; transform: scale(1.1); }
     
-    .registrar-pill { color: #ffffff !important; font-size: 10px !important; font-weight: 700; border: 1px solid #ffffff !important; padding: 6px 15px !important; border-radius: 20px !important; transition: 0.3s; }
+    .registrar-pill { 
+        color: #ffffff !important; 
+        font-size: 10px !important; 
+        font-weight: 700; 
+        border: 1px solid #ffffff !important; 
+        padding: 6px 15px !important; 
+        border-radius: 20px !important; 
+        transition: 0.3s; 
+        cursor: pointer !important; /* MAOZINHA NO REGISTRAR */
+    }
     .registrar-pill:hover { background: rgba(255,255,255,0.1); }
     
-    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 20px !important; border-radius: 4px !important; font-weight: 800 !important; font-size: 10px !important; transition: 0.3s; }
+    .entrar-grad { 
+        background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; 
+        color: white !important; 
+        padding: 7px 20px !important; 
+        border-radius: 4px !important; 
+        font-weight: 800 !important; 
+        font-size: 10px !important; 
+        transition: 0.3s; 
+        cursor: pointer !important; /* MAOZINHA NO ENTRAR */
+    }
     .entrar-grad:hover { opacity: 0.9; transform: translateY(-1px); }
     
     /* ESTILIZAÇÃO DOS CARDS E BARRAS DE CONFIANÇA */
@@ -147,7 +177,7 @@ DADOS_HIEARARQUIA = {
     }
 }
 
-# --- [CABECALHO: RESTAURADO COM LUPA E EFEITOS] ---
+# --- [CABECALHO: RESTAURADO COM LUPA E EFEITOS DE CURSOR] ---
 st.markdown("""
     <div class="betano-header">
         <div style="display:flex; align-items:center;">
@@ -184,7 +214,7 @@ st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
 # --- [ABA: HOME - 8 CARDS] ---
 if st.session_state.aba_ativa == "home":
-    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● HIERARQUIA v57.15 ATIVA</div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● HIERARQUIA v57.16 ATIVA</div>""", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
     with h1: draw_card("Destaque Live", "FLAMENGO x PALMEIRAS", 90)
     with h2: draw_card("Sugestão", "OVER 2.5 GOLS", 88)
@@ -256,9 +286,9 @@ elif st.session_state.aba_ativa == "historico":
                 col_info, col_del = st.columns([0.9, 0.1])
                 with col_info: st.markdown(f"""<div class="history-card-box"><span style="color:#9d54ff; font-weight:900;">[{call['data']}]</span> <span style="color:white; margin-left:15px;">{call['casa']} x {call['fora']}</span><span style="color:#06b6d4; float:right;">{call['gols']}</span></div>""", unsafe_allow_html=True)
                 with col_del: 
-                    if st.button("🗑️", key=f"del_v15_{idx_real}"):
+                    if st.button("🗑️", key=f"del_v16_{idx_real}"):
                         st.session_state.historico_calls.pop(idx_real)
                         st.rerun(scope="fragment")
     render_history_list()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.15 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.16 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
