@@ -4,8 +4,8 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v57.20 - WORLD CUP 2026 FORCED INJECTION]
-# FIX: COPA DO MUNDO 2026 DISPONÍVEL NO SCANNER | GRID 8 CARDS | DESIGN ELITE
+# [GIAE KERNEL SHIELD v57.21 - FULL DATABASE INTEGRITY & WORLD CUP 2026]
+# FIX: RESTAURAÇÃO DE TODAS AS COMPETIÇÕES BRASIL/EUROPA | GRID 8 CARDS
 # INTEGRITY: NO ABBREVIATIONS | FULL CODE RESTORED | INTERFACE LOCKED
 # ==============================================================================
 
@@ -155,38 +155,59 @@ if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
 if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
 if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
 
-# --- [BASE DE DADOS INTEGRAL 2025/2026] ---
+# --- [BASE DE DADOS COMPLETA E RESTAURADA 2025/2026] ---
 DADOS_HIEARARQUIA = {
-    "COPA DO MUNDO 2026": {
-        "Fase de Grupos": {
-            "Grupo Principal": ["Brasil", "Argentina", "França", "Alemanha", "Espanha", "Portugal", "Inglaterra", "Itália", "Holanda", "Bélgica", "EUA", "México", "Canadá", "Uruguai", "Colômbia", "Japão"]
-        }
-    },
     "FUTEBOL BRASIL": {
         "Campeonato Brasileiro": {
-            "Brasileirão Série A": ["Flamengo", "Palmeiras", "Botafogo", "São Paulo", "Grêmio", "Atlético-MG", "Fluminense", "Internacional", "Corinthians", "Bahia", "Cruzeiro", "Vasco", "Athletico-PR", "Fortaleza", "Cuiabá", "Criciúma", "Juventude", "Vitória", "Bragantino", "Atlético-GO"],
-            "Brasileirão Série B": ["Santos", "Sport", "Coritiba", "Goiás", "Ceará", "Novorizontino", "Vila Nova", "Amazonas", "Operário-PR", "Avaí", "Chapecoense", "Ponte Preta"],
-            "Brasileirão Série C": ["Náutico", "Figueirense", "Remo", "CSA", "Volta Redonda", "Sampaio Corrêa", "ABC", "Botafogo-PB", "Londrina", "Caxias"],
-            "Brasileirão Série D": ["Santa Cruz", "Portuguesa", "Treze", "Iguatu", "Brasil de Pelotas", "Anápolis", "Maringá", "Itabuna"]
+            "Série A": ["Flamengo", "Palmeiras", "Botafogo", "São Paulo", "Grêmio", "Atlético-MG", "Fluminense", "Internacional", "Corinthians", "Bahia", "Cruzeiro", "Vasco", "Athletico-PR", "Fortaleza", "Cuiabá", "Criciúma", "Juventude", "Vitória", "Bragantino", "Atlético-GO"],
+            "Série B": ["Santos", "Sport", "Coritiba", "Goiás", "Ceará", "Novorizontino", "Vila Nova", "Amazonas", "Operário-PR", "Avaí", "Chapecoense", "Ponte Preta"],
+            "Série C": ["Náutico", "Figueirense", "Remo", "CSA", "Volta Redonda", "Sampaio Corrêa", "ABC", "Botafogo-PB", "Londrina", "Caxias"],
+            "Série D": ["Santa Cruz", "Portuguesa", "Treze", "Iguatu", "Brasil de Pelotas", "Anápolis", "Maringá", "Itabuna"]
         },
         "Copas Nacionais": {
             "Copa do Brasil": ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Atlético-MG", "Grêmio", "Bahia", "Internacional"],
+            "Supercopa do Brasil": ["Campeão Série A", "Campeão Copa do Brasil"],
             "Copa do Nordeste": ["Bahia", "Vitória", "Fortaleza", "Ceará", "Sport", "Náutico", "CRB", "Sampaio Corrêa"]
         },
         "Campeonatos Estaduais": {
-            "Paulistão": ["Palmeiras", "Santos", "São Paulo", "Corinthians", "Bragantino"],
-            "Carioca": ["Flamengo", "Fluminense", "Vasco", "Botafogo"],
-            "Mineiro": ["Atlético-MG", "Cruzeiro", "América-MG"],
-            "Gaúcho": ["Grêmio", "Internacional", "Juventude"]
+            "Paulistão": ["Palmeiras", "Santos", "São Paulo", "Corinthians", "Bragantino", "Água Santa", "Ituano", "Inter de Limeira"],
+            "Carioca": ["Flamengo", "Fluminense", "Vasco", "Botafogo", "Nova Iguaçu", "Boavista", "Madureira", "Volta Redonda"],
+            "Mineiro": ["Atlético-MG", "Cruzeiro", "América-MG", "Tombense", "Athletic Club", "Villa Nova"],
+            "Gaúcho": ["Grêmio", "Internacional", "Juventude", "Caxias", "Brasil de Pelotas", "Ypiranga"]
         }
     },
-    "EUROPA (LIGAS E COPAS)": {
+    "AMÉRICA DO SUL": {
+        "Competições de Clubes": {
+            "Copa Libertadores": ["Flamengo", "Fluminense", "River Plate", "Palmeiras", "São Paulo", "Atlético-MG", "Boca Juniors", "Peñarol", "LDU", "Colo-Colo"],
+            "Copa Sul-Americana": ["Corinthians", "Cruzeiro", "Internacional", "Athletico-PR", "Fortaleza", "Racing", "Lanús", "Ind. Medellín"]
+        }
+    },
+    "EUROPA (LIGAS NACIONAIS)": {
         "Principais Ligas": {
-            "Premier League": ["Man. City", "Arsenal", "Liverpool", "Chelsea", "Tottenham"],
-            "La Liga": ["Real Madrid", "Barcelona", "Atlético Madrid", "Girona"],
-            "Serie A (Itália)": ["Inter de Milão", "Milan", "Juventus", "Napoli"],
-            "Bundesliga": ["Bayer Leverkusen", "Bayern Munique", "Dortmund"],
-            "UEFA Champions League": ["Real Madrid", "Man. City", "Bayern Munique", "Arsenal", "PSG"]
+            "Premier League (Inglaterra)": ["Man. City", "Arsenal", "Liverpool", "Man. United", "Chelsea", "Tottenham", "Aston Villa", "Newcastle"],
+            "La Liga (Espanha)": ["Real Madrid", "Barcelona", "Atlético Madrid", "Girona", "Real Sociedad", "Athletic Bilbao", "Sevilla", "Valencia"],
+            "Serie A (Itália)": ["Inter de Milão", "Milan", "Juventus", "Napoli", "Atalanta", "Roma", "Lazio", "Fiorentina"],
+            "Bundesliga (Alemanha)": ["Bayer Leverkusen", "Bayern Munique", "Dortmund", "RB Leipzig", "Stuttgart", "Frankfurt", "Wolfsburg"],
+            "Ligue 1 (França)": ["PSG", "Monaco", "Marseille", "Lille", "Lyon", "Nice", "Lens", "Rennes"]
+        },
+        "Copas Nacionais": {
+            "FA Cup": ["Man. City", "Arsenal", "Man. United", "Liverpool", "Chelsea"],
+            "Copa da Liga Inglesa (EFL)": ["Liverpool", "Chelsea", "Man. City", "Tottenham"],
+            "Copa do Rei (Espanha)": ["Real Madrid", "Barcelona", "Athletic Bilbao", "Mallorca"],
+            "Copa da Itália": ["Juventus", "Inter de Milão", "Milan", "Lazio"]
+        }
+    },
+    "EUROPA (UEFA)": {
+        "Competições Continentais": {
+            "UEFA Champions League": ["Real Madrid", "Man. City", "Bayern Munique", "Inter de Milão", "Barcelona", "Arsenal", "PSG", "Bayer Leverkusen", "Dortmund", "Liverpool"],
+            "UEFA Europa League": ["Roma", "Man. United", "Tottenham", "Athletic Bilbao", "Porto", "Ajax", "Lazio"],
+            "UEFA Conference League": ["Chelsea", "Fiorentina", "Real Betis", "Nice", "Gent", "Panathinaikos"]
+        }
+    },
+    "INTERNACIONAL (SELEÇÕES)": {
+        "FIFA / UEFA": {
+            "Copa do Mundo 2026": ["Brasil", "Argentina", "França", "Alemanha", "Espanha", "Portugal", "Inglaterra", "Itália", "Holanda", "Bélgica", "EUA", "México", "Canadá", "Uruguai", "Colômbia", "Japão"],
+            "Eurocopa": ["Espanha", "Inglaterra", "França", "Alemanha", "Portugal", "Itália", "Holanda", "Bélgica"]
         }
     }
 }
@@ -228,7 +249,7 @@ st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
 # --- [ABA: HOME - 8 CARDS] ---
 if st.session_state.aba_ativa == "home":
-    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● HIERARQUIA v57.20 ATIVA ● COPA 2026 DISPONÍVEL</div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● HIERARQUIA v57.21 COMPLETA ● COPA 2026 ATIVA</div>""", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
     with h1: draw_card("Destaque Live", "FLAMENGO x PALMEIRAS", 90)
     with h2: draw_card("Sugestão", "OVER 2.5 GOLS", 88)
@@ -241,21 +262,21 @@ if st.session_state.aba_ativa == "home":
     with h7: draw_card("Volume", "MERCADO EM ALTA", 80)
     with h8: draw_card("Proteção", "JARVIS SUPREME", 100)
 
-# --- [ABA: SCANNER - 8 CARDS COM COPA DO MUNDO] ---
+# --- [ABA: SCANNER - 8 CARDS COM DATABASE INTEGRAL] ---
 elif st.session_state.aba_ativa == "analise":
     @st.fragment
     def area_scanner():
         st.markdown("""<div style="color:white; font-weight:900; font-size:26px; margin-bottom:15px;">🎯 SCANNER PRÉ-LIVE</div>""", unsafe_allow_html=True)
         
-        # Seletores Hierárquicos
+        # Filtros Hierárquicos
         c1, c2, c3 = st.columns(3)
-        categoria_selecionada = c1.selectbox("🌎 CATEGORIA", list(DADOS_HIEARARQUIA.keys()))
-        tipo_selecionado = c2.selectbox("📂 TIPO", list(DADOS_HIEARARQUIA[categoria_selecionada].keys()))
-        campeonato_selecionado = c3.selectbox("🏆 CAMPEONATO", list(DADOS_HIEARARQUIA[categoria_selecionada][tipo_selecionado].keys()))
+        cat = c1.selectbox("🌎 CATEGORIA", list(DADOS_HIEARARQUIA.keys()))
+        tip = c2.selectbox("📂 TIPO", list(DADOS_HIEARARQUIA[cat].keys()))
+        cmp = c3.selectbox("🏆 CAMPEONATO", list(DADOS_HIEARARQUIA[cat][tip].keys()))
         
-        # Seleção de Times
+        # Times baseados no Campeonato selecionado
         t1, t2 = st.columns(2)
-        lista_times = DADOS_HIEARARQUIA[categoria_selecionada][tipo_selecionado][campeonato_selecionado]
+        lista_times = DADOS_HIEARARQUIA[cat][tip][cmp]
         casa = t1.selectbox("🏠 CASA", lista_times)
         fora = t2.selectbox("🚀 VISITANTE", [x for x in lista_times if x != casa])
         
@@ -298,9 +319,9 @@ elif st.session_state.aba_ativa == "historico":
                 col_info, col_del = st.columns([0.9, 0.1])
                 with col_info: st.markdown(f"""<div class="history-card-box"><span style="color:#9d54ff; font-weight:900;">[{call['data']}]</span> <span style="color:white; margin-left:15px;">{call['casa']} x {call['fora']}</span><span style="color:#06b6d4; float:right;">{call['gols']}</span></div>""", unsafe_allow_html=True)
                 with col_del: 
-                    if st.button("🗑️", key=f"del_v20_{idx_real}"):
+                    if st.button("🗑️", key=f"del_v21_{idx_real}"):
                         st.session_state.historico_calls.pop(idx_real)
                         st.rerun(scope="fragment")
     render_history_list()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.20 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.21 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
