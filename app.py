@@ -7,7 +7,7 @@ from datetime import datetime
 # [GIAE KERNEL SHIELD v57.23 - RESTORED & ENHANCED]
 # INTEGRITY: FULL STRUCTURE RECOVERED | NO ABBREVIATIONS | VISUAL LOCK
 # MODS: BANKROLL MGMT | LIVE SCANNER UI | HISTORY SYNC
-# FIX: HEADER FLICKER ELIMINATED | RERUN OPTIMIZED
+# FIX: HEADER STABILITY | FLICKER ELIMINATED | SAVE HISTORY OPTIMIZED
 # ==============================================================================
 
 st.set_page_config(
@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- [ESTILIZAÇÃO E CABEÇALHO - PRIORIDADE DE CARREGAMENTO] ---
+# --- [BLOCO DE ESTILIZAÇÃO E CABEÇALHO - CARREGAMENTO PRIORITÁRIO] ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
@@ -25,7 +25,12 @@ st.markdown("""
     header, [data-testid="stHeader"], [data-testid="stHeader"]::before { display: none !important; }
     [data-testid="stSidebarCollapseButton"] { display: none !important; visibility: hidden !important; }
     .stApp { background-color: #0b0e11 !important; font-family: 'Inter', sans-serif; }
-    [data-testid="stMainBlockContainer"] { padding-top: 0rem !important; padding-bottom: 1rem !important; }
+    
+    /* PREVENÇÃO DE PISCAR: FIXAR O TOPO DO CONTAINER */
+    [data-testid="stMainBlockContainer"] { 
+        padding-top: 60px !important; 
+        padding-bottom: 1rem !important; 
+    }
     
     /* SIDEBAR: DESIGN TRANSPARENTE COM LINHA E TEXTO EM UMA LINHA */
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
@@ -71,7 +76,7 @@ st.markdown("""
         box-shadow: 0 0 15px rgba(109, 40, 217, 0.3) !important;
     }
 
-    /* CABEÇALHO (HEADER) COM EFEITOS, LUPA E CURSOR MAOZINHA */
+    /* CABEÇALHO (HEADER) FIXO */
     .betano-header { position: fixed; top: 0; left: 0; width: 100%; height: 60px; background-color: #002366 !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; display: flex; align-items: center; justify-content: space-between; padding: 0 30px !important; z-index: 999999; }
     
     .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; letter-spacing: 1px; text-decoration: none !important; margin-right: 40px; cursor: pointer !important; }
@@ -98,7 +103,7 @@ st.markdown("""
     div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; border-color: #334155 !important; }
     input { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
     </style>
-    
+
     <div class="betano-header">
         <div style="display:flex; align-items:center;">
             <a class="logo-link">GESTOR IA</a>
@@ -117,7 +122,7 @@ st.markdown("""
             <div class="entrar-grad">ENTRAR</div>
         </div>
     </div>
-    """, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # --- [INICIALIZAÇÃO DE MEMÓRIA] ---
 if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
@@ -199,15 +204,15 @@ DADOS_HIEARARQUIA = {
 # --- [SIDEBAR: NAVEGAÇÃO] ---
 with st.sidebar:
     st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True) 
-    if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
-    if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
-    if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
-    if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
+    if st.button("🎯 SCANNER PRÉ-LIVE", key="btn_pre"): st.session_state.aba_ativa = "analise"
+    if st.button("📡 SCANNER EM TEMPO REAL", key="btn_live"): st.session_state.aba_ativa = "live"
+    if st.button("💰 GESTÃO DE BANCA", key="btn_gestao"): st.session_state.aba_ativa = "gestao"
+    if st.button("📜 HISTÓRICO DE CALLS", key="btn_hist"): st.session_state.aba_ativa = "historico"
     if st.button("📅 JOGOS DO DIA"): pass
     if st.button("🏆 VENCEDORES DA COMPETIÇÃO"): pass
     if st.button("⚽ APOSTAS POR GOLS"): pass
 
-st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
+# --- [CONTEÚDO PRINCIPAL] ---
 
 # --- [ABA: HOME - 8 CARDS] ---
 if st.session_state.aba_ativa == "home":
@@ -237,7 +242,7 @@ elif st.session_state.aba_ativa == "analise":
     casa = t1.selectbox("🏠 CASA", lista_times)
     fora = t2.selectbox("🚀 VISITANTE", [x for x in lista_times if x != casa])
     
-    if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
+    if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True, key="exec_alg"):
         valor_calculado = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
         st.session_state.analise_bloqueada = {
             "casa": casa, "fora": fora, "vencedor": casa, 
@@ -260,7 +265,7 @@ elif st.session_state.aba_ativa == "analise":
         with r7: draw_card("DEFESAS GOLEIRO", "VISITANTE 4+", 30)
         with r8: draw_card("ÍNDICE PRESSÃO", "GOL MADURO 68%", 68)
         
-        if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
+        if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True, key="save_call"):
             st.session_state.historico_calls.append(m)
             st.toast("✅ ADICIONADO AO HISTÓRICO!")
 
@@ -286,7 +291,7 @@ elif st.session_state.aba_ativa == "gestao":
     g_col1, g_col2 = st.columns(2)
     with g_col1:
         nova_banca = st.number_input("DIGITE O VALOR TOTAL DA SUA BANCA (R$)", min_value=0.0, value=st.session_state.banca_total, step=100.0)
-        if st.button("SALVAR CONFIGURAÇÃO DE BANCA", use_container_width=True):
+        if st.button("SALVAR CONFIGURAÇÃO DE BANCA", use_container_width=True, key="save_bank"):
             st.session_state.banca_total = nova_banca
             st.success("BANCA ATUALIZADA COM SUCESSO!")
     with g_col2:
