@@ -4,20 +4,38 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v57.31 - STATIC LAYER STABILIZATION]
-# FIX: SIDEBAR BUTTON FLICKER | HEADER OVERLAP | FULL SYNC
-# INTEGRIDADE: 8 CARDS GRID | 7 BOTÕES SIDEBAR | LUPA FIXA
-# SEM ATALHOS | SEM ABREVIAÇÕES | CÓDIGO INTEGRAL RESTAURADO
+# [GIAE KERNEL SHIELD v57.23 - RESTORED & ENHANCED]
+# INTEGRITY: FULL STRUCTURE RECOVERED | NO ABBREVIATIONS | VISUAL LOCK
+# MODS: BANKROLL MGMT | LIVE SCANNER UI | HISTORY SYNC
 # ==============================================================================
 
-# 1. CONFIGURAÇÃO DE PÁGINA (ESTÁTICA)
 st.set_page_config(
     page_title="GESTOR IA - TRADING PRO", 
     layout="wide", 
     initial_sidebar_state="expanded"
 )
 
-# 2. BLOCO DE SEGURANÇA CSS (BLINDAGEM CONTRA PISCAR)
+# --- [INICIALIZAÇÃO DE MEMÓRIA] ---
+if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
+if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
+if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
+if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
+if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
+
+# --- [FUNÇÃO GLOBAL DE RENDERIZAÇÃO DE CARDS] ---
+def draw_card(title, value, perc):
+    """Renderiza os cards de alta performance do Anderson conforme padrão visual."""
+    st.markdown(f"""
+        <div class="highlight-card">
+            <div style="color:#64748b; font-size:9px;">{title}</div>
+            <div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div>
+            <div class="conf-bar-bg">
+                <div class="conf-bar-fill" style="width:{perc}%;"></div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
+# --- [LOCK] BLOCO DE SEGURANÇA CSS (NÃO ALTERAR ESTRUTURA) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
@@ -28,18 +46,11 @@ st.markdown("""
     .stApp { background-color: #0b0e11 !important; font-family: 'Inter', sans-serif; }
     [data-testid="stMainBlockContainer"] { padding-top: 0rem !important; padding-bottom: 1rem !important; }
     
-    /* SIDEBAR: DESIGN TRAVADO (320PX) - EVITA O PISCAR NO CLIQUE */
-    [data-testid="stSidebar"] { 
-        min-width: 320px !important; 
-        max-width: 320px !important; 
-        width: 320px !important; 
-        background-color: #11151a !important; 
-        border-right: 1px solid #1e293b !important;
-    }
+    /* SIDEBAR: DESIGN TRANSPARENTE COM LINHA E TEXTO EM UMA LINHA */
+    [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
     
-    /* ESTILIZAÇÃO DOS BOTÕES DA SIDEBAR - FIXO */
     section[data-testid="stSidebar"] div.stButton > button { 
         background-color: transparent !important; 
         color: #94a3b8 !important; 
@@ -54,39 +65,49 @@ st.markdown("""
         border-radius: 0px !important;
         display: block !important;
         cursor: pointer !important;
-        transition: none !important; /* REMOVE TRANSIÇÃO PARA EVITAR PISCAR */
     }
     section[data-testid="stSidebar"] div.stButton > button:hover { 
         color: #ffffff !important; 
         border-left: 4px solid #6d28d9 !important; 
         background: rgba(26, 36, 45, 0.8) !important; 
     }
-    section[data-testid="stSidebar"] div.stButton > button:active {
-        background-color: #11151a !important;
-    }
     
-    /* BOTÕES DA ÁREA PRINCIPAL */
+    /* BOTÕES DA ÁREA PRINCIPAL: REMOÇÃO DO BRANCO + GRADIENTE ROXO */
     [data-testid="stMainBlockContainer"] div.stButton > button {
         background: linear-gradient(90deg, #6d28d9 0%, #4c1d95 100%) !important;
-        color: white !important; border: 1px solid rgba(255,255,255,0.1) !important; font-weight: 700 !important;
-        text-transform: uppercase !important; font-size: 11px !important; border-radius: 4px !important;
-        padding: 12px 20px !important; cursor: pointer !important;
+        color: white !important;
+        border: 1px solid rgba(255,255,255,0.1) !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        font-size: 11px !important;
+        border-radius: 4px !important;
+        padding: 12px 20px !important;
+        transition: 0.3s !important;
+        cursor: pointer !important;
+    }
+    [data-testid="stMainBlockContainer"] div.stButton > button:hover {
+        background: linear-gradient(90deg, #7c3aed 0%, #6d28d9 100%) !important;
+        box-shadow: 0 0 15px rgba(109, 40, 217, 0.3) !important;
     }
 
-    /* CABEÇALHO (NAVBAR) - DESIGN IMAGEM 1 */
+    /* CABEÇALHO (HEADER) COM EFEITOS, LUPA E CURSOR MAOZINHA */
     .betano-header { position: fixed; top: 0; left: 0; width: 100%; height: 60px; background-color: #002366 !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; display: flex; align-items: center; justify-content: space-between; padding: 0 30px !important; z-index: 999999; }
-    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; letter-spacing: 1px; text-decoration: none !important; flex-shrink: 0; }
-    .nav-items { display: flex; gap: 20px; align-items: center; justify-content: flex-start; flex-grow: 1; margin-left: 20px; }
-    .nav-items span { color: #ffffff; font-size: 8px !important; text-transform: uppercase; opacity: 0.7; white-space: nowrap; font-weight: 600; cursor: pointer; }
     
-    .header-right { display: flex; align-items: center; gap: 15px; flex-shrink: 0; }
-    .search-icon { color: #ffffff; font-size: 14px; font-weight: 900; cursor: pointer !important; }
-    .registrar-pill { color: #ffffff !important; font-size: 10px !important; font-weight: 700; border: 1px solid #ffffff !important; padding: 6px 15px !important; border-radius: 20px !important; cursor: pointer !important; white-space: nowrap; }
-    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 20px !important; border-radius: 4px !important; font-weight: 800 !important; font-size: 10px !important; cursor: pointer !important; white-space: nowrap; }
+    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; letter-spacing: 1px; text-decoration: none !important; margin-right: 40px; cursor: pointer !important; }
     
-    /* CARDS E GRIDS */
+    .nav-items { display: flex; gap: 20px; align-items: center; }
+    .nav-items span { color: #ffffff; font-size: 9px !important; text-transform: uppercase; opacity: 0.7; white-space: nowrap; cursor: pointer !important; transition: 0.3s ease; font-weight: 600; }
+    .nav-items span:hover { opacity: 1; color: #9d54ff !important; text-shadow: 0 0 10px rgba(157, 84, 255, 0.5); }
+    
+    .header-right { display: flex; align-items: center; gap: 20px; }
+    .search-icon { color: #ffffff; font-size: 14px; cursor: pointer !important; opacity: 0.8; transition: 0.3s; }
+    
+    .registrar-pill { color: #ffffff !important; font-size: 10px !important; font-weight: 700; border: 1px solid #ffffff !important; padding: 6px 15px !important; border-radius: 20px !important; transition: 0.3s; cursor: pointer !important; }
+    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 20px !important; border-radius: 4px !important; font-weight: 800 !important; font-size: 10px !important; transition: 0.3s; cursor: pointer !important; }
+    
     .news-ticker { background: rgba(0, 35, 102, 0.2); border: 1px solid #1e293b; padding: 10px; color: #06b6d4; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; }
-    .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; }
+    .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; transition: 0.3s; }
+    .highlight-card:hover { border-color: #6d28d9; }
     .conf-bar-bg { background: #1e293b; height: 4px; width: 80%; border-radius: 10px; margin: 10px auto; overflow: hidden; }
     .conf-bar-fill { background: linear-gradient(90deg, #6d28d9, #06b6d4); height: 100%; }
     
@@ -98,45 +119,76 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 3. MEMÓRIA DO SISTEMA
-if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
-if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
-if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
-if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
-if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
-
-# 4. FUNÇÕES GLOBAIS
-def draw_card(title, value, perc):
-    st.markdown(f"""
-        <div class="highlight-card">
-            <div style="color:#64748b; font-size:9px; text-transform:uppercase;">{title}</div>
-            <div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div>
-            <div class="conf-bar-bg">
-                <div class="conf-bar-fill" style="width:{perc}%;"></div>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
-
-# 5. BASE DE DADOS
+# --- [BASE DE DADOS INTEGRAL - PRESERVADA] ---
 DADOS_HIEARARQUIA = {
-    "🏆 COPA DO MUNDO 2026": {"Seleções FIFA": {"Principais": ["Brasil", "Argentina", "França", "Alemanha", "Portugal", "Espanha", "Inglaterra", "Holanda"]}},
-    "🇧🇷 BRASIL (LIGAS & COPAS)": {"Campeonato Brasileiro": {"Série A": ["Flamengo", "Palmeiras", "Botafogo", "Vasco", "São Paulo", "Atlético-MG", "Fluminense", "Corinthians"], "Série B": ["Santos", "Sport", "Goiás", "Coritiba"]}},
-    "🇪🇺 EUROPA (ELITE)": {"Premier League": {"Inglaterra": ["Man. City", "Arsenal", "Liverpool", "Chelsea", "Man. United"]}, "La Liga": {"Espanha": ["Real Madrid", "Barcelona", "Atlético Madrid"]}},
-    "🇸🇦 ORIENTE MÉDIO": {"Saudi Pro League": {"Liga": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli"]}},
-    "🇺🇸 MLS": {"Major League": {"USA": ["Inter Miami", "LA Galaxy"]}}
+    "🏆 COPA DO MUNDO 2026": {
+        "Seleções FIFA": {
+            "Principais": ["Brasil", "Argentina", "França", "Alemanha", "Espanha", "Portugal", "Inglaterra", "Itália", "Holanda", "Bélgica", "Uruguai", "EUA", "México", "Japão", "Marrocos"]
+        }
+    },
+    "🇧🇷 BRASIL (LIGAS & COPAS)": {
+        "Campeonato Brasileiro": {
+            "Série A": ["Flamengo", "Palmeiras", "Botafogo", "São Paulo", "Atlético-MG", "Grêmio", "Fluminense", "Internacional", "Corinthians", "Bahia", "Vasco", "Cruzeiro"],
+            "Série B": ["Santos", "Goiás", "Coritiba", "Sport", "Ceará", "Novorizontino", "Vila Nova", "Avaí"],
+            "Série C": ["Náutico", "Remo", "Figueirense", "CSA", "Londrina", "Botafogo-PB"],
+            "Série D": ["Santa Cruz", "Portuguesa", "Treze", "Maringá", "Brasil de Pelotas"]
+        },
+        "Copas & Estaduais": {
+            "Copa do Brasil": ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Atlético-MG", "Grêmio"],
+            "Paulistão": ["Palmeiras", "Santos", "São Paulo", "Corinthians", "Bragantino"],
+            "Carioca": ["Flamengo", "Fluminense", "Vasco", "Botafogo"],
+            "Copa do Nordeste": ["Bahia", "Fortaleza", "Ceará", "Sport", "Vitória"],
+            "Copa Verde": ["Paysandu", "Cuiabá", "Vila Nova", "Remo", "Goiás"]
+        }
+    },
+    "🌎 AMÉRICA DO SUL (CONMEBOL)": {
+        "Competições": {
+            "Copa Libertadores": ["River Plate", "Boca Juniors", "Flamengo", "Palmeiras", "Peñarol", "Colo-Colo"],
+            "Copa Sul-Americana": ["Racing", "Lanús", "Corinthians", "Athletico-PR", "Ind. Medellín"],
+            "Recopa Sul-Americana": ["Campeão Libertadores", "Campeão Sul-Americana"],
+            "Copa América": ["Brasil", "Argentina", "Uruguai", "Colômbia", "Chile"]
+        }
+    },
+    "🇪🇺 EUROPA (PRINCIPAIS LIGAS)": {
+        "Ligas Nacionais": {
+            "Premier League (Ing)": ["Man. City", "Arsenal", "Liverpool", "Chelsea", "Man. United", "Tottenham"],
+            "La Liga (Esp)": ["Real Madrid", "Barcelona", "Atlético Madrid", "Girona", "Real Sociedad"],
+            "Serie A (Ita)": ["Inter de Milão", "Milan", "Juventus", "Napoli", "Atalanta", "Roma"],
+            "Bundesliga (Ale)": ["Bayer Leverkusen", "Bayern Munique", "Dortmund", "RB Leipzig"],
+            "Ligue 1 (Fra)": ["PSG", "Monaco", "Marseille", "Lille", "Lyon"]
+        },
+        "Ligas Secundárias": {
+            "Eredivisie (Hol)": ["PSV", "Ajax", "Feyenoord"],
+            "Primeira Liga (Por)": ["Sporting", "Benfica", "Porto"],
+            "Super Lig (Tur)": ["Galatasaray", "Fenerbahce", "Besiktas"]
+        }
+    },
+    "🇸🇦 ORIENTE MÉDIO & ÁSIA": {
+        "Ligas & Copas": {
+            "Saudi Pro League": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq"],
+            "AFC Champions League": ["Al-Hilal", "Urawa Reds", "Yokohama F. Marinos", "Al-Ain"]
+        }
+    },
+    "🇺🇸 AMÉRICA DO NORTE (MLS)": {
+        "Liga": {
+            "Major League Soccer": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "Seattle Sounders"]
+        }
+    }
 }
 
-# 6. HEADER (FIXO)
+# --- [CABECALHO] ---
 st.markdown("""
     <div class="betano-header">
-        <a class="logo-link">GESTOR IA</a>
-        <div class="nav-items">
-            <span>APOSTAS ESPORTIVAS</span>
-            <span>APOSTAS AO VIVO</span>
-            <span>OPORTUNIDADES IA</span>
-            <span>ESTATÍSTICAS AVANÇADAS</span>
-            <span>MERCADO PROBABILÍSTICO</span>
-            <span>ASSERTIVIDADE IA</span>
+        <div style="display:flex; align-items:center;">
+            <a class="logo-link">GESTOR IA</a>
+            <div class="nav-items">
+                <span>APOSTAS ESPORTIVAS</span>
+                <span>APOSTAS AO VIVO</span>
+                <span>OPORTUNIDADES IA</span>
+                <span>ESTATÍSTICAS AVANÇADAS</span>
+                <span>MERCADO PROBABILÍSTICO</span>
+                <span>ASSERTIVIDADE IA</span>
+            </div>
         </div>
         <div class="header-right">
             <div class="search-icon">🔍</div>
@@ -146,7 +198,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# 7. SIDEBAR (7 BOTÕES)
+# --- [SIDEBAR: NAVEGAÇÃO] ---
 with st.sidebar:
     st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True) 
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
@@ -159,10 +211,9 @@ with st.sidebar:
 
 st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
-# 8. CONTEÚDO (COM PROTEÇÃO CONTRA RELOAD DO HEADER)
-
+# --- [ABA: HOME - 8 CARDS] ---
 if st.session_state.aba_ativa == "home":
-    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● v57.31 GLOBAL DATABASE LOADED ● COPA 2026 ACTIVE</div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● v57.23 GLOBAL DATABASE LOADED ● COPA 2026 ACTIVE</div>""", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
     with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
     with h2: draw_card("Sugestão", "OVER 2.5 GOLS", 88)
@@ -175,78 +226,83 @@ if st.session_state.aba_ativa == "home":
     with h7: draw_card("Volume", "MERCADO EM ALTA", 80)
     with h8: draw_card("Proteção", "JARVIS SUPREME", 100)
 
+# --- [ABA: SCANNER PRÉ-LIVE + CONEXÃO BANCA] ---
 elif st.session_state.aba_ativa == "analise":
-    @st.fragment
-    def scanner_frag():
-        st.markdown("<div style='color:white; font-weight:900; font-size:26px; margin-bottom:15px;'>🎯 SCANNER PRÉ-LIVE</div>", unsafe_allow_html=True)
-        c1, c2, c3 = st.columns(3)
-        cat = c1.selectbox("🌎 CATEGORIA", list(DADOS_HIEARARQUIA.keys()), key="s_cat")
-        tip = c2.selectbox("📂 TIPO", list(DADOS_HIEARARQUIA[cat].keys()), key="s_tip")
-        cmp = c3.selectbox("🏆 CAMPEONATO", list(DADOS_HIEARARQUIA[cat][tip].keys()), key="s_cmp")
-        t1, t2 = st.columns(2)
-        times = DADOS_HIEARARQUIA[cat][tip][cmp]
-        casa = t1.selectbox("🏠 CASA", times, key="s_casa")
-        fora = t2.selectbox("🚀 VISITANTE", [x for x in times if x != casa], key="s_fora")
-        
-        if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
-            st.session_state.analise_bloqueada = {
-                "casa": casa, "fora": fora, "vencedor": casa, "gols": "OVER 1.5 REAL", 
-                "data": datetime.now().strftime("%H:%M"), 
-                "stake_calc": f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}"
-            }
-            st.rerun(scope="fragment")
+    st.markdown("<div style='color:white; font-weight:900; font-size:26px; margin-bottom:15px;'>🎯 SCANNER PRÉ-LIVE</div>", unsafe_allow_html=True)
+    c1, c2, c3 = st.columns(3)
+    cat = c1.selectbox("🌎 CATEGORIA", list(DADOS_HIEARARQUIA.keys()))
+    tip = c2.selectbox("📂 TIPO", list(DADOS_HIEARARQUIA[cat].keys()))
+    cmp = c3.selectbox("🏆 CAMPEONATO", list(DADOS_HIEARARQUIA[cat][tip].keys()))
+    
+    t1, t2 = st.columns(2)
+    lista_times = DADOS_HIEARARQUIA[cat][tip][cmp]
+    casa = t1.selectbox("🏠 CASA", lista_times)
+    fora = t2.selectbox("🚀 VISITANTE", [x for x in lista_times if x != casa])
+    
+    if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
+        valor_calculado = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
+        st.session_state.analise_bloqueada = {
+            "casa": casa, "fora": fora, "vencedor": casa, 
+            "gols": "OVER 1.5 REAL", "data": datetime.now().strftime("%H:%M"),
+            "stake_val": f"R$ {valor_calculado:,.2f}"
+        }
+        st.rerun()
             
-        if st.session_state.analise_bloqueada:
-            m = st.session_state.analise_bloqueada
-            st.markdown(f"<div style='color:#9d54ff; font-weight:900; font-size:18px; margin:20px 0;'>RESULTADO: {m['casa']} vs {m['fora']}</div>", unsafe_allow_html=True)
-            r1, r2, r3, r4 = st.columns(4)
-            with r1: draw_card("VENCEDOR", m['vencedor'], 85)
-            with r2: draw_card("MERCADO GOLS", m['gols'], 70)
-            with r3: draw_card("STAKE CALC.", m['stake_calc'], 100)
-            with r4: draw_card("ESCANTEIOS", "MAIS DE 9.5", 65)
-            st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
-            r5, r6, r7, r8 = st.columns(4)
-            with r5: draw_card("TIROS DE META", "14-16 TOTAIS", 40)
-            with r6: draw_card("CHUTES AO GOL", "CASA +5.5", 50)
-            with r7: draw_card("DEFESAS GOLEIRO", "VISITANTE 4+", 30)
-            with r8: draw_card("ÍNDICE PRESSÃO", "GOL MADURO 68%", 68)
-            if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
-                st.session_state.historico_calls.append(m)
-                st.toast("✅ CALL REGISTRADA!")
-    scanner_frag()
+    if st.session_state.analise_bloqueada:
+        m = st.session_state.analise_bloqueada
+        st.markdown(f"<div style='color:#9d54ff; font-weight:900; font-size:18px; margin:20px 0;'>RESULTADO: {m['casa']} vs {m['fora']}</div>", unsafe_allow_html=True)
+        r1, r2, r3, r4 = st.columns(4)
+        with r1: draw_card("VENCEDOR", m['vencedor'], 85)
+        with r2: draw_card("MERCADO GOLS", m['gols'], 70)
+        with r3: draw_card("STAKE CALC.", m['stake_val'], 100)
+        with r4: draw_card("ESCANTEIOS", "MAIS DE 9.5", 65)
+        st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
+        r5, r6, r7, r8 = st.columns(4)
+        with r5: draw_card("TIROS DE META", "14-16 TOTAIS", 40)
+        with r6: draw_card("CHUTES AO GOL", "CASA +5.5", 50)
+        with r7: draw_card("DEFESAS GOLEIRO", "VISITANTE 4+", 30)
+        with r8: draw_card("ÍNDICE PRESSÃO", "GOL MADURO 68%", 68)
+        
+        if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
+            st.session_state.historico_calls.append(m)
+            st.toast("✅ ADICIONADO AO HISTÓRICO!")
 
-elif st.session_state.aba_ativa == "gestao":
-    @st.fragment
-    def gestao_frag():
-        st.markdown("<div style='color:white; font-weight:900; font-size:26px; margin-bottom:15px;'>💰 GESTÃO DE BANCA</div>", unsafe_allow_html=True)
-        g1, g2 = st.columns(2)
-        with g1:
-            nova_b = st.number_input("VALOR DA BANCA (R$)", value=st.session_state.banca_total, key="g_banca")
-            if st.button("SALVAR BANCA", use_container_width=True):
-                st.session_state.banca_total = nova_b
-                st.success("Banca salva!")
-        with g2:
-            st.session_state.stake_padrao = st.select_slider("RISCO %", options=[0.5, 1.0, 2.0, 3.0, 5.0], value=st.session_state.stake_padrao, key="g_stake")
-            st.info(f"STAKE: R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}")
-    gestao_frag()
-
+# --- [ABA: SCANNER LIVE - DESIGN REFINADO] ---
 elif st.session_state.aba_ativa == "live":
     st.markdown("<div style='color:white; font-weight:900; font-size:26px; margin-bottom:15px;'>📡 SCANNER EM TEMPO REAL</div>", unsafe_allow_html=True)
+    st.markdown("""<div class="news-ticker">● MONITORANDO FLUXO DE DADOS... ● ALTA VOLATILIDADE DETECTADA</div>""", unsafe_allow_html=True)
     l1, l2, l3, l4 = st.columns(4)
-    with l1: draw_card("LIVE: FLAMENGO", "1 x 0 (72')", 72)
-    with l2: draw_card("ATAQUES", "14 - 3", 85)
-    with l3: draw_card("POSSE", "62%", 62)
-    with l4: draw_card("GOL MADURO", "88%", 88)
+    with l1: draw_card("JOGO ATUAL", "FLAMENGO 0x0 PALMEIRAS", 45)
+    with l2: draw_card("PRESSÃO CASA", "ATAQUES PERIGOSOS: 12", 80)
+    with l3: draw_card("PRESSÃO FORA", "ATAQUES PERIGOSOS: 4", 25)
+    with l4: draw_card("ALERTA IA", "GOL PRÓXIMO: 72%", 72)
     st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
     l5, l6, l7, l8 = st.columns(4)
-    with l5: draw_card("CANTOS", "8", 40)
-    with l6: draw_card("CHUTES", "12", 50)
-    with l7: draw_card("DEFESAS", "4", 30)
-    with l8: draw_card("PRESSÃO IA", "MÁXIMA", 100)
+    with l5: draw_card("POSSE DE BOLA", "65% - 35%", 65)
+    with l6: draw_card("CHUTES TOTAIS", "8 CHUTES AO GOL", 50)
+    with l7: draw_card("CANTOS LIVE", "6 ESCANTEIOS", 40)
+    with l8: draw_card("TENDÊNCIA", "MERCADO OVER 0.5 HT", 90)
 
+# --- [ABA: GESTÃO DE BANCA FUNCIONAL] ---
+elif st.session_state.aba_ativa == "gestao":
+    st.markdown("<div style='color:white; font-weight:900; font-size:26px; margin-bottom:15px;'>💰 GESTÃO DE BANCA</div>", unsafe_allow_html=True)
+    g_col1, g_col2 = st.columns(2)
+    with g_col1:
+        nova_banca = st.number_input("DIGITE O VALOR TOTAL DA SUA BANCA (R$)", min_value=0.0, value=st.session_state.banca_total, step=100.0)
+        if st.button("SALVAR CONFIGURAÇÃO DE BANCA", use_container_width=True):
+            st.session_state.banca_total = nova_banca
+            st.success("BANCA ATUALIZADA COM SUCESSO!")
+    with g_col2:
+        st.session_state.stake_padrao = st.select_slider("DEFINIR % DE RISCO POR OPERAÇÃO", options=[0.5, 1.0, 2.0, 3.0, 5.0, 10.0], value=st.session_state.stake_padrao)
+        calc_reais = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
+        st.info(f"Sua Stake padrão agora é de: R$ {calc_reais:,.2f}")
+
+# --- [ABA: HISTÓRICO - PRESERVADO] ---
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<div style='color:white; font-weight:900; font-size:26px; margin-bottom:15px;'>📜 HISTÓRICO DE CALLS</div>", unsafe_allow_html=True)
-    for call in reversed(st.session_state.historico_calls):
-        st.markdown(f"""<div class="history-card-box"><span style="color:#9d54ff; font-weight:900;">[{call['data']}]</span> <span style="color:white; margin-left:15px;">{call['casa']} x {call['fora']}</span><span style="color:#06b6d4; float:right;">{call['stake_calc']} | {call['gols']}</span></div>""", unsafe_allow_html=True)
+    if not st.session_state.historico_calls: st.info("Histórico vazio.")
+    else:
+        for i, call in enumerate(reversed(st.session_state.historico_calls)):
+            st.markdown(f"""<div class="history-card-box"><span style="color:#9d54ff; font-weight:900;">[{call['data']}]</span> <span style="color:white; margin-left:15px;">{call['casa']} x {call['fora']}</span><span style="color:#06b6d4; float:right;">{call['stake_val']} | {call['gols']}</span></div>""", unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.31 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.23 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
