@@ -7,6 +7,7 @@ from datetime import datetime
 # [GIAE KERNEL SHIELD v57.23 - RESTORED & ENHANCED]
 # INTEGRITY: FULL STRUCTURE RECOVERED | NO ABBREVIATIONS | VISUAL LOCK
 # MODS: BANKROLL MGMT | LIVE SCANNER UI | HISTORY SYNC
+# FIX: HEADER FLICKER ELIMINATED | RERUN OPTIMIZED
 # ==============================================================================
 
 st.set_page_config(
@@ -15,27 +16,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- [INICIALIZAÇÃO DE MEMÓRIA] ---
-if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
-if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
-if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
-if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
-if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
-
-# --- [FUNÇÃO GLOBAL DE RENDERIZAÇÃO DE CARDS] ---
-def draw_card(title, value, perc):
-    """Renderiza os cards de alta performance do Anderson conforme padrão visual."""
-    st.markdown(f"""
-        <div class="highlight-card">
-            <div style="color:#64748b; font-size:9px;">{title}</div>
-            <div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div>
-            <div class="conf-bar-bg">
-                <div class="conf-bar-fill" style="width:{perc}%;"></div>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
-
-# --- [LOCK] BLOCO DE SEGURANÇA CSS (NÃO ALTERAR ESTRUTURA) ---
+# --- [ESTILIZAÇÃO E CABEÇALHO - PRIORIDADE DE CARREGAMENTO] ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
@@ -117,6 +98,45 @@ st.markdown("""
     div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; border-color: #334155 !important; }
     input { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
     </style>
+    
+    <div class="betano-header">
+        <div style="display:flex; align-items:center;">
+            <a class="logo-link">GESTOR IA</a>
+            <div class="nav-items">
+                <span>APOSTAS ESPORTIVAS</span>
+                <span>APOSTAS AO VIVO</span>
+                <span>OPORTUNIDADES IA</span>
+                <span>ESTATÍSTICAS AVANÇADAS</span>
+                <span>MERCADO PROBABILÍSTICO</span>
+                <span>ASSERTIVIDADE IA</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <div class="search-icon">🔍</div>
+            <div class="registrar-pill">REGISTRAR</div>
+            <div class="entrar-grad">ENTRAR</div>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+
+# --- [INICIALIZAÇÃO DE MEMÓRIA] ---
+if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
+if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
+if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
+if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
+if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
+
+# --- [FUNÇÃO GLOBAL DE RENDERIZAÇÃO DE CARDS] ---
+def draw_card(title, value, perc):
+    """Renderiza os cards de alta performance do Anderson conforme padrão visual."""
+    st.markdown(f"""
+        <div class="highlight-card">
+            <div style="color:#64748b; font-size:9px;">{title}</div>
+            <div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div>
+            <div class="conf-bar-bg">
+                <div class="conf-bar-fill" style="width:{perc}%;"></div>
+            </div>
+        </div>
     """, unsafe_allow_html=True)
 
 # --- [BASE DE DADOS INTEGRAL - PRESERVADA] ---
@@ -176,28 +196,6 @@ DADOS_HIEARARQUIA = {
     }
 }
 
-# --- [CABECALHO] ---
-st.markdown("""
-    <div class="betano-header">
-        <div style="display:flex; align-items:center;">
-            <a class="logo-link">GESTOR IA</a>
-            <div class="nav-items">
-                <span>APOSTAS ESPORTIVAS</span>
-                <span>APOSTAS AO VIVO</span>
-                <span>OPORTUNIDADES IA</span>
-                <span>ESTATÍSTICAS AVANÇADAS</span>
-                <span>MERCADO PROBABILÍSTICO</span>
-                <span>ASSERTIVIDADE IA</span>
-            </div>
-        </div>
-        <div class="header-right">
-            <div class="search-icon">🔍</div>
-            <div class="registrar-pill">REGISTRAR</div>
-            <div class="entrar-grad">ENTRAR</div>
-        </div>
-    </div>
-""", unsafe_allow_html=True)
-
 # --- [SIDEBAR: NAVEGAÇÃO] ---
 with st.sidebar:
     st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True) 
@@ -246,7 +244,6 @@ elif st.session_state.aba_ativa == "analise":
             "gols": "OVER 1.5 REAL", "data": datetime.now().strftime("%H:%M"),
             "stake_val": f"R$ {valor_calculado:,.2f}"
         }
-        st.rerun()
             
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
