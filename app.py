@@ -4,9 +4,9 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [GIAE KERNEL SHIELD v57.23 - RESTORAÇÃO TOTAL DE DESIGN]
-# REFERÊNCIA: IMAGEM 1 & 2 (PADRÃO ANDERSON)
-# FIX: ZERO FLICKER + SIDEBAR ICONS + HOME GRID RESTORED
+# [GIAE KERNEL SHIELD v57.23 - FULL GRID RESTORATION]
+# FIX: SCANNER 8 CARDS REINSTATED | HOME GRID INTEGRITY | ZERO FLICKER
+# REFERÊNCIA: IMAGEM 1 (HOME) & IMAGEM 2 (SCANNER)
 # ==============================================================================
 
 st.set_page_config(
@@ -15,7 +15,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- [INICIALIZAÇÃO DE MEMÓRIA] ---
+# --- [INICIALIZAÇÃO DE MEMÓRIA CRÍTICA] ---
 if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
 if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
 if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
@@ -24,6 +24,7 @@ if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
 
 # --- [FUNÇÃO GLOBAL DE RENDERIZAÇÃO DE CARDS] ---
 def draw_card(title, value, perc):
+    """Renderiza os quadros de alta performance conforme padrão visual Anderson."""
     st.markdown(f"""
         <div class="highlight-card">
             <div style="color:#64748b; font-size:9px;">{title}</div>
@@ -88,16 +89,16 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# --- [BASE DE DADOS INTEGRAL - PRESERVADA] ---
+# --- [BASE DE DADOS EXPANDIDA] ---
 DADOS_HIEARARQUIA = {
-    "🏆 COPA DO MUNDO 2026": {"Seleções FIFA": {"Principais": ["Brasil", "Argentina", "França", "Alemanha", "Portugal", "Inglaterra", "Espanha"]}},
+    "🏆 COPA DO MUNDO 2026": {"Seleções FIFA": {"Principais": ["Brasil", "Argentina", "França", "Alemanha", "Portugal", "Espanha", "Inglaterra"]}},
     "🇧🇷 BRASIL (LIGAS & COPAS)": {"Campeonato Brasileiro": {"Série A": ["Flamengo", "Palmeiras", "Botafogo", "Vasco", "São Paulo", "Atlético-MG"], "Série B": ["Santos", "Sport", "Goiás"], "Série C": ["Remo", "Náutico"], "Série D": ["Santa Cruz", "Treze"]}},
-    "🇪🇺 EUROPA (PRINCIPAIS LIGAS)": {"Premier League": {"Inglaterra": ["Man. City", "Arsenal", "Liverpool"]}, "La Liga": {"Espanha": ["Real Madrid", "Barcelona"]}},
+    "🇪🇺 EUROPA (ELITE)": {"Premier League": {"Inglaterra": ["Man. City", "Arsenal", "Liverpool"]}, "La Liga": {"Espanha": ["Real Madrid", "Barcelona"]}},
     "🇸🇦 ORIENTE MÉDIO": {"Saudi Pro League": {"Liga": ["Al-Hilal", "Al-Nassr", "Al-Ittihad"]}},
     "🇺🇸 MLS": {"Major League": {"USA": ["Inter Miami", "LA Galaxy"]}}
 }
 
-# --- [CABECALHO: IDENTIDADE VISUAL IMAGEM 1] ---
+# --- [CABECALHO: IDENTIDADE IMAGEM 1] ---
 st.markdown("""
     <div class="betano-header">
         <div style="display:flex; align-items:center;">
@@ -132,7 +133,7 @@ with st.sidebar:
 
 st.markdown('<div style="height: 65px;"></div>', unsafe_allow_html=True)
 
-# --- [ABA: HOME - GRID EXATO DA IMAGEM 1] ---
+# --- [ABA: HOME - GRID 8 CARDS EXATO IMAGEM 1] ---
 if st.session_state.aba_ativa == "home":
     st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● v57.23 GLOBAL DATABASE LOADED ● COPA 2026 ACTIVE</div>""", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
@@ -147,12 +148,12 @@ if st.session_state.aba_ativa == "home":
     with h7: draw_card("Volume", "MERCADO EM ALTA", 80)
     with h8: draw_card("Proteção", "JARVIS SUPREME", 100)
 
-# --- [ABA: SCANNER - DESIGN IMAGEM 2 + ANTI-FLICKER] ---
+# --- [ABA: SCANNER - GRID 8 CARDS EXATO IMAGEM 2 + ANTI-FLICKER] ---
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<div style='color:white; font-weight:900; font-size:26px; margin-bottom:15px;'><span style='margin-right:10px;'>🎯</span>SCANNER PRÉ-LIVE</div>", unsafe_allow_html=True)
     
     @st.fragment
-    def area_scanner_fixed():
+    def area_scanner_grid_completo():
         c1, c2, c3 = st.columns(3)
         cat = c1.selectbox("🌎 CATEGORIA", list(DADOS_HIEARARQUIA.keys()))
         tip = c2.selectbox("📂 TIPO", list(DADOS_HIEARARQUIA[cat].keys()))
@@ -164,26 +165,37 @@ elif st.session_state.aba_ativa == "analise":
         fora = t2.selectbox("🚀 VISITANTE", [x for x in lista_times if x != casa])
         
         if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
-            v_stake = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
+            valor_calculado = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
             st.session_state.analise_bloqueada = {
                 "casa": casa, "fora": fora, "vencedor": casa, "gols": "OVER 1.5 REAL", 
-                "data": datetime.now().strftime("%H:%M"), "stake_calc": f"R$ {v_stake:,.2f}"
+                "data": datetime.now().strftime("%H:%M"), "stake_calc": f"R$ {valor_calculado:,.2f}"
             }
             st.rerun(scope="fragment")
             
         if st.session_state.analise_bloqueada:
             m = st.session_state.analise_bloqueada
             st.markdown(f"<div style='color:#9d54ff; font-weight:900; font-size:18px; margin:20px 0;'>RESULTADO: {m['casa']} vs {m['fora']}</div>", unsafe_allow_html=True)
+            
+            # PRIMEIRA LINHA DE RESULTADOS (4 CARDS)
             r1, r2, r3, r4 = st.columns(4)
             with r1: draw_card("VENCEDOR", m['vencedor'], 85)
             with r2: draw_card("MERCADO GOLS", m['gols'], 70)
             with r3: draw_card("STAKE CALC.", m['stake_calc'], 100)
             with r4: draw_card("ESCANTEIOS", "MAIS DE 9.5", 65)
             
+            st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
+            
+            # SEGUNDA LINHA DE RESULTADOS (4 CARDS) - RESTAURADA
+            r5, r6, r7, r8 = st.columns(4)
+            with r5: draw_card("TIROS DE META", "14-16 TOTAIS", 40)
+            with r6: draw_card("CHUTES AO GOL", "CASA +5.5", 50)
+            with r7: draw_card("DEFESAS GOLEIRO", "VISITANTE 4+", 30)
+            with r8: draw_card("ÍNDICE PRESSÃO", "GOL MADURO 68%", 68)
+            
             if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
                 st.session_state.historico_calls.append(m)
                 st.toast("✅ ADICIONADO AO HISTÓRICO!")
-    area_scanner_fixed()
+    area_scanner_grid_completo()
 
 # --- [ABA: GESTÃO - DESIGN IMAGEM 1] ---
 elif st.session_state.aba_ativa == "gestao":
@@ -191,17 +203,19 @@ elif st.session_state.aba_ativa == "gestao":
     g1, g2 = st.columns(2)
     with g1:
         nova_b = st.number_input("VALOR TOTAL DA BANCA (R$)", value=st.session_state.banca_total)
-        if st.button("ATUALIZAR BANCA"):
+        if st.button("ATUALIZAR BANCA", use_container_width=True):
             st.session_state.banca_total = nova_b
             st.success("Banca atualizada!")
     with g2:
-        st.session_state.stake_padrao = st.select_slider("RISCO (%)", options=[0.5, 1.0, 2.0, 3.0, 5.0], value=st.session_state.stake_padrao)
-        st.info(f"Stake Atual: R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}")
+        st.session_state.stake_padrao = st.select_slider("RISCO (%) POR ENTRADA", options=[0.5, 1.0, 2.0, 3.0, 5.0], value=st.session_state.stake_padrao)
+        st.info(f"Stake Atual configurada para: R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}")
 
 # --- [ABA: HISTÓRICO] ---
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<div style='color:white; font-weight:900; font-size:26px; margin-bottom:15px;'>📜 HISTÓRICO DE CALLS</div>", unsafe_allow_html=True)
-    for call in reversed(st.session_state.historico_calls):
-        st.markdown(f"""<div class="history-card-box"><span style="color:#9d54ff; font-weight:900;">[{call['data']}]</span> <span style="color:white; margin-left:15px;">{call['casa']} x {call['fora']}</span><span style="color:#06b6d4; float:right;">{call['stake_calc']} | {call['gols']}</span></div>""", unsafe_allow_html=True)
+    if not st.session_state.historico_calls: st.info("Sem registros no histórico.")
+    else:
+        for call in reversed(st.session_state.historico_calls):
+            st.markdown(f"""<div class="history-card-box"><span style="color:#9d54ff; font-weight:900;">[{call['data']}]</span> <span style="color:white; margin-left:15px;">{call['casa']} x {call['fora']}</span><span style="color:#06b6d4; float:right;">{call['stake_calc']} | {call['gols']}</span></div>""", unsafe_allow_html=True)
 
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.23 LOCKED</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
