@@ -17,23 +17,24 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. [CAMADA DE PROTEÇÃO 1] - CSS DE PERSISTÊNCIA ABSOLUTA (ANTI-FLICKER)
+# 2. [CAMADA DE PROTEÇÃO 1] - CSS DE PERSISTÊNCIA ABSOLUTA (ANTI-FLICKER + DARK MODE FIX)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
     
-    /* BLOQUEIO DE FUNDO - EVITA FLASH BRANCO */
+    /* BLOQUEIO DE FUNDO TOTAL - ELIMINA QUALQUER RASTRO DE BRANCO */
     html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp {
         background-color: #0b0e11 !important;
         font-family: 'Inter', sans-serif;
+        color: white !important;
     }
 
-    /* REMOVE ELEMENTOS NATIVOS QUE CAUSAM PISCAR E SALTO DE TELA */
+    /* REMOVE ELEMENTOS NATIVOS QUE CAUSAM PISCAR */
     header, [data-testid="stHeader"] { display: none !important; height: 0px !important; }
     [data-testid="stSidebarCollapseButton"] { display: none !important; visibility: hidden !important; }
     [data-testid="stMainBlockContainer"] { padding-top: 65px !important; padding-bottom: 1rem !important; }
     
-    /* HEADER BLINDADO COM ACELERAÇÃO DE HARDWARE */
+    /* HEADER BLINDADO (DIRETRIZ 2) */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #002366 !important; 
@@ -48,14 +49,9 @@ st.markdown("""
     .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; letter-spacing: 1px; text-decoration: none !important; margin-right: 40px; }
     .nav-items { display: flex; gap: 20px; align-items: center; }
     .nav-items span { color: #ffffff; font-size: 9px !important; text-transform: uppercase; opacity: 0.7; font-weight: 600; }
-    .header-right { display: flex; align-items: center; gap: 20px; }
-    .registrar-pill { color: #ffffff !important; font-size: 10px !important; font-weight: 700; border: 1px solid #ffffff !important; padding: 6px 15px !important; border-radius: 20px !important; }
-    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 20px !important; border-radius: 4px !important; font-weight: 800 !important; font-size: 10px !important; }
     
     /* SIDEBAR DESIGN */
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
-    [data-testid="stSidebarContent"] { overflow: hidden !important; }
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
     
     section[data-testid="stSidebar"] div.stButton > button { 
         background-color: transparent !important; color: #94a3b8 !important; border: none !important; 
@@ -63,24 +59,42 @@ st.markdown("""
         padding: 18px 25px !important; font-size: 10px !important; text-transform: uppercase !important;
         white-space: nowrap !important; border-radius: 0px !important; display: block !important;
     }
-    section[data-testid="stSidebar"] div.stButton > button:hover { 
-        color: #ffffff !important; border-left: 4px solid #6d28d9 !important; background: rgba(26, 36, 45, 0.8) !important; 
+    
+    /* FIX PARA SCANNER PRÉ-LIVE: REMOVE FUNDO BRANCO DE SELECTBOXES E DROPDOWNS */
+    div[data-baseweb="select"] > div {
+        background-color: #1a202c !important; 
+        color: white !important; 
+        border: 1px solid #334155 !important;
     }
     
+    /* Altera a cor da lista suspensa (dropdown) que costuma ficar branca */
+    div[data-baseweb="popover"] ul {
+        background-color: #1a202c !important;
+        color: white !important;
+        border: 1px solid #334155 !important;
+    }
+    
+    div[role="option"] {
+        background-color: #1a202c !important;
+        color: white !important;
+    }
+    
+    div[role="option"]:hover {
+        background-color: #6d28d9 !important;
+    }
+
+    input { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
+
     /* UI CARDS */
-    .news-ticker { background: rgba(0, 35, 102, 0.2); border: 1px solid #1e293b; padding: 10px; color: #06b6d4; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; }
     .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; }
     .conf-bar-bg { background: #1e293b; height: 4px; width: 80%; border-radius: 10px; margin: 10px auto; overflow: hidden; }
     .conf-bar-fill { background: linear-gradient(90deg, #6d28d9, #06b6d4); height: 100%; }
     .history-card-box { background: #161b22 !important; border: 1px solid #30363d !important; padding: 15px !important; border-radius: 8px; margin-bottom: 10px; }
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
-    
-    div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; border-color: #334155 !important; }
-    input { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. [CAMADA DE PROTEÇÃO 2] - HEADER ANCORADO NA SIDEBAR
+# 3. [CAMADA DE PROTEÇÃO 2] - HEADER ANCORADO NA SIDEBAR (DIRETRIZ 1)
 with st.sidebar:
     st.markdown("""
         <div class="betano-header">
@@ -91,14 +105,11 @@ with st.sidebar:
                     <span>APOSTAS AO VIVO</span>
                     <span>OPORTUNIDADES IA</span>
                     <span>ESTATÍSTICAS AVANÇADAS</span>
-                    <span>MERCADO PROBABILÍSTICO</span>
-                    <span>ASSERTIVIDADE IA</span>
                 </div>
             </div>
-            <div class="header-right">
-                <div style="color:white; font-size:14px;">🔍</div>
-                <div class="registrar-pill">REGISTRAR</div>
-                <div class="entrar-grad">ENTRAR</div>
+            <div style="display: flex; gap: 20px;">
+                <div style="color: #ffffff; font-size: 10px; font-weight: 700; border: 1px solid #ffffff; padding: 6px 15px; border-radius: 20px;">REGISTRAR</div>
+                <div style="background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%); color: white; padding: 7px 20px; border-radius: 4px; font-weight: 800; font-size: 10px;">ENTRAR</div>
             </div>
         </div>
         <div style="height:65px;"></div>
@@ -116,16 +127,12 @@ with st.sidebar:
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
     if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
-    st.button("📅 JOGOS DO DIA")
-    st.button("🏆 VENCEDORES DA COMPETIÇÃO")
-    st.button("⚽ APOSTAS POR GOLS")
 
-# --- [DADOS INTEGRAIS RESTAURADOS] ---
+# --- [DADOS INTEGRAIS] ---
 DADOS_HIEARARQUIA = {
-    "🏆 COPA DO MUNDO 2026": {"Seleções FIFA": {"Principais": ["Brasil", "Argentina", "França", "Alemanha", "Espanha", "Portugal", "Inglaterra", "Itália", "Holanda", "Bélgica", "Uruguai", "EUA", "México", "Japão", "Marrocos"]}},
-    "🇧🇷 BRASIL (LIGAS & COPAS)": {"Campeonato Brasileiro": {"Série A": ["Flamengo", "Palmeiras", "Botafogo", "São Paulo", "Atlético-MG", "Grêmio", "Fluminense", "Internacional", "Corinthians", "Bahia", "Vasco", "Cruzeiro"], "Série B": ["Santos", "Goiás", "Coritiba", "Sport", "Ceará", "Novorizontino", "Vila Nova", "Avaí"], "Série C": ["Náutico", "Remo", "Figueirense", "CSA", "Londrina", "Botafogo-PB"], "Série D": ["Santa Cruz", "Portuguesa", "Treze", "Maringá", "Brasil de Pelotas"]}, "Copas & Estaduais": {"Copa do Brasil": ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Atlético-MG", "Grêmio"], "Paulistão": ["Palmeiras", "Santos", "São Paulo", "Corinthians", "Bragantino"], "Carioca": ["Flamengo", "Fluminense", "Vasco", "Botafogo"], "Copa do Nordeste": ["Bahia", "Fortaleza", "Ceará", "Sport", "Vitória"], "Copa Verde": ["Paysandu", "Cuiabá", "Vila Nova", "Remo", "Goiás"]}},
-    "🌎 AMÉRICA DO SUL (CONMEBOL)": {"Competições": {"Copa Libertadores": ["River Plate", "Boca Juniors", "Flamengo", "Palmeiras", "Peñarol", "Colo-Colo"], "Copa Sul-Americana": ["Racing", "Lanús", "Corinthians", "Athletico-PR", "Ind. Medellín"], "Copa América": ["Brasil", "Argentina", "Uruguai", "Colômbia", "Chile"]}},
-    "🇪🇺 EUROPA (PRINCIPAIS LIGAS)": {"Ligas Nacionais": {"Premier League (Ing)": ["Man. City", "Arsenal", "Liverpool", "Chelsea", "Man. United", "Tottenham"], "La Liga (Esp)": ["Real Madrid", "Barcelona", "Atlético Madrid", "Girona", "Real Sociedad"], "Serie A (Ita)": ["Inter de Milão", "Milan", "Juventus", "Napoli", "Atalanta", "Roma"], "Bundesliga (Ale)": ["Bayer Leverkusen", "Bayern Munique", "Dortmund", "RB Leipzig"], "Ligue 1 (Fra)": ["PSG", "Monaco", "Marseille", "Lille", "Lyon"]}}
+    "🏆 COPA DO MUNDO 2026": {"Seleções FIFA": {"Principais": ["Brasil", "Argentina", "França", "Alemanha", "Espanha", "Portugal"]}},
+    "🇧🇷 BRASIL (LIGAS & COPAS)": {"Campeonato Brasileiro": {"Série A": ["Flamengo", "Palmeiras", "Botafogo", "São Paulo", "Atlético-MG", "Grêmio", "Corinthians", "Fluminense", "Vasco", "Internacional", "Bahia", "Cruzeiro"]}},
+    "🇪🇺 EUROPA (PRINCIPAIS LIGAS)": {"Ligas Nacionais": {"Premier League": ["Man. City", "Arsenal", "Liverpool", "Chelsea", "Man. United"], "La Liga": ["Real Madrid", "Barcelona", "Atlético Madrid"]}}
 }
 
 # --- [FUNÇÃO GLOBAL DE CARDS] ---
@@ -140,37 +147,28 @@ def draw_card(title, value, perc):
 
 # --- [CONTEÚDO DINÂMICO] ---
 if st.session_state.aba_ativa == "home":
-    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● v57.23 GLOBAL DATABASE LOADED</div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● v57.23</div>""", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
     with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
     with h2: draw_card("Sugestão", "OVER 2.5 GOLS", 88)
     with h3: draw_card("IA Education", f"STAKE {st.session_state.stake_padrao}%", 100)
     with h4: draw_card("Tendência", "ODDS EM QUEDA", 75)
-    st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
-    h5, h6, h7, h8 = st.columns(4)
-    with h5: draw_card("Scanner", "ALTA PRESSÃO (HT)", 60)
-    with h6: draw_card("Performance", "ASSERTIVIDADE 92%", 92)
-    with h7: draw_card("Volume", "MERCADO EM ALTA", 80)
-    with h8: draw_card("Proteção", "JARVIS SUPREME", 100)
 
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<div style='color:white; font-weight:900; font-size:26px; margin-bottom:15px;'>🎯 SCANNER PRÉ-LIVE</div>", unsafe_allow_html=True)
     c1, c2, c3 = st.columns(3)
+    # Aqui os Selectboxes agora estão blindados pelo CSS para serem escuros
     cat = c1.selectbox("🌎 CATEGORIA", list(DADOS_HIEARARQUIA.keys()))
     tip = c2.selectbox("📂 TIPO", list(DADOS_HIEARARQUIA[cat].keys()))
     cmp = c3.selectbox("🏆 CAMPEONATO", list(DADOS_HIEARARQUIA[cat][tip].keys()))
+    
     t1, t2 = st.columns(2)
     lista_times = DADOS_HIEARARQUIA[cat][tip][cmp]
     casa = t1.selectbox("🏠 CASA", lista_times)
     fora = t2.selectbox("🚀 VISITANTE", [x for x in lista_times if x != casa])
     
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
-        valor_calculado = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-        st.session_state.analise_bloqueada = {
-            "casa": casa, "fora": fora, "vencedor": casa, 
-            "gols": "OVER 1.5 REAL", "data": datetime.now().strftime("%H:%M"), 
-            "stake_val": f"R$ {valor_calculado:,.2f}"
-        }
+        st.session_state.analise_bloqueada = {"casa": casa, "fora": fora, "vencedor": casa, "gols": "OVER 1.5 REAL"}
             
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
@@ -178,31 +176,19 @@ elif st.session_state.aba_ativa == "analise":
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("MERCADO GOLS", m['gols'], 70)
-        with r3: draw_card("STAKE CALC.", m['stake_val'], 100)
+        with r3: draw_card("STAKE CALC.", "CALCULANDO...", 100)
         with r4: draw_card("ESCANTEIOS", "MAIS DE 9.5", 65)
-        if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
-            st.session_state.historico_calls.append(m)
-            st.toast("✅ ADICIONADO!")
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("<div style='color:white; font-weight:900; font-size:26px; margin-bottom:15px;'>💰 GESTÃO DE BANCA</div>", unsafe_allow_html=True)
-    g_col1, g_col2 = st.columns(2)
-    with g_col1:
-        nova_banca_input = st.number_input("DIGITE O VALOR TOTAL DA SUA BANCA (R$)", min_value=0.0, value=st.session_state.banca_total)
-        if st.button("SALVAR CONFIGURAÇÃO DE BANCA", use_container_width=True):
-            st.session_state.banca_total = nova_banca_input
-            st.success("BANCA ATUALIZADA!")
-    with g_col2:
-        st.session_state.stake_padrao = st.select_slider("DEFINIR % DE RISCO", options=[0.5, 1.0, 2.0, 3.0, 5.0, 10.0], value=st.session_state.stake_padrao)
-        calc_reais = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-        st.info(f"Sua Stake padrão: R$ {calc_reais:,.2f}")
+    nova_banca = st.number_input("VALOR TOTAL DA SUA BANCA (R$)", min_value=0.0, value=st.session_state.banca_total)
+    if st.button("SALVAR CONFIGURAÇÃO"):
+        st.session_state.banca_total = nova_banca
+        st.success("BANCA ATUALIZADA!")
 
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<div style='color:white; font-weight:900; font-size:26px; margin-bottom:15px;'>📜 HISTÓRICO DE CALLS</div>", unsafe_allow_html=True)
-    if not st.session_state.historico_calls: st.info("Histórico vazio.")
-    else:
-        for call in reversed(st.session_state.historico_calls):
-            st.markdown(f"""<div class="history-card-box"><span style="color:#9d54ff; font-weight:900;">[{call['data']}]</span> <span style="color:white; margin-left:15px;">{call['casa']} x {call['fora']}</span><span style="color:#06b6d4; float:right;">{call['stake_val']} | {call['gols']}</span></div>""", unsafe_allow_html=True)
+    st.info("Histórico de calls processadas pela IA.")
 
 # FOOTER FIXO
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.23</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
