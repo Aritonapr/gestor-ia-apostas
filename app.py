@@ -7,32 +7,32 @@ from datetime import datetime
 # [GIAE KERNEL SHIELD v57.23 - RESTORED & ENHANCED]
 # INTEGRITY: FULL STRUCTURE RECOVERED | NO ABBREVIATIONS | VISUAL LOCK
 # MODS: BANKROLL MGMT | LIVE SCANNER UI | HISTORY SYNC
-# FIX: REMOÇÃO DE RERUN DUPLO PARA ELIMINAÇÃO DE PISCAR (FLICKER)
+# FIX: ELIMINAÇÃO DE PISCAR (FLICKER) VIA REMOÇÃO DE RERUN DUPLO
 # ==============================================================================
 
-# 1. CONFIGURAÇÃO DE PÁGINA (DEVE SER O PRIMEIRO COMANDO)
+# 1. CONFIGURAÇÃO DE PÁGINA (ESTÁTICO NO TOPO)
 st.set_page_config(
     page_title="GESTOR IA - TRADING PRO", 
     layout="wide", 
     initial_sidebar_state="expanded"
 )
 
-# 2. BLOCO DE CSS E HEADER (ESTÁTICO NO TOPO PARA EVITAR MOVIMENTAÇÃO)
+# 2. BLOCO ÚNICO DE CSS E HEADER (ESTABILIZAÇÃO VISUAL)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
     
-    /* BLOQUEIO DE FUNDO - EVITA FLASH BRANCO */
+    /* BLOQUEIO DE FUNDO - EVITA O FLASH BRANCO DO NAVEGADOR */
     html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp {
         background-color: #0b0e11 !important;
         font-family: 'Inter', sans-serif;
     }
 
-    /* OCULTAR ELEMENTOS PADRÃO DO STREAMLIT */
+    /* OCULTAR ELEMENTOS ORIGINAIS DO STREAMLIT */
     header, [data-testid="stHeader"], [data-testid="stHeader"]::before { display: none !important; }
     [data-testid="stSidebarCollapseButton"] { display: none !important; visibility: hidden !important; }
     
-    /* ESPAÇAMENTO PARA O CONTEÚDO NÃO FICAR EMBAIXO DO HEADER */
+    /* FIXAR O CONTEÚDO PARA NÃO PULAR AO RECARREGAR */
     [data-testid="stMainBlockContainer"] { padding-top: 65px !important; padding-bottom: 1rem !important; }
     
     /* SIDEBAR DESIGN */
@@ -61,7 +61,7 @@ st.markdown("""
         background: rgba(26, 36, 45, 0.8) !important; 
     }
     
-    /* BOTÕES DA ÁREA PRINCIPAL */
+    /* BOTÕES ÁREA PRINCIPAL - GRADIENTE ROXO */
     [data-testid="stMainBlockContainer"] div.stButton > button {
         background: linear-gradient(90deg, #6d28d9 0%, #4c1d95 100%) !important;
         color: white !important;
@@ -74,7 +74,7 @@ st.markdown("""
         transition: 0.3s !important;
     }
 
-    /* CABEÇALHO FIXO - GESTOR IA */
+    /* CABEÇALHO FIXO - NÃO PISCA */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #002366 !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; 
@@ -86,7 +86,6 @@ st.markdown("""
     .nav-items { display: flex; gap: 20px; align-items: center; }
     .nav-items span { color: #ffffff; font-size: 9px !important; text-transform: uppercase; opacity: 0.7; font-weight: 600; }
     .header-right { display: flex; align-items: center; gap: 20px; }
-    
     .registrar-pill { color: #ffffff !important; font-size: 10px !important; font-weight: 700; border: 1px solid #ffffff !important; padding: 6px 15px !important; border-radius: 20px !important; }
     .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 20px !important; border-radius: 4px !important; font-weight: 800 !important; font-size: 10px !important; }
     
@@ -151,14 +150,14 @@ DADOS_HIEARARQUIA = {
     "🇺🇸 AMÉRICA DO NORTE (MLS)": {"Liga": {"Major League Soccer": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "Seattle Sounders"]}}
 }
 
-# --- [SIDEBAR: NAVEGAÇÃO SEM RERUN MANUAL] ---
+# --- [SIDEBAR: NAVEGAÇÃO] ---
 with st.sidebar:
     st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True) 
     if st.button("🎯 SCANNER PRÉ-LIVE", key="nav_analise"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL", key="nav_live"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA", key="nav_gestao"): st.session_state.aba_ativa = "gestao"
     if st.button("📜 HISTÓRICO DE CALLS", key="nav_hist"): st.session_state.aba_ativa = "historico"
-    st.button("📅 JOGOS DO DIA", key="nav_dia")
+    st.button("📅 JOGOS DO DIA", key="nav_jogos")
     st.button("🏆 VENCEDORES DA COMPETIÇÃO", key="nav_venc")
     st.button("⚽ APOSTAS POR GOLS", key="nav_gols")
 
@@ -181,15 +180,15 @@ if st.session_state.aba_ativa == "home":
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<div style='color:white; font-weight:900; font-size:26px; margin-bottom:15px;'>🎯 SCANNER PRÉ-LIVE</div>", unsafe_allow_html=True)
     c1, c2, c3 = st.columns(3)
-    cat = c1.selectbox("🌎 CATEGORIA", list(DADOS_HIEARARQUIA.keys()), key="sel_cat")
-    tip = c2.selectbox("📂 TIPO", list(DADOS_HIEARARQUIA[cat].keys()), key="sel_tip")
-    cmp = c3.selectbox("🏆 CAMPEONATO", list(DADOS_HIEARARQUIA[cat][tip].keys()), key="sel_cmp")
+    cat = c1.selectbox("🌎 CATEGORIA", list(DADOS_HIEARARQUIA.keys()), key="cat_sel")
+    tip = c2.selectbox("📂 TIPO", list(DADOS_HIEARARQUIA[cat].keys()), key="tip_sel")
+    cmp = c3.selectbox("🏆 CAMPEONATO", list(DADOS_HIEARARQUIA[cat][tip].keys()), key="cmp_sel")
     t1, t2 = st.columns(2)
     lista_times = DADOS_HIEARARQUIA[cat][tip][cmp]
-    casa = t1.selectbox("🏠 CASA", lista_times, key="sel_casa")
-    fora = t2.selectbox("🚀 VISITANTE", [x for x in lista_times if x != casa], key="sel_fora")
+    casa = t1.selectbox("🏠 CASA", lista_times, key="casa_sel")
+    fora = t2.selectbox("🚀 VISITANTE", [x for x in lista_times if x != casa], key="fora_sel")
     
-    # REMOVIDO O RERUN MANUAL DAQUI PARA ELIMINAR O PISCAR
+    # REMOVIDO ST.RERUN() PARA EVITAR O PISCAR DO HEADER
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True, key="exec_alg"):
         valor_calculado = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
         st.session_state.analise_bloqueada = {
@@ -213,8 +212,7 @@ elif st.session_state.aba_ativa == "analise":
         with r7: draw_card("DEFESAS GOLEIRO", "VISITANTE 4+", 30)
         with r8: draw_card("ÍNDICE PRESSÃO", "GOL MADURO 68%", 68)
         
-        # O BOTÃO SALVAR JÁ FUNCIONA SEM RERUN POR PADRÃO
-        if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True, key="save_call"):
+        if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True, key="save_hist"):
             st.session_state.historico_calls.append(m)
             st.toast("✅ ADICIONADO AO HISTÓRICO!")
 
@@ -222,13 +220,13 @@ elif st.session_state.aba_ativa == "gestao":
     st.markdown("<div style='color:white; font-weight:900; font-size:26px; margin-bottom:15px;'>💰 GESTÃO DE BANCA</div>", unsafe_allow_html=True)
     g_col1, g_col2 = st.columns(2)
     with g_col1:
-        # ATUALIZAÇÃO DIRETA NO SESSION STATE PARA EVITAR PISCAR
-        st.session_state.banca_total = st.number_input("DIGITE O VALOR TOTAL DA SUA BANCA (R$)", min_value=0.0, value=st.session_state.banca_total, key="input_banca")
-        st.success(f"BANCA CONFIGURADA: R$ {st.session_state.banca_total:,.2f}")
+        # ATUALIZAÇÃO DIRETA NO SESSION STATE PARA ESTABILIDADE
+        st.session_state.banca_total = st.number_input("DIGITE O VALOR TOTAL DA SUA BANCA (R$)", min_value=0.0, value=st.session_state.banca_total, key="num_banca")
+        st.success(f"BANCA ATUAL: R$ {st.session_state.banca_total:,.2f}")
     with g_col2:
-        st.session_state.stake_padrao = st.select_slider("DEFINIR % DE RISCO", options=[0.5, 1.0, 2.0, 3.0, 5.0, 10.0], value=st.session_state.stake_padrao, key="input_stake")
+        st.session_state.stake_padrao = st.select_slider("DEFINIR % DE RISCO", options=[0.5, 1.0, 2.0, 3.0, 5.0, 10.0], value=st.session_state.stake_padrao, key="stake_sli")
         calc_reais = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-        st.info(f"Sua Stake padrão é: R$ {calc_reais:,.2f}")
+        st.info(f"Sua Stake padrão: R$ {calc_reais:,.2f}")
 
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<div style='color:white; font-weight:900; font-size:26px; margin-bottom:15px;'>📜 HISTÓRICO DE CALLS</div>", unsafe_allow_html=True)
