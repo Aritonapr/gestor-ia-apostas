@@ -51,16 +51,40 @@ st.markdown("""
     .registrar-pill { color: #ffffff !important; font-size: 10px !important; font-weight: 700; border: 1px solid #ffffff !important; padding: 6px 15px !important; border-radius: 20px !important; }
     .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 20px !important; border-radius: 4px !important; font-weight: 800 !important; font-size: 10px !important; }
     
-    /* SIDEBAR DESIGN */
+    /* SIDEBAR DESIGN - RESTAURAÇÃO DE BOTÕES */
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
     
+    /* ESTILIZAÇÃO DOS BOTÕES DA SIDEBAR - CORREÇÃO DE FEEDBACK VISUAL */
     section[data-testid="stSidebar"] div.stButton > button { 
-        background-color: transparent !important; color: #94a3b8 !important; border: none !important; 
-        border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; 
-        padding: 18px 25px !important; font-size: 10px !important; text-transform: uppercase !important;
-        white-space: nowrap !important; border-radius: 0px !important; display: block !important;
+        background-color: rgba(255,255,255,0.02) !important; 
+        color: #94a3b8 !important; 
+        border: none !important; 
+        border-bottom: 1px solid #1a202c !important; 
+        text-align: left !important; 
+        width: 100% !important; 
+        padding: 18px 25px !important; 
+        font-size: 10px !important; 
+        text-transform: uppercase !important;
+        white-space: nowrap !important; 
+        border-radius: 0px !important; 
+        display: block !important;
+        transition: all 0.2s ease-in-out !important;
+    }
+
+    /* EFEITO AO PASSAR O MOUSE (HOVER) */
+    section[data-testid="stSidebar"] div.stButton > button:hover {
+        background-color: #1e293b !important;
+        color: #06b6d4 !important;
+        padding-left: 35px !important;
+        border-left: 3px solid #6d28d9 !important;
+    }
+
+    /* EFEITO AO CLICAR (ACTIVE) */
+    section[data-testid="stSidebar"] div.stButton > button:active {
+        background-color: #6d28d9 !important;
+        color: white !important;
     }
 
     /* FIX: REMOÇÃO DE FUNDO BRANCO EM SELECTBOXES */
@@ -128,8 +152,9 @@ with st.sidebar:
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
     if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
     if st.button("📅 JOGOS DO DIA"): st.session_state.aba_ativa = "home"
-    if st.button("🏆 VENCEDORES DA COMPETIÇÃO"): pass
-    if st.button("⚽ APOSTAS POR GOLS"): pass
+    if st.button("🏆 VENCEDORES DA COMPETIÇÃO"): st.session_state.aba_ativa = "vencedores"
+    if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
+    if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
 # --- [DADOS INTEGRAL] ---
 DADOS_HIEARARQUIA = {
@@ -190,11 +215,8 @@ elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
     if not st.session_state.historico_calls: st.info("Vazio.")
     else:
-        # Loop para criar as linhas com lixeira
         for i, call in enumerate(reversed(st.session_state.historico_calls)):
-            # Cálculo do índice real (pois usamos reversed)
             idx_real = len(st.session_state.historico_calls) - 1 - i
-            
             col_info, col_del = st.columns([0.9, 0.1])
             with col_info:
                 st.markdown(f"""
@@ -210,6 +232,14 @@ elif st.session_state.aba_ativa == "historico":
                 if st.button("🗑️", key=f"del_{idx_real}"):
                     st.session_state.historico_calls.pop(idx_real)
                     st.rerun()
+
+elif st.session_state.aba_ativa == "escanteios":
+    st.markdown("<h2 style='color:white;'>🚩 ANÁLISE DE ESCANTEIOS</h2>", unsafe_allow_html=True)
+    st.info("Módulo de Escanteios IA em carregamento...")
+
+elif st.session_state.aba_ativa == "gols":
+    st.markdown("<h2 style='color:white;'>⚽ ANÁLISE DE GOLS</h2>", unsafe_allow_html=True)
+    st.info("Módulo de Probabilidade de Gols IA ativo.")
 
 # FOOTER FIXO
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.23</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
