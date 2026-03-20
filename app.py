@@ -51,64 +51,60 @@ st.markdown("""
     .registrar-pill { color: #ffffff !important; font-size: 10px !important; font-weight: 700; border: 1px solid #ffffff !important; padding: 6px 15px !important; border-radius: 20px !important; }
     .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 20px !important; border-radius: 4px !important; font-weight: 800 !important; font-size: 10px !important; }
     
-    /* SIDEBAR DESIGN - RESTAURAÇÃO DE BOTÕES */
+    /* SIDEBAR DESIGN - ESTILIZAÇÃO DE BOTÕES LATERAIS */
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
     
-    /* ESTILIZAÇÃO DOS BOTÕES DA SIDEBAR - CORREÇÃO DE FEEDBACK VISUAL */
     section[data-testid="stSidebar"] div.stButton > button { 
-        background-color: rgba(255,255,255,0.02) !important; 
-        color: #94a3b8 !important; 
-        border: none !important; 
-        border-bottom: 1px solid #1a202c !important; 
-        text-align: left !important; 
-        width: 100% !important; 
-        padding: 18px 25px !important; 
-        font-size: 10px !important; 
-        text-transform: uppercase !important;
-        white-space: nowrap !important; 
-        border-radius: 0px !important; 
-        display: block !important;
+        background-color: rgba(255,255,255,0.02) !important; color: #94a3b8 !important; border: none !important; 
+        border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; 
+        padding: 18px 25px !important; font-size: 10px !important; text-transform: uppercase !important;
+        white-space: nowrap !important; border-radius: 0px !important; display: block !important;
         transition: all 0.2s ease-in-out !important;
     }
-
-    /* EFEITO AO PASSAR O MOUSE (HOVER) */
     section[data-testid="stSidebar"] div.stButton > button:hover {
-        background-color: #1e293b !important;
-        color: #06b6d4 !important;
-        padding-left: 35px !important;
-        border-left: 3px solid #6d28d9 !important;
+        background-color: #1e293b !important; color: #06b6d4 !important;
+        padding-left: 35px !important; border-left: 3px solid #6d28d9 !important;
     }
 
-    /* EFEITO AO CLICAR (ACTIVE) */
-    section[data-testid="stSidebar"] div.stButton > button:active {
-        background-color: #6d28d9 !important;
+    /* [NOVO] BOTÕES DE AÇÃO DO CORPO PRINCIPAL (SCANNER) */
+    div.stButton > button:not([data-testid="stSidebar"] *) {
+        background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
         color: white !important;
+        border: none !important;
+        padding: 12px 20px !important;
+        font-weight: 800 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
+        border-radius: 4px !important;
+        width: 100% !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+    }
+    div.stButton > button:not([data-testid="stSidebar"] *):hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 10px 15px -3px rgba(109, 40, 217, 0.4) !important;
+        filter: brightness(1.1);
+    }
+    div.stButton > button:not([data-testid="stSidebar"] *):active {
+        transform: translateY(0px) !important;
+        filter: brightness(0.9);
     }
 
-    /* FIX: REMOÇÃO DE FUNDO BRANCO EM SELECTBOXES */
+    /* FIX: SELECTBOXES */
     div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
-    div[data-baseweb="popover"] > div, ul[role="listbox"] { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
-    li[role="option"] { background-color: #1a202c !important; color: white !important; }
-    li[role="option"]:hover { background-color: #6d28d9 !important; }
-
+    
     /* UI CARDS */
     .news-ticker { background: rgba(0, 35, 102, 0.2); border: 1px solid #1e293b; padding: 10px; color: #06b6d4; font-size: 10px; font-weight: 700; text-transform: uppercase; margin-bottom: 15px; }
     .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; }
     .conf-bar-bg { background: #1e293b; height: 4px; width: 80%; border-radius: 10px; margin: 10px auto; overflow: hidden; }
     .conf-bar-fill { background: linear-gradient(90deg, #6d28d9, #06b6d4); height: 100%; }
     
-    /* HISTÓRICO - TEXTO FORTE */
+    /* HISTÓRICO */
     .history-card-box { 
-        background: #161b22 !important; 
-        border: 1px solid #30363d !important; 
-        padding: 12px 20px !important; 
-        border-radius: 8px; 
-        margin-bottom: 8px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+        background: #161b22 !important; border: 1px solid #30363d !important; padding: 12px 20px !important; 
+        border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;
     }
     .history-info { color: #ffffff !important; font-weight: 800 !important; font-size: 13px !important; }
     .history-time { color: #9d54ff !important; font-weight: 900 !important; margin-right: 15px; }
@@ -169,14 +165,12 @@ def draw_card(title, value, perc):
 # --- [CONTEÚDO DINÂMICO] ---
 if st.session_state.aba_ativa == "home":
     st.markdown("""<div class="news-ticker">● LIVE: IA OPERACIONAL ● v57.23 ATIVA</div>""", unsafe_allow_html=True)
-    # QUADROS 1-4
     h1, h2, h3, h4 = st.columns(4)
     with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
     with h2: draw_card("ASSERTIVIDADE", "92%", 92)
     with h3: draw_card("SUGESTÃO", "OVER 2.5 GOLS", 88)
     with h4: draw_card("MERCADO", "ODDS EM QUEDA", 75)
     st.markdown('<div style="height:10px;"></div>', unsafe_allow_html=True)
-    # QUADROS 5-8
     h5, h6, h7, h8 = st.columns(4)
     with h5: draw_card("SCANNER", "ALTA PRESSÃO", 60)
     with h6: draw_card("STAKE SUGERIDA", f"{st.session_state.stake_padrao}%", 100)
@@ -190,6 +184,7 @@ elif st.session_state.aba_ativa == "analise":
     tip = c2.selectbox("📂 TIPO", list(DADOS_HIEARARQUIA[cat].keys()))
     cmp = c3.selectbox("🏆 COMPETIÇÃO", ["Série A", "Champions", "Libertadores"])
     
+    # BOTÃO COM EFEITO v57.23
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
         st.session_state.analise_bloqueada = {"casa": "Time Casa", "fora": "Time Visitante", "vencedor": "Casa", "gols": "OVER 1.5", "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}"}
@@ -202,6 +197,8 @@ elif st.session_state.aba_ativa == "analise":
         with r2: draw_card("MERCADO GOLS", m['gols'], 70)
         with r3: draw_card("STAKE CALC.", m['stake_val'], 100)
         with r4: draw_card("ESCANTEIOS", "MAIS DE 9.5", 65)
+        
+        # BOTÃO COM EFEITO v57.23
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m)
             st.toast("✅ SALVO!")
@@ -219,15 +216,7 @@ elif st.session_state.aba_ativa == "historico":
             idx_real = len(st.session_state.historico_calls) - 1 - i
             col_info, col_del = st.columns([0.9, 0.1])
             with col_info:
-                st.markdown(f"""
-                    <div class="history-card-box">
-                        <div class="history-info">
-                            <span class="history-time">[{call['data']}]</span> 
-                            {call['casa']} x {call['fora']} 
-                            <span class="history-stake">{call['stake_val']} | {call['gols']}</span>
-                        </div>
-                    </div>
-                """, unsafe_allow_html=True)
+                st.markdown(f"""<div class="history-card-box"><div class="history-info"><span class="history-time">[{call['data']}]</span> {call['casa']} x {call['fora']} <span class="history-stake">{call['stake_val']} | {call['gols']}</span></div></div>""", unsafe_allow_html=True)
             with col_del:
                 if st.button("🗑️", key=f"del_{idx_real}"):
                     st.session_state.historico_calls.pop(idx_real)
