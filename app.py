@@ -10,12 +10,12 @@ from datetime import datetime
 # 1. CONFIGURAÇÃO DE PÁGINA
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
-# 2. [CAMADA DE PROTEÇÃO 1] - CSS INTEGRAL (REMOÇÃO DE BRANCO, SCROLL E EFEITOS)
+# 2. [CAMADA DE PROTEÇÃO 1] - CSS INTEGRAL (UI PREMIUM E PERFORMANCE)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
     
-    /* REMOÇÃO GLOBAL DE SCROLLBAR */
+    /* REMOÇÃO DE ROLAGEM E PADRÕES */
     ::-webkit-scrollbar { display: none !important; }
     * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
 
@@ -26,21 +26,44 @@ st.markdown("""
 
     header, [data-testid="stHeader"] { display: none !important; }
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
-    [data-testid="stMainBlockContainer"] { padding: 75px 40px 20px 40px !important; }
+    [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
     
-    /* [DIRETRIZ 2] HEADER ESTÁVEL COM ACELERAÇÃO DE GPU */
+    /* [DIRETRIZ 2] HEADER PREMIUM COMPLETO */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #002366 !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; 
         display: flex; align-items: center; justify-content: space-between; 
-        padding: 0 30px !important; z-index: 1000000; 
+        padding: 0 40px !important; z-index: 1000000; 
         transform: translate3d(0,0,0); -webkit-backface-visibility: hidden;
     }
-    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; }
-    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 20px !important; border-radius: 4px !important; font-weight: 800; font-size: 10px; }
     
+    .header-left { display: flex; align-items: center; gap: 30px; }
+    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; }
+    
+    .nav-links { display: flex; gap: 20px; }
+    .nav-item { color: #ffffff; font-size: 9px !important; text-transform: uppercase; opacity: 0.7; font-weight: 700; cursor: pointer; transition: 0.3s; }
+    .nav-item:hover { opacity: 1; color: #06b6d4 !important; }
+
+    .header-right { display: flex; align-items: center; gap: 15px; }
+    .search-lupa { color: #ffffff; font-size: 14px; cursor: pointer; transition: 0.3s; padding: 0 10px; }
+    .search-lupa:hover { color: #9d54ff; transform: scale(1.1); }
+    
+    .registrar-pill { 
+        color: #ffffff !important; font-size: 10px !important; font-weight: 700; 
+        border: 1px solid #ffffff !important; padding: 6px 15px !important; 
+        border-radius: 20px !important; cursor: pointer; transition: 0.3s;
+    }
+    .registrar-pill:hover { background: #ffffff !important; color: #002366 !important; }
+    
+    .entrar-grad { 
+        background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; 
+        color: white !important; padding: 7px 20px !important; border-radius: 4px !important; 
+        font-weight: 800; font-size: 10px; cursor: pointer; transition: 0.3s;
+    }
+    .entrar-grad:hover { filter: brightness(1.2); box-shadow: 0 0 15px rgba(109, 40, 217, 0.4); }
+
     /* SIDEBAR */
-    [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; overflow: hidden !important; }
+    [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
     
@@ -59,14 +82,10 @@ st.markdown("""
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
         color: #ffffff !important; border: none !important; padding: 15px 20px !important;
         font-weight: 900 !important; text-transform: uppercase !important;
-        letter-spacing: 1.2px !important; border-radius: 6px !important;
-        width: 100% !important; transition: all 0.3s ease !important;
+        border-radius: 6px !important; width: 100% !important; transition: 0.3s ease;
         box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important;
     }
-    div.stButton > button:not([data-testid="stSidebar"] *):hover {
-        transform: translateY(-2px) !important; filter: brightness(1.2) !important;
-        box-shadow: 0 8px 25px rgba(109, 40, 217, 0.5) !important;
-    }
+    div.stButton > button:not([data-testid="stSidebar"] *):hover { transform: translateY(-2px); filter: brightness(1.2); }
 
     /* CARDS */
     .highlight-card { 
@@ -76,12 +95,9 @@ st.markdown("""
     }
     .highlight-card:hover { transform: translateY(-5px); border-color: #6d28d9; }
     
-    .history-card-box { background: #161b22 !important; border: 1px solid #30363d !important; padding: 15px 25px !important; border-radius: 8px; margin-bottom: 12px; }
-    
-    /* INPUTS - REMOÇÃO DE FUNDO BRANCO */
+    /* INPUTS */
     div[data-baseweb="input"], div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
-    input { color: white !important; background-color: transparent !important; }
-
+    
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     </style>
 """, unsafe_allow_html=True)
@@ -90,19 +106,27 @@ st.markdown("""
 with st.sidebar:
     st.markdown("""
         <div class="betano-header">
-            <div style="display:flex; align-items:center;">
+            <div class="header-left">
                 <div class="logo-link">GESTOR IA</div>
-                <div style="margin-left:30px; display:flex; gap:15px;">
-                    <span style="color:white; font-size:9px; opacity:0.6;">DASHBOARD</span>
-                    <span style="color:white; font-size:9px; opacity:0.6;">FINANCEIRO</span>
+                <div class="nav-links">
+                    <div class="nav-item">ESPORTES</div>
+                    <div class="nav-item">AO VIVO</div>
+                    <div class="nav-item">VIRTUAIS</div>
+                    <div class="nav-item">E-SPORTS</div>
+                    <div class="nav-item">OPORTUNIDADES IA</div>
+                    <div class="nav-item">RESULTADOS</div>
                 </div>
             </div>
-            <div class="header-right"><div class="entrar-grad">ENTRAR</div></div>
+            <div class="header-right">
+                <div class="search-lupa">🔍</div>
+                <div class="registrar-pill">REGISTRAR</div>
+                <div class="entrar-grad">ENTRAR</div>
+            </div>
         </div>
         <div style="height:65px;"></div>
     """, unsafe_allow_html=True) 
 
-    # --- INICIALIZAÇÃO DE MEMÓRIA ---
+    # --- MEMÓRIA ---
     if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
     if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
     if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
@@ -121,7 +145,7 @@ with st.sidebar:
     if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
-# FUNÇÃO DE UI PARA CARDS
+# FUNÇÃO CARD
 def draw_card(title, value, perc):
     st.markdown(f"""
         <div class="highlight-card">
@@ -133,7 +157,7 @@ def draw_card(title, value, perc):
         </div>
     """, unsafe_allow_html=True)
 
-# --- LÓGICA DE CONTEÚDO ---
+# --- CONTEÚDO DINÂMICO ---
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 JOGOS DO DIA</h2>", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
@@ -143,46 +167,21 @@ if st.session_state.aba_ativa == "home":
     with h4: draw_card("IA STATUS", "ONLINE", 100)
     h5, h6, h7, h8 = st.columns(4)
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
-    with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
+    with h6: draw_card("STAKE", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
     with h8: draw_card("SISTEMA", "JARVIS v57.23", 100)
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("<h2 style='color:white;'>💰 GESTÃO DE BANCA INTELIGENTE</h2>", unsafe_allow_html=True)
-    
     col_input, col_stats = st.columns([1, 1])
-    
     with col_input:
-        st.markdown("<h4 style='color:#06b6d4;'>CONFIGURAÇÕES</h4>", unsafe_allow_html=True)
-        st.session_state.banca_total = st.number_input("VALOR TOTAL DA BANCA (R$)", value=st.session_state.banca_total, step=50.0)
-        st.session_state.stake_padrao = st.slider("STAKE POR OPERAÇÃO (%)", 0.1, 10.0, st.session_state.stake_padrao, step=0.1)
-        st.session_state.meta_diaria = st.slider("META DIÁRIA - STOP GAIN (%)", 1.0, 20.0, st.session_state.meta_diaria, step=0.5)
-        st.session_state.stop_loss = st.slider("LIMITE DE PERDA - STOP LOSS (%)", 1.0, 20.0, st.session_state.stop_loss, step=0.5)
-
+        st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=st.session_state.banca_total, step=50.0)
+        st.session_state.stake_padrao = st.slider("STAKE (%)", 0.1, 10.0, st.session_state.stake_padrao)
+        st.session_state.meta_diaria = st.slider("META (%)", 1.0, 20.0, st.session_state.meta_diaria)
     with col_stats:
-        st.markdown("<h4 style='color:#9d54ff;'>PLANEJAMENTO OPERACIONAL</h4>", unsafe_allow_html=True)
         valor_stake = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-        valor_meta = (st.session_state.banca_total * st.session_state.meta_diaria / 100)
-        valor_perda = (st.session_state.banca_total * st.session_state.stop_loss / 100)
-        
-        g1, g2 = st.columns(2)
-        with g1: draw_card("VALOR POR ENTRADA", f"R$ {valor_stake:,.2f}", 100)
-        with g1: draw_card("META DIÁRIA (R$)", f"R$ {valor_meta:,.2f}", 100)
-        with g2: draw_card("STOP LOSS (R$)", f"R$ {valor_perda:,.2f}", 100)
-        with g2: draw_card("BANCA FINAL META", f"R$ {(st.session_state.banca_total + valor_meta):,.2f}", 100)
-
-elif st.session_state.aba_ativa == "live":
-    st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
-    l1, l2, l3, l4 = st.columns(4)
-    with l1: draw_card("PRESSÃO CASA", "88%", 88)
-    with l2: draw_card("ATAQUES PERIGOSOS", "14/5min", 70)
-    with l3: draw_card("POSSE DE BOLA", "65%", 65)
-    with l4: draw_card("PREDIÇÃO GOL", "90%", 90)
-    l5, l6, l7, l8 = st.columns(4)
-    with l5: draw_card("VARIAÇÃO ODDS", "1.80", 40)
-    with l6: draw_card("EXPECTED GOLS", "1.52", 80)
-    with l7: draw_card("CORNERS", "FORTE", 85)
-    with l8: draw_card("STAKE SUGERIDA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
+        draw_card("VALOR POR ENTRADA", f"R$ {valor_stake:,.2f}", 100)
+        draw_card("STOP GAIN (R$)", f"R$ {(st.session_state.banca_total * st.session_state.meta_diaria / 100):,.2f}", 100)
 
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
@@ -190,14 +189,12 @@ elif st.session_state.aba_ativa == "analise":
     cat = c1.selectbox("🌎 CATEGORIA", ["COPA 2026", "BRASIL", "EUROPA"])
     tip = c2.selectbox("📂 TIPO", ["Série A", "Champions", "Libertadores"])
     cmp = c3.selectbox("🏆 COMPETIÇÃO", ["Rodada 1", "Finais"])
-    
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
         st.session_state.analise_bloqueada = {"casa": "Flamengo", "fora": "Palmeiras", "vencedor": "Casa", "gols": "OVER 1.5", "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}"}
-            
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
-        st.markdown(f"<div style='color:#9d54ff; font-weight:900; font-size:18px; margin:20px 0;'>RESULTADO: {m['casa']} vs {m['fora']}</div>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='color:#9d54ff;'>RESULTADO: {m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("GOLS", m['gols'], 70)
@@ -209,10 +206,23 @@ elif st.session_state.aba_ativa == "analise":
         with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
         with r8: draw_card("STATUS", "v57.23", 100)
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
-            st.session_state.historico_calls.append(m.copy()); st.toast("✅ SALVO!"); time.sleep(0.5)
+            st.session_state.historico_calls.append(m.copy()); st.toast("✅ SALVO!")
+
+elif st.session_state.aba_ativa == "live":
+    st.markdown("<h2 style='color:white;'>📡 SCANNER LIVE</h2>", unsafe_allow_html=True)
+    l1, l2, l3, l4 = st.columns(4)
+    with l1: draw_card("PRESSÃO CASA", "88%", 88)
+    with l2: draw_card("ATAQUES", "14/5m", 70)
+    with l3: draw_card("POSSE", "65%", 65)
+    with l4: draw_card("GOL PROB", "90%", 90)
+    l5, l6, l7, l8 = st.columns(4)
+    with l5: draw_card("ODDS", "1.80", 40)
+    with l6: draw_card("EXPECTED G.", "1.52", 80)
+    with l7: draw_card("CORNERS", "ALTO", 85)
+    with l8: draw_card("STAKE", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
 
 elif st.session_state.aba_ativa == "historico":
-    st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white;'>📜 HISTÓRICO</h2>", unsafe_allow_html=True)
     if not st.session_state.historico_calls: st.info("Vazio.")
     else:
         for i, call in enumerate(reversed(st.session_state.historico_calls)):
