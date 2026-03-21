@@ -28,7 +28,7 @@ st.markdown("""
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 75px 40px 20px 40px !important; }
     
-    /* [DIRETRIZ 2] HEADER ESTÁVEL */
+    /* [DIRETRIZ 2] HEADER ESTÁVEL COM ACELERAÇÃO DE GPU */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #002366 !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; 
@@ -78,8 +78,9 @@ st.markdown("""
     
     .history-card-box { background: #161b22 !important; border: 1px solid #30363d !important; padding: 15px 25px !important; border-radius: 8px; margin-bottom: 12px; }
     
-    /* INPUTS */
-    div[data-baseweb="select"] > div, div[data-baseweb="input"] { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
+    /* INPUTS - REMOÇÃO DE FUNDO BRANCO */
+    div[data-baseweb="input"], div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
+    input { color: white !important; background-color: transparent !important; }
 
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     </style>
@@ -93,7 +94,7 @@ with st.sidebar:
                 <div class="logo-link">GESTOR IA</div>
                 <div style="margin-left:30px; display:flex; gap:15px;">
                     <span style="color:white; font-size:9px; opacity:0.6;">DASHBOARD</span>
-                    <span style="color:white; font-size:9px; opacity:0.6;">LIVE PRO</span>
+                    <span style="color:white; font-size:9px; opacity:0.6;">FINANCEIRO</span>
                 </div>
             </div>
             <div class="header-right"><div class="entrar-grad">ENTRAR</div></div>
@@ -101,12 +102,16 @@ with st.sidebar:
         <div style="height:65px;"></div>
     """, unsafe_allow_html=True) 
 
+    # --- INICIALIZAÇÃO DE MEMÓRIA ---
     if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
     if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
     if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
     if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
     if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
+    if 'meta_diaria' not in st.session_state: st.session_state.meta_diaria = 3.0
+    if 'stop_loss' not in st.session_state: st.session_state.stop_loss = 5.0
 
+    # --- NAVEGAÇÃO ---
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
@@ -116,7 +121,7 @@ with st.sidebar:
     if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
-# FUNÇÃO DE UI
+# FUNÇÃO DE UI PARA CARDS
 def draw_card(title, value, perc):
     st.markdown(f"""
         <div class="highlight-card">
@@ -128,32 +133,56 @@ def draw_card(title, value, perc):
         </div>
     """, unsafe_allow_html=True)
 
-# --- CONTEÚDO ---
+# --- LÓGICA DE CONTEÚDO ---
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 JOGOS DO DIA</h2>", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
     with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
     with h2: draw_card("ASSERTIVIDADE", "92.4%", 92)
     with h3: draw_card("SUGESTÃO", "OVER 2.5", 88)
-    with h4: draw_card("STATUS", "ONLINE", 100)
+    with h4: draw_card("IA STATUS", "ONLINE", 100)
     h5, h6, h7, h8 = st.columns(4)
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
-    with h6: draw_card("STAKE", f"{st.session_state.stake_padrao}%", 100)
-    with h7: draw_card("ODDS", "ESTÁVEIS", 60)
+    with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
+    with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
     with h8: draw_card("SISTEMA", "JARVIS v57.23", 100)
+
+elif st.session_state.aba_ativa == "gestao":
+    st.markdown("<h2 style='color:white;'>💰 GESTÃO DE BANCA INTELIGENTE</h2>", unsafe_allow_html=True)
+    
+    col_input, col_stats = st.columns([1, 1])
+    
+    with col_input:
+        st.markdown("<h4 style='color:#06b6d4;'>CONFIGURAÇÕES</h4>", unsafe_allow_html=True)
+        st.session_state.banca_total = st.number_input("VALOR TOTAL DA BANCA (R$)", value=st.session_state.banca_total, step=50.0)
+        st.session_state.stake_padrao = st.slider("STAKE POR OPERAÇÃO (%)", 0.1, 10.0, st.session_state.stake_padrao, step=0.1)
+        st.session_state.meta_diaria = st.slider("META DIÁRIA - STOP GAIN (%)", 1.0, 20.0, st.session_state.meta_diaria, step=0.5)
+        st.session_state.stop_loss = st.slider("LIMITE DE PERDA - STOP LOSS (%)", 1.0, 20.0, st.session_state.stop_loss, step=0.5)
+
+    with col_stats:
+        st.markdown("<h4 style='color:#9d54ff;'>PLANEJAMENTO OPERACIONAL</h4>", unsafe_allow_html=True)
+        valor_stake = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
+        valor_meta = (st.session_state.banca_total * st.session_state.meta_diaria / 100)
+        valor_perda = (st.session_state.banca_total * st.session_state.stop_loss / 100)
+        
+        g1, g2 = st.columns(2)
+        with g1: draw_card("VALOR POR ENTRADA", f"R$ {valor_stake:,.2f}", 100)
+        with g1: draw_card("META DIÁRIA (R$)", f"R$ {valor_meta:,.2f}", 100)
+        with g2: draw_card("STOP LOSS (R$)", f"R$ {valor_perda:,.2f}", 100)
+        with g2: draw_card("BANCA FINAL META", f"R$ {(st.session_state.banca_total + valor_meta):,.2f}", 100)
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
     l1, l2, l3, l4 = st.columns(4)
-    with l1: draw_card("PRESSÃO 1 (CASA)", "88%", 88)
-    with l2: draw_card("ATAQUES PERIGOSOS", "12 / 5min", 70)
-    with l3: draw_card("POSSE DE BOLA", "62%", 62)
-    with l4: draw_card("CHANCES GOL", "ALTA", 90)
+    with l1: draw_card("PRESSÃO CASA", "88%", 88)
+    with l2: draw_card("ATAQUES PERIGOSOS", "14/5min", 70)
+    with l3: draw_card("POSSE DE BOLA", "65%", 65)
+    with l4: draw_card("PREDIÇÃO GOL", "90%", 90)
     l5, l6, l7, l8 = st.columns(4)
-    with l5: draw_card("VARIAÇÃO ODDS", "QUEDA 1.80", 40)
-    with l6: draw_card("EXPECTED GOLS", "1.42", 80)
-    with l7: draw_card("ÍNDICE CORNER", "FORTE", 85)
-    with l8: draw_card("IA PREDICTION", "SAIRÁ GOL", 95)
+    with l5: draw_card("VARIAÇÃO ODDS", "1.80", 40)
+    with l6: draw_card("EXPECTED GOLS", "1.52", 80)
+    with l7: draw_card("CORNERS", "FORTE", 85)
+    with l8: draw_card("STAKE SUGERIDA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
 
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
@@ -180,8 +209,7 @@ elif st.session_state.aba_ativa == "analise":
         with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
         with r8: draw_card("STATUS", "v57.23", 100)
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
-            st.session_state.historico_calls.append(m.copy())
-            st.toast("✅ SALVO!")
+            st.session_state.historico_calls.append(m.copy()); st.toast("✅ SALVO!"); time.sleep(0.5)
 
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
@@ -194,13 +222,7 @@ elif st.session_state.aba_ativa == "historico":
                 st.markdown(f"""<div class="history-card-box"><div style="color:white; font-weight:800;"><span style="color:#9d54ff;">[{call['data']}]</span> {call['casa']} x {call['fora']} <span style="color:#06b6d4; margin-left:20px;">{call['stake_val']} | {call['gols']}</span></div></div>""", unsafe_allow_html=True)
             with col_del:
                 if st.button("🗑️", key=f"del_{idx}"):
-                    st.session_state.historico_calls.pop(idx)
-                    st.rerun()
-
-elif st.session_state.aba_ativa == "gestao":
-    st.markdown("<h2 style='color:white;'>💰 GESTÃO</h2>", unsafe_allow_html=True)
-    st.session_state.banca_total = st.number_input("BANCA R$", value=st.session_state.banca_total)
-    st.session_state.stake_padrao = st.slider("STAKE %", 0.5, 10.0, st.session_state.stake_padrao)
+                    st.session_state.historico_calls.pop(idx); st.rerun()
 
 # FOOTER
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.23</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
