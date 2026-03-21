@@ -7,7 +7,7 @@ from datetime import datetime
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
-# DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (SEM FUNDO BRANCO / ZERO FLICKER)
+# DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE / ZERO SCROLL)
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -17,12 +17,12 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. [CAMADA DE PROTEÇÃO 1] - CSS INTEGRAL E BLINDADO (UI PREMIUM)
+# 2. [CAMADA DE PROTEÇÃO 1] - CSS INTEGRAL E BLINDADO
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
     
-    /* RESET DE SCROLL E FUNDOS */
+    /* RESET GLOBAL DE ROLAGEM */
     ::-webkit-scrollbar { display: none !important; }
     * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
 
@@ -35,18 +35,18 @@ st.markdown("""
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
     
-    /* [DIRETRIZ 2] HEADER PREMIUM ORIGINAL (AZUL PROFUNDO) */
+    /* [DIRETRIZ 2] HEADER PREMIUM ORIGINAL */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; 
         display: flex; align-items: center; justify-content: space-between; 
-        padding: 0 40px !important; z-index: 1000000; 
+        padding: 0 35px !important; z-index: 1000000; 
         transform: translate3d(0,0,0); -webkit-backface-visibility: hidden;
     }
     
     .header-left { display: flex; align-items: center; gap: 25px; }
     
-    /* LOGO GESTOR IA COM EFEITO DE BOTÃO HOME */
+    /* LOGO COM EFEITO HOME */
     .logo-container { cursor: pointer; transition: 0.3s ease; }
     .logo-text { 
         color: #9d54ff !important; font-weight: 900; font-size: 21px !important; 
@@ -56,10 +56,9 @@ st.markdown("""
     .logo-container:hover .logo-text {
         color: #ffffff !important;
         filter: drop-shadow(0 0 10px rgba(157, 84, 255, 0.8));
-        transform: scale(1.02);
     }
     
-    /* MENU SUPERIOR - TEXTOS LIMPOS E SIMÉTRICOS */
+    /* TEXTOS DO MENU (LIMPOS E SIMÉTRICOS) */
     .nav-links { display: flex; gap: 18px; align-items: center; }
     .nav-item { 
         color: #ffffff !important; font-size: 8.5px !important; 
@@ -71,7 +70,6 @@ st.markdown("""
 
     .header-right { display: flex; align-items: center; gap: 15px; }
     .search-lupa { color: #ffffff; font-size: 15px; cursor: pointer; opacity: 0.8; transition: 0.3s; }
-    .search-lupa:hover { color: #06b6d4; transform: scale(1.2); }
     
     .registrar-pill { 
         color: #ffffff !important; font-size: 9px !important; font-weight: 800; 
@@ -85,7 +83,6 @@ st.markdown("""
         color: white !important; padding: 8px 22px !important; border-radius: 5px !important; 
         font-weight: 800; font-size: 9.5px; transition: 0.3s ease; cursor: pointer;
     }
-    .entrar-grad:hover { filter: brightness(1.15); box-shadow: 0 0 15px rgba(109, 40, 217, 0.4); }
 
     /* SIDEBAR NAVIGATION */
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
@@ -102,7 +99,7 @@ st.markdown("""
         background-color: #1e293b !important; color: #06b6d4 !important; padding-left: 35px !important; border-left: 3px solid #6d28d9 !important;
     }
 
-    /* BOTÃO LOGO HOME (ESTILIZAÇÃO DO TRIGGER INVISÍVEL) */
+    /* BOTÃO LOGO HOME (TRIGGER INVISÍVEL) */
     .stButton>button[key="logo_home_btn"] {
         position: fixed; top: 15px; left: 40px; width: 120px; height: 35px;
         background: transparent !important; border: none !important; color: transparent !important;
@@ -115,7 +112,7 @@ st.markdown("""
         border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px;
         transition: all 0.3s ease;
     }
-    .highlight-card:hover { transform: translateY(-5px); border-color: #6d28d9; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
+    .highlight-card:hover { transform: translateY(-5px); border-color: #6d28d9; }
     
     /* INPUTS SEM BRANCO */
     div[data-baseweb="input"], div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
@@ -127,7 +124,6 @@ st.markdown("""
 
 # 3. [DIRETRIZ 1] HEADER ANCORADO NA SIDEBAR
 with st.sidebar:
-    # Cabeçalho Visual
     st.markdown("""
         <div class="betano-header">
             <div class="header-left">
@@ -152,7 +148,7 @@ with st.sidebar:
         <div style="height:65px;"></div>
     """, unsafe_allow_html=True) 
 
-    # Botão Invisível que dá funcionalidade de Home ao Logo
+    # Gatilho do Logo Home
     if st.button("", key="logo_home_btn"):
         st.session_state.aba_ativa = "home"
 
@@ -165,7 +161,7 @@ with st.sidebar:
     if 'meta_diaria' not in st.session_state: st.session_state.meta_diaria = 3.0
     if 'stop_loss' not in st.session_state: st.session_state.stop_loss = 5.0
 
-    # --- NAVEGAÇÃO LATERAL ---
+    # --- NAVEGAÇÃO LATERAL (SIMETRIA RESTAURADA) ---
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
@@ -191,23 +187,15 @@ def draw_card(title, value, perc):
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 JOGOS DO DIA</h2>", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
-    with h1:
-        draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
-    with h2:
-        draw_card("ASSERTIVIDADE", "92.4%", 92)
-    with h3:
-        draw_card("SUGESTÃO", "OVER 2.5", 88)
-    with h4:
-        draw_card("IA STATUS", "ONLINE", 100)
+    with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
+    with h2: draw_card("ASSERTIVIDADE", "92.4%", 92)
+    with h3: draw_card("SUGESTÃO", "OVER 2.5", 88)
+    with h4: draw_card("IA STATUS", "ONLINE", 100)
     h5, h6, h7, h8 = st.columns(4)
-    with h5:
-        draw_card("VOL. GLOBAL", "ALTO", 75)
-    with h6:
-        draw_card("STAKE", f"{st.session_state.stake_padrao}%", 100)
-    with h7:
-        draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8:
-        draw_card("SISTEMA", "JARVIS v57.23", 100)
+    with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
+    with h6: draw_card("STAKE", f"{st.session_state.stake_padrao}%", 100)
+    with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v57.23", 100)
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("<h2 style='color:white;'>💰 GESTÃO DE BANCA PRO</h2>", unsafe_allow_html=True)
