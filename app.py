@@ -10,7 +10,7 @@ from datetime import datetime
 # 1. CONFIGURAÇÃO DE PÁGINA
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
-# 2. [CAMADA DE PROTEÇÃO 1] - CSS INTEGRAL (REMOÇÃO DE BRANCO E SCROLL)
+# 2. [CAMADA DE PROTEÇÃO 1] - CSS INTEGRAL (REMOÇÃO DE BRANCO, SCROLL E EFEITOS)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
@@ -39,12 +39,11 @@ st.markdown("""
     .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; }
     .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 20px !important; border-radius: 4px !important; font-weight: 800; font-size: 10px; }
     
-    /* SIDEBAR SEM ROLAGEM */
+    /* SIDEBAR */
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; overflow: hidden !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
     
-    /* BOTÕES DA SIDEBAR */
     section[data-testid="stSidebar"] div.stButton > button { 
         background-color: transparent !important; color: #94a3b8 !important; border: none !important; 
         border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; 
@@ -55,30 +54,38 @@ st.markdown("""
         background-color: #1e293b !important; color: #06b6d4 !important; padding-left: 35px !important; border-left: 3px solid #6d28d9 !important;
     }
 
-    /* BOTÕES DO SCANNER (REMOÇÃO DO FUNDO BRANCO E EFEITOS) */
+    /* BOTÕES DE AÇÃO COM EFEITO GLOW */
     div.stButton > button:not([data-testid="stSidebar"] *) {
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
-        color: #ffffff !important;
-        border: none !important;
-        padding: 15px 20px !important;
-        font-weight: 900 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 1.2px !important;
-        border-radius: 6px !important;
-        width: 100% !important;
-        transition: all 0.3s ease !important;
+        color: #ffffff !important; border: none !important; padding: 15px 20px !important;
+        font-weight: 900 !important; text-transform: uppercase !important;
+        letter-spacing: 1.2px !important; border-radius: 6px !important;
+        width: 100% !important; transition: all 0.3s ease !important;
         box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important;
     }
     div.stButton > button:not([data-testid="stSidebar"] *):hover {
-        transform: translateY(-2px) !important;
-        filter: brightness(1.2) !important;
+        transform: translateY(-2px) !important; filter: brightness(1.2) !important;
         box-shadow: 0 8px 25px rgba(109, 40, 217, 0.5) !important;
     }
 
-    /* CARDS */
-    .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px; }
+    /* CARDS COM EFEITO DE ELEVAÇÃO */
+    .highlight-card { 
+        background: #11151a; border: 1px solid #1e293b; padding: 20px; 
+        border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px;
+        transition: all 0.3s ease !important;
+    }
+    .highlight-card:hover {
+        transform: translateY(-5px);
+        border-color: #6d28d9;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+    }
+    
     .history-card-box { background: #161b22 !important; border: 1px solid #30363d !important; padding: 15px 25px !important; border-radius: 8px; margin-bottom: 12px; }
     
+    /* REMOVER FUNDO BRANCO DE INPUTS */
+    div[data-baseweb="input"] { background-color: #1a202c !important; }
+    input { color: white !important; }
+
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     </style>
 """, unsafe_allow_html=True)
@@ -99,7 +106,7 @@ with st.sidebar:
         <div style="height:65px;"></div>
     """, unsafe_allow_html=True) 
 
-    # --- MEMÓRIA ---
+    # --- INICIALIZAÇÃO DE MEMÓRIA (PERSISTENTE) ---
     if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
     if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
     if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
@@ -112,22 +119,39 @@ with st.sidebar:
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
     if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
     if st.button("📅 JOGOS DO DIA"): st.session_state.aba_ativa = "home"
-    if st.button("🏆 VENCEDORES DA COMPETIÇÃO"): st.session_state.aba_ativa = "vencedores"
+    if st.button("🏆 VENCEDORES"): st.session_state.aba_ativa = "vencedores"
     if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
 # --- FUNÇÃO DE CARD ---
 def draw_card(title, value, perc):
-    st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px;">{title}</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:linear-gradient(90deg, #6d28d9, #06b6d4); height:100%; width:{perc}%;"></div></div></div>""", unsafe_allow_html=True)
+    st.markdown(f"""
+        <div class="highlight-card">
+            <div style="color:#64748b; font-size:9px;">{title}</div>
+            <div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div>
+            <div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;">
+                <div style="background:linear-gradient(90deg, #6d28d9, #06b6d4); height:100%; width:{perc}%;"></div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
-# --- CONTEÚDO ---
+# --- CONTEÚDO DINÂMICO ---
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 JOGOS DO DIA</h2>", unsafe_allow_html=True)
+    
+    # ROW 1 (4 CARDS)
     h1, h2, h3, h4 = st.columns(4)
-    with h1: draw_card("BANCA", f"R$ {st.session_state.banca_total:,.2f}", 100)
-    with h2: draw_card("ASSERTIVIDADE", "92%", 92)
-    with h3: draw_card("SUGESTÃO", "OVER 2.5", 88)
-    with h4: draw_card("IA STATUS", "ONLINE", 100)
+    with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
+    with h2: draw_card("ASSERTIVIDADE IA", "92.4%", 92)
+    with h3: draw_card("MERCADO SUGERIDO", "OVER 2.5 GOLS", 88)
+    with h4: draw_card("IA STATUS", "OPERACIONAL", 100)
+    
+    # ROW 2 (4 CARDS) - TOTALIZANDO 8
+    h5, h6, h7, h8 = st.columns(4)
+    with h5: draw_card("VOL. DE APOSTAS", "ALTO", 75)
+    with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
+    with h7: draw_card("TENDÊNCIA", "ODDS EM QUEDA", 65)
+    with h8: draw_card("SISTEMA", "JARVIS v57.23", 100)
 
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
@@ -143,8 +167,6 @@ elif st.session_state.aba_ativa == "analise":
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
         st.markdown(f"<div style='color:#9d54ff; font-weight:900; font-size:18px; margin:20px 0;'>RESULTADO: {m['casa']} vs {m['fora']}</div>", unsafe_allow_html=True)
-        
-        # CORREÇÃO DE SINTAXE DAS COLUNAS
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("GOLS", m['gols'], 70)
