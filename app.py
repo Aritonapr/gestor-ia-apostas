@@ -28,7 +28,7 @@ st.markdown("""
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
     
-    /* [DIRETRIZ 2] HEADER PREMIUM COMPLETO */
+    /* [DIRETRIZ 2] HEADER PREMIUM COM EFEITOS RESTAURADOS */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #002366 !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; 
@@ -41,24 +41,27 @@ st.markdown("""
     .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; letter-spacing: 1px; }
     
     .nav-links { display: flex; gap: 20px; }
-    .nav-item { color: #ffffff; font-size: 9px !important; text-transform: uppercase; opacity: 0.7; font-weight: 700; transition: 0.3s; }
-    .nav-item:hover { opacity: 1; color: #06b6d4 !important; }
+    .nav-item { 
+        color: #ffffff !important; font-size: 9px !important; text-transform: uppercase; 
+        opacity: 0.7; font-weight: 700; transition: 0.3s ease; cursor: pointer;
+    }
+    .nav-item:hover { opacity: 1 !important; color: #06b6d4 !important; transform: scale(1.05); }
 
     .header-right { display: flex; align-items: center; gap: 15px; }
     .search-lupa { color: #ffffff; font-size: 14px; cursor: pointer; transition: 0.3s; }
-    .search-lupa:hover { color: #9d54ff; transform: scale(1.1); }
+    .search-lupa:hover { color: #9d54ff; transform: scale(1.2); }
     
     .registrar-pill { 
         color: #ffffff !important; font-size: 10px !important; font-weight: 700; 
         border: 1px solid #ffffff !important; padding: 6px 15px !important; 
-        border-radius: 20px !important; transition: 0.3s;
+        border-radius: 20px !important; transition: 0.3s ease; cursor: pointer;
     }
     .registrar-pill:hover { background: white !important; color: #002366 !important; }
     
     .entrar-grad { 
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; 
         color: white !important; padding: 7px 20px !important; border-radius: 4px !important; 
-        font-weight: 800; font-size: 10px; transition: 0.3s;
+        font-weight: 800; font-size: 10px; transition: 0.3s ease; cursor: pointer;
     }
     .entrar-grad:hover { filter: brightness(1.2); box-shadow: 0 0 15px rgba(109, 40, 217, 0.4); }
 
@@ -176,8 +179,8 @@ elif st.session_state.aba_ativa == "gestao":
     with col_input:
         st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=st.session_state.banca_total, step=50.0)
         st.session_state.stake_padrao = st.slider("STAKE POR OPERAÇÃO (%)", 0.1, 10.0, st.session_state.stake_padrao)
-        st.session_state.meta_diaria = st.slider("META DIÁRIA - STOP GAIN (%)", 1.0, 30.0, st.session_state.meta_diaria)
-        st.session_state.stop_loss = st.slider("LIMITE DE PERDA - STOP LOSS (%)", 1.0, 30.0, st.session_state.stop_loss)
+        st.session_state.meta_diaria = st.slider("META DIÁRIA (%)", 1.0, 30.0, st.session_state.meta_diaria)
+        st.session_state.stop_loss = st.slider("LIMITE PERDA (%)", 1.0, 30.0, st.session_state.stop_loss)
     with col_stats:
         v_stake = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
         v_meta = (st.session_state.banca_total * st.session_state.meta_diaria / 100)
