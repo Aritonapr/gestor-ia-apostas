@@ -1,6 +1,5 @@
 import streamlit as st
 import time
-import random
 from datetime import datetime
 
 # ==============================================================================
@@ -11,11 +10,12 @@ from datetime import datetime
 # 1. CONFIGURAÇÃO DE PÁGINA
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
-# 2. [CAMADA DE PROTEÇÃO 1] - CSS INTEGRAL (ESTABILIDADE VISUAL)
+# 2. [CAMADA DE PROTEÇÃO 1] - CSS INTEGRAL (REMOÇÃO DE BRANCO, SCROLL E EFEITOS)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
     
+    /* REMOÇÃO GLOBAL DE SCROLLBAR */
     ::-webkit-scrollbar { display: none !important; }
     * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
 
@@ -28,7 +28,7 @@ st.markdown("""
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 75px 40px 20px 40px !important; }
     
-    /* [DIRETRIZ 2] HEADER COM ACELERAÇÃO DE HARDWARE */
+    /* [DIRETRIZ 2] HEADER ESTÁVEL */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #002366 !important; border-bottom: 1px solid rgba(255,255,255,0.1) !important; 
@@ -39,7 +39,7 @@ st.markdown("""
     .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; }
     .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 20px !important; border-radius: 4px !important; font-weight: 800; font-size: 10px; }
     
-    /* SIDEBAR DESIGN */
+    /* SIDEBAR */
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; overflow: hidden !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
@@ -116,6 +116,7 @@ with st.sidebar:
     if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
+# FUNÇÃO DE UI
 def draw_card(title, value, perc):
     st.markdown(f"""
         <div class="highlight-card">
@@ -127,11 +128,11 @@ def draw_card(title, value, perc):
         </div>
     """, unsafe_allow_html=True)
 
-# --- CONTEÚDO PRINCIPAL ---
+# --- CONTEÚDO ---
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 JOGOS DO DIA</h2>", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
-    draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
+    with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
     with h2: draw_card("ASSERTIVIDADE", "92.4%", 92)
     with h3: draw_card("SUGESTÃO", "OVER 2.5", 88)
     with h4: draw_card("STATUS", "ONLINE", 100)
@@ -139,18 +140,15 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("ODDS", "ESTÁVEIS", 60)
-    with h8: draw_card("VERSÃO", "v57.23", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v57.23", 100)
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
-    st.markdown("""<div style="background:rgba(6, 182, 212, 0.1); border:1px solid #06b6d4; padding:10px; color:#06b6d4; font-size:10px; font-weight:700; margin-bottom:20px;">● MONITORANDO 42 JOGOS AO VIVO</div>""", unsafe_allow_html=True)
-    
     l1, l2, l3, l4 = st.columns(4)
     with l1: draw_card("PRESSÃO 1 (CASA)", "88%", 88)
     with l2: draw_card("ATAQUES PERIGOSOS", "12 / 5min", 70)
     with l3: draw_card("POSSE DE BOLA", "62%", 62)
     with l4: draw_card("CHANCES GOL", "ALTA", 90)
-    
     l5, l6, l7, l8 = st.columns(4)
     with l5: draw_card("VARIAÇÃO ODDS", "QUEDA 1.80", 40)
     with l6: draw_card("EXPECTED GOLS", "1.42", 80)
@@ -172,13 +170,18 @@ elif st.session_state.aba_ativa == "analise":
         m = st.session_state.analise_bloqueada
         st.markdown(f"<div style='color:#9d54ff; font-weight:900; font-size:18px; margin:20px 0;'>RESULTADO: {m['casa']} vs {m['fora']}</div>", unsafe_allow_html=True)
         r1, r2, r3, r4 = st.columns(4)
-        with r1: draw_card("VENCEDOR", m['vencedor'], 85); with r2: draw_card("GOLS", m['gols'], 70)
-        with r3: draw_card("STAKE", m['stake_val'], 100); with r4: draw_card("CANTOS", "9.5+", 65)
+        with r1: draw_card("VENCEDOR", m['vencedor'], 85)
+        with r2: draw_card("GOLS", m['gols'], 70)
+        with r3: draw_card("STAKE", m['stake_val'], 100)
+        with r4: draw_card("CANTOS", "9.5+", 65)
         r5, r6, r7, r8 = st.columns(4)
-        with r5: draw_card("IA CONF.", "94%", 94); with r6: draw_card("PRESSÃO", "ALTA", 88)
-        with r7: draw_card("TENDÊNCIA", "SUBINDO", 60); with r8: draw_card("STATUS", "v57.23", 100)
+        with r5: draw_card("IA CONF.", "94%", 94)
+        with r6: draw_card("PRESSÃO", "ALTA", 88)
+        with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
+        with r8: draw_card("STATUS", "v57.23", 100)
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
-            st.session_state.historico_calls.append(m.copy()); st.toast("✅ SALVO!"); time.sleep(0.5)
+            st.session_state.historico_calls.append(m.copy())
+            st.toast("✅ SALVO!")
 
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
@@ -191,7 +194,8 @@ elif st.session_state.aba_ativa == "historico":
                 st.markdown(f"""<div class="history-card-box"><div style="color:white; font-weight:800;"><span style="color:#9d54ff;">[{call['data']}]</span> {call['casa']} x {call['fora']} <span style="color:#06b6d4; margin-left:20px;">{call['stake_val']} | {call['gols']}</span></div></div>""", unsafe_allow_html=True)
             with col_del:
                 if st.button("🗑️", key=f"del_{idx}"):
-                    st.session_state.historico_calls.pop(idx); st.rerun()
+                    st.session_state.historico_calls.pop(idx)
+                    st.rerun()
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("<h2 style='color:white;'>💰 GESTÃO</h2>", unsafe_allow_html=True)
