@@ -10,18 +10,18 @@ from datetime import datetime
 # 1. CONFIGURAÇÃO DE PÁGINA
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
-# 2. [CAMADA DE PROTEÇÃO 1] - CSS DE ALTA PRIORIDADE (ZERO WHITE BACKGROUND)
+# 2. [CAMADA DE PROTEÇÃO 1] - CSS INTEGRAL (REMOÇÃO DE BRANCO E SCROLL)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
     
-    /* ELIMINA SCROLLBARS E FUNDOS PADRÃO */
+    /* REMOÇÃO GLOBAL DE SCROLLBAR */
     ::-webkit-scrollbar { display: none !important; }
     * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+
     html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp {
         background-color: #0b0e11 !important;
         font-family: 'Inter', sans-serif;
-        overflow: hidden !important;
     }
 
     header, [data-testid="stHeader"] { display: none !important; }
@@ -39,8 +39,8 @@ st.markdown("""
     .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; }
     .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 20px !important; border-radius: 4px !important; font-weight: 800; font-size: 10px; }
     
-    /* SIDEBAR ESTILIZADA */
-    [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
+    /* SIDEBAR SEM ROLAGEM */
+    [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; overflow: hidden !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
     
@@ -55,7 +55,7 @@ st.markdown("""
         background-color: #1e293b !important; color: #06b6d4 !important; padding-left: 35px !important; border-left: 3px solid #6d28d9 !important;
     }
 
-    /* BOTÕES DE AÇÃO (SCANNER) - CORREÇÃO DE FUNDO BRANCO E EFEITOS */
+    /* BOTÕES DO SCANNER (REMOÇÃO DO FUNDO BRANCO E EFEITOS) */
     div.stButton > button:not([data-testid="stSidebar"] *) {
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
         color: #ffffff !important;
@@ -66,7 +66,7 @@ st.markdown("""
         letter-spacing: 1.2px !important;
         border-radius: 6px !important;
         width: 100% !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        transition: all 0.3s ease !important;
         box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important;
     }
     div.stButton > button:not([data-testid="stSidebar"] *):hover {
@@ -74,9 +74,6 @@ st.markdown("""
         filter: brightness(1.2) !important;
         box-shadow: 0 8px 25px rgba(109, 40, 217, 0.5) !important;
     }
-
-    /* SELECTBOX - REMOVER FUNDO BRANCO */
-    div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
 
     /* CARDS */
     .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px; }
@@ -115,7 +112,7 @@ with st.sidebar:
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
     if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
     if st.button("📅 JOGOS DO DIA"): st.session_state.aba_ativa = "home"
-    if st.button("🏆 VENCEDORES"): st.session_state.aba_ativa = "vencedores"
+    if st.button("🏆 VENCEDORES DA COMPETIÇÃO"): st.session_state.aba_ativa = "vencedores"
     if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
@@ -146,12 +143,19 @@ elif st.session_state.aba_ativa == "analise":
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
         st.markdown(f"<div style='color:#9d54ff; font-weight:900; font-size:18px; margin:20px 0;'>RESULTADO: {m['casa']} vs {m['fora']}</div>", unsafe_allow_html=True)
+        
+        # CORREÇÃO DE SINTAXE DAS COLUNAS
         r1, r2, r3, r4 = st.columns(4)
-        with r1: draw_card("VENCEDOR", m['vencedor'], 85); with r2: draw_card("GOLS", m['gols'], 70)
-        with r3: draw_card("STAKE", m['stake_val'], 100); with r4: draw_card("CANTOS", "9.5+", 65)
+        with r1: draw_card("VENCEDOR", m['vencedor'], 85)
+        with r2: draw_card("GOLS", m['gols'], 70)
+        with r3: draw_card("STAKE", m['stake_val'], 100)
+        with r4: draw_card("CANTOS", "9.5+", 65)
+        
         r5, r6, r7, r8 = st.columns(4)
-        with r5: draw_card("IA CONF.", "94%", 94); with r6: draw_card("PRESSÃO", "ALTA", 88)
-        with r7: draw_card("TENDÊNCIA", "SUBINDO", 60); with r8: draw_card("STATUS", "v57.23", 100)
+        with r5: draw_card("IA CONF.", "94%", 94)
+        with r6: draw_card("PRESSÃO", "ALTA", 88)
+        with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
+        with r8: draw_card("STATUS", "v57.23", 100)
 
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
