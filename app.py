@@ -84,12 +84,13 @@ st.markdown("""
         border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; 
         padding: 18px 25px !important; font-size: 10px !important; text-transform: uppercase !important;
         border-radius: 0px !important; transition: all 0.2s ease !important;
+        white-space: nowrap !important;
     }
     section[data-testid="stSidebar"] div.stButton > button:hover {
         background-color: #1e293b !important; color: #06b6d4 !important; padding-left: 35px !important; border-left: 3px solid #6d28d9 !important;
     }
 
-    /* [RESTO] EFEITOS DE BOTÕES DE AÇÃO NO CORPO PRINCIPAL (SCANNER) */
+    /* [RESTO] EFEITOS DE BOTÕES DE AÇÃO NO CORPO PRINCIPAL */
     div.stButton > button:not([data-testid="stSidebar"] *) {
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
         color: #ffffff !important;
@@ -108,9 +109,6 @@ st.markdown("""
         transform: translateY(-2px) !important;
         filter: brightness(1.2) !important;
         box-shadow: 0 8px 25px rgba(109, 40, 217, 0.5) !important;
-    }
-    div.stButton > button:not([data-testid="stSidebar"] *):active {
-        transform: translateY(0px) !important;
     }
 
     /* UI CARDS */
@@ -192,6 +190,8 @@ def draw_card(title, value, perc):
     """, unsafe_allow_html=True)
 
 # --- LÓGICA DE TELAS ---
+
+# TELA 1: HOME
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 JOGOS DO DIA</h2>", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
@@ -205,6 +205,7 @@ if st.session_state.aba_ativa == "home":
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
     with h8: draw_card("SISTEMA", "JARVIS v57.23", 100)
 
+# TELA 2: GESTÃO
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("<h2 style='color:white;'>💰 GESTÃO DE BANCA PRO</h2>", unsafe_allow_html=True)
     col_input, col_stats = st.columns([1, 1.5])
@@ -222,23 +223,21 @@ elif st.session_state.aba_ativa == "gestao":
         with g2: draw_card("STOP GAIN (R$)", f"R$ {v_meta:,.2f}", 100)
         with g3: draw_card("STOP LOSS (R$)", f"R$ {v_loss:,.2f}", 100)
         with g4: draw_card("ALVO FINAL", f"R$ {(st.session_state.banca_total + v_meta):,.2f}", 100)
-        g5, g6, g7, g8 = st.columns(4)
-        with g5: draw_card("RISCO TOTAL", f"{st.session_state.stake_padrao}%", 100)
-        with g6: draw_card("ENTRADAS/META", f"{round(v_meta/v_stake if v_stake > 0 else 0)}", 100)
-        with g7: draw_card("ENTRADAS/LOSS", f"{round(v_loss/v_stake if v_stake > 0 else 0)}", 100)
-        with g8: draw_card("SAÚDE BANCA", "EXCELENTE", 100)
 
+# TELA 3: SCANNER PRÉ-LIVE (ALTERAÇÃO REALIZADA AQUI)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
-    c1, c2, c3 = st.columns(3)
-    cat = c1.selectbox("🌎 CATEGORIA", ["COPA 2026", "BRASIL", "EUROPA"])
-    tip = c2.selectbox("📂 TIPO", ["Série A", "Champions", "Libertadores"])
-    cmp = c3.selectbox("🏆 COMPETIÇÃO", ["Rodada 1", "Finais"])
     
-    # BOTÃO EXECUTAR COM EFEITOS RESTAURADOS
+    # [ALTERAÇÃO SOLICITADA] Vencedores da Competição em uma linha só (Lado Esquerdo do formulário)
+    cmp = st.selectbox("🏆 VENCEDORES DA COMPETIÇÃO", ["Rodada Atual", "Finais", "Fase de Grupos", "Oitavas de Final", "Quartas de Final"])
+    
+    c1, c2 = st.columns(2)
+    cat = c1.selectbox("🌎 CATEGORIA", ["BRASIL", "EUROPA", "AMÉRICA DO SUL", "MUNDO"])
+    tip = c2.selectbox("📂 TIPO", ["Série A", "Série B", "Champions League", "Libertadores", "Premier League"])
+    
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-        st.session_state.analise_bloqueada = {"casa": "Flamengo", "fora": "Palmeiras", "vencedor": "Casa", "gols": "OVER 1.5", "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}"}
+        st.session_state.analise_bloqueada = {"casa": "Time A", "fora": "Time B", "vencedor": "Casa", "gols": "OVER 2.5", "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}"}
     
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
@@ -248,18 +247,11 @@ elif st.session_state.aba_ativa == "analise":
         with r2: draw_card("GOLS", m['gols'], 70)
         with r3: draw_card("STAKE", m['stake_val'], 100)
         with r4: draw_card("CANTOS", "9.5+", 65)
-        
-        r5, r6, r7, r8 = st.columns(4)
-        with r5: draw_card("IA CONF.", "94%", 94)
-        with r6: draw_card("PRESSÃO", "ALTA", 88)
-        with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
-        with r8: draw_card("STATUS", "v57.23", 100)
-        
-        # BOTÃO SALVAR COM EFEITOS RESTAURADOS
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ SALVO!")
 
+# TELA 4: LIVE
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER LIVE</h2>", unsafe_allow_html=True)
     l1, l2, l3, l4 = st.columns(4)
@@ -267,12 +259,36 @@ elif st.session_state.aba_ativa == "live":
     with l2: draw_card("ATAQUES", "14/5m", 70)
     with l3: draw_card("POSSE", "65%", 65)
     with l4: draw_card("GOL PROB", "90%", 90)
-    l5, l6, l7, l8 = st.columns(4)
-    with l5: draw_card("ODDS", "1.80", 40)
-    with l6: draw_card("EXPECTED G.", "1.52", 80)
-    with l7: draw_card("CORNERS", "ALTO", 85)
-    with l8: draw_card("STAKE SUGERIDA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
 
+# TELA 5: VENCEDORES DA COMPETIÇÃO (PÁGINA DEDICADA)
+elif st.session_state.aba_ativa == "vencedores":
+    st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
+    v1, v2, v3, v4 = st.columns(4)
+    with v1: draw_card("FAVORITO 1", "Flamengo", 45)
+    with v2: draw_card("FAVORITO 2", "Palmeiras", 38)
+    with v3: draw_card("FAVORITO 3", "Botafogo", 25)
+    with v4: draw_card("ZEBRA PROB", "Fortaleza", 12)
+    st.info("Algoritmo calculando probabilidades de título baseadas em performance recente e ROI.")
+
+# TELA 6: APOSTAS POR GOLS
+elif st.session_state.aba_ativa == "gols":
+    st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>", unsafe_allow_html=True)
+    g1, g2, g3, g4 = st.columns(4)
+    with g1: draw_card("OVER 0.5 HT", "82%", 82)
+    with g2: draw_card("OVER 1.5 FT", "75%", 75)
+    with g3: draw_card("AMBAS MARCAM", "61%", 61)
+    with g4: draw_card("UNDER 3.5", "90%", 90)
+
+# TELA 7: APOSTAS POR ESCANTEIOS
+elif st.session_state.aba_ativa == "escanteios":
+    st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
+    e1, e2, e3, e4 = st.columns(4)
+    with e1: draw_card("OVER 8.5", "88%", 88)
+    with e2: draw_card("OVER 10.5", "62%", 62)
+    with e3: draw_card("CANTOS HT", "4.5+", 70)
+    with e4: draw_card("CORNER RACE", "Time A", 55)
+
+# TELA 8: HISTÓRICO
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
     if not st.session_state.historico_calls:
