@@ -7,7 +7,7 @@ from datetime import datetime
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
-# DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO)
+# DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADA - SELECTBOX BLINDADO)
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -112,11 +112,24 @@ st.markdown("""
         box-shadow: 0 8px 25px rgba(109, 40, 217, 0.5) !important;
     }
 
-    /* [DIRETRIZ 4] REFORÇO ZERO WHITE - INPUTS E SELECTS */
-    div[data-baseweb="input"], .stNumberInput div {{ background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }}
-    div[data-baseweb="input"] input {{ background-color: #1a202c !important; color: white !important; }}
-    div[data-baseweb="select"] > div {{ background-color: #1a202c !important; color: white !important; }}
+    /* [DIRETRIZ 4 - REFORÇADA] ZERO WHITE - INPUTS E SELECTS */
+    /* Captura o container e o fundo interno dos selects e inputs */
+    div[data-baseweb="input"], 
+    div[data-baseweb="select"], 
+    div[data-baseweb="select"] > div,
+    .stNumberInput div,
+    .stSelectbox div[data-baseweb="select"] > div { 
+        background-color: #1a202c !important; 
+        color: white !important; 
+        border: 1px solid #334155 !important; 
+    }
     
+    /* Garante que o texto digitado e selecionado seja branco */
+    input, span[data-baseweb="select"] { 
+        color: white !important; 
+        background-color: transparent !important; 
+    }
+
     /* KPI CARDS (OS "QUADRADOS") */
     .highlight-card { 
         background: #11151a; border: 1px solid #1e293b; padding: 20px; 
@@ -180,7 +193,7 @@ with st.sidebar:
     if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
-# FUNÇÃO CARD GENÉRICA (O "QUADRADO")
+# FUNÇÃO CARD GENÉRICA (O "QUADRADO" KPI)
 def draw_card(title, value, perc):
     st.markdown(f"""
         <div class="highlight-card">
@@ -234,14 +247,21 @@ elif st.session_state.aba_ativa == "gestao":
     with g7: draw_card("ENTRADAS/LOSS", f"{int(v_loss/v_stake) if v_stake > 0 else 0}", 100)
     with g8: draw_card("SAÚDE FINANCEIRA", "EXCELENTE", 100)
 
-# TELA 3: SCANNER PRÉ-LIVE (RESTAURADO)
+# TELA 3: SCANNER PRÉ-LIVE (AJUSTE ZERO WHITE REALIZADO)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
-    cmp = st.selectbox("🏆 VENCEDORES DA COMPETIÇÃO", ["Rodada Atual", "Finais", "Fase de Grupos"])
-    c1, c2 = st.columns(2)
-    cat = c1.selectbox("🌎 CATEGORIA", ["BRASIL", "EUROPA", "MUNDO"])
-    tip = c2.selectbox("📂 TIPO", ["Série A", "Champions League", "Libertadores"])
     
+    # Selectbox 1 (Vencedores) - Fundo Blindado via CSS Global
+    cmp = st.selectbox("🏆 VENCEDORES DA COMPETIÇÃO", ["Rodada Atual", "Finais", "Fase de Grupos", "Playoffs"])
+    
+    c1, c2 = st.columns(2)
+    with c1:
+        # Selectbox 2 (Categoria) - Fundo Blindado via CSS Global
+        cat = st.selectbox("🌎 CATEGORIA", ["BRASIL", "EUROPA", "MUNDO", "AMÉRICA DO SUL"])
+    with c2:
+        tip = st.selectbox("📂 TIPO", ["Série A", "Champions League", "Libertadores", "Premier League"])
+    
+    # Botão com Gradiente Vibrante
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
         st.session_state.analise_bloqueada = {"casa": "Flamengo", "fora": "Palmeiras", "vencedor": "Casa", "gols": "OVER 1.5", "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}"}
@@ -249,21 +269,23 @@ elif st.session_state.aba_ativa == "analise":
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
         st.markdown(f"<h3 style='color:#9d54ff;'>RESULTADO: {m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
+        # 8 Quadrantes de Resultados
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("GOLS", m['gols'], 70)
         with r3: draw_card("STAKE", m['stake_val'], 100)
         with r4: draw_card("CANTOS", "9.5+", 65)
+        
         r5, r6, r7, r8 = st.columns(4)
         with r5: draw_card("IA CONF.", "94%", 94)
         with r6: draw_card("PRESSÃO", "ALTA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
         with r8: draw_card("SISTEMA", "v57.23", 100)
         
-        # BOTÃO DE HISTÓRICO RESTAURADO
+        # Botão de Envio para Histórico
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
-            st.toast("✅ CALL SALVA COM SUCESSO!")
+            st.toast("✅ CALL REGISTRADA NO SISTEMA!")
 
 # TELA 4: LIVE (8 CARDS)
 elif st.session_state.aba_ativa == "live":
@@ -277,7 +299,7 @@ elif st.session_state.aba_ativa == "live":
     with l5: draw_card("ODDS ATUAIS", "1.85", 100)
     with l6: draw_card("VARIAÇÃO", "+0.12", 40)
     with l7: draw_card("CORNERS LIVE", "8", 80)
-    with l8: draw_card("STAKE LIVE", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
+    with l8: draw_card("STAKE SUGERIDA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
 
 # TELA 5: VENCEDORES (8 CARDS)
 elif st.session_state.aba_ativa == "vencedores":
@@ -325,7 +347,7 @@ elif st.session_state.aba_ativa == "escanteios":
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
     if not st.session_state.historico_calls:
-        st.info("Nenhuma operação registrada.")
+        st.info("Nenhuma operação registrada no histórico.")
     else:
         for i, call in enumerate(reversed(st.session_state.historico_calls)):
             idx = len(st.session_state.historico_calls) - 1 - i
@@ -337,5 +359,5 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-# FOOTER
+# FOOTER PERSISTENTE
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.23</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
