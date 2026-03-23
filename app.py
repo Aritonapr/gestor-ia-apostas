@@ -17,6 +17,21 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# --- INICIALIZAÇÃO DE MEMÓRIA BLINDADA E PARAMETRO DE NAVEGAÇÃO ---
+if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
+if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
+if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
+if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
+if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
+if 'meta_diaria' not in st.session_state: st.session_state.meta_diaria = 3.0
+if 'stop_loss' not in st.session_state: st.session_state.stop_loss = 5.0
+
+# Funcionalidade do botão GESTOR IA (Redirecionamento Home)
+query_params = st.query_params
+if query_params.get("go") == "home":
+    st.session_state.aba_ativa = "home"
+    st.query_params.clear()
+
 # 2. [CAMADA DE PROTEÇÃO 1] - CSS INTEGRAL E BLINDADO
 st.markdown("""
     <style>
@@ -45,7 +60,8 @@ st.markdown("""
     }
     
     .header-left { display: flex; align-items: center; gap: 25px; }
-    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; letter-spacing: 0.5px; }
+    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; cursor: pointer;}
+    .logo-link:hover { filter: brightness(1.2); }
     
     .nav-links { display: flex; gap: 18px; align-items: center; }
     .nav-item { 
@@ -159,7 +175,7 @@ with st.sidebar:
     st.markdown("""
         <div class="betano-header">
             <div class="header-left">
-                <div class="logo-link">GESTOR IA</div>
+                <a href="?go=home" class="logo-link">GESTOR IA</a>
                 <div class="nav-links">
                     <div class="nav-item">APOSTAS ESPORTIVAS</div>
                     <div class="nav-item">APOSTAS AO VIVO</div>
@@ -177,15 +193,6 @@ with st.sidebar:
         </div>
         <div style="height:65px;"></div>
     """, unsafe_allow_html=True) 
-
-    # --- INICIALIZAÇÃO DE MEMÓRIA BLINDADA ---
-    if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
-    if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
-    if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
-    if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
-    if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
-    if 'meta_diaria' not in st.session_state: st.session_state.meta_diaria = 3.0
-    if 'stop_loss' not in st.session_state: st.session_state.stop_loss = 5.0
 
     # --- NAVEGAÇÃO ---
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
