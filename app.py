@@ -18,22 +18,50 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# BANCO DE DADOS DE COMPETIÇÕES (DIRETRIZ DE INTEGRIDADE GEOGRÁFICA)
-DADOS_COMPETICOES = {
-    "BRASIL": {
-        "Série A": ["Flamengo", "Palmeiras", "Botafogo", "Atlético-MG", "São Paulo", "Cruzeiro", "Fortaleza", "Internacional", "Fluminense", "Grêmio"],
-        "Série B": ["Santos", "Sport", "Coritiba", "Goiás", "Ceará", "Vila Nova", "América-MG", "Operário", "Novorizontino"],
-        "Copa do Brasil": ["Vasco", "Corinthians", "Bahia", "Athletico-PR", "Juventude", "Criciúma", "Cuiabá", "Vitória"]
+# BANCO DE DADOS HIERÁRQUICO (RESPEITANDO CATEGORIA -> TIPO -> CAMPEONATO)
+DADOS_MUNDIAIS = {
+    "🏆 COPA DO MUNDO 2026": {
+        "Seleções FIFA": {
+            "Principais": ["Brasil", "Argentina", "França", "Alemanha", "Espanha", "Inglaterra", "Portugal", "Holanda", "Itália", "Uruguai"],
+            "Eliminatórias": ["Colômbia", "Equador", "Chile", "Paraguai", "Japão", "Coreia do Sul", "Marrocos", "Senegal"]
+        }
     },
-    "EUROPA": {
-        "Premier League": ["Manchester City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Newcastle", "Manchester United"],
-        "La Liga": ["Real Madrid", "Barcelona", "Girona", "Atlético de Madrid", "Athletic Bilbao", "Real Sociedad", "Villarreal"],
-        "Champions League": ["Bayern de Munique", "PSG", "Inter de Milão", "Dortmund", "Bayer Leverkusen", "Juventus", "Benfica", "Porto"]
+    "🇧🇷 BRASIL (LIGAS & COPAS)": {
+        "Nacional": {
+            "Série A": ["Flamengo", "Palmeiras", "Botafogo", "Atlético-MG", "São Paulo", "Cruzeiro", "Fortaleza", "Internacional", "Fluminense", "Grêmio"],
+            "Série B": ["Santos", "Sport", "Coritiba", "Goiás", "Ceará", "Vila Nova", "América-MG", "Operário"],
+            "Copa do Brasil": ["Vasco", "Corinthians", "Bahia", "Athletico-PR", "Juventude", "Criciúma", "Cuiabá", "Vitória"]
+        }
     },
-    "MUNDO": {
-        "Libertadores": ["River Plate", "Boca Juniors", "Peñarol", "Nacional", "Colo-Colo", "LDU", "Ind. del Valle", "Olimpia"],
-        "MLS": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "NY City", "Seattle Sounders"],
-        "Saudi Pro League": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq"]
+    "🌍 AMÉRICA DO SUL (CONMEBOL)": {
+        "Continentais": {
+            "Libertadores": ["River Plate", "Boca Juniors", "Peñarol", "Nacional", "Colo-Colo", "LDU", "Ind. del Valle", "Olimpia"],
+            "Sul-Americana": ["Racing", "Lanús", "Defensa y Justicia", "Ind. Medellín", "Libertad"]
+        }
+    },
+    "🇪🇺 EUROPA (PRINCIPAIS LIGAS)": {
+        "Inglaterra": {
+            "Premier League": ["Manchester City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Manchester United", "Newcastle"]
+        },
+        "Espanha": {
+            "La Liga": ["Real Madrid", "Barcelona", "Atlético de Madrid", "Girona", "Athletic Bilbao", "Real Sociedad"]
+        },
+        "Alemanha": {
+            "Bundesliga": ["Bayer Leverkusen", "Bayern de Munique", "Dortmund", "RB Leipzig", "Stuttgart"]
+        },
+        "UEFA": {
+            "Champions League": ["Inter de Milão", "PSG", "Benfica", "Porto", "Milan", "Napoli"]
+        }
+    },
+    "🇸🇦 ORIENTE MÉDIO & ÁSIA": {
+        "Arábia Saudita": {
+            "Saudi Pro League": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq"]
+        }
+    },
+    "🇺🇸 AMÉRICA DO NORTE (MLS)": {
+        "Estados Unidos": {
+            "MLS Pro": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "Seattle Sounders"]
+        }
     }
 }
 
@@ -55,7 +83,7 @@ st.markdown("""
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
     
-    /* [DIRETRIZ 2] HEADER PREMIUM ORIGINAL COM GPU ACCELERATION */
+    /* HEADER PREMIUM ORIGINAL COM GPU ACCELERATION */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; 
@@ -66,11 +94,10 @@ st.markdown("""
     
     .header-left { display: flex; align-items: center; gap: 25px; }
     
-    /* ALTERAÇÃO: LOGO COMO BOTÃO HOME */
     .logo-link { 
         color: #9d54ff !important; font-weight: 900; font-size: 21px !important; 
         text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none !important;
-        transition: 0.3s;
+        cursor: pointer; transition: 0.3s;
     }
     .logo-link:hover { filter: brightness(1.3); transform: scale(1.02); }
     
@@ -117,7 +144,7 @@ st.markdown("""
         background-color: #1e293b !important; color: #06b6d4 !important; padding-left: 35px !important; border-left: 3px solid #6d28d9 !important;
     }
 
-    /* [DIRETRIZ 4] EFEITOS DE BOTÕES DE AÇÃO NO CORPO PRINCIPAL */
+    /* BOTOES DE ACAO */
     div.stButton > button:not([data-testid="stSidebar"] *) {
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
         color: #ffffff !important;
@@ -131,67 +158,54 @@ st.markdown("""
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important;
         margin-top: 10px !important;
-        transform: translate3d(0,0,0);
     }
     div.stButton > button:not([data-testid="stSidebar"] *):hover {
         transform: translateY(-2px) !important;
         filter: brightness(1.2) !important;
-        box-shadow: 0 8px 25px rgba(109, 40, 217, 0.5) !important;
     }
 
-    /* [DIRETRIZ 4] REFORÇO ZERO WHITE - INPUTS E SELECTS */
+    /* REFORÇO ZERO WHITE - INPUTS E SELECTS */
     div[data-baseweb="input"], .stNumberInput div { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
     div[data-baseweb="input"] input { background-color: #1a202c !important; color: white !important; }
-    div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; }
+    div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
     
-    /* KPI CARDS (O "QUADRADO") */
+    /* KPI CARDS */
     .highlight-card { 
         background: #11151a; border: 1px solid #1e293b; padding: 20px; 
         border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px;
         transition: all 0.3s ease;
-        transform: translate3d(0,0,0);
     }
     .highlight-card:hover { transform: translateY(-5px); border-color: #6d28d9; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
     
-    /* BANNER TÍTULO GESTÃO */
     .banca-title-banner {
-        background-color: #003399 !important;
-        padding: 15px 25px;
-        border-radius: 5px;
-        color: white !important;
-        font-size: 24px;
-        font-weight: 800;
-        margin-bottom: 35px;
-        display: flex;
-        align-items: center;
-        gap: 15px;
+        background-color: #003399 !important; padding: 15px 25px; border-radius: 5px; color: white !important;
+        font-size: 24px; font-weight: 800; margin-bottom: 35px; display: flex; align-items: center; gap: 15px;
     }
 
-    /* HISTÓRICO CARD */
     .history-card-box { 
-        background: #161b22 !important; border: 1px solid #30363d !important; 
-        padding: 15px 25px !important; border-radius: 8px; margin-bottom: 12px; 
-        display: flex; justify-content: space-between; align-items: center; 
+        background: #161b22 !important; border: 1px solid #30363d !important; padding: 15px 25px !important; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; 
     }
 
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     
-    /* AJUSTE SLIDERS */
-    .stSlider [data-testid="stTickBar"] { display: none; }
+    /* AJUSTE LABELS DOS SELECTS PARA FICAREM DISCRETOS */
+    label[data-testid="stWidgetLabel"] p {
+        color: #64748b !important; font-size: 10px !important; text-transform: uppercase !important; font-weight: 700 !important; letter-spacing: 0.5px !important;
+    }
     </style>
 """, unsafe_allow_html=True)
 
 # 3. [DIRETRIZ 1] HEADER ANCORADO NA SIDEBAR
 with st.sidebar:
-    # APLICADO: Link "/" na logo GESTOR IA para funcionar como Botão Home
+    # APLICADO: Link funcional que reseta para a aba home
     st.markdown("""
         <div class="betano-header">
             <div class="header-left">
-                <a href="./" target="_self" class="logo-link">GESTOR IA</a>
+                <div class="logo-link" onclick="window.parent.location.reload()">GESTOR IA</div>
                 <div class="nav-links">
                     <div class="nav-item">APOSTAS ESPORTIVAS</div>
                     <div class="nav-item">APOSTAS AO VIVO</div>
-                    <div class="nav-item">APOSTAS ENCONTRADAS</div>
+                    <div class="nav-item">OPORTUNIDADES IA</div>
                     <div class="nav-item">ESTATÍSTICAS AVANÇADAS</div>
                     <div class="nav-item">MERCADO PROBABILÍSTICO</div>
                     <div class="nav-item">ASSERTIVIDADE IA</div>
@@ -257,14 +271,10 @@ if st.session_state.aba_ativa == "home":
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
     col_input, col_display = st.columns([1.2, 2.5])
-    
     with col_input:
         st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=st.session_state.banca_total, step=50.0)
-        st.markdown("<br>", unsafe_allow_html=True)
         st.session_state.stake_padrao = st.slider("STAKE POR OPERAÇÃO (%)", 0.1, 10.0, st.session_state.stake_padrao)
-        st.markdown("<br>", unsafe_allow_html=True)
         st.session_state.meta_diaria = st.slider("META DIÁRIA - STOP GAIN (%)", 1.0, 30.0, st.session_state.meta_diaria)
-        st.markdown("<br>", unsafe_allow_html=True)
         st.session_state.stop_loss = st.slider("LIMITE DE PERDA - STOP LOSS (%)", 1.0, 30.0, st.session_state.stop_loss)
 
     v_stake = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
@@ -297,41 +307,52 @@ elif st.session_state.aba_ativa == "gestao":
                 </div>
             """, unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (LOGICA DE COMPETIÇÕES E TIMES ATUALIZADA)
+# TELA 3: SCANNER PRÉ-LIVE (ARMONIA VISUAL RESTAURADA)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    # ORGANIZAÇÃO POR HIERARQUIA GEOGRÁFICA
-    c1, c2 = st.columns(2)
-    cat_selecionada = c1.selectbox("🌎 CATEGORIA", list(DADOS_COMPETICOES.keys()))
+    # LINHA 1: TRÊS COLUNAS CONFORME IMAGEM
+    col_cat, col_tipo, col_camp = st.columns(3)
     
-    # Filtra os tipos (campeonatos) baseados na categoria
-    tipos_disponiveis = list(DADOS_COMPETICOES[cat_selecionada].keys())
-    tipo_selecionado = c2.selectbox("📂 TIPO", tipos_disponiveis)
+    with col_cat:
+        cat_sel = st.selectbox("🌎 CATEGORIA", list(DADOS_MUNDIAIS.keys()))
     
-    # Vencedores da Competição puxa os times do campeonato selecionado
-    competicao_label = f"🏆 COMPETIÇÃO: {tipo_selecionado}"
-    times_do_campeonato = DADOS_COMPETICOES[cat_selecionada][tipo_selecionado]
-    
-    st.selectbox(competicao_label, [f"Análise de {tipo_selecionado} - Rodada Atual"])
-    
-    if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
-        # Seleciona dois times aleatórios DO MESMO CAMPEONATO para a análise
-        equipes = random.sample(times_do_campeonato, 2)
-        v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
+    with col_tipo:
+        tipos_disponiveis = list(DADOS_MUNDIAIS[cat_sel].keys())
+        tipo_sel = st.selectbox("📂 TIPO", tipos_disponiveis)
         
-        st.session_state.analise_bloqueada = {
-            "casa": equipes[0], 
-            "fora": equipes[1], 
-            "vencedor": random.choice(["Casa", "Fora", "Empate"]), 
-            "gols": random.choice(["OVER 1.5", "OVER 2.5", "AMBAS MARCAM"]), 
-            "data": datetime.now().strftime("%H:%M"), 
-            "stake_val": f"R$ {v_calc:,.2f}"
-        }
+    with col_camp:
+        campeonatos_disponiveis = list(DADOS_MUNDIAIS[cat_sel][tipo_sel].keys())
+        camp_sel = st.selectbox("🏆 CAMPEONATO", campeonatos_disponiveis)
+    
+    # LINHA 2: DUAS COLUNAS (MANDANTE E VISITANTE)
+    times_atuais = DADOS_MUNDIAIS[cat_sel][tipo_sel][camp_sel]
+    
+    col_mand, col_vis = st.columns(2)
+    with col_mand:
+        mandante = st.selectbox("🏠 MANDANTE", times_atuais, index=0)
+    with col_vis:
+        # Tenta colocar o segundo time como visitante por padrão
+        idx_vis = 1 if len(times_atuais) > 1 else 0
+        visitante = st.selectbox("🚀 VISITANTE", times_atuais, index=idx_vis)
+    
+    # BOTÃO CENTRALIZADO
+    if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
+        if mandante == visitante:
+            st.error("Selecione times diferentes para a análise.")
+        else:
+            v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
+            st.session_state.analise_bloqueada = {
+                "casa": mandante, "fora": visitante, 
+                "vencedor": random.choice(["Casa", "Fora", "Empate"]), 
+                "gols": random.choice(["OVER 1.5", "OVER 2.5", "AMBAS MARCAM"]), 
+                "data": datetime.now().strftime("%H:%M"), 
+                "stake_val": f"R$ {v_calc:,.2f}"
+            }
     
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
-        st.markdown(f"<h3 style='color:#9d54ff;'>RESULTADO: {m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='color:#9d54ff; text-align:center;'>RESULTADO IA: {m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("GOLS", m['gols'], 70)
@@ -361,49 +382,7 @@ elif st.session_state.aba_ativa == "live":
     with l7: draw_card("CORNERS LIVE", "8", 80)
     with l8: draw_card("STAKE LIVE", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
 
-# TELA: VENCEDORES DA COMPETIÇÃO
-elif st.session_state.aba_ativa == "vencedores":
-    st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
-    v1, v2, v3, v4 = st.columns(4)
-    with v1: draw_card("FAVORITO 1", "Flamengo", 45)
-    with v2: draw_card("FAVORITO 2", "Palmeiras", 38)
-    with v3: draw_card("FAVORITO 3", "Botafogo", 25)
-    with v4: draw_card("ZEBRA PROB", "Fortaleza", 12)
-    v5, v6, v7, v8 = st.columns(4)
-    with v5: draw_card("ROI MÉDIO", "12.4%", 100)
-    with v6: draw_card("VOLATILIDADE", "BAIXA", 20)
-    with v7: draw_card("TENDÊNCIA", "ESTÁVEL", 50)
-    with v8: draw_card("LIQUIDEZ", "ALTA", 90)
-
-# TELA: GOLS
-elif st.session_state.aba_ativa == "gols":
-    st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>", unsafe_allow_html=True)
-    g1, g2, g3, g4 = st.columns(4)
-    with g1: draw_card("OVER 0.5 HT", "82%", 82)
-    with g2: draw_card("OVER 1.5 FT", "75%", 75)
-    with g3: draw_card("AMBAS MARCAM", "61%", 61)
-    with g4: draw_card("UNDER 3.5", "90%", 90)
-    g5, g6, g7, g8 = st.columns(4)
-    with g5: draw_card("UNDER 1.5 HT", "65%", 65)
-    with g6: draw_card("OVER 2.5 FT", "54%", 54)
-    with g7: draw_card("BTTS NO", "39%", 39)
-    with g8: draw_card("OVER 1.5 HT", "22%", 22)
-
-# TELA: ESCANTEIOS
-elif st.session_state.aba_ativa == "escanteios":
-    st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
-    e1, e2, e3, e4 = st.columns(4)
-    with e1: draw_card("OVER 8.5", "88%", 88)
-    with e2: draw_card("OVER 10.5", "62%", 62)
-    with e3: draw_card("CANTOS HT", "4.5+", 70)
-    with e4: draw_card("CORNER RACE", "Time A", 55)
-    e5, e6, e7, e8 = st.columns(4)
-    with e5: draw_card("RACE TO 5", "72%", 72)
-    with e6: draw_card("OVER 12.5", "18%", 18)
-    with e7: draw_card("UNDER 7.5", "12%", 12)
-    with e8: draw_card("CANTOS ASIÁT.", "9.0", 100)
-
-# TELA: HISTÓRICO
+# DEMAIS TELAS (HISTÓRICO, VENCEDORES, ETC)
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
     if not st.session_state.historico_calls:
