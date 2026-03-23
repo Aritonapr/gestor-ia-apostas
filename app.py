@@ -1,6 +1,7 @@
 import streamlit as st
 import time
 from datetime import datetime
+import random
 
 # ==============================================================================
 # [PROTOCOLO DE MANUTENÇÃO v57.23 - PROTEÇÃO ATIVA]
@@ -17,20 +18,24 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- INICIALIZAÇÃO DE MEMÓRIA BLINDADA E PARAMETRO DE NAVEGAÇÃO ---
-if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
-if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
-if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
-if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
-if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
-if 'meta_diaria' not in st.session_state: st.session_state.meta_diaria = 3.0
-if 'stop_loss' not in st.session_state: st.session_state.stop_loss = 5.0
-
-# Funcionalidade do botão GESTOR IA (Redirecionamento Home)
-query_params = st.query_params
-if query_params.get("go") == "home":
-    st.session_state.aba_ativa = "home"
-    st.query_params.clear()
+# BANCO DE DADOS DE COMPETIÇÕES (DIRETRIZ DE INTEGRIDADE GEOGRÁFICA)
+DADOS_COMPETICOES = {
+    "BRASIL": {
+        "Série A": ["Flamengo", "Palmeiras", "Botafogo", "Atlético-MG", "São Paulo", "Cruzeiro", "Fortaleza", "Internacional", "Fluminense", "Grêmio"],
+        "Série B": ["Santos", "Sport", "Coritiba", "Goiás", "Ceará", "Vila Nova", "América-MG", "Operário", "Novorizontino"],
+        "Copa do Brasil": ["Vasco", "Corinthians", "Bahia", "Athletico-PR", "Juventude", "Criciúma", "Cuiabá", "Vitória"]
+    },
+    "EUROPA": {
+        "Premier League": ["Manchester City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Newcastle", "Manchester United"],
+        "La Liga": ["Real Madrid", "Barcelona", "Girona", "Atlético de Madrid", "Athletic Bilbao", "Real Sociedad", "Villarreal"],
+        "Champions League": ["Bayern de Munique", "PSG", "Inter de Milão", "Dortmund", "Bayer Leverkusen", "Juventus", "Benfica", "Porto"]
+    },
+    "MUNDO": {
+        "Libertadores": ["River Plate", "Boca Juniors", "Peñarol", "Nacional", "Colo-Colo", "LDU", "Ind. del Valle", "Olimpia"],
+        "MLS": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "NY City", "Seattle Sounders"],
+        "Saudi Pro League": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq"]
+    }
+}
 
 # 2. [CAMADA DE PROTEÇÃO 1] - CSS INTEGRAL E BLINDADO
 st.markdown("""
@@ -60,8 +65,14 @@ st.markdown("""
     }
     
     .header-left { display: flex; align-items: center; gap: 25px; }
-    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; cursor: pointer;}
-    .logo-link:hover { filter: brightness(1.2); }
+    
+    /* ALTERAÇÃO: LOGO COMO BOTÃO HOME */
+    .logo-link { 
+        color: #9d54ff !important; font-weight: 900; font-size: 21px !important; 
+        text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none !important;
+        transition: 0.3s;
+    }
+    .logo-link:hover { filter: brightness(1.3); transform: scale(1.02); }
     
     .nav-links { display: flex; gap: 18px; align-items: center; }
     .nav-item { 
@@ -142,7 +153,7 @@ st.markdown("""
     }
     .highlight-card:hover { transform: translateY(-5px); border-color: #6d28d9; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
     
-    /* BANNER TÍTULO GESTÃO (IMAGEM 3) */
+    /* BANNER TÍTULO GESTÃO */
     .banca-title-banner {
         background-color: #003399 !important;
         padding: 15px 25px;
@@ -172,10 +183,11 @@ st.markdown("""
 
 # 3. [DIRETRIZ 1] HEADER ANCORADO NA SIDEBAR
 with st.sidebar:
+    # APLICADO: Link "/" na logo GESTOR IA para funcionar como Botão Home
     st.markdown("""
         <div class="betano-header">
             <div class="header-left">
-                <a href="?go=home" class="logo-link">GESTOR IA</a>
+                <a href="./" target="_self" class="logo-link">GESTOR IA</a>
                 <div class="nav-links">
                     <div class="nav-item">APOSTAS ESPORTIVAS</div>
                     <div class="nav-item">APOSTAS AO VIVO</div>
@@ -194,6 +206,15 @@ with st.sidebar:
         <div style="height:65px;"></div>
     """, unsafe_allow_html=True) 
 
+    # --- INICIALIZAÇÃO DE MEMÓRIA BLINDADA ---
+    if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
+    if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
+    if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
+    if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
+    if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
+    if 'meta_diaria' not in st.session_state: st.session_state.meta_diaria = 3.0
+    if 'stop_loss' not in st.session_state: st.session_state.stop_loss = 5.0
+
     # --- NAVEGAÇÃO ---
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
@@ -204,7 +225,7 @@ with st.sidebar:
     if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
-# FUNÇÃO CARD GENÉRICA (O "QUADRADO")
+# FUNÇÃO CARD GENÉRICA
 def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, #06b6d4)"):
     st.markdown(f"""
         <div class="highlight-card">
@@ -218,7 +239,7 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
 
 # --- LÓGICA DE TELAS ---
 
-# TELA 1: HOME (8 CARDS - IMAGEM 1)
+# TELA 1: HOME
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 JOGOS DO DIA</h2>", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
@@ -232,11 +253,9 @@ if st.session_state.aba_ativa == "home":
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
     with h8: draw_card("SISTEMA", "JARVIS v57.23", 100)
 
-# TELA 2: GESTÃO DE BANCA PRO (RESTAURAÇÃO IMAGEM 3)
+# TELA 2: GESTÃO DE BANCA
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
-    
-    # Layout conforme Imagem 3: Controles à esquerda, Grade à direita
     col_input, col_display = st.columns([1.2, 2.5])
     
     with col_input:
@@ -248,27 +267,21 @@ elif st.session_state.aba_ativa == "gestao":
         st.markdown("<br>", unsafe_allow_html=True)
         st.session_state.stop_loss = st.slider("LIMITE DE PERDA - STOP LOSS (%)", 1.0, 30.0, st.session_state.stop_loss)
 
-    # Cálculos Automáticos
     v_stake = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
     v_meta = (st.session_state.banca_total * st.session_state.meta_diaria / 100)
     v_loss = (st.session_state.banca_total * st.session_state.stop_loss / 100)
     alvo_final = st.session_state.banca_total + v_meta
-    
     entradas_meta = int(v_meta/v_stake) if v_stake > 0 else 0
     entradas_loss = int(v_loss/v_stake) if v_stake > 0 else 0
-    
     saude_label = "EXCELENTE" if st.session_state.stake_padrao <= 2.0 else "MODERADA" if st.session_state.stake_padrao <= 5.0 else "CRÍTICA"
     saude_color = "#00ff88" if saude_label == "EXCELENTE" else "#ffcc00" if saude_label == "MODERADA" else "#ff4b4b"
 
     with col_display:
-        # Linha 1 de cards
         g1, g2, g3, g4 = st.columns(4)
         with g1: draw_card("VALOR ENTRADA", f"R$ {v_stake:,.2f}", 100, "#00d2ff")
         with g2: draw_card("STOP GAIN (R$)", f"R$ {v_meta:,.2f}", 100, "#00d2ff")
         with g3: draw_card("STOP LOSS (R$)", f"R$ {v_loss:,.2f}", 100, "#00d2ff")
         with g4: draw_card("ALVO FINAL", f"R$ {alvo_final:,.2f}", 100, "#00d2ff")
-        
-        # Linha 2 de cards
         g5, g6, g7, g8 = st.columns(4)
         with g5: draw_card("RISCO TOTAL", f"{st.session_state.stake_padrao}%", 100, "#00d2ff")
         with g6: draw_card("ENTRADAS/META", f"{entradas_meta}", 100, "#00d2ff")
@@ -284,17 +297,37 @@ elif st.session_state.aba_ativa == "gestao":
                 </div>
             """, unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (IMAGEM 2)
+# TELA 3: SCANNER PRÉ-LIVE (LOGICA DE COMPETIÇÕES E TIMES ATUALIZADA)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
-    cmp = st.selectbox("🏆 VENCEDORES DA COMPETIÇÃO", ["Rodada Atual", "Finais", "Fase de Grupos"])
+    
+    # ORGANIZAÇÃO POR HIERARQUIA GEOGRÁFICA
     c1, c2 = st.columns(2)
-    cat = c1.selectbox("🌎 CATEGORIA", ["BRASIL", "EUROPA", "MUNDO"])
-    tip = c2.selectbox("📂 TIPO", ["Série A", "Champions League", "Libertadores"])
+    cat_selecionada = c1.selectbox("🌎 CATEGORIA", list(DADOS_COMPETICOES.keys()))
+    
+    # Filtra os tipos (campeonatos) baseados na categoria
+    tipos_disponiveis = list(DADOS_COMPETICOES[cat_selecionada].keys())
+    tipo_selecionado = c2.selectbox("📂 TIPO", tipos_disponiveis)
+    
+    # Vencedores da Competição puxa os times do campeonato selecionado
+    competicao_label = f"🏆 COMPETIÇÃO: {tipo_selecionado}"
+    times_do_campeonato = DADOS_COMPETICOES[cat_selecionada][tipo_selecionado]
+    
+    st.selectbox(competicao_label, [f"Análise de {tipo_selecionado} - Rodada Atual"])
     
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
+        # Seleciona dois times aleatórios DO MESMO CAMPEONATO para a análise
+        equipes = random.sample(times_do_campeonato, 2)
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-        st.session_state.analise_bloqueada = {"casa": "Flamengo", "fora": "Palmeiras", "vencedor": "Casa", "gols": "OVER 1.5", "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}"}
+        
+        st.session_state.analise_bloqueada = {
+            "casa": equipes[0], 
+            "fora": equipes[1], 
+            "vencedor": random.choice(["Casa", "Fora", "Empate"]), 
+            "gols": random.choice(["OVER 1.5", "OVER 2.5", "AMBAS MARCAM"]), 
+            "data": datetime.now().strftime("%H:%M"), 
+            "stake_val": f"R$ {v_calc:,.2f}"
+        }
     
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
@@ -314,7 +347,7 @@ elif st.session_state.aba_ativa == "analise":
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ CALL SALVA COM SUCESSO!")
 
-# TELA 4: LIVE (8 CARDS)
+# TELA 4: LIVE
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER LIVE</h2>", unsafe_allow_html=True)
     l1, l2, l3, l4 = st.columns(4)
@@ -328,7 +361,7 @@ elif st.session_state.aba_ativa == "live":
     with l7: draw_card("CORNERS LIVE", "8", 80)
     with l8: draw_card("STAKE LIVE", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
 
-# TELAS ADICIONAIS (MANUTENÇÃO DE INTEGRIDADE)
+# TELA: VENCEDORES DA COMPETIÇÃO
 elif st.session_state.aba_ativa == "vencedores":
     st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
     v1, v2, v3, v4 = st.columns(4)
@@ -342,6 +375,7 @@ elif st.session_state.aba_ativa == "vencedores":
     with v7: draw_card("TENDÊNCIA", "ESTÁVEL", 50)
     with v8: draw_card("LIQUIDEZ", "ALTA", 90)
 
+# TELA: GOLS
 elif st.session_state.aba_ativa == "gols":
     st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>", unsafe_allow_html=True)
     g1, g2, g3, g4 = st.columns(4)
@@ -355,6 +389,7 @@ elif st.session_state.aba_ativa == "gols":
     with g7: draw_card("BTTS NO", "39%", 39)
     with g8: draw_card("OVER 1.5 HT", "22%", 22)
 
+# TELA: ESCANTEIOS
 elif st.session_state.aba_ativa == "escanteios":
     st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
     e1, e2, e3, e4 = st.columns(4)
@@ -368,6 +403,7 @@ elif st.session_state.aba_ativa == "escanteios":
     with e7: draw_card("UNDER 7.5", "12%", 12)
     with e8: draw_card("CANTOS ASIÁT.", "9.0", 100)
 
+# TELA: HISTÓRICO
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
     if not st.session_state.historico_calls:
