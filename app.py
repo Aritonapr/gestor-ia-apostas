@@ -113,11 +113,11 @@ st.markdown("""
     }
 
     /* [DIRETRIZ 4] REFORÇO ZERO WHITE - INPUTS E SELECTS */
-    div[data-baseweb="input"], .stNumberInput div {{ background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }}
-    div[data-baseweb="input"] input {{ background-color: #1a202c !important; color: white !important; }}
-    div[data-baseweb="select"] > div {{ background-color: #1a202c !important; color: white !important; }}
+    div[data-baseweb="input"], .stNumberInput div { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
+    div[data-baseweb="input"] input { background-color: #1a202c !important; color: white !important; }
+    div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; }
     
-    /* KPI CARDS (OS "QUADRADOS") */
+    /* KPI CARDS (O "QUADRADO") */
     .highlight-card { 
         background: #11151a; border: 1px solid #1e293b; padding: 20px; 
         border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px;
@@ -126,6 +126,20 @@ st.markdown("""
     }
     .highlight-card:hover { transform: translateY(-5px); border-color: #6d28d9; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
     
+    /* BANNER TÍTULO GESTÃO (IMAGEM 3) */
+    .banca-title-banner {
+        background-color: #003399 !important;
+        padding: 15px 25px;
+        border-radius: 5px;
+        color: white !important;
+        font-size: 24px;
+        font-weight: 800;
+        margin-bottom: 35px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
     /* HISTÓRICO CARD */
     .history-card-box { 
         background: #161b22 !important; border: 1px solid #30363d !important; 
@@ -134,6 +148,9 @@ st.markdown("""
     }
 
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
+    
+    /* AJUSTE SLIDERS */
+    .stSlider [data-testid="stTickBar"] { display: none; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -181,20 +198,20 @@ with st.sidebar:
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
 # FUNÇÃO CARD GENÉRICA (O "QUADRADO")
-def draw_card(title, value, perc):
+def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, #06b6d4)"):
     st.markdown(f"""
         <div class="highlight-card">
             <div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">{title}</div>
             <div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div>
             <div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;">
-                <div style="background:linear-gradient(90deg, #6d28d9, #06b6d4); height:100%; width:{perc}%;"></div>
+                <div style="background:{color_footer}; height:100%; width:{perc}%;"></div>
             </div>
         </div>
     """, unsafe_allow_html=True)
 
 # --- LÓGICA DE TELAS ---
 
-# TELA 1: HOME (8 CARDS)
+# TELA 1: HOME (8 CARDS - IMAGEM 1)
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 JOGOS DO DIA</h2>", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
@@ -208,33 +225,59 @@ if st.session_state.aba_ativa == "home":
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
     with h8: draw_card("SISTEMA", "JARVIS v57.23", 100)
 
-# TELA 2: GESTÃO DE BANCA PRO (8 CARDS)
+# TELA 2: GESTÃO DE BANCA PRO (RESTAURAÇÃO IMAGEM 3)
 elif st.session_state.aba_ativa == "gestao":
-    st.markdown("<h2 style='color:white;'>💰 GESTÃO DE BANCA PRO</h2>", unsafe_allow_html=True)
+    st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
+    
+    # Layout conforme Imagem 3: Controles à esquerda, Grade à direita
+    col_input, col_display = st.columns([1.2, 2.5])
+    
+    with col_input:
+        st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=st.session_state.banca_total, step=50.0)
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.session_state.stake_padrao = st.slider("STAKE POR OPERAÇÃO (%)", 0.1, 10.0, st.session_state.stake_padrao)
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.session_state.meta_diaria = st.slider("META DIÁRIA - STOP GAIN (%)", 1.0, 30.0, st.session_state.meta_diaria)
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.session_state.stop_loss = st.slider("LIMITE DE PERDA - STOP LOSS (%)", 1.0, 30.0, st.session_state.stop_loss)
+
+    # Cálculos Automáticos
     v_stake = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
     v_meta = (st.session_state.banca_total * st.session_state.meta_diaria / 100)
     v_loss = (st.session_state.banca_total * st.session_state.stop_loss / 100)
+    alvo_final = st.session_state.banca_total + v_meta
     
-    col_input, col_space = st.columns([1, 0.05])
-    with col_input:
-        st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=st.session_state.banca_total, step=50.0)
-        st.session_state.stake_padrao = st.slider("STAKE POR OPERAÇÃO (%)", 0.1, 10.0, st.session_state.stake_padrao)
-        st.session_state.meta_diaria = st.slider("META DIÁRIA (%)", 1.0, 30.0, st.session_state.meta_diaria)
-        st.session_state.stop_loss = st.slider("LIMITE PERDA (%)", 1.0, 30.0, st.session_state.stop_loss)
+    entradas_meta = int(v_meta/v_stake) if v_stake > 0 else 0
+    entradas_loss = int(v_loss/v_stake) if v_stake > 0 else 0
+    
+    saude_label = "EXCELENTE" if st.session_state.stake_padrao <= 2.0 else "MODERADA" if st.session_state.stake_padrao <= 5.0 else "CRÍTICA"
+    saude_color = "#00ff88" if saude_label == "EXCELENTE" else "#ffcc00" if saude_label == "MODERADA" else "#ff4b4b"
 
-    st.write("---")
-    g1, g2, g3, g4 = st.columns(4)
-    with g1: draw_card("VALOR ENTRADA", f"R$ {v_stake:,.2f}", 100)
-    with g2: draw_card("STOP GAIN (R$)", f"R$ {v_meta:,.2f}", 100)
-    with g3: draw_card("STOP LOSS (R$)", f"R$ {v_loss:,.2f}", 100)
-    with g4: draw_card("ALVO FINAL", f"R$ {(st.session_state.banca_total + v_meta):,.2f}", 100)
-    g5, g6, g7, g8 = st.columns(4)
-    with g5: draw_card("RISCO TOTAL", f"{st.session_state.stake_padrao}%", 100)
-    with g6: draw_card("ENTRADAS/META", f"{int(v_meta/v_stake) if v_stake > 0 else 0}", 100)
-    with g7: draw_card("ENTRADAS/LOSS", f"{int(v_loss/v_stake) if v_stake > 0 else 0}", 100)
-    with g8: draw_card("SAÚDE FINANCEIRA", "EXCELENTE", 100)
+    with col_display:
+        # Linha 1 de cards
+        g1, g2, g3, g4 = st.columns(4)
+        with g1: draw_card("VALOR ENTRADA", f"R$ {v_stake:,.2f}", 100, "#00d2ff")
+        with g2: draw_card("STOP GAIN (R$)", f"R$ {v_meta:,.2f}", 100, "#00d2ff")
+        with g3: draw_card("STOP LOSS (R$)", f"R$ {v_loss:,.2f}", 100, "#00d2ff")
+        with g4: draw_card("ALVO FINAL", f"R$ {alvo_final:,.2f}", 100, "#00d2ff")
+        
+        # Linha 2 de cards
+        g5, g6, g7, g8 = st.columns(4)
+        with g5: draw_card("RISCO TOTAL", f"{st.session_state.stake_padrao}%", 100, "#00d2ff")
+        with g6: draw_card("ENTRADAS/META", f"{entradas_meta}", 100, "#00d2ff")
+        with g7: draw_card("ENTRADAS/LOSS", f"{entradas_loss}", 100, "#00d2ff")
+        with g8: 
+            st.markdown(f"""
+                <div class="highlight-card">
+                    <div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div>
+                    <div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div>
+                    <div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;">
+                        <div style="background:#00d2ff; height:100%; width:100%;"></div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (RESTAURADO)
+# TELA 3: SCANNER PRÉ-LIVE (IMAGEM 2)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     cmp = st.selectbox("🏆 VENCEDORES DA COMPETIÇÃO", ["Rodada Atual", "Finais", "Fase de Grupos"])
@@ -260,7 +303,6 @@ elif st.session_state.aba_ativa == "analise":
         with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
         with r8: draw_card("SISTEMA", "v57.23", 100)
         
-        # BOTÃO DE HISTÓRICO RESTAURADO
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ CALL SALVA COM SUCESSO!")
@@ -279,7 +321,7 @@ elif st.session_state.aba_ativa == "live":
     with l7: draw_card("CORNERS LIVE", "8", 80)
     with l8: draw_card("STAKE LIVE", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
 
-# TELA 5: VENCEDORES (8 CARDS)
+# TELAS ADICIONAIS (MANUTENÇÃO DE INTEGRIDADE)
 elif st.session_state.aba_ativa == "vencedores":
     st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
     v1, v2, v3, v4 = st.columns(4)
@@ -293,7 +335,6 @@ elif st.session_state.aba_ativa == "vencedores":
     with v7: draw_card("TENDÊNCIA", "ESTÁVEL", 50)
     with v8: draw_card("LIQUIDEZ", "ALTA", 90)
 
-# TELA 6: GOLS (8 CARDS)
 elif st.session_state.aba_ativa == "gols":
     st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>", unsafe_allow_html=True)
     g1, g2, g3, g4 = st.columns(4)
@@ -307,7 +348,6 @@ elif st.session_state.aba_ativa == "gols":
     with g7: draw_card("BTTS NO", "39%", 39)
     with g8: draw_card("OVER 1.5 HT", "22%", 22)
 
-# TELA 7: ESCANTEIOS (8 CARDS)
 elif st.session_state.aba_ativa == "escanteios":
     st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
     e1, e2, e3, e4 = st.columns(4)
@@ -321,7 +361,6 @@ elif st.session_state.aba_ativa == "escanteios":
     with e7: draw_card("UNDER 7.5", "12%", 12)
     with e8: draw_card("CANTOS ASIÁT.", "9.0", 100)
 
-# TELA 8: HISTÓRICO
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
     if not st.session_state.historico_calls:
