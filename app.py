@@ -275,7 +275,7 @@ elif st.session_state.aba_ativa == "gestao":
                 </div>
             """, unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (BANCO DE DADOS COMPLETO)
+# TELA 3: SCANNER PRÉ-LIVE (ATUALIZADO COM COMPETIÇÕES DO BRASIL)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
@@ -287,9 +287,13 @@ elif st.session_state.aba_ativa == "analise":
             "EUROPA (OUTROS)", "ÁSIA / OCEANIA", "MUNDO (CONCACAF/ÁFRICA)"
         ])
     with row1_c2:
-        # BANCO DE DADOS DE VARREDURA - COMPETIÇÕES REAIS
+        # BANCO DE DADOS DE VARREDURA - COMPETIÇÕES REAIS (LISTA BRASIL REFINADA)
         opcoes_tipo = {
-            "BRASIL": ["Série A", "Série B", "Série C", "Copa do Brasil", "Paulistão", "Carioca", "Gauchão", "Mineiro"],
+            "BRASIL": [
+                "Série A", "Série B", "Série C", "Série D", 
+                "Copa do Brasil", "Paulistão", "Carioca", "Mineiro", "Gaúcho", 
+                "Supercopa do Brasil", "Copa do Nordeste"
+            ],
             "INGLATERRA": ["Premier League", "Championship", "League One", "League Two", "FA Cup", "EFL Cup"],
             "ESPANHA": ["La Liga", "La Liga 2", "Copa del Rey"],
             "ITÁLIA": ["Serie A", "Serie B", "Coppa Italia"],
