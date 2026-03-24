@@ -3,12 +3,12 @@ import time
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v57.29 - PROTEÇÃO ATIVA]
+# [PROTOCOLO DE MANUTENÇÃO v57.30 - PROTEÇÃO ATIVA]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
 # DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO)
-# DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO (SEM ABREVIAÇÕES)
+# DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO (CORREÇÃO ATTRIBUTEERROR)
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -231,7 +231,7 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v57.29", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v57.30", 100)
 
 # TELA 2: GESTÃO DE BANCA
 elif st.session_state.aba_ativa == "gestao":
@@ -265,11 +265,11 @@ elif st.session_state.aba_ativa == "gestao":
         with g8: 
             st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div><div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:#00d2ff; height:100%; width:100%;"></div></div></div>""", unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (BANCO DE DADOS INTEGRAL)
-elif st.session_state.aba_active == "analise" or st.session_state.aba_ativa == "analise":
+# TELA 3: SCANNER PRÉ-LIVE (CORREÇÃO DE ATTRIBUTEERROR E HIERARQUIA BRASIL)
+elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    # BANCO DE DADOS GLOBAL [v57.29]
+    # BANCO DE DADOS INTEGRAL [v57.30]
     db_times = {
         "BRASIL": ["Flamengo", "Palmeiras", "Vasco", "São Paulo", "Corinthians", "Fluminense", "Botafogo", "Grêmio", "Inter", "Atlético-MG", "Cruzeiro", "Santos", "Bahia", "Fortaleza", "Athletico-PR"],
         "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man United", "Newcastle", "West Ham", "Brighton"],
@@ -292,7 +292,6 @@ elif st.session_state.aba_active == "analise" or st.session_state.aba_ativa == "
         cat_pais = st.selectbox("🌎 CATEGORIA / REGIÃO", list(db_times.keys()))
     
     with row_filtros[1]:
-        # Logica de Grupos baseada na Região
         if cat_pais == "BRASIL": grupo_opcoes = ["BRASILEIRÃO", "REGIONAIS", "ESTADUAIS", "COPAS", "FEMININO / BASE"]
         elif cat_pais in ["EUROPA (UEFA)", "AMÉRICA DO SUL (CONMEBOL)", "FIFA (INTERCONTINENTAL)"]: grupo_opcoes = ["CHAMPIONS LEAGUE", "LIBERTADORES", "EUROPA LEAGUE", "SUL-AMERICANA", "CONFERENCE LEAGUE", "MUNDIAL DE CLUBES"]
         elif cat_pais == "SELEÇÕES (INTERNACIONAL)": grupo_opcoes = ["COPA DO MUNDO 2026", "QUALIF. COPA DO MUNDO", "EUROCOPA", "COPA AMÉRICA", "NATIONS LEAGUE"]
@@ -300,7 +299,6 @@ elif st.session_state.aba_active == "analise" or st.session_state.aba_ativa == "
         grupo_selecionado = st.selectbox("📂 GRUPO", grupo_opcoes)
     
     with row_filtros[2]:
-        # Banco de Ligas completo para evitar erros de chave (KeyError)
         db_ligas = {
             "BRASILEIRÃO": ["Série A", "Série B", "Série C", "Série D"],
             "REGIONAIS": ["Copa do Nordeste", "Copa Verde"],
@@ -312,17 +310,16 @@ elif st.session_state.aba_active == "analise" or st.session_state.aba_ativa == "
             "SUL-AMERICANA": ["Fase de Grupos", "Mata-Mata"],
             "CONFERENCE LEAGUE": ["Fase de Liga", "Mata-Mata"],
             "MUNDIAL DE CLUBES": ["Fase de Grupos", "Mata-Mata"],
-            "LIGA NACIONAL": ["Primeira Divisão (Elite)", "Segunda Divisão"],
-            "COPAS NACIONAIS": ["Taça Nacional", "Copa da Liga"],
+            "LIGA NACIONAL": ["Elite (1ª Divisão)", "Acesso (2ª Divisão)"],
+            "COPAS NACIONAIS": ["Copa da Liga", "Taça Nacional"],
             "SUPERCOPA": ["Final Única"],
             "COPA DO MUNDO 2026": ["Fase de Grupos", "32-avos", "Oitavas", "Quartas", "Semi/Final"],
             "QUALIF. COPA DO MUNDO": ["América do Sul", "Europa", "Ásia/África"],
             "EUROCOPA": ["Fase de Grupos", "Mata-Mata"],
             "COPA AMÉRICA": ["Fase de Grupos", "Mata-Mata"],
             "NATIONS LEAGUE": ["Liga A", "Liga B", "Final Four"],
-            "FEMININO / BASE": ["Nacional Feminino", "Sub-20", "Sub-17"]
+            "FEMININO / BASE": ["Brasileirão Feminino", "Sub-20"]
         }
-        # Garante que se o grupo não estiver no DB, ele mostre "Geral" para não travar
         competicao = st.selectbox("🏆 COMPETIÇÃO", db_ligas.get(grupo_selecionado, ["Geral"]))
 
     # [DEFINIR CONFRONTO]
@@ -358,7 +355,7 @@ elif st.session_state.aba_active == "analise" or st.session_state.aba_ativa == "
         with r5: draw_card("IA CONF.", "94%", 94)
         with r6: draw_card("PRESSÃO", "ALTA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
-        with r8: draw_card("SISTEMA", "v57.29", 100)
+        with r8: draw_card("SISTEMA", "v57.30", 100)
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ CALL SALVA COM SUCESSO!")
@@ -434,4 +431,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.rerun()
 
 # FOOTER
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.29</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.30</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
