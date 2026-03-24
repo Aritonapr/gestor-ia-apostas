@@ -3,12 +3,12 @@ import time
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v57.34 - PROTEÇÃO ATIVA]
+# [PROTOCOLO DE MANUTENÇÃO v57.35 - PROTEÇÃO ATIVA]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
 # DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO)
-# DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO (DATABASE BRASIL FULL)
+# DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO (MELHORIA UI MENU)
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -50,11 +50,12 @@ st.markdown("""
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
     
+    /* HEADER PREMIUM ORIGINAL */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; 
         display: flex; align-items: center; justify-content: space-between; 
-        padding: 0 40 (0 40px) !important; z-index: 1000000; 
+        padding: 0 40px !important; z-index: 1000000; 
         transform: translate3d(0,0,0); -webkit-backface-visibility: hidden;
     }
     
@@ -62,14 +63,21 @@ st.markdown("""
     .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; cursor: pointer;}
     .logo-link:hover { filter: brightness(1.2); }
     
-    .nav-links { display: flex; gap: 18px; align-items: center; }
+    .nav-links { display: flex; gap: 22px; align-items: center; }
+    
+    /* MELHORIA DA LETRA DO MENU SUPERIOR (NÍTIDA E LIMPA) */
     .nav-item { 
-        color: #ffffff !important; font-size: 8.5px !important; 
-        text-transform: uppercase; opacity: 0.85; font-weight: 700; 
-        letter-spacing: 0.8px; transition: 0.3s ease; cursor: pointer;
+        color: #ffffff !important; 
+        font-size: 11px !important; /* Aumentado para legibilidade */
+        text-transform: uppercase; 
+        opacity: 1 !important; /* Removida transparência para limpar o texto */
+        font-weight: 600 !important; 
+        letter-spacing: 0.5px; 
+        transition: 0.3s ease; 
+        cursor: pointer;
         white-space: nowrap;
     }
-    .nav-item:hover { opacity: 1 !important; color: #06b6d4 !important; transform: scale(1.05); }
+    .nav-item:hover { color: #06b6d4 !important; transform: scale(1.05); }
 
     .header-right { display: flex; align-items: center; gap: 15px; }
     .search-lupa { color: #ffffff; font-size: 15px; cursor: pointer; transition: 0.3s; }
@@ -202,7 +210,7 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v57.34", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v57.35", 100)
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
@@ -234,11 +242,10 @@ elif st.session_state.aba_ativa == "gestao":
         with g7: draw_card("ENTRADAS/LOSS", f"{entradas_loss}", 100, "#00d2ff")
         with g8: st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div><div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:#00d2ff; height:100%; width:100%;"></div></div></div>""", unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (BANCO DE DADOS INTEGRAL)
+# TELA 3: SCANNER PRÉ-LIVE (DATABASE COMPLETO)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    # 1. CATEGORIAS PRINCIPAIS
     db_paises = {
         "BRASIL": ["BRASILEIRÃO", "BRASILEIRÃO SUB-20", "CAMPEONATOS ESTADUAIS", "COPAS NACIONAIS / REGIONAIS"],
         "ARGENTINA": ["LIGA PROFESIONAL", "COPAS ARGENTINAS"],
@@ -254,7 +261,6 @@ elif st.session_state.aba_ativa == "analise":
         "SELEÇÕES / MUNDIAL": ["COPA DO MUNDO 2026", "ELIMINATÓRIAS / REPESCAGEM", "SUL-AMERICANO SUB-17"]
     }
 
-    # 2. COMPETIÇÕES DETALHADAS (NIVEL 3)
     db_ligas = {
         "BRASILEIRÃO": ["Série A", "Série B", "Série C", "Série D"],
         "BRASILEIRÃO SUB-20": ["Temporada Regular", "Fase Final"],
@@ -286,7 +292,6 @@ elif st.session_state.aba_ativa == "analise":
         "SUL-AMERICANO SUB-17": ["Fase de Grupos", "Hexagonal Final"]
     }
 
-    # 3. BANCO DE TIMES
     db_times = {
         "BRASIL": ["Flamengo", "Palmeiras", "Vasco", "São Paulo", "Corinthians", "Fluminense", "Botafogo", "Grêmio", "Inter", "Atlético-MG", "Cruzeiro", "Santos", "Bahia", "Fortaleza", "Athletico-PR"],
         "ARGENTINA": ["River Plate", "Boca Juniors", "Racing Club", "Independiente", "Talleres"],
@@ -321,7 +326,7 @@ elif st.session_state.aba_ativa == "analise":
     with c2:
         lista_f = [x for x in lista_t if x != t_casa]
         t_fora = st.selectbox("🚀 TIME DE FORA", lista_f + ["(Outro)"])
-        if t_fora == "(Outro)": t_fora = t.text_input("NOME DO TIME FORA")
+        if t_fora == "(Outro)": t_fora = st.text_input("NOME DO TIME FORA")
 
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
@@ -339,7 +344,7 @@ elif st.session_state.aba_ativa == "analise":
         with r5: draw_card("IA CONF.", "94%", 94)
         with r6: draw_card("PRESSÃO", "ALTA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
-        with r8: draw_card("SISTEMA", "v57.34", 100)
+        with r8: draw_card("SISTEMA", "v57.35", 100)
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ CALL SALVA COM SUCESSO!")
@@ -409,4 +414,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.34</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.35</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
