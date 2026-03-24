@@ -3,12 +3,12 @@ import time
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v57.32 - PROTEÇÃO ATIVA]
+# [PROTOCOLO DE MANUTENÇÃO v57.33 - PROTEÇÃO ATIVA]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
 # DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO)
-# DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO (DB COMPLETO v2)
+# DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO (DB FINAL v3)
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -202,7 +202,7 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v57.32", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v57.33", 100)
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
@@ -234,13 +234,15 @@ elif st.session_state.aba_ativa == "gestao":
         with g7: draw_card("ENTRADAS/LOSS", f"{entradas_loss}", 100, "#00d2ff")
         with g8: st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div><div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:#00d2ff; height:100%; width:100%;"></div></div></div>""", unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (REESTRUTURADO TOTAL)
+# TELA 3: SCANNER PRÉ-LIVE (BANCO DE DADOS COMPLETO)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    # BANCO DE DADOS HIERÁRQUICO COMPLETO BASEADO NA SUA LISTA
     db_paises = {
         "BRASIL": ["BRASILEIRÃO", "COPAS REGIONAIS", "COPAS NACIONAIS"],
+        "ARGENTINA": ["LIGA PROFESIONAL", "COPAS ARGENTINAS"],
+        "PORTUGAL": ["LIGA PORTUGAL", "COPAS PORTUGUESAS"],
+        "HOLANDA": ["EREDIVISIE", "COPA HOLANDESA"],
         "INGLATERRA": ["PREMIER LEAGUE", "COPAS DA INGLATERRA"],
         "ESPANHA": ["LA LIGA", "COPA DO REI"],
         "ITÁLIA": ["CAMPEONATO ITALIANO", "COPA DA ITÁLIA"],
@@ -255,8 +257,14 @@ elif st.session_state.aba_ativa == "analise":
         "BRASILEIRÃO": ["Série A", "Série B", "Série C"],
         "COPAS REGIONAIS": ["Copa Verde", "Copa Sul-Sudeste"],
         "COPAS NACIONAIS": ["Copa do Brasil", "Supercopa do Brasil"],
-        "PREMIER LEAGUE": ["Premier League (1ª Divisão)", "EFL Championship (2ª)"],
-        "COPAS DA INGLATERRA": ["Copa da Inglaterra (FA Cup)", "Copa da Liga Inglesa (EFL Cup)"],
+        "LIGA PROFESIONAL": ["Liga Profesional (1ª Div)"],
+        "COPAS ARGENTINAS": ["Copa de la Liga", "Copa Argentina"],
+        "LIGA PORTUGAL": ["Primeira Liga", "Liga Portugal 2"],
+        "COPAS PORTUGUESAS": ["Taça de Portugal", "Taça da Liga"],
+        "EREDIVISIE": ["Eredivisie (1ª Div)", "Eerste Divisie (2ª Div)"],
+        "COPA HOLANDESA": ["KNVB Beker"],
+        "PREMIER LEAGUE": ["Premier League (1ª Div)", "EFL Championship (2ª)"],
+        "COPAS DA INGLATERRA": ["FA Cup", "EFL Cup (Carabao)"],
         "LA LIGA": ["Primeira Divisão"],
         "COPA DO REI": ["Fases Finais"],
         "CAMPEONATO ITALIANO": ["Serie A TIM"],
@@ -277,17 +285,19 @@ elif st.session_state.aba_ativa == "analise":
 
     db_times = {
         "BRASIL": ["Flamengo", "Palmeiras", "Vasco", "São Paulo", "Corinthians", "Fluminense", "Botafogo", "Grêmio", "Inter", "Atlético-MG"],
+        "ARGENTINA": ["River Plate", "Boca Juniors", "Racing Club", "Independiente", "San Lorenzo", "Talleres", "Estudiantes"],
+        "PORTUGAL": ["Benfica", "Porto", "Sporting CP", "Braga", "Vitória SC", "Moreirense"],
+        "HOLANDA": ["Ajax", "PSV", "Feyenoord", "AZ Alkmaar", "Twente", "Utrecht"],
         "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Chelsea", "Man United", "Tottenham"],
         "ESPANHA": ["Real Madrid", "Barcelona", "Atlético Madrid"],
         "ITÁLIA": ["Inter Milan", "AC Milan", "Juventus", "Napoli", "Roma"],
         "ALEMANHA": ["Bayern Munchen", "Bayer Leverkusen", "Borussia Dortmund"],
         "FRANÇA": ["PSG", "Monaco", "Marseille", "Lyon"],
-        "ÁSIA": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Urawa Reds"],
-        "INTERNACIONAL (UEFA)": ["Real Madrid", "Man City", "Bayern", "PSG", "Inter Milan", "Liverpool", "Arsenal"],
-        "SELEÇÕES / MUNDIAL": ["Brasil", "França", "Argentina", "Inglaterra", "Espanha", "Portugal", "Alemanha", "Uruguai", "Japão"]
+        "ÁSIA": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli"],
+        "INTERNACIONAL (UEFA)": ["Real Madrid", "Man City", "Bayern", "PSG", "Inter Milan", "Liverpool"],
+        "SELEÇÕES / MUNDIAL": ["Brasil", "França", "Argentina", "Inglaterra", "Espanha", "Portugal", "Alemanha"]
     }
 
-    # SELEÇÃO DE 3 NÍVEIS
     row_f = st.columns(3)
     with row_f[0]:
         sel_pais = st.selectbox("🌎 REGIÃO / PAÍS", list(db_paises.keys()))
@@ -325,7 +335,7 @@ elif st.session_state.aba_ativa == "analise":
         with r5: draw_card("IA CONF.", "94%", 94)
         with r6: draw_card("PRESSÃO", "ALTA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
-        with r8: draw_card("SISTEMA", "v57.32", 100)
+        with r8: draw_card("SISTEMA", "v57.33", 100)
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ CALL SALVA COM SUCESSO!")
@@ -367,7 +377,7 @@ elif st.session_state.aba_ativa == "gols":
     with g5: draw_card("UNDER 1.5 HT", "65%", 65)
     with g6: draw_card("OVER 2.5 FT", "54%", 54)
     with g7: draw_card("BTTS NO", "39%", 39)
-    with v8: draw_card("SISTEMA IA", "GOLS v2", 100)
+    with g8: draw_card("SISTEMA IA", "GOLS v2", 100)
 
 elif st.session_state.aba_ativa == "escanteios":
     st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
@@ -395,4 +405,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.32</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.33</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
