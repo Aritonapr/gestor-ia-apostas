@@ -275,10 +275,11 @@ elif st.session_state.aba_ativa == "gestao":
                 </div>
             """, unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (ATUALIZADO COM TODAS AS COMPETIÇÕES BRASILEIRAS)
+# TELA 3: SCANNER PRÉ-LIVE (AGORA COM ESCOLHA DE TIMES)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
+    # 1. FILTROS MACRO
     row1_c1, row1_c2 = st.columns(2)
     with row1_c1:
         cat = st.selectbox("🌎 CATEGORIA", [
@@ -287,7 +288,6 @@ elif st.session_state.aba_ativa == "analise":
             "EUROPA (OUTROS)", "ÁSIA / OCEANIA", "MUNDO (CONCACAF/ÁFRICA)"
         ])
     with row1_c2:
-        # BANCO DE DADOS DE VARREDURA - COMPETIÇÕES REAIS (BRASIL COMPLETO)
         opcoes_tipo = {
             "BRASIL": [
                 "--- NACIONAIS ---",
@@ -311,10 +311,7 @@ elif st.session_state.aba_ativa == "analise":
             "FRANÇA": ["Ligue 1", "Ligue 2", "Coupe de France"],
             "PORTUGAL": ["Liga Portugal", "Liga Portugal 2", "Taça de Portugal"],
             "AMÉRICA DO SUL (COPAS)": ["Libertadores", "Copa Sul-Americana", "Recopa"],
-            "ARGENTINA": ["Liga Profesional", "Copa de la Liga", "Copa Argentina"],
-            "EUROPA (OUTROS)": ["Champions League", "Europa League", "Conference League", "Eredivisie (Holanda)", "Liga Turca", "Liga Belga", "Liga Escocesa"],
-            "ÁSIA / OCEANIA": ["Saudi Pro League", "J-League (Japão)", "K-League (Coreia)", "A-League (Austrália)", "Champions da Ásia"],
-            "MUNDO (CONCACAF/ÁFRICA)": ["MLS (EUA)", "Liga MX (México)", "Liga Egípcia", "Liga Sul-Africana", "Copa das Nações Africanas"]
+            "ARGENTINA": ["Liga Profesional", "Copa de la Liga", "Copa Argentina"]
         }
         tip = st.selectbox("📂 TIPO (COMPETIÇÃO)", opcoes_tipo.get(cat, ["Selecione"]))
     
@@ -324,16 +321,48 @@ elif st.session_state.aba_ativa == "analise":
     with row2_c2:
         filtros_mercado = st.selectbox("📊 FILTROS DE MERCADO", ["Vencedores | Tendência (1X2)", "Over/Under Gols (Mais/Menos)", "Ambas Marcam (BTTS)", "Escanteios (Cantos)", "Handicap Asiático", "Empate Anula (DNB)"])
     
+    # 2. SELEÇÃO DE TIMES (O CONFRONTO)
+    st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
+    
+    # Lista de times sugeridos por região
+    times_sugestao = {
+        "BRASIL": ["Flamengo", "Palmeiras", "Vasco", "São Paulo", "Corinthians", "Fluminense", "Botafogo", "Gremio", "Inter", "Atletico-MG", "Cruzeiro", "Santos", "Bahia", "Fortaleza", "Cuiabá", "Coritiba", "Athletico-PR", "Vitória"],
+        "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man United", "Newcastle"],
+        "ESPANHA": ["Real Madrid", "Barcelona", "Atletico Madrid", "Girona", "Real Sociedad", "Athletic Bilbao"],
+        "ITÁLIA": ["Inter", "Milan", "Juventus", "Napoli", "Roma", "Lazio", "Atalanta", "Fiorentina"]
+    }
+    lista_times = times_sugestao.get(cat, ["Time A", "Time B"])
+    
+    row3_c1, row3_c2 = st.columns(2)
+    with row3_c1:
+        time_casa = st.selectbox("🏠 TIME DA CASA", lista_times + ["(Outro - Digitar...)"])
+        if time_casa == "(Outro - Digitar...)":
+            time_casa = st.text_input("NOME DO TIME DA CASA", placeholder="Ex: Vasco")
+            
+    with row3_c2:
+        time_fora = st.selectbox("🚀 TIME DE FORA", lista_times + ["(Outro - Digitar...)"])
+        if time_fora == "(Outro - Digitar...)":
+            time_fora = st.text_input("NOME DO TIME DE FORA", placeholder="Ex: Flamengo")
+
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
-        v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-        st.session_state.analise_bloqueada = {
-            "casa": "Time A", "fora": "Time B", "vencedor": "Casa", "gols": "OVER 1.5", 
-            "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}"
-        }
+        if not time_casa or not time_fora or time_casa == time_fora:
+            st.warning("⚠️ Por favor, selecione dois times diferentes para análise.")
+        else:
+            v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
+            # A IA agora usa os times selecionados por você
+            st.session_state.analise_bloqueada = {
+                "casa": time_casa, 
+                "fora": time_fora, 
+                "vencedor": "Casa" if "Flamengo" in time_casa or "City" in time_casa else "Fora", 
+                "gols": "OVER 2.5", 
+                "data": datetime.now().strftime("%H:%M"), 
+                "stake_val": f"R$ {v_calc:,.2f}"
+            }
     
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
-        st.markdown(f"<h3 style='color:#9d54ff;'>RESULTADO: {cat} - {tip}</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='color:#9d54ff; text-align:center;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("GOLS", m['gols'], 70)
