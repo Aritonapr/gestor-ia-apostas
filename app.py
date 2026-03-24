@@ -218,7 +218,7 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
 
 # --- LÓGICA DE TELAS ---
 
-# TELA 1: HOME (8 CARDS - IMAGEM 1)
+# TELA 1: HOME (8 CARDS - IMAGem 1)
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 JOGOS DO DIA</h2>", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
@@ -284,13 +284,22 @@ elif st.session_state.aba_ativa == "gestao":
                 </div>
             """, unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (IMAGEM 2)
+# TELA 3: SCANNER PRÉ-LIVE (REESTRUTURADO)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
-    cmp = st.selectbox("🏆 VENCEDORES DA COMPETIÇÃO", ["Rodada Atual", "Finais", "Fase de Grupos"])
-    c1, c2 = st.columns(2)
-    cat = c1.selectbox("🌎 CATEGORIA", ["BRASIL", "EUROPA", "MUNDO"])
-    tip = c2.selectbox("📂 TIPO", ["Série A", "Champions League", "Libertadores"])
+    
+    # Nova organização sugerida pela IA
+    row1_c1, row1_c2 = st.columns(2)
+    with row1_c1:
+        cat = st.selectbox("🌎 CATEGORIA", ["BRASIL", "EUROPA", "AMÉRICAS", "MUNDO"])
+    with row1_c2:
+        tip = st.selectbox("📂 TIPO (COMPETIÇÃO)", ["Série A", "Série B", "Champions League", "Libertadores", "Premier League"])
+    
+    row2_c1, row2_c2 = st.columns(2)
+    with row2_c1:
+        tempo = st.selectbox("📅 DATA / TEMPO", ["Rodada Atual", "Hoje", "Próximos Jogos", "Amanhã"])
+    with row2_c2:
+        filtros_mercado = st.selectbox("📊 FILTROS DE MERCADO", ["Vencedores | Tendência", "Over/Under Gols", "Ambas Marcam", "Escanteios"])
     
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
