@@ -275,65 +275,66 @@ elif st.session_state.aba_ativa == "gestao":
                 </div>
             """, unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (COMPLETO: BRASIL + EUROPA + INTERNACIONAL)
+# TELA 3: SCANNER PRÉ-LIVE (HIERARQUIA COMPLETA NACIONAL E INTERNACIONAL)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    # [ESTRUTURA HIERÁRQUICA DE 3 NÍVEIS]
+    # [ESTRUTURA DE 3 NÍVEIS CONFORME IMAGEM DO USUÁRIO]
     row_filtros = st.columns(3)
     
     with row_filtros[0]:
-        cat_pais = st.selectbox("🌎 CATEGORIA / PAÍS", [
-            "BRASIL", "INGLATERRA", "ESPANHA", "ITÁLIA", "ALEMANHA", "FRANÇA", "PORTUGAL", "EUROPA (INTERNACIONAL)", "MUNDO"
+        cat_pais = st.selectbox("🌎 CATEGORIA / REGIÃO", [
+            "BRASIL", "EUROPA (UEFA)", "AMÉRICA DO SUL (CONMEBOL)", "FIFA (INTERCONTINENTAL)",
+            "INGLATERRA", "ESPANHA", "ITÁLIA", "ALEMANHA", "PORTUGAL", "FRANÇA", "ARGENTINA"
         ])
 
     with row_filtros[1]:
-        # Definição de Grupos baseados na Categoria
+        # Definição de Grupos baseados na Categoria (Nível 2)
         if cat_pais == "BRASIL":
             grupo_opcoes = ["BRASILEIRÃO", "REGIONAIS", "ESTADUAIS", "COPAS", "FEMININO / BASE"]
-        elif cat_pais == "EUROPA (INTERNACIONAL)":
-            grupo_opcoes = ["UEFA (CONTINENTAL)", "FIFA (GLOBAL)"]
+        elif cat_pais == "EUROPA (UEFA)":
+            grupo_opcoes = ["CHAMPIONS LEAGUE", "EUROPA LEAGUE", "CONFERENCE LEAGUE", "NATIONS LEAGUE"]
+        elif cat_pais == "AMÉRICA DO SUL (CONMEBOL)":
+            grupo_opcoes = ["LIBERTADORES", "SUL-AMERICANA", "RECOPA"]
+        elif cat_pais == "FIFA (INTERCONTINENTAL)":
+            grupo_opcoes = ["MUNDIAL DE CLUBES", "COPA DO MUNDO"]
         else:
             grupo_opcoes = ["LIGA NACIONAL", "COPAS NACIONAIS", "SUPERCOPA"]
         
         grupo_selecionado = st.selectbox("📂 GRUPO", grupo_opcoes)
 
     with row_filtros[2]:
-        # Banco de dados de Ligas (Nível 3)
+        # Banco de dados de Ligas Específicas (Nível 3)
         db_ligas = {
+            # Brasil
             "BRASILEIRÃO": ["Série A", "Série B", "Série C", "Série D"],
             "REGIONAIS": ["Copa do Nordeste", "Copa Verde"],
             "ESTADUAIS": ["Paulistão", "Carioca", "Mineiro", "Gaúcho", "Paranaense"],
             "COPAS": ["Copa do Brasil", "Supercopa do Brasil"],
-            "FEMININO / BASE": ["Brasileiro Fem A1", "Brasileiro Fem A2", "Copinha", "Brasileiro Sub-20", "Brasileiro Sub-17"],
-            "LIGA NACIONAL": {
-                "INGLATERRA": ["Premier League", "Championship"],
-                "ESPANHA": ["La Liga", "La Liga 2"],
-                "ITÁLIA": ["Serie A", "Serie B"],
-                "ALEMANHA": ["Bundesliga", "2. Bundesliga"],
-                "FRANÇA": ["Ligue 1", "Ligue 2"],
-                "PORTUGAL": ["Liga Portugal", "Liga Portugal 2"]
-            },
-            "COPAS NACIONAIS": {
-                "INGLATERRA": ["FA Cup", "EFL Cup"],
-                "ESPANHA": ["Copa del Rey"],
-                "ITÁLIA": ["Coppa Italia"],
-                "ALEMANHA": ["DFB Pokal"],
-                "FRANÇA": ["Coupe de France"],
-                "PORTUGAL": ["Taça de Portugal"]
-            },
-            "SUPERCOPA": ["Supercopa Nacional (Final)"],
-            "UEFA (CONTINENTAL)": ["UEFA Champions League", "UEFA Europa League", "UEFA Conference League"],
-            "FIFA (GLOBAL)": ["Mundial de Clubes da FIFA"]
+            "FEMININO / BASE": ["Brasileiro Fem A1", "Copinha Sub-20", "Brasileiro Sub-20"],
+            
+            # Internacional UEFA
+            "CHAMPIONS LEAGUE": ["Fase de Grupos", "Oitavas/Quartas", "Semi/Final"],
+            "EUROPA LEAGUE": ["Fase de Grupos", "Play-offs", "Fase Final"],
+            "CONFERENCE LEAGUE": ["Fase de Grupos", "Mata-Mata"],
+            "NATIONS LEAGUE": ["Liga A", "Liga B", "Final Four"],
+            
+            # Internacional CONMEBOL
+            "LIBERTADORES": ["Fase de Grupos", "Oitavas/Quartas", "Final Única"],
+            "SUL-AMERICANA": ["Fase de Grupos", "Play-offs", "Final"],
+            "RECOPA": ["Final (Ida/Volta)"],
+            
+            # Internacional FIFA
+            "MUNDIAL DE CLUBES": ["Play-off", "Semi-Final", "Grande Final"],
+            "COPA DO MUNDO": ["Fase de Grupos", "Mata-Mata", "Final"],
+            
+            # Ligas Nacionais Europeias
+            "LIGA NACIONAL": ["Primeira Divisão (Elite)", "Segunda Divisão"],
+            "COPAS NACIONAIS": ["Copa Principal", "Copa da Liga"],
+            "SUPERCOPA": ["Final Única"]
         }
         
-        # Lógica de exibição do Nível 3
-        if grupo_selecionado in ["LIGA NACIONAL", "COPAS NACIONAIS"]:
-            lista_final = db_ligas[grupo_selecionado].get(cat_pais, ["Selecione"])
-        else:
-            lista_final = db_ligas.get(grupo_selecionado, ["Selecione"])
-            
-        competicao = st.selectbox("🏆 COMPETIÇÃO", lista_final)
+        competicao = st.selectbox("🏆 COMPETIÇÃO", db_ligas.get(grupo_selecionado, ["Selecione"]))
 
     # Filtros de Mercado e Tempo
     row_mercados = st.columns(2)
@@ -346,13 +347,13 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
-    # Sugestão inteligente de times baseada no país
+    # Sugestão de times
     sugestao_times = {
-        "BRASIL": ["Flamengo", "Palmeiras", "Vasco", "São Paulo", "Corinthians", "Botafogo"],
-        "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Man United", "Chelsea"],
-        "ESPANHA": ["Real Madrid", "Barcelona", "Atletico Madrid"],
-        "ALEMANHA": ["Bayern Munchen", "B. Leverkusen", "B. Dortmund"],
-        "ITÁLIA": ["Inter", "Milan", "Juventus", "Napoli"]
+        "BRASIL": ["Flamengo", "Palmeiras", "Vasco", "São Paulo", "Corinthians", "Fluminense"],
+        "EUROPA (UEFA)": ["Real Madrid", "Man City", "Bayern Munchen", "PSG", "Liverpool"],
+        "AMÉRICA DO SUL (CONMEBOL)": ["Flamengo", "River Plate", "Palmeiras", "Boca Juniors", "LDU"],
+        "INGLATERRA": ["Arsenal", "Man United", "Chelsea", "Tottenham"],
+        "ESPANHA": ["Barcelona", "Atletico Madrid", "Real Sociedad"]
     }
     lista_times = sugestao_times.get(cat_pais, ["Time A", "Time B"])
     
@@ -370,8 +371,8 @@ elif st.session_state.aba_ativa == "analise":
         else:
             v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
             st.session_state.analise_bloqueada = {
-                "casa": time_casa, "fora": time_fora, "vencedor": "Análise Pendente", 
-                "gols": "OVER 2.5", "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}"
+                "casa": time_casa, "fora": time_fora, "vencedor": "Indefinido", 
+                "gols": "OVER 1.5", "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}"
             }
     
     if st.session_state.analise_bloqueada:
