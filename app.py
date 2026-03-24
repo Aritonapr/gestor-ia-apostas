@@ -284,26 +284,58 @@ elif st.session_state.aba_ativa == "gestao":
                 </div>
             """, unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (REESTRUTURADO)
+# TELA 3: SCANNER PRÉ-LIVE (REESTRUTURADO COM DADOS ATUALIZADOS)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    # Nova organização sugerida pela IA
+    # Organização baseada em pesquisa de mercado e jornada do usuário
     row1_c1, row1_c2 = st.columns(2)
     with row1_c1:
-        cat = st.selectbox("🌎 CATEGORIA", ["BRASIL", "EUROPA", "AMÉRICAS", "MUNDO"])
+        cat = st.selectbox("🌎 CATEGORIA", [
+            "BRASIL", "INGLATERRA", "ESPANHA", "ITÁLIA", "ALEMANHA", 
+            "FRANÇA", "PORTUGAL", "ARGENTINA", "COPAS INTERNACIONAIS", "MUNDO"
+        ])
     with row1_c2:
-        tip = st.selectbox("📂 TIPO (COMPETIÇÃO)", ["Série A", "Série B", "Champions League", "Libertadores", "Premier League"])
+        # Preenchimento automático baseado na categoria (Exemplo de varredura das principais ligas)
+        opcoes_tipo = {
+            "BRASIL": ["Série A", "Série B", "Copa do Brasil", "Estadual Paulistão", "Estadual Carioca"],
+            "INGLATERRA": ["Premier League", "Championship", "FA Cup", "EFL Cup"],
+            "ESPANHA": ["La Liga", "La Liga 2", "Copa del Rey"],
+            "ITÁLIA": ["Serie A", "Serie B", "Coppa Italia"],
+            "ALEMANHA": ["Bundesliga", "2. Bundesliga", "DFB Pokal"],
+            "FRANÇA": ["Ligue 1", "Ligue 2", "Coupe de France"],
+            "PORTUGAL": ["Liga Portugal", "Liga Portugal 2", "Taça de Portugal"],
+            "ARGENTINA": ["Liga Profesional", "Copa de la Liga"],
+            "COPAS INTERNACIONAIS": ["Champions League", "Europa League", "Libertadores", "Copa Sul-Americana", "Mundial de Clubes"],
+            "MUNDO": ["MLS (EUA)", "Saudi Pro League", "J-League (Japão)", "Liga MX (México)"]
+        }
+        tip = st.selectbox("📂 TIPO (COMPETIÇÃO)", opcoes_tipo.get(cat, ["Selecione"]))
     
     row2_c1, row2_c2 = st.columns(2)
     with row2_c1:
-        tempo = st.selectbox("📅 DATA / TEMPO", ["Rodada Atual", "Hoje", "Próximos Jogos", "Amanhã"])
+        tempo = st.selectbox("📅 DATA / TEMPO", [
+            "Hoje", "Amanhã", "Final de Semana", "Rodada Atual", 
+            "Próximas 24 Horas", "Próximas 48 Horas", "Próximos 7 Dias"
+        ])
     with row2_c2:
-        filtros_mercado = st.selectbox("📊 FILTROS DE MERCADO", ["Vencedores | Tendência", "Over/Under Gols", "Ambas Marcam", "Escanteios"])
+        filtros_mercado = st.selectbox("📊 FILTROS DE MERCADO", [
+            "Vencedores | Tendência (1X2)", 
+            "Over/Under Gols (Mais/Menos)", 
+            "Ambas Marcam (BTTS)", 
+            "Escanteios (Cantos)", 
+            "Handicap Asiático",
+            "Empate Anula (DNB)"
+        ])
     
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-        st.session_state.analise_bloqueada = {"casa": "Flamengo", "fora": "Palmeiras", "vencedor": "Casa", "gols": "OVER 1.5", "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}"}
+        # Mock de resultado para demonstração (IA VARIAÇÃO)
+        st.session_state.analise_bloqueada = {
+            "casa": "Flamengo" if cat == "BRASIL" else "Real Madrid" if cat == "ESPANHA" else "Man. City", 
+            "fora": "Palmeiras" if cat == "BRASIL" else "Barcelona" if cat == "ESPANHA" else "Liverpool", 
+            "vencedor": "Casa", "gols": "OVER 1.5", "data": datetime.now().strftime("%H:%M"), 
+            "stake_val": f"R$ {v_calc:,.2f}"
+        }
     
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
