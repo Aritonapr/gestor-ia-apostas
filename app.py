@@ -3,12 +3,12 @@ import time
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v57.30 - PROTEÇÃO ATIVA]
+# [PROTOCOLO DE MANUTENÇÃO v57.31 - PROTEÇÃO ATIVA]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
 # DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO)
-# DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO (CORREÇÃO ATTRIBUTEERROR)
+# DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO (MÓDULO INGLATERRA)
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -38,7 +38,6 @@ st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
     
-    /* RESET DE SCROLL E FUNDOS */
     ::-webkit-scrollbar { display: none !important; }
     * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
 
@@ -51,7 +50,6 @@ st.markdown("""
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
     
-    /* [DIRETRIZ 2] HEADER PREMIUM ORIGINAL COM GPU ACCELERATION */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; 
@@ -91,7 +89,6 @@ st.markdown("""
     }
     .entrar-grad:hover { filter: brightness(1.15); box-shadow: 0 0 15px rgba(109, 40, 217, 0.4); }
 
-    /* SIDEBAR NAVIGATION */
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
@@ -107,57 +104,37 @@ st.markdown("""
         background-color: #1e293b !important; color: #06b6d4 !important; padding-left: 35px !important; border-left: 3px solid #6d28d9 !important;
     }
 
-    /* [DIRETRIZ 4] EFEITOS DE BOTÕES DE AÇÃO NO CORPO PRINCIPAL */
     div.stButton > button:not([data-testid="stSidebar"] *) {
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
-        color: #ffffff !important;
-        border: none !important;
-        padding: 15px 20px !important;
-        font-weight: 900 !important;
-        text-transform: uppercase !important;
-        letter-spacing: 1.2px !important;
-        border-radius: 6px !important;
-        width: 100% !important;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important;
-        margin-top: 10px !important;
+        color: #ffffff !important; border: none !important; padding: 15px 20px !important;
+        font-weight: 900 !important; text-transform: uppercase !important;
+        letter-spacing: 1.2px !important; border-radius: 6px !important;
+        width: 100% !important; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important; margin-top: 10px !important;
         transform: translate3d(0,0,0);
     }
     div.stButton > button:not([data-testid="stSidebar"] *):hover {
-        transform: translateY(-2px) !important;
-        filter: brightness(1.2) !important;
+        transform: translateY(-2px) !important; filter: brightness(1.2) !important;
         box-shadow: 0 8px 25px rgba(109, 40, 217, 0.5) !important;
     }
 
-    /* [DIRETRIZ 4] REFORÇO ZERO WHITE - INPUTS E SELECTS */
     div[data-baseweb="input"], .stNumberInput div { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
     div[data-baseweb="input"] input { background-color: #1a202c !important; color: white !important; }
     div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; }
     
-    /* KPI CARDS (O "QUADRADO") */
     .highlight-card { 
         background: #11151a; border: 1px solid #1e293b; padding: 20px; 
         border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px;
-        transition: all 0.3s ease;
-        transform: translate3d(0,0,0);
+        transition: all 0.3s ease; transform: translate3d(0,0,0);
     }
     .highlight-card:hover { transform: translateY(-5px); border-color: #6d28d9; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
     
-    /* BANNER TÍTULO GESTÃO (IMAGEM 3) */
     .banca-title-banner {
-        background-color: #003399 !important;
-        padding: 15px 25px;
-        border-radius: 5px;
-        color: white !important;
-        font-size: 24px;
-        font-weight: 800;
-        margin-bottom: 35px;
-        display: flex;
-        align-items: center;
-        gap: 15px;
+        background-color: #003399 !important; padding: 15px 25px; border-radius: 5px;
+        color: white !important; font-size: 24px; font-weight: 800; margin-bottom: 35px;
+        display: flex; align-items: center; gap: 15px;
     }
 
-    /* HISTÓRICO CARD */
     .history-card-box { 
         background: #161b22 !important; border: 1px solid #30363d !important; 
         padding: 15px 25px !important; border-radius: 8px; margin-bottom: 12px; 
@@ -165,13 +142,10 @@ st.markdown("""
     }
 
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
-    
-    /* AJUSTE SLIDERS */
-    .stSlider [data-testid="stTickBar"] { display: none; }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. [DIRETRIZ 1] HEADER ANCORADO NA SIDEBAR
+# 3. HEADER SIDEBAR
 with st.sidebar:
     st.markdown("""
         <div class="betano-header">
@@ -195,7 +169,6 @@ with st.sidebar:
         <div style="height:65px;"></div>
     """, unsafe_allow_html=True) 
 
-    # --- NAVEGAÇÃO ---
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
@@ -205,7 +178,6 @@ with st.sidebar:
     if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
-# FUNÇÃO CARD GENÉRICA (O "QUADRADO")
 def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, #06b6d4)"):
     st.markdown(f"""
         <div class="highlight-card">
@@ -219,7 +191,6 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
 
 # --- LÓGICA DE TELAS ---
 
-# TELA 1: HOME
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 JOGOS DO DIA</h2>", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
@@ -231,9 +202,8 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v57.30", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v57.31", 100)
 
-# TELA 2: GESTÃO DE BANCA
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
     col_input, col_display = st.columns([1.2, 2.5])
@@ -262,67 +232,49 @@ elif st.session_state.aba_ativa == "gestao":
         with g5: draw_card("RISCO TOTAL", f"{st.session_state.stake_padrao}%", 100, "#00d2ff")
         with g6: draw_card("ENTRADAS/META", f"{entradas_meta}", 100, "#00d2ff")
         with g7: draw_card("ENTRADAS/LOSS", f"{entradas_loss}", 100, "#00d2ff")
-        with g8: 
-            st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div><div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:#00d2ff; height:100%; width:100%;"></div></div></div>""", unsafe_allow_html=True)
+        with g8: st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div><div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:#00d2ff; height:100%; width:100%;"></div></div></div>""", unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (CORREÇÃO DE ATTRIBUTEERROR E HIERARQUIA BRASIL)
+# TELA 3: SCANNER PRÉ-LIVE (MÓDULO INGLATERRA ATUALIZADO)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    # BANCO DE DADOS INTEGRAL [v57.30]
+    # BANCO DE DADOS INTEGRAL
     db_times = {
-        "BRASIL": ["Flamengo", "Palmeiras", "Vasco", "São Paulo", "Corinthians", "Fluminense", "Botafogo", "Grêmio", "Inter", "Atlético-MG", "Cruzeiro", "Santos", "Bahia", "Fortaleza", "Athletico-PR"],
-        "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man United", "Newcastle", "West Ham", "Brighton"],
-        "ESPANHA": ["Real Madrid", "Barcelona", "Atlético Madrid", "Girona", "Real Sociedad", "Athletic Bilbao", "Sevilla", "Valencia"],
-        "ITÁLIA": ["Inter Milan", "AC Milan", "Juventus", "Napoli", "AS Roma", "Lazio", "Atalanta", "Fiorentina"],
-        "ALEMANHA": ["Bayern Munchen", "Bayer Leverkusen", "Borussia Dortmund", "RB Leipzig", "Stuttgart", "Eintracht Frankfurt"],
-        "FRANÇA": ["PSG", "Monaco", "Marseille", "Lyon", "Lille", "Nice"],
-        "PORTUGAL": ["Benfica", "Porto", "Sporting CP", "Braga", "Vitória SC"],
-        "ARÁBIA SAUDITA": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq"],
-        "ESTADOS UNIDOS (MLS)": ["Inter Miami", "LAFC", "Columbus Crew", "LA Galaxy", "Seattle Sounders"],
-        "EUROPA (UEFA)": ["Real Madrid", "Man City", "Bayern Munchen", "PSG", "Inter Milan", "Liverpool", "Arsenal", "Barcelona"],
-        "AMÉRICA DO SUL (CONMEBOL)": ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors", "Fluminense", "Atlético-MG", "Peñarol", "LDU"],
-        "FIFA (INTERCONTINENTAL)": ["Real Madrid", "Man City", "Al-Hilal", "Flamengo", "Urawa Reds", "Leon"],
-        "SELEÇÕES (INTERNACIONAL)": ["Brasil", "França", "Argentina", "Inglaterra", "Espanha", "Portugal", "Alemanha", "Holanda", "Itália", "Bélgica"]
+        "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man United", "Newcastle", "West Ham", "Brighton", "Everton", "Leeds", "Leicester", "Sunderland", "Portsmouth"],
+        "BRASIL": ["Flamengo", "Palmeiras", "Vasco", "São Paulo", "Corinthians", "Fluminense", "Botafogo", "Grêmio", "Inter", "Atlético-MG"],
+        "SELEÇÕES": ["Brasil", "França", "Argentina", "Inglaterra", "Espanha", "Portugal", "Alemanha"],
+        "EUROPA (UEFA)": ["Real Madrid", "Man City", "Bayern Munchen", "PSG", "Inter Milan"],
+        "AMÉRICA DO SUL (CONMEBOL)": ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors"]
     }
 
-    # [ESTRUTURA HIERÁRQUICA DE 3 NÍVEIS]
     row_filtros = st.columns(3)
     with row_filtros[0]:
         cat_pais = st.selectbox("🌎 CATEGORIA / REGIÃO", list(db_times.keys()))
     
     with row_filtros[1]:
-        if cat_pais == "BRASIL": grupo_opcoes = ["BRASILEIRÃO", "REGIONAIS", "ESTADUAIS", "COPAS", "FEMININO / BASE"]
-        elif cat_pais in ["EUROPA (UEFA)", "AMÉRICA DO SUL (CONMEBOL)", "FIFA (INTERCONTINENTAL)"]: grupo_opcoes = ["CHAMPIONS LEAGUE", "LIBERTADORES", "EUROPA LEAGUE", "SUL-AMERICANA", "CONFERENCE LEAGUE", "MUNDIAL DE CLUBES"]
-        elif cat_pais == "SELEÇÕES (INTERNACIONAL)": grupo_opcoes = ["COPA DO MUNDO 2026", "QUALIF. COPA DO MUNDO", "EUROCOPA", "COPA AMÉRICA", "NATIONS LEAGUE"]
-        else: grupo_opcoes = ["LIGA NACIONAL", "COPAS NACIONAIS", "SUPERCOPA"]
+        # Logica de Grupos para Inglaterra
+        if cat_pais == "INGLATERRA": 
+            grupo_opcoes = ["LIGAS NACIONAIS (EFL)", "COPAS NACIONAIS", "SUPERCOPA (COMMUNITY SHIELD)"]
+        elif cat_pais == "BRASIL": 
+            grupo_opcoes = ["BRASILEIRÃO", "COPAS", "ESTADUAIS"]
+        elif cat_pais == "SELEÇÕES":
+            grupo_opcoes = ["COPA DO MUNDO 2026", "EUROCOPA", "COPA AMÉRICA", "QUALIFICATÓRIAS"]
+        else: 
+            grupo_opcoes = ["COMPETIÇÕES CONTINENTAIS", "COPAS NACIONAIS"]
         grupo_selecionado = st.selectbox("📂 GRUPO", grupo_opcoes)
     
     with row_filtros[2]:
+        # Detalhamento por Competição
         db_ligas = {
-            "BRASILEIRÃO": ["Série A", "Série B", "Série C", "Série D"],
-            "REGIONAIS": ["Copa do Nordeste", "Copa Verde"],
-            "ESTADUAIS": ["Paulistão", "Carioca", "Mineiro", "Gaúcho", "Paranaense"],
-            "COPAS": ["Copa do Brasil", "Supercopa do Brasil"],
-            "CHAMPIONS LEAGUE": ["Fase de Liga", "Mata-Mata", "Final"],
-            "LIBERTADORES": ["Fase de Grupos", "Mata-Mata", "Final"],
-            "EUROPA LEAGUE": ["Fase de Liga", "Mata-Mata"],
-            "SUL-AMERICANA": ["Fase de Grupos", "Mata-Mata"],
-            "CONFERENCE LEAGUE": ["Fase de Liga", "Mata-Mata"],
-            "MUNDIAL DE CLUBES": ["Fase de Grupos", "Mata-Mata"],
-            "LIGA NACIONAL": ["Elite (1ª Divisão)", "Acesso (2ª Divisão)"],
-            "COPAS NACIONAIS": ["Copa da Liga", "Taça Nacional"],
-            "SUPERCOPA": ["Final Única"],
-            "COPA DO MUNDO 2026": ["Fase de Grupos", "32-avos", "Oitavas", "Quartas", "Semi/Final"],
-            "QUALIF. COPA DO MUNDO": ["América do Sul", "Europa", "Ásia/África"],
-            "EUROCOPA": ["Fase de Grupos", "Mata-Mata"],
-            "COPA AMÉRICA": ["Fase de Grupos", "Mata-Mata"],
-            "NATIONS LEAGUE": ["Liga A", "Liga B", "Final Four"],
-            "FEMININO / BASE": ["Brasileirão Feminino", "Sub-20"]
+            "LIGAS NACIONAIS (EFL)": ["Premier League (1ª Divisão)", "EFL Championship (2ª Divisão)", "EFL League One (3ª Divisão)", "EFL League Two (4ª Divisão)", "National League (5ª Divisão)"],
+            "COPAS NACIONAIS": ["FA Cup (Copa da Inglaterra)", "EFL Cup (Carabao Cup)", "EFL Trophy"],
+            "SUPERCOPA (COMMUNITY SHIELD)": ["Final Community Shield"],
+            "BRASILEIRÃO": ["Série A", "Série B", "Série C"],
+            "COPA DO MUNDO 2026": ["Fase de Grupos", "Mata-Mata Final"],
+            "COMPETIÇÕES CONTINENTAIS": ["Champions League", "Libertadores", "Sudamericana"]
         }
         competicao = st.selectbox("🏆 COMPETIÇÃO", db_ligas.get(grupo_selecionado, ["Geral"]))
 
-    # [DEFINIR CONFRONTO]
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
@@ -330,18 +282,15 @@ elif st.session_state.aba_ativa == "analise":
     row_times = st.columns(2)
     with row_times[0]:
         time_casa = st.selectbox("🏠 TIME DA CASA", lista_de_times + ["(Outro)"])
-        if time_casa == "(Outro)": time_casa = st.text_input("DIGITE O NOME DO TIME (CASA)")
+        if time_casa == "(Outro)": time_casa = st.text_input("NOME DO TIME (CASA)")
     with row_times[1]:
         lista_fora_filtrada = [t for t in lista_de_times if t != time_casa]
         time_fora = st.selectbox("🚀 TIME DE FORA", lista_fora_filtrada + ["(Outro)"])
-        if time_fora == "(Outro)": time_fora = st.text_input("DIGITE O NOME DO TIME (FORA)")
+        if time_fora == "(Outro)": time_fora = st.text_input("NOME DO TIME (FORA)")
 
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
-        if not time_casa or not time_fora:
-            st.warning("⚠️ Selecione os times corretamente.")
-        else:
-            v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-            st.session_state.analise_bloqueada = {"casa": time_casa, "fora": time_fora, "vencedor": "Indefinido", "gols": "OVER 1.5", "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}"}
+        v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
+        st.session_state.analise_bloqueada = {"casa": time_casa, "fora": time_fora, "vencedor": "Indefinido", "gols": "OVER 1.5", "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}"}
     
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
@@ -355,12 +304,11 @@ elif st.session_state.aba_ativa == "analise":
         with r5: draw_card("IA CONF.", "94%", 94)
         with r6: draw_card("PRESSÃO", "ALTA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
-        with r8: draw_card("SISTEMA", "v57.30", 100)
+        with r8: draw_card("SISTEMA", "v57.31", 100)
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ CALL SALVA COM SUCESSO!")
 
-# TELA 4: LIVE
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER LIVE</h2>", unsafe_allow_html=True)
     l1, l2, l3, l4 = st.columns(4)
@@ -374,21 +322,19 @@ elif st.session_state.aba_ativa == "live":
     with l7: draw_card("CORNERS LIVE", "8", 80)
     with l8: draw_card("STAKE LIVE", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
 
-# TELA 5: VENCEDORES DA COMPETIÇÃO
 elif st.session_state.aba_ativa == "vencedores":
     st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
     v1, v2, v3, v4 = st.columns(4)
-    with v1: draw_card("FAVORITO 1", "Flamengo", 45)
-    with v2: draw_card("FAVORITO 2", "Palmeiras", 38)
-    with v3: draw_card("FAVORITO 3", "Botafogo", 25)
-    with v4: draw_card("ZEBRA PROB", "Fortaleza", 12)
+    with v1: draw_card("FAVORITO 1", "Man City", 45)
+    with v2: draw_card("FAVORITO 2", "Arsenal", 38)
+    with v3: draw_card("FAVORITO 3", "Liverpool", 25)
+    with v4: draw_card("ZEBRA PROB", "Aston Villa", 12)
     v5, v6, v7, v8 = st.columns(4)
     with v5: draw_card("ROI MÉDIO", "12.4%", 100)
     with v6: draw_card("VOLATILIDADE", "BAIXA", 20)
     with v7: draw_card("TENDÊNCIA", "ESTÁVEL", 50)
     with v8: draw_card("LIQUIDEZ", "ALTA", 90)
 
-# TELA 6: APOSTAS POR GOLS
 elif st.session_state.aba_ativa == "gols":
     st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>", unsafe_allow_html=True)
     g1, g2, g3, g4 = st.columns(4)
@@ -402,7 +348,6 @@ elif st.session_state.aba_ativa == "gols":
     with g7: draw_card("BTTS NO", "39%", 39)
     with g8: draw_card("SISTEMA IA", "GOLS v2", 100)
 
-# TELA 7: APOSTAS POR ESCANTEIOS
 elif st.session_state.aba_ativa == "escanteios":
     st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
     e1, e2, e3, e4 = st.columns(4)
@@ -416,7 +361,6 @@ elif st.session_state.aba_ativa == "escanteios":
     with e7: draw_card("UNDER 7.5", "12%", 12)
     with e8: draw_card("ASIÁTICOS", "9.0", 100)
 
-# TELA 8: HISTÓRICO
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
     if not st.session_state.historico_calls: st.info("Nenhuma operação registrada.")
@@ -430,5 +374,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-# FOOTER
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.30</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.31</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
