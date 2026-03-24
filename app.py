@@ -164,6 +164,9 @@ st.markdown("""
     }
 
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
+    
+    /* AJUSTE SLIDERS */
+    .stSlider [data-testid="stTickBar"] { display: none; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -201,7 +204,7 @@ with st.sidebar:
     if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
-# FUNÇÃO CARD GENÉRICA
+# FUNÇÃO CARD GENÉRICA (O "QUADRADO")
 def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, #06b6d4)"):
     st.markdown(f"""
         <div class="highlight-card">
@@ -215,7 +218,7 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
 
 # --- LÓGICA DE TELAS ---
 
-# TELA 1: HOME
+# TELA 1: HOME (8 CARDS)
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 JOGOS DO DIA</h2>", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
@@ -229,7 +232,7 @@ if st.session_state.aba_ativa == "home":
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
     with h8: draw_card("SISTEMA", "JARVIS v57.23", 100)
 
-# TELA 2: GESTÃO DE BANCA
+# TELA 2: GESTÃO DE BANCA PRO
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
     col_input, col_display = st.columns([1.2, 2.5])
@@ -261,26 +264,22 @@ elif st.session_state.aba_ativa == "gestao":
         with g8: 
             st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div><div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:#00d2ff; height:100%; width:100%;"></div></div></div>""", unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (COMPLETO E PROTEGIDO)
+# TELA 3: SCANNER PRÉ-LIVE (COMPLETO COM PROTEÇÃO DE TIME)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
     # BANCO DE DADOS DE TIMES POR PAÍS/REGIÃO
     db_times = {
         "BRASIL": ["Flamengo", "Palmeiras", "Vasco", "São Paulo", "Corinthians", "Fluminense", "Botafogo", "Grêmio", "Inter", "Atlético-MG", "Cruzeiro", "Santos", "Bahia", "Fortaleza", "Athletico-PR"],
-        "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man United", "Newcastle", "West Ham"],
-        "ESPANHA": ["Real Madrid", "Barcelona", "Atlético Madrid", "Girona", "Real Sociedad", "Athletic Bilbao", "Sevilla"],
-        "ITÁLIA": ["Inter Milan", "AC Milan", "Juventus", "Napoli", "AS Roma", "Lazio", "Atalanta", "Fiorentina"],
-        "ALEMANHA": ["Bayern Munchen", "B. Leverkusen", "B. Dortmund", "RB Leipzig", "Stuttgart", "Eintracht Frankfurt"],
-        "PORTUGAL": ["Benfica", "Porto", "Sporting CP", "SC Braga", "Vitória SC"],
-        "FRANÇA": ["PSG", "Marseille", "Lyon", "Monaco", "Lille", "Nice"],
-        "ARGENTINA": ["River Plate", "Boca Juniors", "Racing", "Independiente", "San Lorenzo"],
-        "EUROPA (UEFA)": ["Real Madrid", "Man City", "Bayern Munchen", "PSG", "Inter Milan", "Liverpool", "Barcelona", "Arsenal"],
-        "AMÉRICA DO SUL (CONMEBOL)": ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors", "Fluminense", "LDU Quito"],
-        "FIFA (INTERCONTINENTAL)": ["Real Madrid", "Flamengo", "Al-Hilal", "Man City", "Leon", "Urawa Red Diamonds"]
+        "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man United", "Newcastle"],
+        "ESPANHA": ["Real Madrid", "Barcelona", "Atlético Madrid", "Girona", "Real Sociedad", "Athletic Bilbao"],
+        "ITÁLIA": ["Inter Milan", "AC Milan", "Juventus", "Napoli", "AS Roma", "Lazio"],
+        "EUROPA (UEFA)": ["Real Madrid", "Man City", "Bayern Munchen", "PSG", "Inter Milan", "Liverpool"],
+        "AMÉRICA DO SUL (CONMEBOL)": ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors", "Fluminense"],
+        "FIFA (INTERCONTINENTAL)": ["Real Madrid", "Flamengo", "Al-Hilal", "Man City"]
     }
 
-    # [NÍVEL 1, 2 e 3]
+    # [ESTRUTURA HIERÁRQUICA DE 3 NÍVEIS]
     row_filtros = st.columns(3)
     with row_filtros[0]:
         cat_pais = st.selectbox("🌎 CATEGORIA / REGIÃO", list(db_times.keys()))
@@ -301,19 +300,16 @@ elif st.session_state.aba_ativa == "analise":
         }
         competicao = st.selectbox("🏆 COMPETIÇÃO", db_ligas.get(grupo_selecionado, ["Geral"]))
 
-    # [DEFINIR CONFRONTO - COM TRAVAS DE SEGURANÇA]
+    # [DEFINIR CONFRONTO - COM TRAVA DE DUPLICIDADE]
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
     lista_de_times = db_times.get(cat_pais, ["Time A", "Time B"])
-    
     row_times = st.columns(2)
     with row_times[0]:
         time_casa = st.selectbox("🏠 TIME DA CASA", lista_de_times + ["(Outro)"])
         if time_casa == "(Outro)": time_casa = st.text_input("DIGITE O NOME DO TIME (CASA)")
-    
     with row_times[1]:
-        # TRAVA: Remove o time da casa da lista de opções do time de fora
         lista_fora_filtrada = [t for t in lista_de_times if t != time_casa]
         time_fora = st.selectbox("🚀 TIME DE FORA", lista_fora_filtrada + ["(Outro)"])
         if time_fora == "(Outro)": time_fora = st.text_input("DIGITE O NOME DO TIME (FORA)")
@@ -323,7 +319,7 @@ elif st.session_state.aba_ativa == "analise":
             st.warning("⚠️ Selecione os times corretamente.")
         else:
             v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-            st.session_state.analise_bloqueada = {"casa": time_casa, "fora": time_fora, "vencedor": "Calculando...", "gols": "OVER 2.5", "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}"}
+            st.session_state.analise_bloqueada = {"casa": time_casa, "fora": time_fora, "vencedor": "Indefinido", "gols": "OVER 1.5", "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}"}
     
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
@@ -342,22 +338,63 @@ elif st.session_state.aba_ativa == "analise":
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ CALL SALVA COM SUCESSO!")
 
-# TELA 4: LIVE
+# TELA 4: LIVE (8 CARDS RESTAURADOS)
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER LIVE</h2>", unsafe_allow_html=True)
     l1, l2, l3, l4 = st.columns(4)
     with l1: draw_card("PRESSÃO CASA", "88%", 88)
-    with l2: draw_card("ATAQUES", "14/5m", 70)
-    with l3: draw_card("POSSE", "65%", 65)
+    with l2: draw_card("ATAQUES/5m", "14", 70)
+    with l3: draw_card("POSSE BOLA", "65%", 65)
     with l4: draw_card("GOL PROB", "90%", 90)
+    l5, l6, l7, l8 = st.columns(4)
+    with l5: draw_card("ODDS ATUAIS", "1.85", 100)
+    with l6: draw_card("VARIAÇÃO", "+0.12", 40)
+    with l7: draw_card("CORNERS LIVE", "8", 80)
+    with l8: draw_card("STAKE LIVE", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
 
-# TELAS ADICIONAIS (MANUTENÇÃO)
+# TELA 5: VENCEDORES DA COMPETIÇÃO (8 CARDS RESTAURADOS)
 elif st.session_state.aba_ativa == "vencedores":
     st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
+    v1, v2, v3, v4 = st.columns(4)
+    with v1: draw_card("FAVORITO 1", "Flamengo", 45)
+    with v2: draw_card("FAVORITO 2", "Palmeiras", 38)
+    with v3: draw_card("FAVORITO 3", "Botafogo", 25)
+    with v4: draw_card("ZEBRA PROB", "Fortaleza", 12)
+    v5, v6, v7, v8 = st.columns(4)
+    with v5: draw_card("ROI MÉDIO", "12.4%", 100)
+    with v6: draw_card("VOLATILIDADE", "BAIXA", 20)
+    with v7: draw_card("TENDÊNCIA", "ESTÁVEL", 50)
+    with v8: draw_card("LIQUIDEZ", "ALTA", 90)
+
+# TELA 6: APOSTAS POR GOLS (8 CARDS RESTAURADOS)
 elif st.session_state.aba_ativa == "gols":
     st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>", unsafe_allow_html=True)
+    g1, g2, g3, g4 = st.columns(4)
+    with g1: draw_card("OVER 0.5 HT", "82%", 82)
+    with g2: draw_card("OVER 1.5 FT", "75%", 75)
+    with g3: draw_card("AMBAS MARCAM", "61%", 61)
+    with g4: draw_card("UNDER 3.5", "90%", 90)
+    g5, g6, g7, g8 = st.columns(4)
+    with g5: draw_card("UNDER 1.5 HT", "65%", 65)
+    with g6: draw_card("OVER 2.5 FT", "54%", 54)
+    with g7: draw_card("BTTS NO", "39%", 39)
+    with g8: draw_card("SISTEMA IA", "GOLS v2", 100)
+
+# TELA 7: APOSTAS POR ESCANTEIOS (8 CARDS RESTAURADOS)
 elif st.session_state.aba_ativa == "escanteios":
     st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
+    e1, e2, e3, e4 = st.columns(4)
+    with e1: draw_card("OVER 8.5", "88%", 88)
+    with e2: draw_card("OVER 10.5", "62%", 62)
+    with e3: draw_card("CANTOS HT", "4.5+", 70)
+    with e4: draw_card("CORNER RACE", "Time A", 55)
+    e5, e6, e7, e8 = st.columns(4)
+    with e5: draw_card("RACE TO 5", "72%", 72)
+    with e6: draw_card("OVER 12.5", "18%", 18)
+    with e7: draw_card("UNDER 7.5", "12%", 12)
+    with e8: draw_card("ASIÁTICOS", "9.0", 100)
+
+# TELA 8: HISTÓRICO
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
     if not st.session_state.historico_calls: st.info("Nenhuma operação registrada.")
