@@ -3,12 +3,12 @@ import time
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v57.24 - PROTEÇÃO ATIVA]
+# [PROTOCOLO DE MANUTENÇÃO v57.25 - PROTEÇÃO ATIVA]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
 # DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO)
-# DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO
+# DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO (SEM ABREVIAÇÕES)
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -231,7 +231,7 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v57.24", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v57.25", 100)
 
 # TELA 2: GESTÃO DE BANCA PRO
 elif st.session_state.aba_ativa == "gestao":
@@ -269,21 +269,21 @@ elif st.session_state.aba_ativa == "gestao":
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    # BANCO DE DADOS EXPANDIDO [v57.24]
+    # BANCO DE DADOS EXPANDIDO [v57.25] - FOCO EM COPA 2026 E LIGAS GLOBAIS
     db_times = {
-        "BRASIL": ["Flamengo", "Palmeiras", "Vasco", "São Paulo", "Corinthians", "Fluminense", "Botafogo", "Grêmio", "Inter", "Atlético-MG", "Cruzeiro", "Santos", "Bahia", "Fortaleza", "Athletico-PR"],
-        "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man United", "Newcastle", "West Ham", "Brighton"],
-        "ESPANHA": ["Real Madrid", "Barcelona", "Atlético Madrid", "Girona", "Real Sociedad", "Athletic Bilbao", "Sevilla", "Valencia"],
-        "ITÁLIA": ["Inter Milan", "AC Milan", "Juventus", "Napoli", "AS Roma", "Lazio", "Atalanta", "Fiorentina"],
-        "ALEMANHA": ["Bayern Munchen", "Bayer Leverkusen", "Borussia Dortmund", "RB Leipzig", "Stuttgart", "Eintracht Frankfurt"],
-        "FRANÇA": ["PSG", "Monaco", "Marseille", "Lyon", "Lille", "Nice"],
-        "PORTUGAL": ["Benfica", "Porto", "Sporting CP", "Braga", "Vitória SC"],
-        "ARÁBIA SAUDITA": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq"],
-        "ESTADOS UNIDOS (MLS)": ["Inter Miami", "LAFC", "Columbus Crew", "LA Galaxy", "Seattle Sounders"],
-        "EUROPA (UEFA)": ["Real Madrid", "Man City", "Bayern Munchen", "PSG", "Inter Milan", "Liverpool", "Arsenal", "Barcelona"],
-        "AMÉRICA DO SUL (CONMEBOL)": ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors", "Fluminense", "Atlético-MG", "Peñarol", "LDU"],
-        "FIFA (INTERCONTINENTAL)": ["Real Madrid", "Flamengo", "Al-Hilal", "Man City", "Urawa Reds", "Leon"],
-        "SELEÇÕES (INTERNACIONAL)": ["Brasil", "França", "Argentina", "Inglaterra", "Espanha", "Portugal", "Alemanha", "Holanda", "Itália", "Bélgica"]
+        "BRASIL": ["Flamengo", "Palmeiras", "Vasco", "São Paulo", "Corinthians", "Fluminense", "Botafogo", "Grêmio", "Inter", "Atlético-MG", "Cruzeiro", "Santos", "Bahia", "Fortaleza", "Athletico-PR", "Cuiabá", "Vitória", "Criciúma", "Juventude", "Sport"],
+        "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Aston Villa", "Tottenham", "Chelsea", "Man United", "Newcastle", "West Ham", "Brighton", "Everton", "Wolverhampton", "Leicester City"],
+        "ESPANHA": ["Real Madrid", "Barcelona", "Atlético Madrid", "Girona", "Real Sociedad", "Athletic Bilbao", "Sevilla", "Valencia", "Real Betis", "Villarreal"],
+        "ITÁLIA": ["Inter Milan", "AC Milan", "Juventus", "Napoli", "AS Roma", "Lazio", "Atalanta", "Fiorentina", "Bologna", "Torino"],
+        "ALEMANHA": ["Bayern Munchen", "Bayer Leverkusen", "Borussia Dortmund", "RB Leipzig", "Stuttgart", "Eintracht Frankfurt", "Hoffenheim", "Wolfsburg", "Werder Bremen"],
+        "FRANÇA": ["PSG", "Monaco", "Marseille", "Lyon", "Lille", "Nice", "Lens", "Rennes", "Reims"],
+        "PORTUGAL": ["Benfica", "Porto", "Sporting CP", "Braga", "Vitória SC", "Moreirense", "Famalicão"],
+        "ARÁBIA SAUDITA": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Ettifaq", "Al-Shabab", "Al-Taawoun"],
+        "ESTADOS UNIDOS (MLS)": ["Inter Miami", "LAFC", "Columbus Crew", "LA Galaxy", "Seattle Sounders", "Cincinnati", "NY City FC"],
+        "EUROPA (UEFA)": ["Real Madrid", "Man City", "Bayern Munchen", "PSG", "Inter Milan", "Liverpool", "Arsenal", "Barcelona", "Leverkusen", "Dortmund"],
+        "AMÉRICA DO SUL (CONMEBOL)": ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors", "Fluminense", "Atlético-MG", "Peñarol", "LDU", "Ind. del Valle", "Colo-Colo"],
+        "FIFA (INTERCONTINENTAL)": ["Real Madrid", "Man City", "Al-Hilal", "Flamengo", "Urawa Reds", "Leon", "Auckland City"],
+        "SELEÇÕES (INTERNACIONAL)": ["Brasil", "França", "Argentina", "Inglaterra", "Espanha", "Portugal", "Alemanha", "Holanda", "Itália", "Bélgica", "Uruguai", "Colômbia", "Croácia", "Marrocos", "Japão", "EUA", "México", "Canadá"]
     }
 
     # [ESTRUTURA HIERÁRQUICA DE 3 NÍVEIS]
@@ -292,25 +292,30 @@ elif st.session_state.aba_ativa == "analise":
         cat_pais = st.selectbox("🌎 CATEGORIA / REGIÃO", list(db_times.keys()))
     with row_filtros[1]:
         if cat_pais == "BRASIL": grupo_opcoes = ["BRASILEIRÃO", "REGIONAIS", "ESTADUAIS", "COPAS", "FEMININO / BASE"]
-        elif cat_pais in ["EUROPA (UEFA)", "AMÉRICA DO SUL (CONMEBOL)", "FIFA (INTERCONTINENTAL)"]: grupo_opcoes = ["CHAMPIONS LEAGUE", "LIBERTADORES", "EUROPA LEAGUE", "SUL-AMERICANA", "MUNDIAL DE CLUBES"]
-        elif cat_pais == "SELEÇÕES (INTERNACIONAL)": grupo_opcoes = ["COPA DO MUNDO (QUALIF.)", "EUROCOPA", "COPA AMÉRICA", "AMISTOSOS", "NATIONS LEAGUE"]
-        else: grupo_opcoes = ["LIGA NACIONAL", "COPAS NACIONAIS", "SUPERCOPA"]
+        elif cat_pais in ["EUROPA (UEFA)", "AMÉRICA DO SUL (CONMEBOL)", "FIFA (INTERCONTINENTAL)"]: grupo_opcoes = ["CHAMPIONS LEAGUE", "LIBERTADORES", "EUROPA LEAGUE", "CONFERENCE LEAGUE", "SUL-AMERICANA", "RECOPA", "MUNDIAL DE CLUBES", "COPA INTERCONTINENTAL"]
+        elif cat_pais == "SELEÇÕES (INTERNACIONAL)": grupo_opcoes = ["COPA DO MUNDO 2026", "QUALIF. COPA DO MUNDO", "EUROCOPA", "COPA AMÉRICA", "AMISTOSOS", "NATIONS LEAGUE"]
+        else: grupo_opcoes = ["LIGA NACIONAL (ELITE)", "COPAS NACIONAIS", "SUPERCOPA", "SEGUNDA DIVISÃO"]
         grupo_selecionado = st.selectbox("📂 GRUPO", grupo_opcoes)
     with row_filtros[2]:
         db_ligas = {
             "BRASILEIRÃO": ["Série A", "Série B", "Série C", "Série D"],
             "REGIONAIS": ["Copa do Nordeste", "Copa Verde"],
-            "ESTADUAIS": ["Paulistão", "Carioca", "Mineiro", "Gaúcho", "Paranaense"],
+            "ESTADUAIS": ["Paulistão", "Carioca", "Mineiro", "Gaúcho", "Paranaense", "Baiano", "Catarinense"],
             "COPAS": ["Copa do Brasil", "Supercopa do Brasil"],
-            "CHAMPIONS LEAGUE": ["Fase de Grupos", "Mata-Mata (Oitavas)", "Quartas/Semi", "Final"],
+            "CHAMPIONS LEAGUE": ["Fase de Liga", "Oitavas", "Quartas", "Semifinal", "Final"],
             "LIBERTADORES": ["Fase de Grupos", "Mata-Mata", "Final"],
-            "EUROPA LEAGUE": ["Fase Final", "Play-offs"],
-            "SUL-AMERICANA": ["Fase de Grupos", "Mata-Mata"],
-            "LIGA NACIONAL": ["Primeira Divisão (Elite)", "Segunda Divisão", "Terceira Divisão"],
-            "COPAS NACIONAIS": ["Copa da Liga", "Taça Nacional"],
-            "COPA DO MUNDO (QUALIF.)": ["América do Sul", "Europa", "Ásia/África"],
+            "EUROPA LEAGUE": ["Fase de Liga", "Play-offs", "Mata-Mata"],
+            "CONFERENCE LEAGUE": ["Fase de Liga", "Mata-Mata"],
+            "SUL-AMERICANA": ["Fase de Grupos", "Play-offs", "Mata-Mata"],
+            "RECOPA": ["Final (Ida/Volta)"],
+            "LIGA NACIONAL (ELITE)": ["Temporada Regular", "Play-offs"],
+            "COPAS NACIONAIS": ["Copa Principal", "Copa da Liga"],
+            "COPA DO MUNDO 2026": ["Fase de Grupos", "32-avos de Final", "Oitavas", "Quartas", "Semi/Final"],
+            "QUALIF. COPA DO MUNDO": ["CONMEBOL", "UEFA", "CONCACAF", "AFC (Ásia)", "CAF (África)"],
             "EUROCOPA": ["Qualificação", "Fase de Grupos", "Mata-Mata"],
-            "COPA AMÉRICA": ["Fase de Grupos", "Mata-Mata"]
+            "COPA AMÉRICA": ["Fase de Grupos", "Mata-Mata"],
+            "MUNDIAL DE CLUBES": ["Fase de Grupos (Novo Formato)", "Mata-Mata"],
+            "COPA INTERCONTINENTAL": ["Final"]
         }
         competicao = st.selectbox("🏆 COMPETIÇÃO", db_ligas.get(grupo_selecionado, ["Geral"]))
 
@@ -347,7 +352,7 @@ elif st.session_state.aba_ativa == "analise":
         with r5: draw_card("IA CONF.", "94%", 94)
         with r6: draw_card("PRESSÃO", "ALTA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
-        with r8: draw_card("SISTEMA", "v57.24", 100)
+        with r8: draw_card("SISTEMA", "v57.25", 100)
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ CALL SALVA COM SUCESSO!")
@@ -423,4 +428,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.rerun()
 
 # FOOTER
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.24</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.25</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
