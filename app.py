@@ -275,7 +275,7 @@ elif st.session_state.aba_ativa == "gestao":
                 </div>
             """, unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (ATUALIZADO COM COMPETIÇÕES DO BRASIL)
+# TELA 3: SCANNER PRÉ-LIVE (ATUALIZADO COM TODAS AS COMPETIÇÕES BRASILEIRAS)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
@@ -287,12 +287,22 @@ elif st.session_state.aba_ativa == "analise":
             "EUROPA (OUTROS)", "ÁSIA / OCEANIA", "MUNDO (CONCACAF/ÁFRICA)"
         ])
     with row1_c2:
-        # BANCO DE DADOS DE VARREDURA - COMPETIÇÕES REAIS (LISTA BRASIL REFINADA)
+        # BANCO DE DADOS DE VARREDURA - COMPETIÇÕES REAIS (BRASIL COMPLETO)
         opcoes_tipo = {
             "BRASIL": [
-                "Série A", "Série B", "Série C", "Série D", 
-                "Copa do Brasil", "Paulistão", "Carioca", "Mineiro", "Gaúcho", 
-                "Supercopa do Brasil", "Copa do Nordeste"
+                "--- NACIONAIS ---",
+                "Brasileirão Série A", "Brasileirão Série B", "Brasileirão Série C", "Brasileirão Série D", 
+                "Copa do Brasil", "Supercopa do Brasil",
+                "--- REGIONAIS ---",
+                "Copa do Nordeste (Lampions League)", "Copa Verde",
+                "--- ESTADUAIS ---",
+                "Paulistão", "Carioca", "Mineiro", "Gaúcho", "Paranaense",
+                "Outros Estaduais (22 Estados)",
+                "--- FEMININO ---",
+                "Brasileiro Feminino A1", "Brasileiro Feminino A2", "Brasileiro Feminino A3",
+                "--- CATEGORIAS DE BASE ---",
+                "Copinha (Copa São Paulo Jr)", "Brasileiro Sub-20", "Brasileiro Sub-17", "Brasileiro Sub-15",
+                "Copa do Brasil Sub-20", "Copa do Brasil Sub-17", "Nike Premier Cup"
             ],
             "INGLATERRA": ["Premier League", "Championship", "League One", "League Two", "FA Cup", "EFL Cup"],
             "ESPANHA": ["La Liga", "La Liga 2", "Copa del Rey"],
