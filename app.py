@@ -3,12 +3,12 @@ import time
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v57.33 - PROTEÇÃO ATIVA]
+# [PROTOCOLO DE MANUTENÇÃO v57.34 - PROTEÇÃO ATIVA]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
 # DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO)
-# DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO (DB FINAL v3)
+# DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO (DATABASE BRASIL FULL)
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -54,7 +54,7 @@ st.markdown("""
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; 
         display: flex; align-items: center; justify-content: space-between; 
-        padding: 0 40px !important; z-index: 1000000; 
+        padding: 0 40 (0 40px) !important; z-index: 1000000; 
         transform: translate3d(0,0,0); -webkit-backface-visibility: hidden;
     }
     
@@ -202,7 +202,7 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v57.33", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v57.34", 100)
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
@@ -234,12 +234,13 @@ elif st.session_state.aba_ativa == "gestao":
         with g7: draw_card("ENTRADAS/LOSS", f"{entradas_loss}", 100, "#00d2ff")
         with g8: st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div><div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:#00d2ff; height:100%; width:100%;"></div></div></div>""", unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (BANCO DE DADOS COMPLETO)
+# TELA 3: SCANNER PRÉ-LIVE (BANCO DE DADOS INTEGRAL)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
+    # 1. CATEGORIAS PRINCIPAIS
     db_paises = {
-        "BRASIL": ["BRASILEIRÃO", "COPAS REGIONAIS", "COPAS NACIONAIS"],
+        "BRASIL": ["BRASILEIRÃO", "BRASILEIRÃO SUB-20", "CAMPEONATOS ESTADUAIS", "COPAS NACIONAIS / REGIONAIS"],
         "ARGENTINA": ["LIGA PROFESIONAL", "COPAS ARGENTINAS"],
         "PORTUGAL": ["LIGA PORTUGAL", "COPAS PORTUGUESAS"],
         "HOLANDA": ["EREDIVISIE", "COPA HOLANDESA"],
@@ -253,10 +254,12 @@ elif st.session_state.aba_ativa == "analise":
         "SELEÇÕES / MUNDIAL": ["COPA DO MUNDO 2026", "ELIMINATÓRIAS / REPESCAGEM", "SUL-AMERICANO SUB-17"]
     }
 
+    # 2. COMPETIÇÕES DETALHADAS (NIVEL 3)
     db_ligas = {
-        "BRASILEIRÃO": ["Série A", "Série B", "Série C"],
-        "COPAS REGIONAIS": ["Copa Verde", "Copa Sul-Sudeste"],
-        "COPAS NACIONAIS": ["Copa do Brasil", "Supercopa do Brasil"],
+        "BRASILEIRÃO": ["Série A", "Série B", "Série C", "Série D"],
+        "BRASILEIRÃO SUB-20": ["Temporada Regular", "Fase Final"],
+        "CAMPEONATOS ESTADUAIS": ["Campeonato Carioca", "Campeonato Paulistano", "Campeonato Mineiro", "Campeonato Gaúcho", "Campeonato Paranaense", "Campeonato Catarinense"],
+        "COPAS NACIONAIS / REGIONAIS": ["Copa do Brasil", "Copa do Nordeste", "Copa Verde", "Copa Sul-Sudeste"],
         "LIGA PROFESIONAL": ["Liga Profesional (1ª Div)"],
         "COPAS ARGENTINAS": ["Copa de la Liga", "Copa Argentina"],
         "LIGA PORTUGAL": ["Primeira Liga", "Liga Portugal 2"],
@@ -283,11 +286,12 @@ elif st.session_state.aba_ativa == "analise":
         "SUL-AMERICANO SUB-17": ["Fase de Grupos", "Hexagonal Final"]
     }
 
+    # 3. BANCO DE TIMES
     db_times = {
-        "BRASIL": ["Flamengo", "Palmeiras", "Vasco", "São Paulo", "Corinthians", "Fluminense", "Botafogo", "Grêmio", "Inter", "Atlético-MG"],
-        "ARGENTINA": ["River Plate", "Boca Juniors", "Racing Club", "Independiente", "San Lorenzo", "Talleres", "Estudiantes"],
-        "PORTUGAL": ["Benfica", "Porto", "Sporting CP", "Braga", "Vitória SC", "Moreirense"],
-        "HOLANDA": ["Ajax", "PSV", "Feyenoord", "AZ Alkmaar", "Twente", "Utrecht"],
+        "BRASIL": ["Flamengo", "Palmeiras", "Vasco", "São Paulo", "Corinthians", "Fluminense", "Botafogo", "Grêmio", "Inter", "Atlético-MG", "Cruzeiro", "Santos", "Bahia", "Fortaleza", "Athletico-PR"],
+        "ARGENTINA": ["River Plate", "Boca Juniors", "Racing Club", "Independiente", "Talleres"],
+        "PORTUGAL": ["Benfica", "Porto", "Sporting CP", "Braga"],
+        "HOLANDA": ["Ajax", "PSV", "Feyenoord"],
         "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Chelsea", "Man United", "Tottenham"],
         "ESPANHA": ["Real Madrid", "Barcelona", "Atlético Madrid"],
         "ITÁLIA": ["Inter Milan", "AC Milan", "Juventus", "Napoli", "Roma"],
@@ -304,7 +308,7 @@ elif st.session_state.aba_ativa == "analise":
     with row_f[1]:
         sel_grupo = st.selectbox("📂 GRUPO", db_paises[sel_pais])
     with row_f[2]:
-        sel_comp = st.selectbox("🏆 COMPETIÇÃO", db_ligas[sel_grupo])
+        sel_comp = st.selectbox("🏆 COMPETIÇÃO", db_ligas.get(sel_grupo, ["Geral"]))
 
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
@@ -317,7 +321,7 @@ elif st.session_state.aba_ativa == "analise":
     with c2:
         lista_f = [x for x in lista_t if x != t_casa]
         t_fora = st.selectbox("🚀 TIME DE FORA", lista_f + ["(Outro)"])
-        if t_fora == "(Outro)": t_fora = st.text_input("NOME DO TIME FORA")
+        if t_fora == "(Outro)": t_fora = t.text_input("NOME DO TIME FORA")
 
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
@@ -335,7 +339,7 @@ elif st.session_state.aba_ativa == "analise":
         with r5: draw_card("IA CONF.", "94%", 94)
         with r6: draw_card("PRESSÃO", "ALTA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
-        with r8: draw_card("SISTEMA", "v57.33", 100)
+        with r8: draw_card("SISTEMA", "v57.34", 100)
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ CALL SALVA COM SUCESSO!")
@@ -405,4 +409,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.33</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.34</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
