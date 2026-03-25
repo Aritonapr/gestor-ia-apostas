@@ -1,14 +1,15 @@
 import streamlit as st
-import time
+import pandas as pd
+import os
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v57.35 - PROTEÇÃO ATIVA]
+# [PROTOCOLO DE MANUTENÇÃO v58.00 - INTEGRAÇÃO DATA-AUTOMATION]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
-# DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO)
-# DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO (MELHORIA UI MENU)
+# DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO) - MANTER UI v57.35
+# DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -33,7 +34,20 @@ if query_params.get("go") == "home":
     st.session_state.aba_ativa = "home"
     st.query_params.clear()
 
-# 2. CAMADA DE ESTILO CSS INTEGRAL
+# --- FUNÇÃO DE CARREGAMENTO DE DADOS (NOVO NA v58.00) ---
+def carregar_jogos_diarios():
+    path = "data/database_diario.csv"
+    if os.path.exists(path):
+        try:
+            df = pd.read_csv(path)
+            return df
+        except:
+            return None
+    return None
+
+df_diario = carregar_jogos_diarios()
+
+# 2. CAMADA DE ESTILO CSS INTEGRAL (MANTIDA 100% DA v57.35)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -50,7 +64,6 @@ st.markdown("""
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
     
-    /* HEADER PREMIUM ORIGINAL */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; 
@@ -65,12 +78,11 @@ st.markdown("""
     
     .nav-links { display: flex; gap: 22px; align-items: center; }
     
-    /* MELHORIA DA LETRA DO MENU SUPERIOR (NÍTIDA E LIMPA) */
     .nav-item { 
         color: #ffffff !important; 
-        font-size: 11px !important; /* Aumentado para legibilidade */
+        font-size: 11px !important; 
         text-transform: uppercase; 
-        opacity: 1 !important; /* Removida transparência para limpar o texto */
+        opacity: 1 !important; 
         font-weight: 600 !important; 
         letter-spacing: 0.5px; 
         transition: 0.3s ease; 
@@ -210,7 +222,7 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v57.35", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v58.00", 100)
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
@@ -242,7 +254,7 @@ elif st.session_state.aba_ativa == "gestao":
         with g7: draw_card("ENTRADAS/LOSS", f"{entradas_loss}", 100, "#00d2ff")
         with g8: st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div><div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:#00d2ff; height:100%; width:100%;"></div></div></div>""", unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (DATABASE COMPLETO)
+# TELA 3: SCANNER PRÉ-LIVE (DATABASE HÍBRIDO v58.00)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
@@ -318,14 +330,34 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
-    lista_t = db_times.get(sel_pais, ["Time A", "Time B"])
+    # --- LÓGICA DE DETECÇÃO AUTOMÁTICA DE TIMES (v58.00) ---
+    lista_casa_auto = []
+    lista_fora_auto = []
+    
+    if df_diario is not None:
+        # Filtrar o CSV por Pais, Grupo e Competição
+        filtro = df_diario[
+            (df_diario['PAÍS'] == sel_pais) & 
+            (df_diario['GRUPO'] == sel_grupo) & 
+            (df_diario['COMPETIÇÃO'] == sel_comp)
+        ]
+        if not filtro.empty:
+            lista_casa_auto = filtro['TIME_CASA'].unique().tolist()
+            lista_fora_auto = filtro['TIME_FORA'].unique().tolist()
+
+    # Fallback para o Banco de Dados original se o CSV não tiver dados específicos
+    if not lista_casa_auto:
+        lista_casa_auto = db_times.get(sel_pais, ["Time A", "Time B"])
+    if not lista_fora_auto:
+        lista_fora_auto = db_times.get(sel_pais, ["Time A", "Time B"])
+
     c1, c2 = st.columns(2)
     with c1:
-        t_casa = st.selectbox("🏠 TIME DA CASA", lista_t + ["(Outro)"])
+        t_casa = st.selectbox("🏠 TIME DA CASA", lista_casa_auto + ["(Outro)"])
         if t_casa == "(Outro)": t_casa = st.text_input("NOME DO TIME CASA")
     with c2:
-        lista_f = [x for x in lista_t if x != t_casa]
-        t_fora = st.selectbox("🚀 TIME DE FORA", lista_f + ["(Outro)"])
+        # Se veio do CSV, tenta sugerir o adversário real, senão usa a lista padrão
+        t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora_auto + ["(Outro)"])
         if t_fora == "(Outro)": t_fora = st.text_input("NOME DO TIME FORA")
 
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
@@ -344,7 +376,7 @@ elif st.session_state.aba_ativa == "analise":
         with r5: draw_card("IA CONF.", "94%", 94)
         with r6: draw_card("PRESSÃO", "ALTA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
-        with r8: draw_card("SISTEMA", "v57.35", 100)
+        with r8: draw_card("SISTEMA", "v58.00", 100)
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ CALL SALVA COM SUCESSO!")
@@ -414,4 +446,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v57.35</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.00</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
