@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v58.22 - BUSCA BLINDADA E INTEGRAÇÃO]
+# [PROTOCOLO DE MANUTENÇÃO v58.30 - INDICADOR DE FONTE E BUSCA]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -40,7 +40,7 @@ def carregar_jogos_diarios():
     if os.path.exists(path):
         try:
             df = pd.read_csv(path)
-            # Limpa espaços e padroniza colunas para facilitar a busca
+            # Normalização agressiva de colunas
             df.columns = df.columns.str.strip().str.upper()
             return df
         except:
@@ -228,7 +228,7 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v58.22", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v58.30", 100)
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
@@ -335,12 +335,11 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
-    # --- LÓGICA DE DETECÇÃO HÍBRIDA (Busca Blindada) ---
+    # --- LÓGICA DE DETECÇÃO HÍBRIDA ---
     lista_base = db_times.get(sel_pais, ["Time A", "Time B"])
     csv_casa, csv_fora = [], []
     if df_diario is not None:
         try:
-            # Filtro blindado por país
             filtro_csv = df_diario[df_diario['PAÍS'].astype(str).str.strip().str.upper() == sel_pais.upper()]
             csv_casa = filtro_csv['TIME_CASA'].unique().tolist()
             csv_fora = filtro_csv['TIME_FORA'].unique().tolist()
@@ -359,30 +358,28 @@ elif st.session_state.aba_ativa == "analise":
 
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-        res_vencedor, res_gols, res_cantos, res_conf = "Indefinido", "OVER 1.5", "9.5+", "85%"
+        res_vencedor, res_gols, res_cantos, res_conf, res_sistema = "Indefinido", "OVER 1.5", "9.5+", "85%", "JARVIS v58.30"
         
         if df_diario is not None:
             try:
-                # BUSCA BLINDADA (Ignora espaços e maiúsculas/minúsculas)
                 c_val = str(t_casa).strip().upper()
                 f_val = str(t_fora).strip().upper()
-                
                 match_row = df_diario[
                     (df_diario['TIME_CASA'].astype(str).str.strip().str.upper() == c_val) & 
                     (df_diario['TIME_FORA'].astype(str).str.strip().str.upper() == f_val)
                 ]
-                
                 if not match_row.empty:
                     res_vencedor = str(match_row['VENCEDOR_IA'].values[0])
                     res_gols = str(match_row['GOLS_IA'].values[0])
                     res_cantos = str(match_row['CANTOS_IA'].values[0])
                     res_conf = str(match_row['CONF_IA'].values[0])
+                    res_sistema = "SYNC: CSV" # INDICADOR VERDE
             except: pass
 
         st.session_state.analise_bloqueada = {
             "casa": t_casa, "fora": t_fora, "vencedor": res_vencedor, 
             "gols": res_gols, "data": datetime.now().strftime("%H:%M"), 
-            "stake_val": f"R$ {v_calc:,.2f}", "cantos": res_cantos, "conf": res_conf
+            "stake_val": f"R$ {v_calc:,.2f}", "cantos": res_cantos, "conf": res_conf, "sistema": res_sistema
         }
     
     if st.session_state.analise_bloqueada:
@@ -397,7 +394,11 @@ elif st.session_state.aba_ativa == "analise":
         with r5: draw_card("IA CONF.", m['conf'], m['conf'])
         with r6: draw_card("PRESSÃO", "ALTA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
-        with r8: draw_card("SISTEMA", "v58.22", 100)
+        
+        # CARD DE SISTEMA COM COR DINÂMICA
+        sis_color = "#00ff88" if m['sistema'] == "SYNC: CSV" else "linear-gradient(90deg, #6d28d9, #06b6d4)"
+        with r8: draw_card("SISTEMA", m['sistema'], 100, sis_color)
+
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ CALL SALVA COM SUCESSO!")
@@ -467,4 +468,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.22</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.30</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
