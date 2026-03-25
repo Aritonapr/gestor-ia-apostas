@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE RESTAURAÇÃO TOTAL v61.00 - FIDELIDADE VISUAL COMPLETA]
+# [PROTOCOLO DE MANUTENÇÃO v61.10 - LIMPEZA DE SIDEBAR & FIDELIDADE TOTAL]
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -52,7 +52,7 @@ def salvar_call_permanente(call):
 
 df_diario, df_historico_full = carregar_dados_permanentes()
 
-# 2. CAMADA DE ESTILO CSS INTEGRAL (RESTAURAÇÃO DO DARK MODE ORIGINAL)
+# 2. CAMADA DE ESTILO CSS INTEGRAL (DARK MODE REFORÇADO)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -110,7 +110,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. HEADER SUPERIOR (COM LINK NO ASSERTIVIDADE IA)
+# 3. HEADER SUPERIOR (ASSERTIVIDADE APENAS AQUI AGORA)
 st.markdown(f"""
     <div class="betano-header">
         <div style="display: flex; align-items: center;">
@@ -126,18 +126,17 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# 4. SIDEBAR (TODOS OS BOTÕES ORIGINAIS)
+# 4. SIDEBAR (BOTÃO ASSERTIVIDADE REMOVIDO DAQUI)
 with st.sidebar:
     st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True)
+    if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
+    if st.button("📅 JOGOS DO DIA"): st.session_state.aba_ativa = "home"
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
-    if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
-    if st.button("📅 JOGOS DO DIA"): st.session_state.aba_ativa = "home"
     if st.button("🏆 VENCEDORES DA COMPETIÇÃO"): st.session_state.aba_ativa = "vencedores"
     if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
-    if st.button("📈 ASSERTIVIDADE IA"): st.session_state.aba_ativa = "assertividade"
 
 def draw_card(title, value, perc, color="linear-gradient(90deg, #6d28d9, #06b6d4)"):
     st.markdown(f"""
@@ -152,7 +151,7 @@ def draw_card(title, value, perc, color="linear-gradient(90deg, #6d28d9, #06b6d4
 
 # --- LÓGICA DE TELAS ---
 
-# TELA: JOGOS DO DIA (RESTAURAÇÃO IMAGEM 2 - 8 CARDS)
+# TELA: JOGOS DO DIA (RESTAURAÇÃO TOTAL - 8 CARDS EM 2 LINHAS)
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 JOGOS DO DIA</h2>", unsafe_allow_html=True)
     r1c1, r1c2, r1c3, r1c4 = st.columns(4)
@@ -164,9 +163,9 @@ if st.session_state.aba_ativa == "home":
     with r2c1: draw_card("VOL. GLOBAL", "ALTO", 75)
     with r2c2: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with r2c3: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with r2c4: draw_card("SISTEMA", "JARVIS v61.00", 100)
+    with r2c4: draw_card("SISTEMA", "JARVIS v61.10", 100)
 
-# TELA: ASSERTIVIDADE (RESTAURAÇÃO IMAGEM 1)
+# TELA: ASSERTIVIDADE (ACESSO APENAS PELO MENU SUPERIOR)
 elif st.session_state.aba_ativa == "assertividade":
     st.markdown("<h2 style='color:white;'>📈 ASSERTIVIDADE DA INTELIGÊNCIA</h2>", unsafe_allow_html=True)
     a1, a2, a3, a4 = st.columns(4)
@@ -191,15 +190,12 @@ elif st.session_state.aba_ativa == "analise":
     with f1: sel_pais = st.selectbox("🌎 REGIÃO / PAÍS", ["BRASIL", "INGLATERRA", "ESPANHA", "ARGENTINA"])
     with f2: sel_grupo = st.selectbox("📂 GRUPO", ["BRASILEIRÃO", "PREMIER LEAGUE", "LA LIGA", "LIGA PROFESIONAL"])
     with f3: sel_comp = st.selectbox("🏆 COMPETIÇÃO", ["Série A", "Série B", "Geral"])
-    
     t_casa = st.text_input("TIME DA CASA", "Flamengo")
     t_fora = st.text_input("TIME DE FORA", "Palmeiras")
-    
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_stake = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
         status_luz, cor_luz, validacao_txt = ("🟢", "#00ff88", "FILÉ MIGNON: INFORMAÇÃO REAL")
         st.session_state.analise_bloqueada = {"casa": t_casa, "fora": t_fora, "vencedor": "ALTA PROB", "gols": "OVER 1.5", "data": datetime.now().strftime("%d/%m %H:%M"), "stake_val": f"R$ {v_stake:,.2f}", "luz": status_luz, "cor": cor_luz, "motivo": validacao_txt}
-    
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
         st.markdown(f'<div style="background:rgba(255,255,255,0.03); border-left:5px solid {m["cor"]}; padding:15px; border-radius:6px; margin-bottom:20px;">{m["luz"]} SISTEMA JARVIS: <b style="color:{m["cor"]}">{m["motivo"]}</b></div>', unsafe_allow_html=True)
@@ -210,17 +206,11 @@ elif st.session_state.aba_ativa == "analise":
 # TELA: HISTÓRICO
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO PERMANENTE</h2>", unsafe_allow_html=True)
-    df_h = pd.read_csv("data/historico_permanente.csv") if os.path.exists("data/historico_permanente.csv") else pd.DataFrame()
-    if df_h.empty: st.info("Vazio.")
-    else:
+    if os.path.exists("data/historico_permanente.csv"):
+        df_h = pd.read_csv("data/historico_permanente.csv")
         for idx, row in df_h.iterrows():
             st.markdown(f'<div style="background:#161b22; padding:15px; margin-bottom:10px; border-radius:8px; border:1px solid #30363d; color:white;"><b>{row["data"]}</b> - {row["casa"]} x {row["fora"]}</div>', unsafe_allow_html=True)
-
-# TELA: GESTÃO
-elif st.session_state.aba_ativa == "gestao":
-    st.markdown("<h2 style='color:white;'>💰 GESTÃO DE BANCA</h2>", unsafe_allow_html=True)
-    st.session_state.banca_total = st.number_input("Banca Total (R$)", value=st.session_state.banca_total)
-    st.session_state.stake_padrao = st.slider("Stake (%)", 0.1, 10.0, st.session_state.stake_padrao)
+    else: st.info("Vazio.")
 
 # RODAPÉ
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v61.00</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v61.10</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
