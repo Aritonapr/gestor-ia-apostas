@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v58.00 - INTEGRAÇÃO DATA-AUTOMATION]
+# [PROTOCOLO DE MANUTENÇÃO v58.10 - INTEGRAÇÃO DATA-AUTOMATION]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -34,13 +34,18 @@ if query_params.get("go") == "home":
     st.session_state.aba_ativa = "home"
     st.query_params.clear()
 
-# --- FUNÇÃO DE CARREGAMENTO DE DADOS (NOVO NA v58.00) ---
+# --- FUNÇÃO DE CARREGAMENTO DE DADOS (INTEGRAÇÃO JARVIS SYNC) ---
 def carregar_jogos_diarios():
     path = "data/database_diario.csv"
     if os.path.exists(path):
         try:
+            # Lógica para ler o CSV gerado pela automação GitHub Actions
             df = pd.read_csv(path)
-            return df
+            df.columns = df.columns.str.strip()
+            # Verifica se o arquivo não está vazio
+            if not df.empty:
+                return df
+            return None
         except:
             return None
     return None
@@ -199,12 +204,16 @@ with st.sidebar:
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
 def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, #06b6d4)"):
+    try:
+        p_val = float(str(perc).replace('%',''))
+    except:
+        p_val = 100.0
     st.markdown(f"""
         <div class="highlight-card">
             <div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">{title}</div>
             <div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div>
             <div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;">
-                <div style="background:{color_footer}; height:100%; width:{perc}%;"></div>
+                <div style="background:{color_footer}; height:100%; width:{p_val}%;"></div>
             </div>
         </div>
     """, unsafe_allow_html=True)
@@ -222,7 +231,7 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v58.00", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v58.10", 100)
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
@@ -254,7 +263,6 @@ elif st.session_state.aba_ativa == "gestao":
         with g7: draw_card("ENTRADAS/LOSS", f"{entradas_loss}", 100, "#00d2ff")
         with g8: st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div><div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:#00d2ff; height:100%; width:100%;"></div></div></div>""", unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (DATABASE HÍBRIDO v58.00)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
@@ -330,22 +338,19 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
-    # --- LÓGICA DE DETECÇÃO AUTOMÁTICA DE TIMES (v58.00) ---
     lista_casa_auto = []
     lista_fora_auto = []
     
     if df_diario is not None:
-        # Filtrar o CSV por Pais, Grupo e Competição
-        filtro = df_diario[
+        filtro_times = df_diario[
             (df_diario['PAÍS'] == sel_pais) & 
             (df_diario['GRUPO'] == sel_grupo) & 
             (df_diario['COMPETIÇÃO'] == sel_comp)
         ]
-        if not filtro.empty:
-            lista_casa_auto = filtro['TIME_CASA'].unique().tolist()
-            lista_fora_auto = filtro['TIME_FORA'].unique().tolist()
+        if not filtro_times.empty:
+            lista_casa_auto = sorted(filtro_times['TIME_CASA'].unique().tolist())
+            lista_fora_auto = sorted(filtro_times['TIME_FORA'].unique().tolist())
 
-    # Fallback para o Banco de Dados original se o CSV não tiver dados específicos
     if not lista_casa_auto:
         lista_casa_auto = db_times.get(sel_pais, ["Time A", "Time B"])
     if not lista_fora_auto:
@@ -356,13 +361,26 @@ elif st.session_state.aba_ativa == "analise":
         t_casa = st.selectbox("🏠 TIME DA CASA", lista_casa_auto + ["(Outro)"])
         if t_casa == "(Outro)": t_casa = st.text_input("NOME DO TIME CASA")
     with c2:
-        # Se veio do CSV, tenta sugerir o adversário real, senão usa a lista padrão
         t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora_auto + ["(Outro)"])
         if t_fora == "(Outro)": t_fora = st.text_input("NOME DO TIME FORA")
 
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-        st.session_state.analise_bloqueada = {"casa": t_casa, "fora": t_fora, "vencedor": "Indefinido", "gols": "OVER 1.5", "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}"}
+        res_vencedor, res_gols, res_cantos, res_conf = "Indefinido", "OVER 1.5", "9.5+", "85%"
+        
+        if df_diario is not None:
+            match_row = df_diario[(df_diario['TIME_CASA'] == t_casa) & (df_diario['TIME_FORA'] == t_fora)]
+            if not match_row.empty:
+                res_vencedor = str(match_row['VENCEDOR_IA'].values[0])
+                res_gols = str(match_row['GOLS_IA'].values[0])
+                res_cantos = str(match_row['CANTOS_IA'].values[0])
+                res_conf = str(match_row['CONF_IA'].values[0])
+
+        st.session_state.analise_bloqueada = {
+            "casa": t_casa, "fora": t_fora, "vencedor": res_vencedor, 
+            "gols": res_gols, "data": datetime.now().strftime("%H:%M"), 
+            "stake_val": f"R$ {v_calc:,.2f}", "cantos": res_cantos, "conf": res_conf
+        }
     
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
@@ -371,12 +389,12 @@ elif st.session_state.aba_ativa == "analise":
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("GOLS", m['gols'], 70)
         with r3: draw_card("STAKE", m['stake_val'], 100)
-        with r4: draw_card("CANTOS", "9.5+", 65)
+        with r4: draw_card("CANTOS", m['cantos'], 65)
         r5, r6, r7, r8 = st.columns(4)
-        with r5: draw_card("IA CONF.", "94%", 94)
+        with r5: draw_card("IA CONF.", m['conf'], m['conf'])
         with r6: draw_card("PRESSÃO", "ALTA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
-        with r8: draw_card("SISTEMA", "v58.00", 100)
+        with r8: draw_card("SISTEMA", "v58.10", 100)
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ CALL SALVA COM SUCESSO!")
@@ -446,4 +464,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.00</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.10</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
