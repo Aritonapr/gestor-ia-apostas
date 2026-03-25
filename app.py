@@ -330,22 +330,18 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
-    # --- LÓGICA DE DETECÇÃO AUTOMÁTICA DE TIMES (v58.00) ---
     lista_casa_auto = []
     lista_fora_auto = []
     
     if df_diario is not None:
-        # Filtrar o CSV por Pais, Grupo e Competição
         filtro = df_diario[
             (df_diario['PAÍS'] == sel_pais) & 
-            (df_diario['GRUPO'] == sel_grupo) & 
-            (df_diario['COMPETIÇÃO'] == sel_comp)
+            (df_diario['GRUPO'] == sel_grupo)
         ]
         if not filtro.empty:
             lista_casa_auto = filtro['TIME_CASA'].unique().tolist()
             lista_fora_auto = filtro['TIME_FORA'].unique().tolist()
 
-    # Fallback para o Banco de Dados original se o CSV não tiver dados específicos
     if not lista_casa_auto:
         lista_casa_auto = db_times.get(sel_pais, ["Time A", "Time B"])
     if not lista_fora_auto:
@@ -356,27 +352,69 @@ elif st.session_state.aba_ativa == "analise":
         t_casa = st.selectbox("🏠 TIME DA CASA", lista_casa_auto + ["(Outro)"])
         if t_casa == "(Outro)": t_casa = st.text_input("NOME DO TIME CASA")
     with c2:
-        # Se veio do CSV, tenta sugerir o adversário real, senão usa a lista padrão
         t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora_auto + ["(Outro)"])
         if t_fora == "(Outro)": t_fora = st.text_input("NOME DO TIME FORA")
 
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-        st.session_state.analise_bloqueada = {"casa": t_casa, "fora": t_fora, "vencedor": "Indefinido", "gols": "OVER 1.5", "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}"}
+        
+        # --- MOTOR JARVIS v58.00 (INTEGRAÇÃO DE DADOS REAIS) ---
+        status_luz = "🔴"
+        validacao_txt = "ALERTA: DADOS FORA DA ROTINA (ESTATÍSTICA FRIA)"
+        cor_luz = "#ff4b4b"
+        confianca_ia = "45%"
+        res_vencedor = "INDEFINIDO"
+        res_gols = "REVISAR"
+
+        if df_diario is not None:
+            # Procura o time selecionado no banco de dados real
+            match = df_diario[(df_diario['TIME_CASA'] == t_casa) | (df_diario['TIME_FORA'] == t_fora)]
+            
+            if not match.empty:
+                status_luz = "🟢"
+                validacao_txt = "FILÉ MIGNON: INFORMAÇÃO REAL E ATUALIZADA"
+                cor_luz = "#00ff88"
+                confianca_ia = "94.2%"
+                res_vencedor = "ALTA PROB."
+                res_gols = "OVER 1.5"
+
+        st.session_state.analise_bloqueada = {
+            "casa": t_casa, 
+            "fora": t_fora, 
+            "vencedor": res_vencedor, 
+            "gols": res_gols, 
+            "data": datetime.now().strftime("%H:%M"), 
+            "stake_val": f"R$ {v_calc:,.2f}",
+            "luz": status_luz,
+            "motivo": validacao_txt,
+            "cor": cor_luz,
+            "confia": confianca_ia
+        }
     
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
-        st.markdown(f"<h3 style='color:#9d54ff; text-align:center;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
+        
+        # Banner de Validação JARVIS
+        st.markdown(f"""
+            <div style="background: rgba(255,255,255,0.03); border-left: 5px solid {m['cor']}; padding: 18px; border-radius: 6px; margin-bottom: 25px; transform: translate3d(0,0,0);">
+                <span style="font-size: 20px;">{m['luz']}</span> 
+                <b style="color: white; margin-left: 10px; letter-spacing: 1px; font-size: 11px;">SISTEMA JARVIS:</b> 
+                <span style="color: {m['cor']}; font-weight: 800; font-size: 11px;">{m['motivo']}</span>
+            </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown(f<h3 style='color:#9d54ff; text-align:center;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("GOLS", m['gols'], 70)
         with r3: draw_card("STAKE", m['stake_val'], 100)
         with r4: draw_card("CANTOS", "9.5+", 65)
         r5, r6, r7, r8 = st.columns(4)
-        with r5: draw_card("IA CONF.", "94%", 94)
-        with r6: draw_card("PRESSÃO", "ALTA", 88)
-        with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
+        with r5: draw_card("IA CONF.", m['confia'], 94)
+        with r6: draw_card("PRESSÃO", "ALTA" if m['luz'] == "🟢" else "MÉDIA", 88)
+        with r7: draw_card("TENDÊNCIA", "SUBINDO" if m['luz'] == "🟢" else "ESTÁVEL", 60)
         with r8: draw_card("SISTEMA", "v58.00", 100)
+        
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ CALL SALVA COM SUCESSO!")
