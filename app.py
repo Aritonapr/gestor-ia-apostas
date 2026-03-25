@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v58.21 - FIX DE SINTAXE E INTEGRAÇÃO]
+# [PROTOCOLO DE MANUTENÇÃO v58.22 - BUSCA BLINDADA E INTEGRAÇÃO]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -40,7 +40,8 @@ def carregar_jogos_diarios():
     if os.path.exists(path):
         try:
             df = pd.read_csv(path)
-            df.columns = df.columns.str.strip()
+            # Limpa espaços e padroniza colunas para facilitar a busca
+            df.columns = df.columns.str.strip().str.upper()
             return df
         except:
             return None
@@ -227,7 +228,7 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v58.21", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v58.22", 100)
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
@@ -334,12 +335,13 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
-    # --- LÓGICA DE DETECÇÃO HÍBRIDA (Soma CSV + Memória Interna) ---
+    # --- LÓGICA DE DETECÇÃO HÍBRIDA (Busca Blindada) ---
     lista_base = db_times.get(sel_pais, ["Time A", "Time B"])
     csv_casa, csv_fora = [], []
     if df_diario is not None:
         try:
-            filtro_csv = df_diario[df_diario['PAÍS'] == sel_pais]
+            # Filtro blindado por país
+            filtro_csv = df_diario[df_diario['PAÍS'].astype(str).str.strip().str.upper() == sel_pais.upper()]
             csv_casa = filtro_csv['TIME_CASA'].unique().tolist()
             csv_fora = filtro_csv['TIME_FORA'].unique().tolist()
         except: pass
@@ -361,7 +363,15 @@ elif st.session_state.aba_ativa == "analise":
         
         if df_diario is not None:
             try:
-                match_row = df_diario[(df_diario['TIME_CASA'] == t_casa) & (df_diario['TIME_FORA'] == t_fora)]
+                # BUSCA BLINDADA (Ignora espaços e maiúsculas/minúsculas)
+                c_val = str(t_casa).strip().upper()
+                f_val = str(t_fora).strip().upper()
+                
+                match_row = df_diario[
+                    (df_diario['TIME_CASA'].astype(str).str.strip().str.upper() == c_val) & 
+                    (df_diario['TIME_FORA'].astype(str).str.strip().str.upper() == f_val)
+                ]
+                
                 if not match_row.empty:
                     res_vencedor = str(match_row['VENCEDOR_IA'].values[0])
                     res_gols = str(match_row['GOLS_IA'].values[0])
@@ -387,7 +397,7 @@ elif st.session_state.aba_ativa == "analise":
         with r5: draw_card("IA CONF.", m['conf'], m['conf'])
         with r6: draw_card("PRESSÃO", "ALTA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO", 60)
-        with r8: draw_card("SISTEMA", "v58.21", 100)
+        with r8: draw_card("SISTEMA", "v58.22", 100)
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ CALL SALVA COM SUCESSO!")
@@ -457,4 +467,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.21</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.22</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
