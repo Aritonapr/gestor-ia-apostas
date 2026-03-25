@@ -367,9 +367,7 @@ elif st.session_state.aba_ativa == "analise":
         res_gols = "REVISAR"
 
         if df_diario is not None:
-            # Procura o time selecionado no banco de dados real
             match = df_diario[(df_diario['TIME_CASA'] == t_casa) | (df_diario['TIME_FORA'] == t_fora)]
-            
             if not match.empty:
                 status_luz = "🟢"
                 validacao_txt = "FILÉ MIGNON: INFORMAÇÃO REAL E ATUALIZADA"
@@ -393,8 +391,6 @@ elif st.session_state.aba_ativa == "analise":
     
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
-        
-        # Banner de Validação JARVIS
         st.markdown(f"""
             <div style="background: rgba(255,255,255,0.03); border-left: 5px solid {m['cor']}; padding: 18px; border-radius: 6px; margin-bottom: 25px; transform: translate3d(0,0,0);">
                 <span style="font-size: 20px;">{m['luz']}</span> 
@@ -403,7 +399,7 @@ elif st.session_state.aba_ativa == "analise":
             </div>
         """, unsafe_allow_html=True)
 
-        st.markdown(f<h3 style='color:#9d54ff; text-align:center;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='color:#9d54ff; text-align:center;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("GOLS", m['gols'], 70)
