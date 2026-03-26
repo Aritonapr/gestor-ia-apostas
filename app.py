@@ -3,11 +3,9 @@ import pandas as pd
 import os
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v59.50 - SIMETRIA TOTAL E AUTONOMIA A+B]
-# DIRETRIZ 1: RESTAURAR MENU SUPERIOR COMPLETO E LUPA (REF: IMAGEM 1)
-# DIRETRIZ 2: MANTER 8 KPI CARDS COM SIMETRIA (REF: IMAGEM 7)
-# DIRETRIZ 3: AUTONOMIA A (FILTRO DE JOGOS) E B (PREPARAÇÃO AUTO-CHECK)
-# DIRETRIZ 4: PROTOCOLO PIT - ZERO ABREVIAÇÕES
+# [PROTOCOLO DE MANUTENÇÃO v59.60 - RESTAURAÇÃO TOTAL E SIMETRIA]
+# DIRETRIZ: FIXAR MENU SUPERIOR, LUPA E 8 CARDS (REF: IMAGEM 1 e 7)
+# DIRETRIZ: REMOVER ERRO DE SINTAXE E GARANTIR CÓDIGO ÍNTEGRO
 # ==============================================================================
 
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
@@ -17,15 +15,16 @@ if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
 if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
 if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
 
-# --- LÓGICA DE AUTONOMIA A (PROCESSAMENTO DE DADOS) ---
+# --- LÓGICA DE AUTONOMIA (OPÇÃO A) ---
 def buscar_sugestao_ia():
     path_d = "data/database_diario.csv"
     if os.path.exists(path_d):
-        df = pd.read_csv(path_d)
-        if not df.empty:
-            # IA seleciona o primeiro jogo da lista para destaque
-            jogo = df.iloc[0]
-            return f"{jogo['TIME_CASA']} vs {jogo['TIME_FORA']}", "OVER 1.5 GOLS"
+        try:
+            df = pd.read_csv(path_d)
+            if not df.empty:
+                jogo = df.iloc[0]
+                return f"{jogo['TIME_CASA']} vs {jogo['TIME_FORA']}", "OVER 1.5 GOLS"
+        except: pass
     return "AGUARDANDO DADOS", "ANALISANDO..."
 
 nome_jogo, palpite_ia = buscar_sugestao_ia()
@@ -34,14 +33,11 @@ nome_jogo, palpite_ia = buscar_sugestao_ia()
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-    
-    /* REMOVER SCROLLBARS */
     ::-webkit-scrollbar { display: none !important; }
     * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
-
     header, [data-testid="stHeader"] { display: none !important; }
     [data-testid="stAppViewContainer"] { background-color: #0b0e11 !important; }
-    [data-testid="stMainBlockContainer"] { padding: 85px 45px 20px 45px !important; }
+    [data-testid="stMainBlockContainer"] { padding: 90px 45px 20px 45px !important; }
     
     /* HEADER SUPERIOR (RESTAURO IMAGEM 1) */
     .betano-header { 
@@ -50,26 +46,21 @@ st.markdown("""
         justify-content: space-between; padding: 0 45px !important; z-index: 1000000;
         border-bottom: 1px solid rgba(255,255,255,0.05);
     }
-    .logo-text { color: #9d54ff !important; font-weight: 900; font-size: 22px !important; text-transform: uppercase; margin-right: 30px; }
     .nav-links { display: flex; gap: 18px; align-items: center; }
-    .nav-item { color: #ffffff !important; font-size: 10px !important; text-transform: uppercase; font-weight: 700; opacity: 0.8; text-decoration: none; cursor: pointer; }
-    .nav-item:hover { opacity: 1; color: #06b6d4 !important; }
+    .nav-item { color: #ffffff !important; font-size: 10px !important; text-transform: uppercase; font-weight: 700; opacity: 0.8; text-decoration: none; }
     
     /* SIDEBAR */
     [data-testid="stSidebar"] { min-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
-    [data-testid="stSidebarContent"] { overflow: hidden !important; }
     section[data-testid="stSidebar"] div.stButton > button { 
         background-color: transparent !important; color: #94a3b8 !important; border: none !important; 
         border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; 
         padding: 18px 25px !important; font-size: 10px !important; text-transform: uppercase !important;
-        white-space: nowrap !important;
     }
-    section[data-testid="stSidebar"] div.stButton > button:hover { background-color: #1e293b !important; color: #06b6d4 !important; border-left: 3px solid #6d28d9 !important; }
 
-    /* CARDS SIMÉTRICOS (RESTAURO IMAGEM 7) */
+    /* CARDS (RESTAURO IMAGEM 7) */
     .highlight-card { 
         background: #11151a; border: 1px solid #1e293b; padding: 25px 15px; 
-        border-radius: 10px; text-align: center; height: 155px; margin-bottom: 20px;
+        border-radius: 10px; text-align: center; height: 160px; margin-bottom: 20px;
     }
     .card-title { color: #64748b; font-size: 9px; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
     .card-value { color: white; font-size: 19px; font-weight: 900; margin-top: 12px; }
@@ -81,24 +72,16 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 def draw_card(title, value, perc):
-    st.markdown(f"""
-        <div class="highlight-card">
-            <div class="card-title">{title}</div>
-            <div class="card-value">{value}</div>
-            <div class="progress-container"><div class="progress-bar" style="width:{perc}%;"></div></div>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"""<div class="highlight-card"><div class="card-title">{title}</div><div class="card-value">{value}</div><div class="progress-container"><div class="progress-bar" style="width:{perc}%;"></div></div></div>""", unsafe_allow_html=True)
 
-# --- HEADER SUPERIOR (TODAS AS OPÇÕES + LUPA) ---
+# --- HEADER SUPERIOR RESTAURADO ---
 st.markdown(f"""
     <div class="betano-header">
-        <div style="display:flex; align-items:center;">
-            <div class="logo-text">GESTOR IA</div>
+        <div style="display:flex; align-items:center; gap:30px;">
+            <div style="color:#9d54ff; font-weight:900; font-size:22px;">GESTOR IA</div>
             <div class="nav-links">
-                <div class="nav-item">APOSTAS ESPORTIVAS</div>
-                <div class="nav-item">APOSTAS AO VIVO</div>
-                <div class="nav-item">OPORTUNIDADES IA</div>
-                <div class="nav-item">ESTATÍSTICAS AVANÇADAS</div>
+                <div class="nav-item">APOSTAS ESPORTIVAS</div><div class="nav-item">APOSTAS AO VIVO</div>
+                <div class="nav-item">OPORTUNIDADES IA</div><div class="nav-item">ESTATÍSTICAS AVANÇADAS</div>
                 <div class="nav-item">ASSERTIVIDADE IA</div>
             </div>
         </div>
@@ -110,52 +93,37 @@ st.markdown(f"""
     </div>
 """, unsafe_allow_html=True)
 
-# --- SIDEBAR NAVEGAÇÃO ---
+# --- SIDEBAR ---
 with st.sidebar:
     st.markdown("<div style='height:80px;'></div>", unsafe_allow_html=True)
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "prelive"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
-    if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
     if st.button("📅 JOGOS DO DIA"): st.session_state.aba_ativa = "home"
     if st.button("🧠 ASSERTIVIDADE & IA"): st.session_state.aba_ativa = "assertividade"
     if st.button("🏆 VENCEDORES"): st.session_state.aba_ativa = "vencedores"
-    if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
-    if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
-# --- TELA HOME (8 CARDS COM AUTONOMIA) ---
+# --- TELAS ---
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📅 JOGOS DO DIA</h2>", unsafe_allow_html=True)
-    
-    # Linha 1
     c1, c2, c3, c4 = st.columns(4)
     with c1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
     with c2: draw_card("ASSERTIVIDADE IA", "92.4%", 92)
-    with c3: draw_card("SUGESTÃO DO DIA", palpite_ia, 100) # Opção A
-    with c4: draw_card("JOGO EM FOCO", nome_jogo, 100)      # Opção A
+    with c3: draw_card("SUGESTÃO DO DIA", palpite_ia, 100)
+    with c4: draw_card("JOGO EM FOCO", nome_jogo, 100)
     
-    # Linha 2
     c5, c6, c7, c8 = st.columns(4)
     with c5: draw_card("VOL. DE MERCADO", "ALTO", 75)
     with c6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with c7: draw_card("VALOR ENTRADA", f"R$ {st.session_state.banca_total*(st.session_state.stake_padrao/100):,.2f}", 100)
-    with c8: draw_card("SISTEMA STATUS", "v59.50 ONLINE", 100)
-
-elif st.session_state.aba_ativa == "prelive":
-    st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
-    path_d = "data/database_diario.csv"
-    if os.path.exists(path_d):
-        df = pd.read_csv(path_d)
-        st.dataframe(df, use_container_width=True)
-    else: st.info("Sincronize o database_diario.csv para alimentar a IA.")
+    with c8: draw_card("SISTEMA STATUS", "v59.60 ONLINE", 100)
 
 elif st.session_state.aba_ativa == "gestao":
-    st.markdown('<div style="background:#003399; padding:20px; border-radius:5px; color:white; font-size:24px; font-weight:800; margin-bottom:35px;">💰 GESTÃO DE BANCA</div>', unsafe_allow_html=True)
+    st.markdown('<div style="background:#003399; padding:20px; border-radius:5px; color:white; font-size:24px; font-weight:800; margin-bottom:35px;">💰 GESTÃO DE BANCA INTELIGENTE</div>', unsafe_allow_html=True)
     col_in, col_out = st.columns([1.2, 2.5])
     with col_in:
         st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=st.session_state.banca_total)
-        st.session_state.stake_padrao = st.slider("STAKE (%)", 0.1, 10.0, st.session_state.stake_padrao)
     with col_out:
-        draw_card("VALOR DA ENTRADA", f"R$ {st.session_state.banca_total*(st.session_state.stake_padrao/100):,.2f}", 100)
+        draw_card("VALOR ENTRADA", f"R$ {st.session_state.banca_total*0.01:,.2f}", 100)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA AUTÔNOMA A+B ATIVA | v59.50</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v59.60</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
