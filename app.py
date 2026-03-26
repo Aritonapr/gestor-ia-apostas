@@ -1,44 +1,33 @@
-import pandas as pd
-import os
-import random
+name: Sync Jarvis Data
 
-# CONFIGURAÇÃO DO DIRETÓRIO
-if not os.path.exists('data'):
-    os.makedirs('data')
+on:
+  schedule:
+    - cron: '0 8 * * *' # Roda todo dia às 08:00 AM
+  workflow_dispatch: # Permite rodar manualmente no botão "Run workflow"
 
-def buscar_jogos_ia():
-    print("Iniciando coleta de jogos via IA...")
-    
-    # Este é um simulador de coleta. Em um cenário avançado, 
-    # aqui conectaríamos com APIs de futebol (API-Football, etc).
-    jogos = [
-        ["BRASIL", "SERIE A", "Flamengo", "Palmeiras"],
-        ["BRASIL", "SERIE A", "São Paulo", "Corinthians"],
-        ["INGLATERRA", "PREMIER", "Man City", "Arsenal"],
-        ["INGLATERRA", "PREMIER", "Liverpool", "Chelsea"],
-        ["ESPANHA", "LA LIGA", "Real Madrid", "Barcelona"],
-        ["ITÁLIA", "SERIE A", "Inter Milan", "Juventus"],
-        ["BRASIL", "SERIE B", "Santos", "Sport"],
-        ["BRASIL", "SERIE A", "Vasco", "Botafogo"],
-        ["BRASIL", "SERIE A", "Grêmio", "Internacional"],
-        ["INGLATERRA", "PREMIER", "Tottenham", "Aston Villa"],
-        ["ALEMANHA", "BUNDESLIGA", "Bayern", "Dortmund"],
-        ["FRANÇA", "LIGUE 1", "PSG", "Monaco"],
-        ["BRASIL", "SERIE A", "Bahia", "Fortaleza"],
-        ["BRASIL", "SERIE A", "Athletico-PR", "Cruzeiro"],
-        ["BRASIL", "SERIE A", "Fluminense", "Atlético-MG"],
-        ["BRASIL", "COPA", "Cuiabá", "Coritiba"],
-        ["PORTUGAL", "LIGA", "Benfica", "Porto"],
-        ["HOLANDA", "EREDIVISIE", "Ajax", "PSV"],
-        ["ARGENTINA", "LIGA", "River Plate", "Boca Juniors"],
-        ["EUA", "MLS", "Inter Miami", "LA Galaxy"]
-    ]
-    
-    df = pd.DataFrame(jogos, columns=['PAÍS', 'GRUPO', 'TIME_CASA', 'TIME_FORA'])
-    
-    # Salva no arquivo que o app.py lê
-    df.to_csv('data/database_diario.csv', index=False)
-    print("Sucesso! 20 jogos carregados em data/database_diario.csv")
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-if __name__ == "__main__":
-    buscar_jogos_ia()
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Install dependencies
+        run: |
+          pip install pandas
+
+      - name: Run sync script
+        run: python sync_data.py
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name "Jarvis Bot"
+          git config --global user.email "bot@jarvis.ia"
+          git add data/database_diario.csv
+          git commit -m "Auto-update jogos do dia [skip ci]" || echo "No changes to commit"
+          git push
