@@ -1,10 +1,11 @@
 import streamlit as st
 import pandas as pd
 import os
+import json
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v58.00 - INTEGRAÇÃO DATA-AUTOMATION]
+# [PROTOCOLO DE MANUTENÇÃO v58.10 - PERSISTÊNCIA & CORREÇÃO DE PATH]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -19,9 +20,29 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# --- FUNÇÕES DE PERSISTÊNCIA DE DADOS ---
+PATH_HISTORICO = "dados/historico_permanente.json"
+
+def salvar_historico_disco(lista_calls):
+    try:
+        if not os.path.exists("dados"): os.makedirs("dados")
+        with open(PATH_HISTORICO, "w", encoding="utf-8") as f:
+            json.dump(lista_calls, f, ensure_ascii=False, indent=4)
+    except Exception as e:
+        st.error(f"Erro ao salvar histórico: {e}")
+
+def carregar_historico_disco():
+    if os.path.exists(PATH_HISTORICO):
+        try:
+            with open(PATH_HISTORICO, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except:
+            return []
+    return []
+
 # --- INICIALIZAÇÃO DE MEMÓRIA BLINDADA ---
 if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
-if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
+if 'historico_calls' not in st.session_state: st.session_state.historico_calls = carregar_historico_disco()
 if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
 if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
 if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
@@ -34,9 +55,9 @@ if query_params.get("go") == "home":
     st.session_state.aba_ativa = "home"
     st.query_params.clear()
 
-# --- FUNÇÃO DE CARREGAMENTO DE DADOS (NOVO NA v58.00) ---
+# --- FUNÇÃO DE CARREGAMENTO DE JOGOS (PATH CORRIGIDO PARA 'DADOS') ---
 def carregar_jogos_diarios():
-    path = "data/database_diario.csv"
+    path = "dados/database_diario.csv" # Alterado de data/ para dados/
     if os.path.exists(path):
         try:
             df = pd.read_csv(path)
@@ -79,15 +100,9 @@ st.markdown("""
     .nav-links { display: flex; gap: 22px; align-items: center; }
     
     .nav-item { 
-        color: #ffffff !important; 
-        font-size: 11px !important; 
-        text-transform: uppercase; 
-        opacity: 1 !important; 
-        font-weight: 600 !important; 
-        letter-spacing: 0.5px; 
-        transition: 0.3s ease; 
-        cursor: pointer;
-        white-space: nowrap;
+        color: #ffffff !important; font-size: 11px !important; text-transform: uppercase; 
+        opacity: 1 !important; font-weight: 600 !important; letter-spacing: 0.5px; 
+        transition: 0.3s ease; cursor: pointer; white-space: nowrap;
     }
     .nav-item:hover { color: #06b6d4 !important; transform: scale(1.05); }
 
@@ -117,8 +132,7 @@ st.markdown("""
         background-color: transparent !important; color: #94a3b8 !important; border: none !important; 
         border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; 
         padding: 18px 25px !important; font-size: 10px !important; text-transform: uppercase !important;
-        border-radius: 0px !important; transition: all 0.2s ease !important;
-        white-space: nowrap !important;
+        border-radius: 0px !important; transition: all 0.2s ease !important; white-space: nowrap !important;
     }
     section[data-testid="stSidebar"] div.stButton > button:hover {
         background-color: #1e293b !important; color: #06b6d4 !important; padding-left: 35px !important; border-left: 3px solid #6d28d9 !important;
@@ -222,7 +236,7 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v58.00", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v58.10", 100)
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
@@ -254,7 +268,7 @@ elif st.session_state.aba_ativa == "gestao":
         with g7: draw_card("ENTRADAS/LOSS", f"{entradas_loss}", 100, "#00d2ff")
         with g8: st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div><div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:#00d2ff; height:100%; width:100%;"></div></div></div>""", unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (DATABASE HÍBRIDO v58.00)
+# TELA 3: SCANNER PRÉ-LIVE (DATABASE HÍBRIDO v58.10)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
@@ -358,7 +372,6 @@ elif st.session_state.aba_ativa == "analise":
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
         
-        # --- MOTOR JARVIS v58.00 (INTEGRAÇÃO DE DADOS REAIS) ---
         status_luz = "🔴"
         validacao_txt = "ALERTA: DADOS FORA DA ROTINA (ESTATÍSTICA FRIA)"
         cor_luz = "#ff4b4b"
@@ -409,10 +422,11 @@ elif st.session_state.aba_ativa == "analise":
         with r5: draw_card("IA CONF.", m['confia'], 94)
         with r6: draw_card("PRESSÃO", "ALTA" if m['luz'] == "🟢" else "MÉDIA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO" if m['luz'] == "🟢" else "ESTÁVEL", 60)
-        with r8: draw_card("SISTEMA", "v58.00", 100)
+        with r8: draw_card("SISTEMA", "v58.10", 100)
         
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
+            salvar_historico_disco(st.session_state.historico_calls) # PERSISTÊNCIA DISCO
             st.toast("✅ CALL SALVA COM SUCESSO!")
 
 elif st.session_state.aba_ativa == "live":
@@ -471,6 +485,13 @@ elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
     if not st.session_state.historico_calls: st.info("Nenhuma operação registrada.")
     else:
+        # Botão para limpar tudo
+        if st.button("🗑️ LIMPAR TODO O HISTÓRICO", use_container_width=True):
+            st.session_state.historico_calls = []
+            salvar_historico_disco([])
+            st.rerun()
+            
+        st.markdown("<br>", unsafe_allow_html=True)
         for i, call in enumerate(reversed(st.session_state.historico_calls)):
             idx = len(st.session_state.historico_calls) - 1 - i
             col_info, col_del = st.columns([0.92, 0.08])
@@ -478,6 +499,7 @@ elif st.session_state.aba_ativa == "historico":
             with col_del:
                 if st.button("🗑️", key=f"del_{idx}"):
                     st.session_state.historico_calls.pop(idx)
+                    salvar_historico_disco(st.session_state.historico_calls) # ATUALIZA DISCO
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.00</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.10</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
