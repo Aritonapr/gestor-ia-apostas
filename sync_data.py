@@ -5,64 +5,74 @@ from datetime import datetime
 
 if not os.path.exists('data'): os.makedirs('data')
 
-def carregar_historico():
-    path = 'data/historico_mestre.csv'
-    if os.path.exists(path): return pd.read_csv(path)
-    return None
+# DNA DOS TIMES (Base para os 7 cálculos)
+# atk: chutes/gols | def: defesas/tiros de meta | aggressive: cartões | pressure: cantos
+dna_ia = {
+    "Man City": {"atk": 9.8, "def": 8.5, "agg": 2, "pres": 10},
+    "Arsenal": {"atk": 9.2, "def": 9.0, "agg": 3, "pres": 9},
+    "Real Madrid": {"atk": 9.6, "def": 8.8, "agg": 4, "pres": 8},
+    "Flamengo": {"atk": 8.8, "def": 8.2, "agg": 5, "pres": 9},
+    "Luton": {"atk": 4.0, "def": 3.0, "agg": 7, "pres": 4},
+}
 
-def calcular_confianca_real(casa, fora, df_hist):
-    if df_hist is None: return 50, "MÉDIA"
-    # Análise de confrontos
-    h_c = df_hist[(df_hist['HomeTeam'] == casa)]
-    h_f = df_hist[(df_hist['AwayTeam'] == fora)]
+def motor_preditivo(casa, fora):
+    c = dna_ia.get(casa, {"atk": 5, "def": 5, "agg": 5, "pres": 5})
+    f = dna_ia.get(fora, {"atk": 5, "def": 5, "agg": 5, "pres": 5})
     
-    if len(h_c) == 0 or len(h_f) == 0: return random.randint(88, 92), "ESTATÍSTICA"
+    # 1. Probabilidade Vencedor
+    prob_c = round(min(98, 45 + (c['atk'] - f['def']) * 5), 1)
     
-    gols_m_casa = h_c['FTHG'].mean()
-    gols_m_fora = h_f['FTAG'].mean()
+    # 2. Gols (Total e Tempos)
+    total_gols = round((c['atk'] + f['atk']) / 4 + random.uniform(0.5, 1.5), 1)
+    gols_ht = "SIM" if total_gols > 2.5 else "NÃO"
     
-    # Score de 0 a 100
-    score = min((gols_m_casa + gols_m_fora) * 20, 99)
-    return round(score, 1), "DADOS REAIS"
+    # 3. Cartões (Baseado em Agressividade)
+    total_cartoes = int((c['agg'] + f['agg']) / 2 + random.randint(1, 3))
+    
+    # 4. Escanteios (Baseado em Pressão)
+    cantos = int((c['pres'] + f['pres']) + random.randint(0, 4))
+    
+    # 5. Tiros de Meta (Quanto menos posse/ataque, mais tiro de meta o time dá)
+    tm_casa = int(15 - c['atk'] + random.randint(0, 5))
+    tm_fora = int(15 - f['atk'] + random.randint(0, 5))
+    
+    # 6. Chutes no Gol
+    chutes = int((c['atk'] + f['atk']) + random.randint(2, 6))
+    
+    # 7. Defesas do Goleiro
+    defesas = int((c['atk'] + f['atk']) / 3 + random.randint(1, 4))
+    
+    return {
+        "PROB_CASA": f"{prob_c}%",
+        "GOLS_FT": f"+{int(total_gols)}.5",
+        "GOLS_AMBOS_T": gols_ht,
+        "CARTÕES": total_cartoes,
+        "CANTOS": cantos,
+        "TIROS_META": tm_casa + tm_fora,
+        "CHUTES": chutes,
+        "DEFESAS": defesas
+    }
 
 def processar_ia():
-    df_hist = carregar_historico()
     jogos = [
         ["INGLATERRA", "PREMIER", "Man City", "Luton"],
         ["INGLATERRA", "PREMIER", "Arsenal", "Aston Villa"],
-        ["INGLATERRA", "PREMIER", "Liverpool", "Crystal Palace"],
         ["ESPANHA", "LA LIGA", "Real Madrid", "Athletic Bilbao"],
-        ["ESPANHA", "LA LIGA", "Barcelona", "Las Palmas"],
-        ["ITÁLIA", "SERIE A", "Inter Milan", "Cagliari"],
-        ["ITÁLIA", "SERIE A", "Udinese", "Roma"],
-        ["ALEMANHA", "BUNDESLIGA", "Bayern Munchen", "FC Koln"],
-        ["ALEMANHA", "BUNDESLIGA", "Bayer Leverkusen", "Werder Bremen"],
-        ["FRANÇA", "LIGUE 1", "Lyon", "Brest"],
-        ["FRANÇA", "LIGUE 1", "PSG", "Lorient"],
         ["BRASIL", "SÉRIE A", "Flamengo", "Palmeiras"],
         ["BRASIL", "SÉRIE A", "Vasco", "Grêmio"],
         ["BRASIL", "SÉRIE A", "Corinthians", "Atlético-MG"],
         ["BRASIL", "SÉRIE A", "São Paulo", "Fortaleza"],
-        ["PORTUGAL", "LIGA", "Benfica", "Moreirense"],
-        ["PORTUGAL", "LIGA", "Porto", "Famalicao"],
-        ["INGLATERRA", "PREMIER", "Newcastle", "Tottenham"],
-        ["ESPANHA", "LA LIGA", "Atletico Madrid", "Girona"],
-        ["ITÁLIA", "SERIE A", "Torino", "Juventus"]
+        ["ITÁLIA", "SERIE A", "Inter Milan", "Cagliari"],
+        ["ALEMANHA", "BUNDESLIGA", "Bayern Munchen", "FC Koln"],
+        ["FRANÇA", "LIGUE 1", "PSG", "Lorient"]
     ]
     
-    final = []
-    for p, l, c, f in jogos:
-        conf, tipo = calcular_confianca_real(c, f, df_hist)
-        # Define Mercado
-        if conf > 95: mercado = "VITORIA DIRETA"
-        elif conf > 85: mercado = "OVER 2.5 GOLS"
-        else: mercado = "OVER 1.5 GOLS"
-        
-        final.append([p, l, c, f, mercado, f"{conf}%", tipo])
-        
-    df = pd.DataFrame(final, columns=['PAÍS', 'GRUPO', 'TIME_CASA', 'TIME_FORA', 'MERCADO', 'CONFIDANÇA', 'TIPO_DADO'])
-    # Ordenar pelos 3 melhores (Bilhete de Ouro)
-    df = df.sort_values(by='CONFIDANÇA', ascending=False)
+    db = []
+    for p, l, casa, fora in jogos:
+        res = motor_preditivo(casa, fora)
+        db.append([p, l, casa, fora, res['GOLS_FT'], res['PROB_CASA'], res['CARTÕES'], res['CANTOS'], res['CHUTES'], res['DEFESAS'], res['TIROS_META']])
+    
+    df = pd.DataFrame(db, columns=['PAÍS','GRUPO','TIME_CASA','TIME_FORA','MERCADO','CONFIDANÇA','CARTOES','CANTOS','CHUTES','DEFESAS','TMETA'])
     df.to_csv('data/database_diario.csv', index=False)
 
 if __name__ == "__main__": processar_ia()
