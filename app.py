@@ -6,7 +6,7 @@ from datetime import datetime
 import random
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v71.00 - FIX TOTAL DE HEADER E LINKS SUPERIORES]
+# [PROTOCOLO DE MANUTENÇÃO v72.00 - FIX FINAL DE BILHETE E HEADER]
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -46,7 +46,7 @@ st.markdown("""
 
     header, [data-testid="stHeader"] { display: none !important; height: 0px !important; }
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
-    [data-testid="stMainBlockContainer"] { padding: 90px 40px 20px 40px !important; }
+    [data-testid="stMainBlockContainer"] { padding: 95px 40px 20px 40px !important; }
     
     /* HEADER FIXO SUPERIOR */
     .betano-header { 
@@ -64,8 +64,8 @@ st.markdown("""
     .nav-item:hover { color: #06b6d4 !important; opacity: 1; }
 
     .header-right { display: flex; align-items: center; gap: 15px; }
-    .registrar-pill { color: #ffffff !important; font-size: 9px !important; font-weight: 800; border: 1.5px solid #ffffff !important; padding: 7px 18px !important; border-radius: 20px !important; cursor: pointer; }
-    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 8px 22px !important; border-radius: 5px !important; font-weight: 800; font-size: 9.5px; cursor: pointer; }
+    .registrar-pill { color: #ffffff !important; font-size: 9px !important; font-weight: 800; border: 1.5px solid #ffffff !important; padding: 7px 18px !important; border-radius: 20px !important; }
+    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 8px 22px !important; border-radius: 5px !important; font-weight: 800; font-size: 9.5px; }
 
     /* SIDEBAR */
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
@@ -81,8 +81,15 @@ st.markdown("""
 
     /* CARDS */
     .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px; }
-    .bilhete-master { background: #ffffff !important; color: #111 !important; padding: 25px; border-radius: 2px; font-family: 'Courier New', monospace; max-width: 480px; margin: 0 auto; border-top: 10px solid #9d54ff; box-shadow: 0 10px 40px rgba(0,0,0,0.8); }
-    .ticket-row { display: flex; justify-content: space-between; font-size: 11px; border-bottom: 1px dashed #ccc; padding: 5px 0; }
+    
+    /* BILHETE DE OURO - CORREÇÃO DE CONTAINER */
+    .bilhete-master { 
+        background: #ffffff !important; color: #111 !important; padding: 25px; 
+        border-radius: 2px; font-family: 'Courier New', monospace; 
+        max-width: 480px; margin: 0 auto; border-top: 10px solid #9d54ff; 
+        box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+    }
+    .ticket-row { display: flex; justify-content: space-between; font-size: 11px; border-bottom: 1px dashed #ccc; padding: 8px 0; color: #111 !important; }
     
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     </style>
@@ -132,18 +139,33 @@ if st.session_state.aba_ativa == "home":
     with c1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
     with c2: draw_card("ASSERTIVIDADE", "92.4%", 92)
     with c3: draw_card("SUGESTÃO", "OVER 2.5", 88)
-    with c4: draw_card("SISTEMA", "JARVIS v71.00", 100)
+    with c4: draw_card("SISTEMA", "JARVIS v72.00", 100)
 
 elif st.session_state.aba_ativa == "bilhete":
     st.markdown("<h2 style='color:white; text-align:center;'>🎟️ SEU BILHETE PRONTO</h2>", unsafe_allow_html=True)
     if df_diario is not None and not df_diario.empty:
         top_20 = df_diario.head(20)
+        
+        # CONSTRUÇÃO DO HTML DO BILHETE EM UMA ÚNICA STRING
+        html_bilhete = f"""
+        <div class="bilhete-master">
+            <div style="text-align:center; font-weight:900; font-size:20px; border-bottom:2px solid #111; margin-bottom:15px; padding-bottom:10px;">GESTOR IA PRO</div>
+            <div style="font-size:10px; text-align:center; margin-bottom:15px;">GERADO EM: {datetime.now().strftime('%d/%m/%Y %H:%M')}</div>
+        """
+        
+        for _, row in top_20.iterrows():
+            html_bilhete += f"""
+            <div class="ticket-row">
+                <span>{row['TIME_CASA']} x {row['TIME_FORA']}</span>
+                <b>OVER 1.5</b>
+            </div>
+            """
+            
+        html_bilhete += "</div>"
+        
         col_x1, col_x2, col_x3 = st.columns([1, 2, 1])
         with col_x2:
-            st.markdown(f"""<div class="bilhete-master"><div style="text-align:center; font-weight:900; font-size:20px; border-bottom:2px solid #111; margin-bottom:15px; padding-bottom:10px;">GESTOR IA PRO</div><div style="font-size:10px; text-align:center; margin-bottom:15px;">GERADO EM: {datetime.now().strftime('%d/%m/%Y %H:%M')}</div>""", unsafe_allow_html=True)
-            for _, row in top_20.iterrows():
-                st.markdown(f"""<div class="ticket-row"><span>{row['TIME_CASA']} x {row['TIME_FORA']}</span><b>OVER 1.5</b></div>""", unsafe_allow_html=True)
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown(html_bilhete, unsafe_allow_html=True)
     else: st.error("Aguardando carregamento de jogos...")
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v71.00</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v72.00</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
