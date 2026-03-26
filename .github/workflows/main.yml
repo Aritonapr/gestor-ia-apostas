@@ -1,33 +1,32 @@
-name: Jarvis Sync Data
+name: Automação Diária Jarvis
 
 on:
   schedule:
-    - cron: '0 8 * * *' # Roda todos os dias às 05:00 AM (Horário de Brasília)
-  workflow_dispatch: # Permite que você rode manualmente se quiser
+    - cron: '0 8 * * *' # Roda todo dia às 08:00 AM
+  workflow_dispatch: # Permite que você rode o robô manualmente clicando em um botão
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout código
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Configurar Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: '3.9'
 
-      - name: Instalar dependências
-        run: |
-          pip install pandas requests
+      - name: Instalar Pandas
+        run: pip install pandas
 
-      - name: Executar Sincronização
+      - name: Rodar Coleta de Jogos
         run: python sync_data.py
 
-      - name: Salvar alterações no GitHub
+      - name: Salvar dados no GitHub
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --global user.name "Jarvis Automation"
+          git config --global user.email "bot@jarvis.ia"
           git add data/database_diario.csv
-          git commit -m "Jarvis: Atualização diária de jogos" || exit 0
+          git commit -m "Jarvis: Atualização automática de jogos [skip ci]" || echo "Sem mudanças"
           git push
