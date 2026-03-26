@@ -6,7 +6,7 @@ from datetime import datetime
 import random
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v77.00 - FUNÇÃO COPIAR BILHETE]
+# [PROTOCOLO DE MANUTENÇÃO v80.00 - ATIVAÇÃO DO CÉREBRO ESTATÍSTICO]
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -35,20 +35,15 @@ df_diario = carregar_jogos_diarios()
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-    
     ::-webkit-scrollbar { display: none !important; }
     * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
-
     html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp {
         background-color: #0b0e11 !important;
         font-family: 'Inter', sans-serif;
     }
-
     header, [data-testid="stHeader"] { display: none !important; height: 0px !important; }
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 90px 40px 20px 40px !important; }
-    
-    /* HEADER FIXO */
     .fixed-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; 
@@ -58,15 +53,9 @@ st.markdown("""
     .logo-txt { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; text-decoration: none; }
     .nav-box { display: flex; gap: 18px; }
     .nav-txt { color: #ffffff; font-size: 10px; text-transform: uppercase; font-weight: 600; opacity: 0.8; }
-    
     .btn-registrar { color: #ffffff; font-size: 9px; font-weight: 800; border: 1.5px solid #ffffff; padding: 6px 15px; border-radius: 20px; }
     .btn-entrar { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%); color: white; padding: 7px 20px; border-radius: 5px; font-weight: 800; font-size: 9px; }
-
-    /* SIDEBAR */
     [data-testid="stSidebar"] { min-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
-    [data-testid="stSidebarContent"] { overflow-y: auto !important; }
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -10px !important; gap: 0px !important; }
-    
     section[data-testid="stSidebar"] div.stButton > button { 
         background-color: transparent !important; color: #94a3b8 !important; border: none !important; 
         border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; 
@@ -74,8 +63,6 @@ st.markdown("""
         border-radius: 0px !important;
     }
     section[data-testid="stSidebar"] div.stButton > button:hover { background-color: #1e293b !important; color: #06b6d4 !important; border-left: 3px solid #6d28d9 !important; }
-
-    /* BILHETE DE OURO */
     .bilhete-master { 
         background: #ffffff !important; color: #111 !important; padding: 25px; 
         border-radius: 8px; font-family: 'Inter', sans-serif; 
@@ -84,12 +71,8 @@ st.markdown("""
     }
     .ticket-row { display: flex; justify-content: space-between; font-size: 12px; border-bottom: 1px solid #f2f2f2; padding: 10px 0; color: #111 !important; }
     .badge-market { background: #f1f5f9; padding: 3px 10px; border-radius: 4px; font-weight: 900; color: #6d28d9; font-size: 10px; }
-
     .card-ia { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; }
     .footer-ia { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
-    
-    /* BOTÃO COPIAR STYLE */
-    .stCodeBlock { border-radius: 8px !important; border: 1px solid #1e293b !important; margin-top: 20px !important; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -131,14 +114,12 @@ if st.session_state.aba_ativa == "home":
     c1, c2, c3, c4 = st.columns(4)
     with c1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
     with c2: draw_card("ASSERTIVIDADE", "92.4%", 92)
-    with c3: draw_card("SUGESTÃO", "OVER 2.5", 88)
-    with c4: draw_card("SISTEMA", "JARVIS v77.00", 100)
+    with c3: draw_card("SUGESTÃO", "DIVERSOS", 88)
+    with c4: draw_card("SISTEMA", "JARVIS v80.00", 100)
 
 elif st.session_state.aba_ativa == "bilhete":
     st.markdown("<h2 style='color:white; text-align:center;'>🎟️ SEU BILHETE PRONTO</h2>", unsafe_allow_html=True)
     if df_diario is not None and not df_diario.empty:
-        top_20 = df_diario.head(20)
-        
         # 1. BILHETE VISUAL (HTML)
         bilhete_html = f"""
         <div class="bilhete-master">
@@ -147,13 +128,13 @@ elif st.session_state.aba_ativa == "bilhete":
                 <span style="font-size:10px; color:#666;">ID: #JARVIS-{random.randint(100,999)} | {datetime.now().strftime('%d/%m/%Y')}</span>
             </div>
         """
+        texto_copia = f"🔥 *BILHETE DO DIA - GESTOR IA*\n📅 Data: {datetime.now().strftime('%d/%m/%Y')}\n\n"
         
-        # 2. TEXTO PARA CÓPIA (STRING)
-        texto_copia = f"🔥 *BILHETE DO DIA - GESTOR IA*\n📅 Data: {datetime.now().strftime('%d/%m/%Y')}\n🎯 Confiança: 94.2%\n\n"
-        
-        for i, row in top_20.iterrows():
-            bilhete_html += f"""<div class="ticket-row"><span><b>{row['TIME_CASA']}</b> x <b>{row['TIME_FORA']}</b></span><span class="badge-market">OVER 1.5 GOLS</span></div>"""
-            texto_copia += f"✅ {row['TIME_CASA']} x {row['TIME_FORA']} -> OVER 1.5\n"
+        for i, row in df_diario.iterrows():
+            mercado_ia = row['MERCADO'] if 'MERCADO' in row else "OVER 1.5 GOLS"
+            confia_ia = row['CONFIDANÇA'] if 'CONFIDANÇA' in row else 92
+            bilhete_html += f"""<div class="ticket-row"><span><b>{row['TIME_CASA']}</b> x <b>{row['TIME_FORA']}</b></span><span class="badge-market">{mercado_ia}</span></div>"""
+            texto_copia += f"✅ {row['TIME_CASA']} x {row['TIME_FORA']} -> {mercado_ia} ({confia_ia}%)\n"
         
         bilhete_html += "</div>"
         texto_copia += "\n🚀 *BOA SORTE! LUCRO É O ALVO.*"
@@ -161,13 +142,11 @@ elif st.session_state.aba_ativa == "bilhete":
         col_x1, col_x2, col_x3 = st.columns([1, 2, 1])
         with col_x2: 
             st.markdown(bilhete_html, unsafe_allow_html=True)
-            st.markdown("<div style='margin-top:25px; color:#8b949e; font-size:11px; text-align:center;'>📋 CLIQUE ABAIXO PARA COPIAR O SINAL:</div>", unsafe_allow_html=True)
-            st.code(texto_copia, language="text") # BOTÃO DE CÓPIA NATIVO
-            
+            st.code(texto_copia, language="text")
     else: st.error("Aguardando carregamento de jogos do robô...")
 
 else:
     st.markdown(f"<h2 style='color:white;'>📊 {st.session_state.aba_ativa.upper()}</h2>", unsafe_allow_html=True)
     st.info("Scanner operando. Os dados estatísticos estão sendo processados pela IA.")
 
-st.markdown("""<div class="footer-ia"><div>STATUS: ● IA OPERACIONAL | v77.00</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-ia"><div>STATUS: ● IA OPERACIONAL | v80.00</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
