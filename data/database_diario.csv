@@ -1,11 +1,21 @@
 PAIS,LIGA,CASA,FORA,GOLS,CONF,CARTOES,CANTOS,CHUTES,DEFESAS,TMETA
-INGLATERRA,PREMIER,Man City,Luton,+1.5,87.5%,3,11,10,2,17
-INGLATERRA,PREMIER,Arsenal,Aston Villa,+2.5,85.5%,7,13,18,2,12
-ESPANHA,LA LIGA,Real Madrid,Athletic Bilbao,+1.5,87.5%,4,10,22,5,17
-BRASIL,SÉRIE A,Flamengo,Palmeiras,+1.5,84.5%,5,9,13,3,17
-BRASIL,SÉRIE A,Vasco,Grêmio,+1.5,68.0%,6,9,22,6,19
-BRASIL,SÉRIE A,Corinthians,Atlético-MG,+2.5,69.0%,3,10,19,8,13
-BRASIL,SÉRIE A,São Paulo,Fortaleza,+1.5,70.0%,7,8,18,4,16
-ITÁLIA,SERIE A,Inter Milan,Cagliari,+1.5,81.5%,3,12,16,6,13
-ALEMANHA,BUNDESLIGA,Bayern Munchen,FC Koln,+2.5,79.5%,3,14,14,6,17
-FRANÇA,LIGUE 1,PSG,Lorient,+1.5,81.5%,3,8,17,7,16
+ING,PREMIER,Man City,Luton,+2.5,87.5%,4,11,21,3,13
+ING,PREMIER,Arsenal,Aston Villa,+2.5,86.5%,3,11,21,1,11
+ESP,LA LIGA,Real Madrid,Bilbao,+2.5,88.5%,5,12,19,6,14
+BRA,SÉRIE A,Flamengo,Palmeiras,+2.5,87.5%,4,11,13,3,15
+ITA,SERIE A,Inter Milan,Cagliari,+1.5,87.5%,4,12,18,7,13
+ALE,BUNDESLIGA,Bayern,FC Koln,+2.5,71.0%,3,12,15,5,13
+FRA,LIGUE 1,PSG,Lyon,+2.5,90.5%,6,15,14,4,18
+POR,LIGA,Benfica,Porto,+1.5,73.0%,5,10,21,3,16
+ING,PREMIER,Liverpool,Palace,+2.5,90.5%,3,8,24,1,16
+ESP,LA LIGA,Barcelona,PSG,+1.5,70.0%,4,12,18,5,16
+BRA,SÉRIE A,Vasco,Grêmio,+2.5,71.0%,6,13,23,3,16
+BRA,SÉRIE A,Corinthians,Atlético-MG,+2.5,72.0%,8,10,21,1,10
+BRA,SÉRIE A,São Paulo,Fortaleza,+1.5,69.0%,4,11,18,2,18
+ALE,BUNDESLIGA,Leverkusen,Bremen,+2.5,69.0%,3,12,23,6,12
+ITA,SERIE A,Juventus,Torino,+1.5,70.0%,3,8,16,4,12
+ING,PREMIER,Chelsea,Everton,+1.5,69.0%,8,9,21,2,14
+ING,PREMIER,Newcastle,Tottenham,+1.5,72.0%,5,14,13,5,15
+ESP,LA LIGA,Atletico,Girona,+2.5,68.0%,8,14,24,5,16
+FRA,LIGUE 1,Monaco,Lille,+1.5,71.0%,4,15,22,5,14
+HOL,EREDIVISIE,Ajax,PSV,+1.5,69.0%,7,12,14,7,17
