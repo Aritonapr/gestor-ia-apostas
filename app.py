@@ -6,7 +6,7 @@ from datetime import datetime
 import random
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v76.00 - ANTI-FLICKER & SIDEBAR REORDENADA]
+# [PROTOCOLO DE MANUTENÇÃO v77.00 - FUNÇÃO COPIAR BILHETE]
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -31,7 +31,7 @@ def carregar_jogos_diarios():
 
 df_diario = carregar_jogos_diarios()
 
-# 2. CAMADA DE ESTILO CSS (OTIMIZADA PARA ESTABILIDADE)
+# 2. CAMADA DE ESTILO CSS (ESTÁVEL E SEM PISCAR)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -48,14 +48,14 @@ st.markdown("""
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 90px 40px 20px 40px !important; }
     
-    /* HEADER FIXO - SEM PISCAR */
+    /* HEADER FIXO */
     .fixed-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; 
         display: flex; align-items: center; justify-content: space-between; 
         padding: 0 40px !important; z-index: 1000000; 
     }
-    .logo-txt { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; }
+    .logo-txt { color: #9d54ff !important; font-weight: 900; font-size: 20px !important; text-transform: uppercase; text-decoration: none; }
     .nav-box { display: flex; gap: 18px; }
     .nav-txt { color: #ffffff; font-size: 10px; text-transform: uppercase; font-weight: 600; opacity: 0.8; }
     
@@ -75,22 +75,25 @@ st.markdown("""
     }
     section[data-testid="stSidebar"] div.stButton > button:hover { background-color: #1e293b !important; color: #06b6d4 !important; border-left: 3px solid #6d28d9 !important; }
 
-    /* BILHETE DE OURO - VISUAL LIMPO */
+    /* BILHETE DE OURO */
     .bilhete-master { 
         background: #ffffff !important; color: #111 !important; padding: 25px; 
         border-radius: 8px; font-family: 'Inter', sans-serif; 
         max-width: 480px; margin: 0 auto; border-top: 10px solid #9d54ff; 
         box-shadow: 0 10px 40px rgba(0,0,0,0.8);
     }
-    .ticket-row { display: flex; justify-content: space-between; font-size: 12px; border-bottom: 1px solid #f2f2f2; padding: 10px 0; }
+    .ticket-row { display: flex; justify-content: space-between; font-size: 12px; border-bottom: 1px solid #f2f2f2; padding: 10px 0; color: #111 !important; }
     .badge-market { background: #f1f5f9; padding: 3px 10px; border-radius: 4px; font-weight: 900; color: #6d28d9; font-size: 10px; }
 
     .card-ia { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; }
     .footer-ia { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
+    
+    /* BOTÃO COPIAR STYLE */
+    .stCodeBlock { border-radius: 8px !important; border: 1px solid #1e293b !important; margin-top: 20px !important; }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. HEADER HTML (IMPRESSÃO ÚNICA)
+# 3. HEADER HTML FIXO
 st.markdown("""
     <div class="fixed-header">
         <div class="nav-box">
@@ -107,16 +110,14 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# 4. SIDEBAR REORDENADA
+# 4. SIDEBAR
 with st.sidebar:
     st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True) 
-    # BOTÕES PRINCIPAIS NO TOPO
     if st.button("🎟️ GERAR BILHETE DO DIA"): st.session_state.aba_ativa = "bilhete"
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
     if st.button("📅 JOGOS DO DIA"): st.session_state.aba_ativa = "home"
-    if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
     if st.button("🏆 VENCEDORES"): st.session_state.aba_ativa = "vencedores"
     if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
@@ -131,12 +132,14 @@ if st.session_state.aba_ativa == "home":
     with c1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
     with c2: draw_card("ASSERTIVIDADE", "92.4%", 92)
     with c3: draw_card("SUGESTÃO", "OVER 2.5", 88)
-    with c4: draw_card("SISTEMA", "JARVIS v76.00", 100)
+    with c4: draw_card("SISTEMA", "JARVIS v77.00", 100)
 
 elif st.session_state.aba_ativa == "bilhete":
     st.markdown("<h2 style='color:white; text-align:center;'>🎟️ SEU BILHETE PRONTO</h2>", unsafe_allow_html=True)
     if df_diario is not None and not df_diario.empty:
         top_20 = df_diario.head(20)
+        
+        # 1. BILHETE VISUAL (HTML)
         bilhete_html = f"""
         <div class="bilhete-master">
             <div style="text-align:center; border-bottom:1px solid #eee; padding-bottom:10px; margin-bottom:15px;">
@@ -144,16 +147,27 @@ elif st.session_state.aba_ativa == "bilhete":
                 <span style="font-size:10px; color:#666;">ID: #JARVIS-{random.randint(100,999)} | {datetime.now().strftime('%d/%m/%Y')}</span>
             </div>
         """
-        for _, row in top_20.iterrows():
+        
+        # 2. TEXTO PARA CÓPIA (STRING)
+        texto_copia = f"🔥 *BILHETE DO DIA - GESTOR IA*\n📅 Data: {datetime.now().strftime('%d/%m/%Y')}\n🎯 Confiança: 94.2%\n\n"
+        
+        for i, row in top_20.iterrows():
             bilhete_html += f"""<div class="ticket-row"><span><b>{row['TIME_CASA']}</b> x <b>{row['TIME_FORA']}</b></span><span class="badge-market">OVER 1.5 GOLS</span></div>"""
+            texto_copia += f"✅ {row['TIME_CASA']} x {row['TIME_FORA']} -> OVER 1.5\n"
+        
         bilhete_html += "</div>"
+        texto_copia += "\n🚀 *BOA SORTE! LUCRO É O ALVO.*"
         
         col_x1, col_x2, col_x3 = st.columns([1, 2, 1])
-        with col_x2: st.markdown(bilhete_html, unsafe_allow_html=True)
+        with col_x2: 
+            st.markdown(bilhete_html, unsafe_allow_html=True)
+            st.markdown("<div style='margin-top:25px; color:#8b949e; font-size:11px; text-align:center;'>📋 CLIQUE ABAIXO PARA COPIAR O SINAL:</div>", unsafe_allow_html=True)
+            st.code(texto_copia, language="text") # BOTÃO DE CÓPIA NATIVO
+            
     else: st.error("Aguardando carregamento de jogos do robô...")
 
 else:
     st.markdown(f"<h2 style='color:white;'>📊 {st.session_state.aba_ativa.upper()}</h2>", unsafe_allow_html=True)
     st.info("Scanner operando. Os dados estatísticos estão sendo processados pela IA.")
 
-st.markdown("""<div class="footer-ia"><div>STATUS: ● IA OPERACIONAL | v76.00</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-ia"><div>STATUS: ● IA OPERACIONAL | v77.00</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
