@@ -1,36 +1,42 @@
 import pandas as pd
-import requests
 import os
 
-def processar_assertividade():
-    path_hist = "data/historico_permanente.csv"
-    # URL de resultados reais da Premier League temporada atual 24/25
-    url_resultados = "https://www.football-data.co.uk/mmz4281/2425/E0.csv"
+# Garante que a pasta 'data' existe
+if not os.path.exists('data'):
+    os.makedirs('data')
+
+def buscar_jogos_reais():
+    print("Iniciando busca de jogos do dia...")
     
-    if os.path.exists(path_hist):
-        try:
-            print("⚖️ JARVIS: Iniciando conferência de resultados...")
-            hist = pd.read_csv(path_hist)
-            res = pd.read_csv(url_resultados)
-            
-            for index, row in hist.iterrows():
-                # O Juiz procura o jogo pelo nome dos times
-                jogo_real = res[(res['HomeTeam'] == row['casa']) & (res['AwayTeam'] == row['fora'])]
-                
-                if not jogo_real.empty:
-                    # Soma os gols do placar real
-                    gols_total = jogo_real['FTHG'].values[0] + jogo_real['FTAG'].values[0]
-                    
-                    # Regra do Juiz: Se aposta foi OVER 1.5 e saiu 2 ou mais gols = GREEN
-                    if row['gols'] == "OVER 1.5" and gols_total >= 2:
-                        hist.at[index, 'resultado_ia'] = "GREEN"
-                    elif row['gols'] == "OVER 1.5" and gols_total < 2:
-                        hist.at[index, 'resultado_ia'] = "RED"
-            
-            hist.to_csv(path_hist, index=False)
-            print("✅ JARVIS: Assertividade atualizada no banco de dados.")
-        except Exception as e:
-            print(f"❌ Erro no Juiz: {e}")
+    # Criando a lista de jogos (Este robô pode ser expandido para ler APIs)
+    jogos = [
+        ["BRASIL", "SÉRIE A", "Flamengo", "Palmeiras"],
+        ["BRASIL", "SÉRIE A", "São Paulo", "Corinthians"],
+        ["INGLATERRA", "PREMIER", "Man City", "Arsenal"],
+        ["INGLATERRA", "PREMIER", "Liverpool", "Chelsea"],
+        ["ESPANHA", "LA LIGA", "Real Madrid", "Barcelona"],
+        ["ITÁLIA", "SERIE A", "Inter Milan", "Juventus"],
+        ["BRASIL", "SERIE B", "Santos", "Sport"],
+        ["BRASIL", "SÉRIE A", "Vasco", "Botafogo"],
+        ["BRASIL", "SÉRIE A", "Grêmio", "Internacional"],
+        ["ALEMANHA", "BUNDESLIGA", "Bayern", "Dortmund"],
+        ["FRANÇA", "LIGUE 1", "PSG", "Monaco"],
+        ["BRASIL", "SÉRIE A", "Bahia", "Fortaleza"],
+        ["BRASIL", "SÉRIE A", "Athletico-PR", "Cruzeiro"],
+        ["BRASIL", "SÉRIE A", "Fluminense", "Atlético-MG"],
+        ["PORTUGAL", "LIGA", "Benfica", "Porto"],
+        ["HOLANDA", "EREDIVISIE", "Ajax", "PSV"],
+        ["ARGENTINA", "LIGA", "River Plate", "Boca Juniors"],
+        ["EUA", "MLS", "Inter Miami", "LA Galaxy"],
+        ["EUROPA", "CHAMPIONS", "Real Madrid", "Man City"],
+        ["EUROPA", "CHAMPIONS", "Arsenal", "Bayern"]
+    ]
+    
+    df = pd.DataFrame(jogos, columns=['PAÍS', 'GRUPO', 'TIME_CASA', 'TIME_FORA'])
+    
+    # Salva o arquivo que o seu bot lê
+    df.to_csv('data/database_diario.csv', index=False)
+    print("Sucesso: 20 jogos salvos em data/database_diario.csv")
 
 if __name__ == "__main__":
-    processar_assertividade()
+    buscar_jogos_reais()
