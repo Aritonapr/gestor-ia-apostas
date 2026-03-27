@@ -3,94 +3,103 @@ import requests
 import os
 from datetime import datetime
 import io
+import time
 
 # ==============================================================================
-# 🕵️‍♂️ JARVIS SCRAPER & INTELLIGENCE v95.00
+# 🧠 JARVIS AUTO-LEARNING & SYNC v96.00 (CONSTRUTOR DE BASE HISTÓRICA)
 # ==============================================================================
 
-# Configurações de Caminhos
+PATH_HISTORICO = "data/historico_5_temporadas.csv"
 PATH_DATABASE = "data/database_diario.csv"
-PATH_HISTORICO = "data/historico_5_temporadas.csv" # O seu arquivo de 5 temporadas
 
-def baixar_jogos_hoje():
+def criar_base_historica_se_nao_existir():
     """
-    Tenta capturar jogos reais. 
-    Nota: Para sites com proteção, usamos headers para simular um navegador.
+    JARVIS: "Se o senhor não tem os dados, eu os busco para o senhor."
+    Baixa dados reais das últimas 5 temporadas das ligas principais.
     """
-    print("📡 Buscando jogos programados para hoje...")
-    
-    # Exemplo de fonte de dados abertos (Football-Data.co.uk ou similar)
-    # Aqui simulamos a estrutura que o senhor baixaria.
-    # Se o senhor tiver um link direto de download de CSV, coloque-o aqui.
-    try:
-        # Exemplo: Lista de jogos do dia (Placeholder para integração com seu site favorito)
-        # Se você usa um site específico que gera CSV, troque a URL abaixo:
-        url_fixtures = "https://www.football-data.co.uk/fixtures.csv" 
-        header = {"User-Agent": "Mozilla/5.0"}
-        response = requests.get(url_fixtures, headers=header)
-        
-        if response.status_code == 200:
-            df_hoje = pd.read_csv(io.StringIO(response.text))
-            print(f"✅ Sucesso: {len(df_hoje)} jogos encontrados na fonte externa.")
-            return df_hoje
-        else:
-            print("⚠️ Fonte externa indisponível. Usando fallback de inteligência.")
-            return None
-    except Exception as e:
-        print(f"❌ Erro ao baixar dados: {e}")
-        return None
-
-def processar_ia_com_historico():
-    # 1. Carregar o Histórico de 5 Temporadas (O CORAÇÃO DO SISTEMA)
     if os.path.exists(PATH_HISTORICO):
-        df_hist = pd.read_csv(PATH_HISTORICO)
-        print("📚 Memória de 5 temporadas carregada com sucesso.")
-    else:
-        print("🚨 ERRO: Arquivo 'historico_5_temporadas.csv' não encontrado em /data!")
+        print("✅ Memória de 5 temporadas já existe. Pulando download.")
         return
 
-    # 2. Obter Jogos de Hoje
-    # Se o scraper falhar, ele usará uma lista interna de segurança baseada no histórico
-    df_hoje = baixar_jogos_hoje()
+    print("📡 Iniciando construção de base histórica (5 temporadas)... Isso pode levar um minuto.")
+    leagues = ['E0', 'SP1', 'I1', 'D1', 'F1'] # Inglaterra, Espanha, Itália, Alemanha, França
+    seasons = ['1920', '2021', '2122', '2223', '2324']
     
-    # 3. Cruzamento de Dados (Merge)
-    # Aqui a IA olha para o jogo de hoje e busca os números dos últimos 5 anos
-    db_final = []
+    all_data = []
     
-    # Simulando processamento dos jogos encontrados
-    # (Adaptado para a estrutura do seu arquivo de 5 temporadas)
-    sample_jogos = [
-        ["ING", "PREMIER", "Arsenal", "Everton"],
-        ["ESP", "LA LIGA", "Real Madrid", "Alavés"],
-        ["BRA", "SÉRIE A", "Flamengo", "Bahia"]
+    for season in seasons:
+        for league in leagues:
+            try:
+                url = f"https://www.football-data.co.uk/mmz4281/{season}/{league}.csv"
+                print(f"📥 Baixando Temporada {season} - Liga {league}...")
+                df = pd.read_csv(url)
+                # Padronizar colunas essenciais
+                df = df[['Date', 'HomeTeam', 'AwayTeam', 'FTHG', 'FTAG', 'FTR']]
+                all_data.append(df)
+                time.sleep(1) # Evitar bloqueio do servidor
+            except Exception as e:
+                print(f"⚠️ Erro ao baixar {league} {season}: {e}")
+
+    if all_data:
+        df_final = pd.concat(all_data, ignore_index=True)
+        # Renomear para o padrão do nosso motor de 7 níveis
+        df_final.columns = ['Data', 'Casa', 'Fora', 'GolsCasa', 'GolsFora', 'Resultado']
+        if not os.path.exists('data'): os.makedirs('data')
+        df_final.to_csv(PATH_HISTORICO, index=False)
+        print(f"✅ Base histórica criada com {len(df_final)} jogos reais!")
+
+def motor_ia_v96(casa, fora, df_hist):
+    """
+    Cálculo Real baseado na média de gols dos últimos 5 anos.
+    """
+    # Estatísticas do Time da Casa
+    hist_casa = df_hist[df_hist['Casa'] == casa]
+    # Estatísticas do Time de Fora
+    hist_fora = df_hist[df_hist['Fora'] == fora]
+    
+    media_gols = 1.5 # Padrão
+    if not hist_casa.empty and not hist_fora.empty:
+        media_gols = (hist_casa['GolsCasa'].mean() + hist_fora['GolsFora'].mean()) / 2
+
+    conf = round(55 + (media_gols * 10), 1)
+    if conf > 99: conf = 98.8
+
+    return {
+        "GOLS": "OVER 1.5" if media_gols > 1.3 else "UNDER 3.5",
+        "CONF": f"{conf}%",
+        "CARTOES": f"{int(media_gols + 2)}+",
+        "CANTOS": f"{int(media_gols * 4)}+",
+        "CHUTES": int(media_gols * 8),
+        "DEFESAS": int(media_gols * 3),
+        "TMETA": int(10 + media_gols)
+    }
+
+def processar():
+    # 1. Garantir que temos os dados históricos
+    criar_base_historica_se_nao_existir()
+    
+    # 2. Carregar o que acabamos de baixar
+    df_hist = pd.read_csv(PATH_HISTORICO)
+    
+    # 3. Jogos de hoje (Simulando o scraper de jogos atuais)
+    # Aqui o senhor pode editar os jogos do dia manualmente ou via scraper
+    jogos_do_dia = [
+        ["ING", "PREMIER", "Man City", "Arsenal"],
+        ["ESP", "LA LIGA", "Real Madrid", "Barcelona"],
+        ["ITA", "SERIE A", "Inter", "Milan"],
+        ["ALE", "BUNDESLIGA", "Bayern Munich", "Bayer Leverkusen"],
+        ["FRA", "LIGUE 1", "PSG", "Monaco"]
     ]
-
-    print("🧠 Analisando tendências históricas...")
-    for pais, liga, casa, fora in sample_jogos:
-        # FILTRO DE IA: Busca estatísticas do time da casa no histórico
-        stats_casa = df_hist[df_hist['HomeTeam'] == casa] if 'HomeTeam' in df_hist.columns else df_hist[df_hist['time'] == casa]
-        
-        # CÁLCULO DE 7 NÍVEIS REAIS
-        media_gols = round(stats_casa['FullTime_Goals'].mean(), 2) if not stats_casa.empty else 1.5
-        win_rate = (len(stats_casa[stats_casa['Result'] == 'H']) / len(stats_casa)) * 100 if not stats_casa.empty else 50
-        
-        confianca = min(round(win_rate + 10, 1), 99.0)
-        mercado_gols = "OVER 1.5" if media_gols > 1.3 else "UNDER 3.5"
-        
-        db_final.append([
-            pais, liga, casa, fora,
-            mercado_gols, f"{confianca}%", 
-            f"{int(media_gols + 2)}+", # Cartões
-            f"{int(media_gols * 4)}+", # Cantos
-            int(media_gols * 8),       # Chutes
-            int(media_gols * 3),       # Defesas
-            int(10 + media_gols)       # T. Meta
-        ])
-
-    # 4. Salvar o Resultado Final para o APP.PY ler
-    df_resultado = pd.DataFrame(db_final, columns=['PAIS','LIGA','CASA','FORA','GOLS','CONF','CARTOES','CANTOS','CHUTES','DEFESAS','TMETA'])
-    df_resultado.to_csv(PATH_DATABASE, index=False)
-    print(f"✅ DATABASE DIÁRIO ATUALIZADO: {datetime.now().strftime('%d/%m/%Y %H:%M')}")
+    
+    db_final = []
+    for p, l, c, f in jogos_do_dia:
+        r = motor_ia_v96(c, f, df_hist)
+        db_final.append([p, l, c, f, r['GOLS'], r['CONF'], r['CARTOES'], r['CANTOS'], r['CHUTES'], r['DEFESAS'], r['TMETA']])
+    
+    # 4. Salvar para o APP
+    df_res = pd.DataFrame(db_final, columns=['PAIS','LIGA','CASA','FORA','GOLS','CONF','CARTOES','CANTOS','CHUTES','DEFESAS','TMETA'])
+    df_res.to_csv(PATH_DATABASE, index=False)
+    print("✅ Sucesso: Bilhete do dia gerado com base em 5 anos de história.")
 
 if __name__ == "__main__":
-    processar_ia_com_historico()
+    processar()
