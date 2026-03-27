@@ -1,59 +1,35 @@
 import streamlit as st
 import pandas as pd
 import os
-from datetime import datetime
 
-# 1. CONFIGURAÇÃO INICIAL (OBRIGATÓRIO SER A PRIMEIRA LINHA)
-st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide")
+# 1. Configuração inicial (Deve ser a primeira!)
+st.set_page_config(page_title="GESTOR IA v96.3", layout="wide")
 
-# 2. FUNÇÃO DE VERIFICAÇÃO DE DADOS
-def carregar_dados():
-    path = "data/database_diario.csv"
-    if os.path.exists(path):
-        try:
-            df = pd.read_csv(path)
-            if not df.empty:
-                return df
-        except:
-            return None
-    return None
-
-df = carregar_dados()
-
-# 3. ESTILO CSS PARA O HEADER BETANO
+# 2. CSS Blindado (Identidade Betano)
 st.markdown("""
     <style>
     [data-testid="stHeader"] { visibility: hidden; }
     .stApp { background-color: #0b0e11 !important; color: white; }
-    .betano-header { 
-        position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
-        background-color: #001a4d !important; border-bottom: 2px solid #9d54ff; 
-        display: flex; align-items: center; justify-content: center; 
-        z-index: 10000;
+    .header-fix {
+        position: fixed; top: 0; left: 0; width: 100%; height: 60px;
+        background-color: #001a4d; border-bottom: 2px solid #9d54ff;
+        display: flex; align-items: center; justify-content: center;
+        z-index: 999;
     }
-    .main-content { padding-top: 80px; }
+    .spacer { padding-top: 70px; }
     </style>
-    <div class="betano-header">
-        <div style="color:#9d54ff; font-weight:900; font-size:22px;">GESTOR IA - TRADING PRO</div>
+    <div class="header-fix">
+        <h2 style="color:#9d54ff; margin:0;">GESTOR IA - TRADING PRO</h2>
     </div>
+    <div class="spacer"></div>
 """, unsafe_allow_html=True)
 
-st.markdown('<div class="main-content"></div>', unsafe_allow_html=True)
-
-# 4. TELA DE CARREGAMENTO OU CONTEÚDO
-if df is None:
-    st.error("🚨 SISTEMA EM SINCRONIZAÇÃO INICIAL")
-    st.info("Senhor, o JARVIS está baixando as 5 temporadas e processando os jogos de hoje. Isso ocorre apenas na primeira vez. Por favor, aguarde 30 segundos e clique no botão abaixo.")
-    if st.button("🔄 ATUALIZAR SISTEMA"):
-        st.rerun()
+# 3. Carregamento de Dados
+path = "data/database_diario.csv"
+if os.path.exists(path):
+    df = pd.read_csv(path)
+    st.success(f"📈 Sistema Online: {len(df)} jogos processados.")
+    st.dataframe(df, use_container_width=True)
 else:
-    st.success(f"✅ SISTEMA ONLINE - {len(df)} JOGOS ANALISADOS")
-    
-    # --- AQUI VAI O SEU CÓDIGO DAS ABAS ---
-    aba = st.sidebar.selectbox("MENU", ["🎟️ BILHETE DO DIA", "🎯 SCANNER"])
-    
-    if aba == "🎟️ BILHETE DO DIA":
-        st.write("### 🎟️ BILHETE MESTRE IA")
-        st.dataframe(df, use_container_width=True)
-    
-    # ... (Restante da sua lógica de abas pode ser colada aqui)
+    st.warning("⏳ JARVIS: Sincronizando dados históricos... Por favor, aguarde o primeiro processamento do sync_data.py no GitHub Actions.")
+    st.info("DICA: Verifique a aba 'Actions' no seu GitHub para ver se o robô já terminou de baixar as 5 temporadas.")
