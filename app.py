@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v58.00 - INTEGRAÇÃO DATA-AUTOMATION]
+# [PROTOCOLO DE MANUTENÇÃO v58.1 - INTEGRAÇÃO DATA-AUTOMATION]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -34,12 +34,14 @@ if query_params.get("go") == "home":
     st.session_state.aba_ativa = "home"
     st.query_params.clear()
 
-# --- FUNÇÃO DE CARREGAMENTO DE DADOS (NOVO NA v58.00) ---
+# --- FUNÇÃO DE CARREGAMENTO DE DADOS (CORREÇÃO DE COLUNAS v58.1) ---
 def carregar_jogos_diarios():
     path = "data/database_diario.csv"
     if os.path.exists(path):
         try:
             df = pd.read_csv(path)
+            # Normalização de colunas para evitar KeyError
+            # Se o CSV vier com 'PAIS', 'LIGA', 'CASA', 'FORA', o sistema aceita.
             return df
         except:
             return None
@@ -213,16 +215,22 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
 
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 JOGOS DO DIA</h2>", unsafe_allow_html=True)
-    h1, h2, h3, h4 = st.columns(4)
-    with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
-    with h2: draw_card("ASSERTIVIDADE", "92.4%", 92)
-    with h3: draw_card("SUGESTÃO", "OVER 2.5", 88)
-    with h4: draw_card("IA STATUS", "ONLINE", 100)
-    h5, h6, h7, h8 = st.columns(4)
-    with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
-    with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
-    with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v58.00", 100)
+    if df_diario is not None:
+        h1, h2, h3, h4 = st.columns(4)
+        with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
+        with h2: draw_card("ASSERTIVIDADE", "92.4%", 92)
+        with h3: draw_card("SUGESTÃO", "OVER 2.5", 88)
+        with h4: draw_card("IA STATUS", "ONLINE", 100)
+        h5, h6, h7, h8 = st.columns(4)
+        with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
+        with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
+        with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
+        with h8: draw_card("SISTEMA", "JARVIS v58.1", 100)
+        
+        st.markdown("### 📋 ANÁLISE DETALHADA (7 NÍVEIS)")
+        st.dataframe(df_diario, use_container_width=True)
+    else:
+        st.warning("Aguardando sincronização de dados diários...")
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
@@ -254,7 +262,7 @@ elif st.session_state.aba_ativa == "gestao":
         with g7: draw_card("ENTRADAS/LOSS", f"{entradas_loss}", 100, "#00d2ff")
         with g8: st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div><div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:#00d2ff; height:100%; width:100%;"></div></div></div>""", unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (DATABASE HÍBRIDO v58.00)
+# TELA 3: SCANNER PRÉ-LIVE (DATABASE HÍBRIDO v58.1 - CORREÇÃO DE ERRO)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
@@ -333,14 +341,21 @@ elif st.session_state.aba_ativa == "analise":
     lista_casa_auto = []
     lista_fora_auto = []
     
+    # --- CORREÇÃO DO ERRO DE COLUNA (KEYERROR) ---
     if df_diario is not None:
+        # Verifica se as colunas existem antes de filtrar para não travar
+        col_pais = 'PAIS' if 'PAIS' in df_diario.columns else 'PAÍS'
+        col_liga = 'LIGA' if 'LIGA' in df_diario.columns else 'GRUPO'
+        col_casa = 'CASA' if 'CASA' in df_diario.columns else 'TIME_CASA'
+        col_fora = 'FORA' if 'FORA' in df_diario.columns else 'TIME_FORA'
+
         filtro = df_diario[
-            (df_diario['PAÍS'] == sel_pais) & 
-            (df_diario['GRUPO'] == sel_grupo)
+            (df_diario[col_pais] == sel_pais) & 
+            (df_diario[col_liga] == sel_grupo)
         ]
         if not filtro.empty:
-            lista_casa_auto = filtro['TIME_CASA'].unique().tolist()
-            lista_fora_auto = filtro['TIME_FORA'].unique().tolist()
+            lista_casa_auto = filtro[col_casa].unique().tolist()
+            lista_fora_auto = filtro[col_fora].unique().tolist()
 
     if not lista_casa_auto:
         lista_casa_auto = db_times.get(sel_pais, ["Time A", "Time B"])
@@ -358,7 +373,6 @@ elif st.session_state.aba_ativa == "analise":
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
         
-        # --- MOTOR JARVIS v58.00 (INTEGRAÇÃO DE DADOS REAIS) ---
         status_luz = "🔴"
         validacao_txt = "ALERTA: DADOS FORA DA ROTINA (ESTATÍSTICA FRIA)"
         cor_luz = "#ff4b4b"
@@ -367,7 +381,9 @@ elif st.session_state.aba_ativa == "analise":
         res_gols = "REVISAR"
 
         if df_diario is not None:
-            match = df_diario[(df_diario['TIME_CASA'] == t_casa) | (df_diario['TIME_FORA'] == t_fora)]
+            col_casa = 'CASA' if 'CASA' in df_diario.columns else 'TIME_CASA'
+            col_fora = 'FORA' if 'FORA' in df_diario.columns else 'TIME_FORA'
+            match = df_diario[(df_diario[col_casa] == t_casa) | (df_diario[col_fora] == t_fora)]
             if not match.empty:
                 status_luz = "🟢"
                 validacao_txt = "FILÉ MIGNON: INFORMAÇÃO REAL E ATUALIZADA"
@@ -409,7 +425,7 @@ elif st.session_state.aba_ativa == "analise":
         with r5: draw_card("IA CONF.", m['confia'], 94)
         with r6: draw_card("PRESSÃO", "ALTA" if m['luz'] == "🟢" else "MÉDIA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO" if m['luz'] == "🟢" else "ESTÁVEL", 60)
-        with r8: draw_card("SISTEMA", "v58.00", 100)
+        with r8: draw_card("SISTEMA", "v58.1", 100)
         
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
@@ -480,4 +496,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.00</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.1</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
