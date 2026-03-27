@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v58.3 - EXPANSÃO TOTAL DE DATABASE MASCULINO]
+# [PROTOCOLO DE MANUTENÇÃO v58.4 - TRAVA DE DUPLICIDADE E ISOLAMENTO GEOGRÁFICO]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -223,7 +223,7 @@ if st.session_state.aba_ativa == "home":
         with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
         with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
         with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-        with h8: draw_card("SISTEMA", "JARVIS v58.3", 100)
+        with h8: draw_card("SISTEMA", "JARVIS v58.4", 100)
         
         st.markdown("### 📋 ANÁLISE DETALHADA (7 NÍVEIS)")
         st.dataframe(df_diario, use_container_width=True)
@@ -260,7 +260,7 @@ elif st.session_state.aba_ativa == "gestao":
         with g7: draw_card("ENTRADAS/LOSS", f"{entradas_loss}", 100, "#00d2ff")
         with g8: st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div><div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:#00d2ff; height:100%; width:100%;"></div></div></div>""", unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (DATABASE EXPANDIDO v58.3)
+# TELA 3: SCANNER PRÉ-LIVE (LOGICA DE BLOQUEIO v58.4)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
@@ -319,7 +319,8 @@ elif st.session_state.aba_ativa == "analise":
         "FRANÇA": ["PSG", "Monaco", "Marseille", "Lyon", "Lille"],
         "ÁSIA": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli"],
         "INTERNACIONAL (UEFA)": ["Real Madrid", "Man City", "Bayern", "PSG", "Inter Milan", "Liverpool"],
-        "SELEÇÕES / MUNDIAL": ["Brasil", "França", "Argentina", "Inglaterra", "Espanha", "Portugal", "Alemanha", "Itália"]
+        "SELEÇÕES / MUNDIAL": ["Brasil", "França", "Argentina", "Inglaterra", "Espanha", "Portugal", "Alemanha", "Itália"],
+        "BASE / JOVENS": ["Brasil U17", "Argentina U17", "Equador U17", "Uruguai U17"]
     }
 
     row_f = st.columns(3)
@@ -333,39 +334,32 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
-    lista_casa_auto = []
-    lista_fora_auto = []
+    # --- LOGICA DE FILTRAGEM GEOGRÁFICA E BLOQUEIO DE DUPLICADOS ---
+    lista_base_do_pais = db_times.get(sel_pais, ["Time A", "Time B"])
     
+    # Se houver banco diário carregado, filtra os times reais daquela liga
     if df_diario is not None:
         col_pais = 'PAIS' if 'PAIS' in df_diario.columns else 'PAÍS'
         col_liga = 'LIGA' if 'LIGA' in df_diario.columns else 'GRUPO'
         col_casa = 'CASA' if 'CASA' in df_diario.columns else 'TIME_CASA'
-        col_fora = 'FORA' if 'FORA' in df_diario.columns else 'TIME_FORA'
-
-        filtro = df_diario[
-            (df_diario[col_pais] == sel_pais) & 
-            (df_diario[col_liga] == sel_grupo)
-        ]
-        if not filtro.empty:
-            lista_casa_auto = filtro[col_casa].unique().tolist()
-            lista_fora_auto = filtro[col_fora].unique().tolist()
-
-    if not lista_casa_auto:
-        lista_casa_auto = db_times.get(sel_pais, ["Time A", "Time B"])
-    if not lista_fora_auto:
-        lista_fora_auto = db_times.get(sel_pais, ["Time A", "Time B"])
+        
+        filtro_db = df_diario[(df_diario[col_pais] == sel_pais) & (df_diario[col_liga] == sel_grupo)]
+        if not filtro_db.empty:
+            lista_base_do_pais = sorted(filtro_db[col_casa].unique().tolist())
 
     c1, c2 = st.columns(2)
     with c1:
-        t_casa = st.selectbox("🏠 TIME DA CASA", lista_casa_auto + ["(Outro)"])
+        t_casa = st.selectbox("🏠 TIME DA CASA", lista_base_do_pais + ["(Outro)"])
         if t_casa == "(Outro)": t_casa = st.text_input("NOME DO TIME CASA")
+
     with c2:
-        t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora_auto + ["(Outro)"])
+        # TRAVA: Remove o time selecionado na "Casa" da lista do "Fora" para evitar duplicados
+        lista_fora_filtrada = [t for t in lista_base_do_pais if t != t_casa]
+        t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora_filtrada + ["(Outro)"])
         if t_fora == "(Outro)": t_fora = st.text_input("NOME DO TIME FORA")
 
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-        
         status_luz = "🔴"
         validacao_txt = "ALERTA: DADOS FORA DA ROTINA (ESTATÍSTICA FRIA)"
         cor_luz = "#ff4b4b"
@@ -386,16 +380,9 @@ elif st.session_state.aba_ativa == "analise":
                 res_gols = "OVER 1.5"
 
         st.session_state.analise_bloqueada = {
-            "casa": t_casa, 
-            "fora": t_fora, 
-            "vencedor": res_vencedor, 
-            "gols": res_gols, 
-            "data": datetime.now().strftime("%H:%M"), 
-            "stake_val": f"R$ {v_calc:,.2f}",
-            "luz": status_luz,
-            "motivo": validacao_txt,
-            "cor": cor_luz,
-            "confia": confianca_ia
+            "casa": t_casa, "fora": t_fora, "vencedor": res_vencedor, "gols": res_gols, 
+            "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}",
+            "luz": status_luz, "motivo": validacao_txt, "cor": cor_luz, "confia": confianca_ia
         }
     
     if st.session_state.analise_bloqueada:
@@ -408,7 +395,7 @@ elif st.session_state.aba_ativa == "analise":
             </div>
         """, unsafe_allow_html=True)
 
-        st.markdown(f"<h3 style='color:#9d54ff; text-align:center;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
+        st.markdown(f<h3 style='color:#9d54ff; text-align:center;'>{m['casa']} vs {m['fora']}</h3>, unsafe_allow_html=True)
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("GOLS", m['gols'], 70)
@@ -418,7 +405,7 @@ elif st.session_state.aba_ativa == "analise":
         with r5: draw_card("IA CONF.", m['confia'], 94)
         with r6: draw_card("PRESSÃO", "ALTA" if m['luz'] == "🟢" else "MÉDIA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO" if m['luz'] == "🟢" else "ESTÁVEL", 60)
-        with r8: draw_card("SISTEMA", "v58.3", 100)
+        with r8: draw_card("SISTEMA", "v58.4", 100)
         
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
@@ -489,4 +476,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.3</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.4</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
