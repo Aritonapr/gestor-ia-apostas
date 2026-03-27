@@ -1,50 +1,50 @@
 PAIS,LIGA,CASA,FORA,GOLS,CONF,CARTOES,CANTOS,CHUTES,DEFESAS,TMETA
-EUROPA,E2,Blackpool,Burton,OVER 1.5,52.5%,3,6,9,3,13
-EUROPA,E2,Exeter,Leyton Orient,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,E2,Reading,Wigan,OVER 1.5,54.6%,3,7,11,2,13
-EUROPA,E2,Stockport,AFC Wimbledon,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,E2,Wycombe,Port Vale,UNDER 3.5,45.9%,2,4,5,3,12
-EUROPA,E3,Harrogate,Notts County,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,E3,Barnet,Cambridge,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,E3,Barrow,Bromley,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,E3,Bristol Rvs,Accrington,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,E3,Colchester,Walsall,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,E3,Crawley Town,Gillingham,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,E3,Crewe,Oldham,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,E3,Newport County,Shrewsbury,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,E3,Salford,Milton Keynes Dons,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,E3,Swindon,Fleetwood Town,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,EC,Brackley Town,Tamworth,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,EC,Braintree Town,Carlisle,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,EC,Eastleigh,Forest Green,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,EC,Gateshead,Yeovil,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,EC,Halifax,Scunthorpe,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,EC,Morecambe,Aldershot,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,EC,Solihull,Altrincham,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,EC,Sutton,Rochdale,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,EC,Truro,Boreham Wood,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,EC,York,Woking,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SC1,Partick,Ross County,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SC1,Raith Rvs,Ayr,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SC1,Morton,Arbroath,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SC1,St Johnstone,Queens Park,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SC2,Inverness C,Queen of Sth,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SC2,East Fife,Stenhousemuir,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SC2,Alloa,Peterhead,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SC2,Hamilton,Kelty Hearts,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SC3,Dumbarton,Forfar,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SC3,Annan Athletic,Stranraer,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SC3,Elgin,Clyde,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SC3,Spartans,East Kilbride,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SC3,Stirling,Edinburgh City,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SP2,Cordoba,Mirandes,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SP2,Ceuta,Cadiz,UNDER 3.5,65.5%,3,7,11,2,13
-EUROPA,SP2,Granada,Huesca,UNDER 3.5,52.3%,3,7,10,2,13
-EUROPA,SP2,Valladolid,Burgos,UNDER 3.5,43.6%,3,6,8,3,13
-EUROPA,SP2,Malaga,Leganes,UNDER 3.5,65.5%,3,7,11,2,13
-EUROPA,SP2,Albacete,Castellon,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SP2,Sp Gijon,La Coruna,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SP2,Eibar,Las Palmas,UNDER 3.5,41.8%,2,5,7,2,12
-EUROPA,SP2,Cultural Leonesa,Andorra,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SP2,Zaragoza,Santander,OVER 1.5,65.5%,3,7,11,3,13
-EUROPA,SP2,Almeria,Sociedad B,OVER 1.5,44.4%,3,7,10,3,13
+INTERNACIONAL 🌍,E2,Blackpool,Burton,OVER 1.5,49.0%,3,4,11,4,12
+INTERNACIONAL 🌍,SC1,Raith Rvs,Ayr,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SC1,Morton,Arbroath,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SC1,St Johnstone,Queens Park,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SC2,Inverness C,Queen of Sth,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SC2,East Fife,Stenhousemuir,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SC2,Alloa,Peterhead,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SC2,Hamilton,Kelty Hearts,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SC3,Dumbarton,Forfar,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SC3,Annan Athletic,Stranraer,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SC3,Elgin,Clyde,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SC3,Spartans,East Kilbride,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SC3,Stirling,Edinburgh City,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SP2,Cordoba,Mirandes,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SP2,Ceuta,Cadiz,UNDER 3.5,57.0%,3,4,10,2,12
+INTERNACIONAL 🌍,SP2,Granada,Huesca,OVER 1.5,48.8%,3,5,11,3,12
+INTERNACIONAL 🌍,SP2,Valladolid,Burgos,OVER 1.5,40.1%,3,4,9,4,12
+INTERNACIONAL 🌍,SP2,Malaga,Leganes,UNDER 3.5,57.0%,3,4,10,2,12
+INTERNACIONAL 🌍,SP2,Albacete,Castellon,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SP2,Sp Gijon,La Coruna,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SP2,Eibar,Las Palmas,UNDER 3.5,38.3%,2,3,8,2,11
+INTERNACIONAL 🌍,SP2,Cultural Leonesa,Andorra,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SC1,Partick,Ross County,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SP2,Zaragoza,Santander,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,EC,York,Woking,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,EC,Sutton,Rochdale,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,E2,Exeter,Leyton Orient,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,E2,Reading,Wigan,OVER 1.5,51.1%,3,5,12,3,12
+INTERNACIONAL 🌍,E2,Stockport,AFC Wimbledon,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,E2,Wycombe,Port Vale,UNDER 3.5,42.4%,2,2,6,4,11
+INTERNACIONAL 🌍,E3,Harrogate,Notts County,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,E3,Barnet,Cambridge,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,E3,Barrow,Bromley,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,E3,Bristol Rvs,Accrington,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,E3,Colchester,Walsall,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,E3,Crawley Town,Gillingham,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,E3,Crewe,Oldham,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,E3,Newport County,Shrewsbury,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,E3,Salford,Milton Keynes Dons,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,E3,Swindon,Fleetwood Town,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,EC,Brackley Town,Tamworth,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,EC,Braintree Town,Carlisle,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,EC,Eastleigh,Forest Green,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,EC,Gateshead,Yeovil,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,EC,Halifax,Scunthorpe,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,EC,Morecambe,Aldershot,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,EC,Solihull,Altrincham,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,EC,Truro,Boreham Wood,OVER 1.5,57.0%,3,4,10,4,12
+INTERNACIONAL 🌍,SP2,Almeria,Sociedad B,OVER 1.5,40.9%,3,5,12,4,12
