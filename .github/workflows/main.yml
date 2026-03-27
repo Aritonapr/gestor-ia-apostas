@@ -2,31 +2,35 @@ name: Automação Diária Jarvis
 
 on:
   schedule:
-    - cron: '0 8 * * *' # Roda todo dia às 08:00 AM
-  workflow_dispatch: # Permite que você rode o robô manualmente clicando em um botão
+    - cron: '0 0 * * *' # Roda todo dia à meia-noite
+  workflow_dispatch: # Permite que o senhor rode manualmente clicando no botão
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # ESSENCIAL: Permite que o robô salve o arquivo CSV
+    
     steps:
-      - name: Checkout código
-        uses: actions/checkout@v3
+      - name: 📥 Clonando o Repositório
+        uses: actions/checkout@v4
 
-      - name: Configurar Python
-        uses: actions/setup-python@v4
+      - name: 🐍 Configurando Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
+          python-version: '3.10'
 
-      - name: Instalar Pandas
-        run: pip install pandas
+      - name: 🛠️ Instalando Ferramentas (Pandas e Requests)
+        run: |
+          pip install pandas requests
 
-      - name: Rodar Coleta de Jogos
+      - name: 🤖 Executando o Bot Jarvis (sync_data.py)
         run: python sync_data.py
 
-      - name: Salvar dados no GitHub
+      - name: 💾 Salvando Dados Novos no GitHub
         run: |
-          git config --global user.name "Jarvis Automation"
-          git config --global user.email "bot@jarvis.ia"
-          git add data/database_diario.csv
-          git commit -m "Jarvis: Atualização automática de jogos [skip ci]" || echo "Sem mudanças"
+          git config --global user.name "Jarvis Bot"
+          git config --global user.email "jarvis@bot.com"
+          git add data/*.csv
+          git commit -m "📊 Jarvis: Dados Diários Atualizados" || echo "Sem mudanças para salvar"
           git push
