@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v58.1 - INTEGRAÇÃO DATA-AUTOMATION]
+# [PROTOCOLO DE MANUTENÇÃO v58.2 - ATUALIZAÇÃO DE BANCO DE DADOS]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -40,8 +40,6 @@ def carregar_jogos_diarios():
     if os.path.exists(path):
         try:
             df = pd.read_csv(path)
-            # Normalização de colunas para evitar KeyError
-            # Se o CSV vier com 'PAIS', 'LIGA', 'CASA', 'FORA', o sistema aceita.
             return df
         except:
             return None
@@ -225,7 +223,7 @@ if st.session_state.aba_ativa == "home":
         with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
         with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
         with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-        with h8: draw_card("SISTEMA", "JARVIS v58.1", 100)
+        with h8: draw_card("SISTEMA", "JARVIS v58.2", 100)
         
         st.markdown("### 📋 ANÁLISE DETALHADA (7 NÍVEIS)")
         st.dataframe(df_diario, use_container_width=True)
@@ -262,69 +260,60 @@ elif st.session_state.aba_ativa == "gestao":
         with g7: draw_card("ENTRADAS/LOSS", f"{entradas_loss}", 100, "#00d2ff")
         with g8: st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div><div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:#00d2ff; height:100%; width:100%;"></div></div></div>""", unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (DATABASE HÍBRIDO v58.1 - CORREÇÃO DE ERRO)
+# TELA 3: SCANNER PRÉ-LIVE (DATABASE ATUALIZADO v58.2)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
+    # --- ATUALIZAÇÃO COMPLETA DE DICIONÁRIOS (RESPEITANDO A LISTA SOLICITADA) ---
     db_paises = {
         "BRASIL": ["BRASILEIRÃO", "BRASILEIRÃO SUB-20", "CAMPEONATOS ESTADUAIS", "COPAS NACIONAIS / REGIONAIS"],
-        "ARGENTINA": ["LIGA PROFESIONAL", "COPAS ARGENTINAS"],
-        "PORTUGAL": ["LIGA PORTUGAL", "COPAS PORTUGUESAS"],
-        "HOLANDA": ["EREDIVISIE", "COPA HOLANDESA"],
         "INGLATERRA": ["PREMIER LEAGUE", "COPAS DA INGLATERRA"],
-        "ESPANHA": ["LA LIGA", "COPA DO REI"],
+        "ESPANHA": ["LA LIGA", "COPA DO REI DA ESPANHA"],
         "ITÁLIA": ["CAMPEONATO ITALIANO", "COPA DA ITÁLIA"],
         "ALEMANHA": ["BUNDESLIGA", "COPA DA ALEMANHA"],
         "FRANÇA": ["CAMPEONATO FRANCÊS", "COPA DA FRANÇA"],
-        "ÁSIA": ["CAMPEONATO SAUDITA", "CHAMPIONS LEAGUE DA ÁSIA"],
         "INTERNACIONAL (UEFA)": ["CHAMPIONS LEAGUE", "LIGA EUROPA", "LIGA CONFERÊNCIA"],
-        "SELEÇÕES / MUNDIAL": ["COPA DO MUNDO 2026", "ELIMINATÓRIAS / REPESCAGEM", "SUL-AMERICANO SUB-17"]
+        "ÁSIA": ["CAMPEONATO SAUDITA", "CHAMPIONS LEAGUE DA ÁSIA"],
+        "SELEÇÕES / MUNDIAL": ["COPA DO MUNDO 2026", "ELIMINATÓRIAS DA COPA-EUROPA", "ELIMINATÓRIAS DA COPA - REPESCAGEM MUNDIAL"],
+        "BASE / JOVENS": ["SUL-AMERICANO SUB 17"]
     }
 
     db_ligas = {
         "BRASILEIRÃO": ["Série A", "Série B", "Série C", "Série D"],
         "BRASILEIRÃO SUB-20": ["Temporada Regular", "Fase Final"],
-        "CAMPEONATOS ESTADUAIS": ["Campeonato Carioca", "Campeonato Paulistano", "Campeonato Mineiro", "Campeonato Gaúcho", "Campeonato Paranaense", "Campeonato Catarinense"],
-        "COPAS NACIONAIS / REGIONAIS": ["Copa do Brasil", "Copa do Nordeste", "Copa Verde", "Copa Sul-Sudeste"],
-        "LIGA PROFESIONAL": ["Liga Profesional (1ª Div)"],
-        "COPAS ARGENTINAS": ["Copa de la Liga", "Copa Argentina"],
-        "LIGA PORTUGAL": ["Primeira Liga", "Liga Portugal 2"],
-        "COPAS PORTUGUESAS": ["Taça de Portugal", "Taça da Liga"],
-        "EREDIVISIE": ["Eredivisie (1ª Div)", "Eerste Divisie (2ª Div)"],
-        "COPA HOLANDESA": ["KNVB Beker"],
+        "CAMPEONATOS ESTADUAIS": ["Campeonato Carioca", "Campeonato Paulistano", "Campeonato Mineiro", "Campeonato Gaucho", "Campeonato Paranaense", "Campeonato Catarinense"],
+        "COPAS NACIONAIS / REGIONAIS": ["Copa do Brasil", "Copa do Nordeste", "Copa Sul-Suldest", "Copa Verde"],
         "PREMIER LEAGUE": ["Premier League (1ª Div)", "EFL Championship (2ª)"],
-        "COPAS DA INGLATERRA": ["FA Cup", "EFL Cup (Carabao)"],
+        "COPAS DA INGLATERRA": ["FA Cup (Copa da Inglaterra)", "EFL Cup (Copa da Liga Inglesa)"],
         "LA LIGA": ["Primeira Divisão"],
-        "COPA DO REI": ["Fases Finais"],
+        "COPA DO REI DA ESPANHA": ["Fases Finais"],
         "CAMPEONATO ITALIANO": ["Serie A TIM"],
-        "COPA DA ITÁLIA": ["Mata-Mata"],
+        "COPA DA ITÁLIA": ["Coppa Italia"],
         "BUNDESLIGA": ["1. Bundesliga"],
         "COPA DA ALEMANHA": ["DFB Pokal"],
         "CAMPEONATO FRANCÊS": ["Ligue 1"],
         "COPA DA FRANÇA": ["Coupe de France"],
+        "CHAMPIONS LEAGUE": ["Fase de Grupos", "Mata-Mata"],
+        "LIGA EUROPA": ["Fase de Grupos", "Mata-Mata"],
+        "LIGA CONFERÊNCIA": ["Fase de Grupos", "Mata-Mata"],
         "CAMPEONATO SAUDITA": ["Saudi Pro League"],
-        "CHAMPIONS LEAGUE DA ÁSIA": ["Fase de Grupos", "Mata-Mata"],
-        "CHAMPIONS LEAGUE": ["Fase de Liga", "Oitavas", "Quartas", "Semi", "Final"],
-        "LIGA EUROPA": ["Fase de Liga", "Mata-Mata"],
-        "LIGA CONFERÊNCIA": ["Fase de Liga", "Mata-Mata"],
-        "COPA DO MUNDO 2026": ["Fase de Grupos", "Mata-Mata Final"],
-        "ELIMINATÓRIAS / REPESCAGEM": ["Eliminatórias Europa", "Repescagem Mundial"],
-        "SUL-AMERICANO SUB-17": ["Fase de Grupos", "Hexagonal Final"]
+        "CHAMPIONS LEAGUE DA ÁSIA": ["Champions League Ásia"],
+        "COPA DO MUNDO 2026": ["Fase de Grupos", "Mata-Mata"],
+        "ELIMINATÓRIAS DA COPA-EUROPA": ["Qualificação"],
+        "ELIMINATÓRIAS DA COPA - REPESCAGEM MUNDIAL": ["Playoffs Intercontinentais"],
+        "SUL-AMERICANO SUB 17": ["Fase Final"]
     }
 
     db_times = {
         "BRASIL": ["Flamengo", "Palmeiras", "Vasco", "São Paulo", "Corinthians", "Fluminense", "Botafogo", "Grêmio", "Inter", "Atlético-MG", "Cruzeiro", "Santos", "Bahia", "Fortaleza", "Athletico-PR"],
-        "ARGENTINA": ["River Plate", "Boca Juniors", "Racing Club", "Independiente", "Talleres"],
-        "PORTUGAL": ["Benfica", "Porto", "Sporting CP", "Braga"],
-        "HOLANDA": ["Ajax", "PSV", "Feyenoord"],
-        "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Chelsea", "Man United", "Tottenham"],
-        "ESPANHA": ["Real Madrid", "Barcelona", "Atlético Madrid"],
-        "ITÁLIA": ["Inter Milan", "AC Milan", "Juventus", "Napoli", "Roma"],
-        "ALEMANHA": ["Bayern Munchen", "Bayer Leverkusen", "Borussia Dortmund"],
-        "FRANÇA": ["PSG", "Monaco", "Marseille", "Lyon"],
+        "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Chelsea", "Man United", "Tottenham", "Aston Villa", "Newcastle"],
+        "ESPANHA": ["Real Madrid", "Barcelona", "Atlético Madrid", "Sevilla", "Real Sociedad"],
+        "ITÁLIA": ["Inter Milan", "AC Milan", "Juventus", "Napoli", "Roma", "Lazio", "Atalanta"],
+        "ALEMANHA": ["Bayern Munchen", "Bayer Leverkusen", "Borussia Dortmund", "RB Leipzig"],
+        "FRANÇA": ["PSG", "Monaco", "Marseille", "Lyon", "Lille"],
         "ÁSIA": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli"],
         "INTERNACIONAL (UEFA)": ["Real Madrid", "Man City", "Bayern", "PSG", "Inter Milan", "Liverpool"],
-        "SELEÇÕES / MUNDIAL": ["Brasil", "França", "Argentina", "Inglaterra", "Espanha", "Portugal", "Alemanha"]
+        "SELEÇÕES / MUNDIAL": ["Brasil", "França", "Argentina", "Inglaterra", "Espanha", "Portugal", "Alemanha", "Itália"]
     }
 
     row_f = st.columns(3)
@@ -341,9 +330,7 @@ elif st.session_state.aba_ativa == "analise":
     lista_casa_auto = []
     lista_fora_auto = []
     
-    # --- CORREÇÃO DO ERRO DE COLUNA (KEYERROR) ---
     if df_diario is not None:
-        # Verifica se as colunas existem antes de filtrar para não travar
         col_pais = 'PAIS' if 'PAIS' in df_diario.columns else 'PAÍS'
         col_liga = 'LIGA' if 'LIGA' in df_diario.columns else 'GRUPO'
         col_casa = 'CASA' if 'CASA' in df_diario.columns else 'TIME_CASA'
@@ -425,7 +412,7 @@ elif st.session_state.aba_ativa == "analise":
         with r5: draw_card("IA CONF.", m['confia'], 94)
         with r6: draw_card("PRESSÃO", "ALTA" if m['luz'] == "🟢" else "MÉDIA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO" if m['luz'] == "🟢" else "ESTÁVEL", 60)
-        with r8: draw_card("SISTEMA", "v58.1", 100)
+        with r8: draw_card("SISTEMA", "v58.2", 100)
         
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
@@ -496,4 +483,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.1</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.2</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
