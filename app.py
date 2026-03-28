@@ -99,7 +99,6 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
 if st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    # 1. DEFINIÇÃO DA ESTRUTURA DE CATEGORIAS E LIGAS
     db_competicoes = {
         "BRASIL": ["BRASILEIRÃO SÉRIE A", "BRASILEIRÃO SÉRIE B", "BRASILEIRÃO SÉRIE C", "BRASILEIRÃO SÉRIE D", "BRASILEIRÃO SUB-20", "CARIOQUÃO", "PAULISTÃO", "MINEIRO", "GAÚCHO", "PARANAENSE", "CATARINENSE", "COPA DO BRASIL", "COPA DO NORDESTE", "COPA SUL-SUDESTE", "COPA VERDE"],
         "INGLATERRA": ["PREMIER LEAGUE", "COPA DA LIGA INGLESA", "COPA DA INGLATERRA"],
@@ -113,7 +112,6 @@ if st.session_state.aba_ativa == "analise":
         "BASE / JOVENS": ["SUL-AMERICANO SUB 17"]
     }
 
-    # 2. DEFINIÇÃO DE TIMES (TOP TIMES POR REGIÃO)
     db_times = {
         "BRASIL": ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Fluminense", "Vasco", "Grêmio", "Inter", "Atlético-MG", "Cruzeiro", "Botafogo", "Bahia", "Athletico-PR", "Santos"],
         "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Man United", "Chelsea", "Tottenham", "Aston Villa"],
@@ -154,14 +152,18 @@ if st.session_state.aba_ativa == "analise":
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ CALL SALVA NO HISTÓRICO!")
 
-# ==============================================================================
-# [OUTRAS TELAS]
-# ==============================================================================
 elif st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
-    with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
-    with h2: draw_card("ASSERTIVIDADE", "92.4%", 92); with h3: draw_card("SUGESTÃO", "OVER 2.5", 88); with h4: draw_card("IA STATUS", "ONLINE", 100)
+    with h1:
+        draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
+    with h2:
+        draw_card("ASSERTIVIDADE", "92.4%", 92)
+    with h3:
+        draw_card("SUGESTÃO", "OVER 2.5", 88)
+    with h4:
+        draw_card("IA STATUS", "ONLINE", 100)
+    
     if df_diario is not None: st.dataframe(df_diario, use_container_width=True)
 
 elif st.session_state.aba_ativa == "gestao":
