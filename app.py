@@ -93,22 +93,28 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">{title}</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:{color_footer}; height:100%; width:{perc}%;"></div></div></div>""", unsafe_allow_html=True)
 
 # ==============================================================================
-# [TELA: SCANNER PRÉ-LIVE - AJUSTADO CONFORME IMAGEM]
+# [TELA: SCANNER PRÉ-LIVE - ESTRUTURA COMPLETA DE CAMPEONATOS]
 # ==============================================================================
 if st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    # Hierarquia conforme o print do usuário
+    # ESTRUTURA REMODELADA CONFORME SOLICITAÇÃO
     db_hierarquia = {
-        "🏆 COPA DO MUNDO 2026": {"Seleções FIFA": ["Principais", "Eliminatórias"]},
-        "BR BRASIL (LIGAS & COPAS)": {"Série A": ["Rodada 1", "Rodada 2"], "Copa do Brasil": ["Oitavas"]},
-        "🌎 AMÉRICA DO SUL (CONMEBOL)": {"Libertadores": ["Fase de Grupos"], "Sul-Americana": ["Fase de Grupos"]},
-        "EU EUROPA (PRINCIPAIS LIGAS)": {"Premier League": ["Geral"], "Champions League": ["Mata-Mata"]},
-        "SA ORIENTE MÉDIO & ÁSIA": {"Saudi Pro League": ["Geral"]},
-        "US AMÉRICA DO NORTE (MLS)": {"MLS": ["Temporada Regular"]}
+        "🇧🇷 BRASIL": {
+            "Ligas Nacionais": ["BRASILEIRÃO SÉRIE A", "BRASILEIRÃO SÉRIE B", "BRASILEIRÃO SÉRIE C", "BRASILEIRÃO SÉRIE D", "BRASILEIRÃO SUB-20"],
+            "Campeonatos Estaduais": ["CAMPEONATO CARIOCA", "CAMPEONATO PAULISTANO", "CAMPEONATO MINEIRO", "CAMPEONATO GAUCHO", "CAMPEONATO PARANAENSE", "CAMPEONATO CATARINENSE"],
+            "Copas do Brasil": ["COPA DO BRASIL", "COPA DO NORDESTE", "COPA SUL-SUDESTE", "COPA VERDE"]
+        },
+        "🌎 INTERNACIONAIS": {
+            "Mundiais & Seleções": ["COPA DO MUNDO 2026", "ELIMINATÓRIAS COPA-EUROPA", "REPESCAGEM MUNDIAL", "SUL-AMERICANO SUB 17"],
+            "Ligas Europeias": ["PREMIER LEAGUE", "LA LIGA", "CAMPEONATO ITALIANO", "BUNDESLIGA", "CAMPEONATO FRANCÊS"],
+            "Copas Internacionais": ["CHAMPIONS LEAGUE", "LIGA EUROPA", "LIGA CONFERÊNCIA"],
+            "Copas Nacionais (Europa)": ["COPA DA LIGA INGLESA", "COPA DA INGLATERRA", "COPA DO REI DA ESPANHA", "COPA DA ITÁLIA", "COPA DA ALEMANHA", "COPA DA FRANÇA"],
+            "Ásia & Oriente Médio": ["CAMPEONATO SAUDITA", "CHAMPIONS LEAGUE DA ÁSIA"]
+        }
     }
 
-    # Linha 1: Três Seletores
+    # Linha 1: CATEGORIA | TIPO | CAMPEONATO
     c1, c2, c3 = st.columns(3)
     with c1: 
         sel_cat = st.selectbox("🌎 CATEGORIA", list(db_hierarquia.keys()))
@@ -117,17 +123,19 @@ if st.session_state.aba_ativa == "analise":
     with c3: 
         sel_camp = st.selectbox("🏆 CAMPEONATO", db_hierarquia[sel_cat][sel_tipo])
 
-    # Linha 2: Dois Seletores (Times)
+    # Linha 2: MANDANTE | VISITANTE
     c4, c5 = st.columns(2)
     with c4:
-        t_casa = st.selectbox("🏠 MANDANTE", ["Flamengo", "Palmeiras", "São Paulo", "Argentina", "Brasil", "Man City"])
+        # Lista genérica de times para mandante (você pode expandir conforme o campeonato)
+        t_casa = st.selectbox("🏠 MANDANTE", ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Real Madrid", "Man City", "Brasil", "Argentina", "Al-Hilal"])
     with c5:
-        t_fora = st.selectbox("🚀 VISITANTE", ["Argentina", "Palmeiras", "Real Madrid", "França", "Alemanha"])
+        # Lista genérica para visitante
+        t_fora = st.selectbox("🚀 VISITANTE", ["Fluminense", "Vasco", "Barcelona", "Liverpool", "França", "Alemanha", "Al-Nassr", "Bayer Leverkusen"])
 
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
         st.session_state.analise_bloqueada = {
-            "liga": sel_camp, "casa": t_casa, "fora": t_fora, "vencedor": "FORA",
+            "liga": sel_camp, "casa": t_casa, "fora": t_fora, "vencedor": "CASA",
             "gols": "OVER 1.5", "stake": f"R$ {v_calc:,.2f}", "cantos": "9.5+", "data": datetime.now().strftime("%H:%M")
         }
 
@@ -162,7 +170,7 @@ elif st.session_state.aba_ativa == "historico":
     if not st.session_state.historico_calls: st.info("Nenhuma call salva.")
     else:
         for call in reversed(st.session_state.historico_calls):
-            st.markdown(f"""<div class="history-card-box"><div style="color:white;"><b>[{call['data']}]</b> {call['casa']} x {call['fora']} | <span style="color:#06b6d4;">{call['stake']}</span> | {call['gols']}</div></div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="history-card-box"><div style="color:white;"><b>[{call['data']}]</b> {call['casa']} x {call['fora']} <span style="color:#64748b; font-size:10px;">({call['liga']})</span> | <span style="color:#06b6d4;">{call['stake']}</span> | {call['gols']}</div></div>""", unsafe_allow_html=True)
 
 else:
     st.markdown(f"<h2 style='color:white;'>{st.session_state.aba_ativa.upper()}</h2>", unsafe_allow_html=True)
