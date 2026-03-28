@@ -4,12 +4,12 @@ import os
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v58.7 - RENOMEAÇÃO DE MENU LATERAL]
-# DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
+# [PROTOCOLO DE MANUTENÇÃO v58.8 - HEADER FIXO E INTEGRIDADE DE NAVEGAÇÃO]
+# DIRETRIZ 1: HEADER FORA DA SIDEBAR (VISIBILIDADE GLOBAL)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
-# DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
-# DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO) - MANTER UI v57.35
-# DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO
+# DIRETRIZ 3: NAVEGAÇÃO ROBUSTA POR SESSION_STATE (PREVENÇÃO DE SUMIÇO)
+# DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO) - IMUTÁVEL
+# DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO (SEM ABREVIAÇÕES)
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -47,7 +47,7 @@ def carregar_jogos_diarios():
 
 df_diario = carregar_jogos_diarios()
 
-# 2. CAMADA DE ESTILO CSS INTEGRAL (MANTIDA 100% DA v57.35)
+# 2. CAMADA DE ESTILO CSS INTEGRAL (MANTIDA 100% DA v57.35 + FIX DE HEADER)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -61,7 +61,13 @@ st.markdown("""
     }
 
     header, [data-testid="stHeader"] { display: none !important; height: 0px !important; }
-    [data-testid="stSidebarCollapseButton"] { display: none !important; }
+    [data-testid="stSidebarCollapseButton"] { 
+        background-color: transparent !important; 
+        color: white !important; 
+        top: 10px !important;
+        z-index: 1000001 !important;
+    }
+    
     [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
     
     .betano-header { 
@@ -111,7 +117,7 @@ st.markdown("""
 
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: 20px !important; gap: 0px !important; }
     
     section[data-testid="stSidebar"] div.stButton > button { 
         background-color: transparent !important; color: #94a3b8 !important; border: none !important; 
@@ -165,30 +171,31 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. HEADER SIDEBAR
-with st.sidebar:
-    st.markdown("""
-        <div class="betano-header">
-            <div class="header-left">
-                <a href="?go=home" class="logo-link">GESTOR IA</a>
-                <div class="nav-links">
-                    <div class="nav-item">APOSTAS ESPORTIVAS</div>
-                    <div class="nav-item">APOSTAS AO VIVO</div>
-                    <div class="nav-item">APOSTAS ENCONTRADAS</div>
-                    <div class="nav-item">ESTATÍSTICAS AVANÇADAS</div>
-                    <div class="nav-item">MERCADO PROBABILÍSTICO</div>
-                    <div class="nav-item">ASSERTIVIDADE IA</div>
-                </div>
-            </div>
-            <div class="header-right">
-                <div class="search-lupa">🔍</div>
-                <div class="registrar-pill">REGISTRAR</div>
-                <div class="entrar-grad">ENTRAR</div>
+# 3. HEADER GLOBAL (FORA DA SIDEBAR PARA MANTER VISIBILIDADE)
+st.markdown("""
+    <div class="betano-header">
+        <div class="header-left">
+            <a href="?go=home" class="logo-link">GESTOR IA</a>
+            <div class="nav-links">
+                <div class="nav-item">APOSTAS ESPORTIVAS</div>
+                <div class="nav-item">APOSTAS AO VIVO</div>
+                <div class="nav-item">APOSTAS ENCONTRADAS</div>
+                <div class="nav-item">ESTATÍSTICAS AVANÇADAS</div>
+                <div class="nav-item">MERCADO PROBABILÍSTICO</div>
+                <div class="nav-item">ASSERTIVIDADE IA</div>
             </div>
         </div>
-        <div style="height:65px;"></div>
-    """, unsafe_allow_html=True) 
+        <div class="header-right">
+            <div class="search-lupa">🔍</div>
+            <div class="registrar-pill">REGISTRAR</div>
+            <div class="entrar-grad">ENTRAR</div>
+        </div>
+    </div>
+""", unsafe_allow_html=True) 
 
+# 4. SIDEBAR - MENU DE NAVEGAÇÃO
+with st.sidebar:
+    st.markdown("<div style='height:40px;'></div>", unsafe_allow_html=True) 
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
@@ -223,7 +230,7 @@ if st.session_state.aba_ativa == "home":
         with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
         with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
         with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-        with h8: draw_card("SISTEMA", "JARVIS v58.7", 100)
+        with h8: draw_card("SISTEMA", "JARVIS v58.8", 100)
         
         st.markdown("### 📋 ANÁLISE DETALHADA (7 NÍVEIS)")
         st.dataframe(df_diario, use_container_width=True)
@@ -260,7 +267,7 @@ elif st.session_state.aba_ativa == "gestao":
         with g7: draw_card("ENTRADAS/LOSS", f"{entradas_loss}", 100, "#00d2ff")
         with g8: st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div><div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:#00d2ff; height:100%; width:100%;"></div></div></div>""", unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (LOGICA DE BLOQUEIO ABSOLUTO v58.7)
+# TELA 3: SCANNER PRÉ-LIVE (LOGICA DE BLOQUEIO ABSOLUTO v58.8)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
@@ -402,7 +409,7 @@ elif st.session_state.aba_ativa == "analise":
         with r5: draw_card("IA CONF.", m['confia'], 94)
         with r6: draw_card("PRESSÃO", "ALTA" if m['luz'] == "🟢" else "MÉDIA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO" if m['luz'] == "🟢" else "ESTÁVEL", 60)
-        with r8: draw_card("SISTEMA", "v58.7", 100)
+        with r8: draw_card("SISTEMA", "v58.8", 100)
         
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
@@ -473,4 +480,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.7</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.8</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
