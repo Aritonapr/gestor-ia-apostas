@@ -93,12 +93,11 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">{title}</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:{color_footer}; height:100%; width:{perc}%;"></div></div></div>""", unsafe_allow_html=True)
 
 # ==============================================================================
-# [TELA: SCANNER PRÉ-LIVE - ESTRUTURA COMPLETA DE CAMPEONATOS]
+# [TELA: SCANNER PRÉ-LIVE - ESTRUTURA COMPLETA REVISADA]
 # ==============================================================================
 if st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    # ESTRUTURA REMODELADA CONFORME SOLICITAÇÃO
     db_hierarquia = {
         "🇧🇷 BRASIL": {
             "Ligas Nacionais": ["BRASILEIRÃO SÉRIE A", "BRASILEIRÃO SÉRIE B", "BRASILEIRÃO SÉRIE C", "BRASILEIRÃO SÉRIE D", "BRASILEIRÃO SUB-20"],
@@ -114,23 +113,16 @@ if st.session_state.aba_ativa == "analise":
         }
     }
 
-    # Linha 1: CATEGORIA | TIPO | CAMPEONATO
+    # Linha 1: 3 Colunas
     c1, c2, c3 = st.columns(3)
-    with c1: 
-        sel_cat = st.selectbox("🌎 CATEGORIA", list(db_hierarquia.keys()))
-    with c2: 
-        sel_tipo = st.selectbox("📂 TIPO", list(db_hierarquia[sel_cat].keys()))
-    with c3: 
-        sel_camp = st.selectbox("🏆 CAMPEONATO", db_hierarquia[sel_cat][sel_tipo])
+    with c1: sel_cat = st.selectbox("🌎 CATEGORIA", list(db_hierarquia.keys()))
+    with c2: sel_tipo = st.selectbox("📂 TIPO", list(db_hierarquia[sel_cat].keys()))
+    with c3: sel_camp = st.selectbox("🏆 CAMPEONATO", db_hierarquia[sel_cat][sel_tipo])
 
-    # Linha 2: MANDANTE | VISITANTE
+    # Linha 2: 2 Colunas
     c4, c5 = st.columns(2)
-    with c4:
-        # Lista genérica de times para mandante (você pode expandir conforme o campeonato)
-        t_casa = st.selectbox("🏠 MANDANTE", ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Real Madrid", "Man City", "Brasil", "Argentina", "Al-Hilal"])
-    with c5:
-        # Lista genérica para visitante
-        t_fora = st.selectbox("🚀 VISITANTE", ["Fluminense", "Vasco", "Barcelona", "Liverpool", "França", "Alemanha", "Al-Nassr", "Bayer Leverkusen"])
+    with c4: t_casa = st.selectbox("🏠 MANDANTE", ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Real Madrid", "Man City", "Brasil", "Argentina", "Al-Hilal"])
+    with c5: t_fora = st.selectbox("🚀 VISITANTE", ["Fluminense", "Vasco", "Barcelona", "Liverpool", "França", "Alemanha", "Al-Nassr", "Bayer Leverkusen"])
 
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
@@ -174,6 +166,6 @@ elif st.session_state.aba_ativa == "historico":
 
 else:
     st.markdown(f"<h2 style='color:white;'>{st.session_state.aba_ativa.upper()}</h2>", unsafe_allow_html=True)
-    st.info("Módulo em processamento...")
+    st.info("Processando dados...")
 
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.7</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
