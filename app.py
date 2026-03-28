@@ -3,7 +3,7 @@ import pandas as pd
 import math
 
 # ==============================================================================
-# [PROTOCOLO FINAL v61.2 - SIDEBAR GOLD + BOTÕES ESTILO FOTO]
+# [PROTOCOLO FINAL v61.3 - SIDEBAR ORIGINAL + 1 BOTÃO GOLD + 8 BOTÕES TOTAIS]
 # ==============================================================================
 
 st.set_page_config(
@@ -37,7 +37,7 @@ def engine_ia_avancada():
         return analises
     except: return []
 
-# --- ESTILO CSS (SIDEBAR GOLD + BOTÕES FOTO) ---
+# --- ESTILO CSS (1 GOLD + 7 ORIGINAIS) ---
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
@@ -45,7 +45,7 @@ st.markdown("""
     /* REMOVER SCROLLBARS */
     ::-webkit-scrollbar { display: none !important; }
     * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
-    [data-testid="stSidebarContent"] { overflow: hidden !important; background-color: #f8f9fa !important; }
+    [data-testid="stSidebarContent"] { overflow: hidden !important; background-color: #11151a !important; }
 
     html, body, [data-testid="stAppViewContainer"], .stApp {
         background-color: #0b0e11 !important;
@@ -53,42 +53,47 @@ st.markdown("""
     }
     header, [data-testid="stHeader"] { display: none !important; }
 
-    /* BOTÃO BILHETE OURO (GOLD NA SIDEBAR) */
-    div.stButton > button:first-child, [data-testid="stSidebar"] div.stButton > button:first-of-type {
+    /* ESTILO DO PRIMEIRO BOTÃO (GOLD - BILHETE OURO) */
+    [data-testid="stSidebar"] div.stButton > button:first-of-type {
         background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fcf6ba, #aa771c) !important;
         color: #000 !important;
         font-weight: 900 !important;
         border: 1px solid #fff5b7 !important;
         border-radius: 8px !important;
+        height: 50px !important;
         position: relative;
         overflow: hidden;
-        height: 50px !important;
-        box-shadow: 0 4px 10px rgba(184, 134, 11, 0.3) !important;
+        margin-bottom: 20px !important;
+        box-shadow: 0 4px 15px rgba(184, 134, 11, 0.4) !important;
     }
 
-    /* EFEITO SHINE NO BOTÃO DA SIDEBAR */
-    div.stButton > button:first-child::after {
+    /* EFEITO SHINE APENAS NO GOLD */
+    [data-testid="stSidebar"] div.stButton > button:first-of-type::after {
         content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
         background: linear-gradient(to right, transparent, rgba(255,255,255,0.6), transparent);
         transform: rotate(45deg); animation: shine 3s infinite;
     }
     @keyframes shine { 0% { transform: translateX(-150%) rotate(45deg); } 100% { transform: translateX(150%) rotate(45deg); } }
 
-    /* OUTROS BOTÕES DA SIDEBAR (ESTILO FOTO) */
-    [data-testid="stSidebar"] div.stButton > button {
-        background-color: white !important;
-        color: #1e293b !important;
-        border: 1px solid #e2e8f0 !important;
-        border-radius: 8px !important;
-        font-weight: 600 !important;
-        font-size: 11px !important;
+    /* ESTILO DOS DEMAIS 7 BOTÕES (ORIGINAIS) */
+    [data-testid="stSidebar"] div.stButton > button:not(:first-of-type) {
+        background-color: transparent !important;
+        color: #94a3b8 !important;
+        border: none !important;
+        border-bottom: 1px solid #1e293b !important;
+        border-radius: 0px !important;
+        text-align: left !important;
+        width: 100% !important;
+        padding: 12px 25px !important;
+        font-size: 10px !important;
         text-transform: uppercase !important;
-        margin-bottom: 5px !important;
-        transition: 0.3s;
+        font-weight: 600 !important;
+        transition: 0.2s;
     }
-    [data-testid="stSidebar"] div.stButton > button:hover {
-        border-color: #9d54ff !important;
-        color: #6d28d9 !important;
+    [data-testid="stSidebar"] div.stButton > button:not(:first-of-type):hover {
+        color: #06b6d4 !important;
+        background-color: #1e293b !important;
+        border-left: 3px solid #6d28d9 !important;
     }
 
     /* HEADER */
@@ -100,14 +105,14 @@ st.markdown("""
     }
     .logo-box { color: #9d54ff !important; font-weight: 900; font-size: 22px; text-transform: uppercase; }
 
-    /* CARDS GOLD NO TOPO */
-    .card-gold {
+    /* CARDS GOLD TOPO */
+    .card-gold-topo {
         background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fcf6ba, #aa771c);
         color: #000 !important; border-radius: 10px; padding: 15px; text-align: center;
-        border: 1px solid #fff5b7; position: relative; overflow: hidden;
+        border: 1px solid #fff5b7;
     }
 
-    /* ESTRUTURA DOS JOGOS */
+    /* CONTAINERS DE JOGO */
     .game-container {
         background: #11151a; border: 1px solid #1e293b; border-left: 4px solid #bf953f;
         border-radius: 8px; padding: 20px; margin-bottom: 20px;
@@ -115,17 +120,18 @@ st.markdown("""
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; margin-top: 15px; }
     .stat-box { background: rgba(255,255,255,0.03); border: 1px solid #1e293b; padding: 8px; border-radius: 6px; }
     .stat-label { color: #bf953f; font-size: 8px; font-weight: 900; }
-    .stat-value { color: #ffffff; font-size: 11px; font-weight: 700; margin-top: 3px; }
+    .stat-value { color: #ffffff; font-size: 11px; font-weight: 700; }
 
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     </style>
 """, unsafe_allow_html=True)
 
-# --- SIDEBAR NAVEGAÇÃO ---
+# --- SIDEBAR E HEADER ---
 st.sidebar.markdown('<div class="betano-header"><div class="logo-box">GESTOR IA</div><div style="background:#6d28d9; color:white; padding:4px 12px; border-radius:4px; font-size:9px; font-weight:800;">IA GOLD</div></div><div style="height:75px;"></div>', unsafe_allow_html=True)
 
 if 'aba' not in st.session_state: st.session_state.aba = "home"
 with st.sidebar:
+    # ORDEM DOS 8 BOTÕES TOTAIS
     if st.button("📅 BILHETE OURO"): st.session_state.aba = "home"
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba = "scanner"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba = "live"
@@ -135,16 +141,16 @@ with st.sidebar:
     if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba = "gols"
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba = "cantos"
 
-# --- RENDERIZAÇÃO PRINCIPAL ---
+# --- RENDERIZAÇÃO ---
 if st.session_state.aba == "home":
     dados = engine_ia_avancada()
     st.markdown("<h3 style='color:#FFD700; text-align:center; font-weight:900;'>🏆 BILHETE OURO - ANÁLISE REAL 🏆</h3>", unsafe_allow_html=True)
     
     c1, c2, c3, c4 = st.columns(4)
-    with c1: st.markdown('<div class="card-gold"><div style="font-size:8px;font-weight:800;">ASSERTIVIDADE</div><div style="font-size:18px;font-weight:900;">94.2%</div></div>', unsafe_allow_html=True)
-    with c2: st.markdown('<div class="card-gold"><div style="font-size:8px;font-weight:800;">JOGOS</div><div style="font-size:18px;font-weight:900;">20 ATIVOS</div></div>', unsafe_allow_html=True)
-    with c3: st.markdown('<div class="card-gold"><div style="font-size:8px;font-weight:800;">BANCA</div><div style="font-size:18px;font-weight:900;">R$ 1.000,00</div></div>', unsafe_allow_html=True)
-    with c4: st.markdown('<div class="card-gold"><div style="font-size:8px;font-weight:800;">SISTEMA</div><div style="font-size:18px;font-weight:900;">GOLD IA</div></div>', unsafe_allow_html=True)
+    with c1: st.markdown('<div class="card-gold-topo"><div style="font-size:8px;font-weight:800;">ASSERTIVIDADE</div><div style="font-size:18px;font-weight:900;">94.2%</div></div>', unsafe_allow_html=True)
+    with c2: st.markdown('<div class="card-gold-topo"><div style="font-size:8px;font-weight:800;">JOGOS ANALISADOS</div><div style="font-size:18px;font-weight:900;">20 JOGOS</div></div>', unsafe_allow_html=True)
+    with c3: st.markdown('<div class="card-gold-topo"><div style="font-size:8px;font-weight:800;">BANCA</div><div style="font-size:18px;font-weight:900;">R$ 1.000,00</div></div>', unsafe_allow_html=True)
+    with c4: st.markdown('<div class="card-gold-topo"><div style="font-size:8px;font-weight:800;">SISTEMA</div><div style="font-size:18px;font-weight:900;">GOLD IA</div></div>', unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -168,4 +174,4 @@ if st.session_state.aba == "home":
             </div>
         """, unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● JARVIS GOLD v61.2 | SIDEBAR ATUALIZADA</div><div>PROTEÇÃO ATIVA</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● JARVIS GOLD v61.3 | 8 BOTÕES ATIVOS</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
