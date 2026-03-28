@@ -5,7 +5,7 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v59.8 - RESTAURAÇÃO TOTAL DE UI E FUNÇÕES]
+# [PROTOCOLO DE MANUTENÇÃO v59.9 - FIDELIDADE VISUAL ABSOLUTA + FUNÇÕES TOTAIS]
 # DIRETRIZ 1: HEADER INTEGRAL NA SIDEBAR (DESIGN BETANO + HOVER EFFECTS)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -107,12 +107,11 @@ def engine_ia_gen(n=20):
         dados.append({"jogo": f"{t1} vs {t2}", "win": f"{confia}%", "gols": "Over 2.5", "cantos": "10.5+", "ia": f"{confia}%", "meta": "18+", "chutes": "12+", "defesas": "6+", "cards": "4.5+"})
     return dados
 
-# 2. CAMADA DE ESTILO CSS INTEGRAL (RESTAURAÇÃO v58.8 + NO SCROLLBAR)
+# 2. CAMADA DE ESTILO CSS INTEGRAL (RESTAURAÇÃO UI IMAGEM + NO SCROLLBAR)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
     
-    /* REMOVER BARRA DE ROLAGEM LATERAL */
     ::-webkit-scrollbar { display: none !important; }
     * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
@@ -163,9 +162,16 @@ st.markdown("""
     }
 
     div[data-baseweb="input"], div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
+    label { color: #64748b !important; font-size: 10px !important; text-transform: uppercase !important; font-weight: 700 !important; }
     
-    .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px; }
-    .banca-banner { background-color: #003399 !important; padding: 15px 25px; border-radius: 5px; color: white !important; font-size: 24px; font-weight: 800; margin-bottom: 35px; display: flex; align-items: center; gap: 15px; }
+    .highlight-card { 
+        background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px; transition: 0.3s;
+    }
+    .highlight-card:hover { border-color: #6d28d9; }
+
+    .banca-banner { 
+        background-color: #003399 !important; padding: 15px 25px; border-radius: 5px; color: white !important; font-size: 24px; font-weight: 800; margin-bottom: 35px; display: flex; align-items: center; gap: 15px; 
+    }
     .history-card-box { background: #161b22 !important; border: 1px solid #30363d !important; padding: 15px 25px !important; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
     .bilhete-item-box { background: rgba(109, 40, 217, 0.03); border: 1px solid #1e293b; border-left: 4px solid #9d54ff; padding: 15px; border-radius: 8px; margin-bottom: 12px; }
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
@@ -198,8 +204,16 @@ with st.sidebar:
     if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
-def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, #06b6d4)"):
-    st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">{title}</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:{color_footer}; height:100%; width:{perc}%;"></div></div></div>""", unsafe_allow_html=True)
+def draw_card(title, value, perc=100, color_val="white", bar_color="#06b6d4"):
+    st.markdown(f"""
+        <div class="highlight-card">
+            <div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">{title}</div>
+            <div style="color:{color_val}; font-size:16px; font-weight:900; margin-top:10px;">{value}</div>
+            <div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;">
+                <div style="background:{bar_color}; height:100%; width:{perc}%;"></div>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
 # --- TELAS ---
 
@@ -214,7 +228,7 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v59.8", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v59.9", 100)
     
     st.markdown("### 📋 ANÁLISE DETALHADA (7 NÍVEIS)")
     bilhetes = engine_ia_gen(20)
@@ -225,7 +239,7 @@ if st.session_state.aba_ativa == "home":
             st.markdown(f"""<div class="bilhete-item-box"><div style="color:#06b6d4; font-size:9px; font-weight:900;">JOGO {i+1} | CONFIA: {b['ia']}</div><div style="color:white; font-size:15px; font-weight:800; margin:5px 0;">{b['jogo']}</div><div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:10px; color:#94a3b8;"><div>WIN: <b style="color:white;">{b['win']}</b></div><div>GOLS: <b style="color:white;">{b['gols']}</b></div><div>CARD: <b style="color:white;">{b['cards']}</b></div><div>CANTOS: <b style="color:white;">{b['cantos']}</b></div><div>META: <b style="color:white;">{b['meta']}</b></div><div>CHUTES: <b style="color:white;">{b['chutes']}</b></div><div style="grid-column: span 2;">DEFESAS: <b style="color:white;">{b['defesas']}</b></div></div></div>""", unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "gestao":
-    st.markdown("""<div class="banca-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
+    st.markdown("""<div class="banca-banner">👑 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
     col_input, col_display = st.columns([1.5, 2.5])
     with col_input:
         st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=st.session_state.banca_total, step=50.0)
@@ -242,15 +256,15 @@ elif st.session_state.aba_ativa == "gestao":
     
     with col_display:
         g1, g2, g3, g4 = st.columns(4)
-        with g1: draw_card("VALOR ENTRADA", f"R$ {v_stake:,.2f}", 100)
-        with g2: draw_card("STOP GAIN (R$)", f"R$ {v_meta:,.2f}", 100)
-        with g3: draw_card("STOP LOSS (R$)", f"R$ {v_loss:,.2f}", 100)
-        with g4: draw_card("ALVO FINAL", f"R$ {alvo_final:,.2f}", 100)
+        with g1: draw_card("VALOR ENTRADA", f"R$ {v_stake:,.2f}")
+        with g2: draw_card("STOP GAIN (R$)", f"R$ {v_meta:,.2f}")
+        with g3: draw_card("STOP LOSS (R$)", f"R$ {v_loss:,.2f}")
+        with g4: draw_card("ALVO FINAL", f"R$ {alvo_final:,.2f}")
         g5, g6, g7, g8 = st.columns(4)
-        with g5: draw_card("RISCO TOTAL", f"{st.session_state.stake_padrao}%", 100)
-        with g6: draw_card("ENTRADAS/META", f"{int(v_meta/v_stake) if v_stake > 0 else 0}", 100)
-        with g7: draw_card("ENTRADAS/LOSS", f"{int(v_loss/v_stake) if v_stake > 0 else 0}", 100)
-        with g8: st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div><div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div></div>""", unsafe_allow_html=True)
+        with g5: draw_card("RISCO TOTAL", f"{st.session_state.stake_padrao}%")
+        with g6: draw_card("ENTRADAS/META", f"{int(v_meta/v_stake) if v_stake > 0 else 0}")
+        with g7: draw_card("ENTRADAS/LOSS", f"{int(v_loss/v_stake) if v_stake > 0 else 0}")
+        with g8: draw_card("SAÚDE BANCA", saude_label, color_val=saude_color)
 
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
@@ -264,17 +278,17 @@ elif st.session_state.aba_ativa == "analise":
     with c1: t_casa = st.selectbox("🏠 CASA", t_list)
     with c2: t_fora = st.selectbox("🚀 FORA", [t for t in t_list if t != t_casa])
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
-        st.session_state.analise_bloqueada = {"casa": t_casa, "fora": t_fora, "win": "92%", "gols": "OVER 1.5", "stake": f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}"}
+        st.session_state.analise_bloqueada = {"casa": t_casa, "fora": t_fora, "win": "94.2%", "gols": "OVER 1.5", "stake": f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}"}
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
         st.markdown(f"<h3 style='color:#9d54ff; text-align:center;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
         k1, k2, k3, k4 = st.columns(4)
-        with k1: draw_card("VENCEDOR", m['win'], 90)
+        with k1: draw_card("VENCEDOR", m['win'], 94)
         with k2: draw_card("GOLS", m['gols'], 70)
         with k3: draw_card("STAKE", m['stake'], 100)
         with k4: draw_card("CANTOS", "9.5+", 65)
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
-            st.session_state.historico_calls.append({"data": datetime.now().strftime("%H:%M"), "casa": m['casa'], "fora": m['fora'], "stake_val": m['stake']}); st.toast("SALVA!")
+            st.session_state.historico_calls.append({"data": datetime.now().strftime("%H:%M"), "casa": m['casa'], "fora": m['fora'], "stake_val": m['stake']}); st.toast("✅ CALL SALVA!")
 
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
@@ -287,23 +301,19 @@ elif st.session_state.aba_ativa == "historico":
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
-    bilhetes = engine_ia_gen(5)
-    for b in bilhetes:
+    for b in engine_ia_gen(5):
         st.markdown(f"<div class='bilhete-item-box'><b>LIVE:</b> {b['jogo']} | <b>PRESSÃO:</b> {random.randint(60,95)}% | <b>GOL PROB:</b> {random.randint(40,88)}%</div>", unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "vencedores":
     st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
-    bilhetes = engine_ia_gen(10)
-    for b in bilhetes: st.markdown(f"<div class='bilhete-item-box'><b>FAVORITO:</b> {b['jogo'].split(' vs ')[0]} | <b>ROI PREVISTO:</b> {random.randint(5,25)}%</div>", unsafe_allow_html=True)
+    for b in engine_ia_gen(10): st.markdown(f"<div class='bilhete-item-box'><b>FAVORITO:</b> {b['jogo'].split(' vs ')[0]} | <b>ROI:</b> {random.randint(5,25)}%</div>", unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "gols":
     st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>", unsafe_allow_html=True)
-    bilhetes = engine_ia_gen(15)
-    for b in bilhetes: st.markdown(f"<div class='bilhete-item-box'>{b['jogo']} | <b>PALPITE:</b> {random.choice(['OVER 1.5 HT', 'OVER 2.5 FT', 'BTTS YES'])}</div>", unsafe_allow_html=True)
+    for b in engine_ia_gen(15): st.markdown(f"<div class='bilhete-item-box'>{b['jogo']} | <b>PALPITE:</b> OVER 2.5 FT</div>", unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "escanteios":
     st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
-    bilhetes = engine_ia_gen(15)
-    for b in bilhetes: st.markdown(f"<div class='bilhete-item-box'>{b['jogo']} | <b>PALPITE:</b> {random.choice(['OVER 9.5', 'OVER 10.5', 'RACE TO 7'])}</div>", unsafe_allow_html=True)
+    for b in engine_ia_gen(15): st.markdown(f"<div class='bilhete-item-box'>{b['jogo']} | <b>PALPITE:</b> OVER 9.5 CANTOS</div>", unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v59.8</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v59.9</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
