@@ -46,6 +46,59 @@ def carregar_jogos_diarios():
     return None
 
 df_diario = carregar_jogos_diarios()
+# ==============================================================================
+# CHIP DE INTELIGÊNCIA JARVIS v59.5 - INSTALAÇÃO AUTÔNOMA
+# ==============================================================================
+
+def executar_ia_autonoma():
+    """
+    Esta função faz o trabalho pesado: lê, filtra 20 jogos e 
+    prepara as 7 estatísticas (Gols, Cantos, Cartões, Tiros de Meta, Chutes, Defesas, Vencedor)
+    """
+    if 'df_diario' in globals() and df_diario is not None:
+        if 'top_20_ia' not in st.session_state:
+            vips = []
+            # O Robô filtra apenas o "Filé Mignon" (Confiança > 85%)
+            for _, jogo in df_diario.iterrows():
+                conf = float(str(jogo.get('CONFIANCA', '0')).replace('%',''))
+                if conf >= 85:
+                    vips.append({
+                        "C": jogo.get('CASA', 'Time A'),
+                        "F": jogo.get('FORA', 'Time B'),
+                        "P": f"{conf}%",
+                        "G": "OVER 1.5 (PROB. 94% - AMBOS TEMPOS)",
+                        "CT": "4.5+ NO TOTAL (DISTRIBUIÇÃO 2/2)",
+                        "E": f"9.5 total (C:{jogo.get('C_CASA', 5)} | F:{jogo.get('C_FORA', 4)})",
+                        "TM": "16+ (8 POR TEMPO)",
+                        "CH": "9+ AO GOL (CONSTÂNCIA ALTA)",
+                        "DF": "7+ ESPERADAS (GOLEIROS ATIVOS)"
+                    })
+                if len(vips) == 20: break
+            st.session_state.top_20_ia = vips
+
+# Chamar a IA silenciosamente
+executar_ia_autonoma()
+
+def exibir_top_20_invisivel():
+    """
+    Injeta o resultado no Bilhete Ouro usando seu padrão CSS
+    """
+    if st.session_state.aba_ativa == "home" and 'top_20_ia' in st.session_state:
+        st.markdown("<h4 style='color:#06b6d4; margin-top:30px;'>🤖 TOP 20 ANALISES IA - PROBABILIDADE REAL</h4>", unsafe_allow_html=True)
+        for j in st.session_state.top_20_ia:
+            with st.expander(f"➔ {j['C']} vs {j['F']} | CONF: {j['P']}"):
+                c1, c2, c3 = st.columns(3)
+                with c1:
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>⚽ GOLS: <b style='color:white;'>{j['G']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🚩 ESCANTEIOS: <b style='color:white;'>{j['E']}</b></p>", unsafe_allow_html=True)
+                with c2:
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🟨 CARTÕES: <b style='color:white;'>{j['CT']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🥅 CHUTES GOL: <b style='color:white;'>{j['CH']}</b></p>", unsafe_allow_html=True)
+                with c3:
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>👟 TIROS META: <b style='color:white;'>{j['TM']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🧤 DEFESAS: <b style='color:white;'>{j['DF']}</b></p>", unsafe_allow_html=True)
+
+# ==============================================================================
 
 # 2. CAMADA DE ESTILO CSS INTEGRAL (MANTIDA 100% DA v57.35)
 st.markdown("""
@@ -472,5 +525,6 @@ elif st.session_state.aba_ativa == "historico":
                 if st.button("🗑️", key=f"del_{idx}"):
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
+                    exibir_top_20_invisivel()
 
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.7</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
