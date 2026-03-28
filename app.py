@@ -5,8 +5,8 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v59.6 - RESTAURAÇÃO TOTAL E BLINDAGEM PIT]
-# DIRETRIZ 1: HEADER INTEGRAL NA SIDEBAR (DESIGN BETANO)
+# [PROTOCOLO DE MANUTENÇÃO v59.7 - RESTAURAÇÃO ESTÉTICA E SIDEBAR INTEGRAL]
+# DIRETRIZ 1: HEADER INTEGRAL NA SIDEBAR (DESIGN BETANO + HOVER EFFECTS)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
 # DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO) - UI v58.8
@@ -98,17 +98,17 @@ if 'meta_diaria' not in st.session_state: st.session_state.meta_diaria = 3.0
 if 'stop_loss' not in st.session_state: st.session_state.stop_loss = 5.0
 
 # --- MECANISMO IA JARVIS (BILHETE OURO) ---
-def engine_bilhete_ouro():
+def engine_bilhete_ouro_v2():
     bilhetes = []
     paises_keys = list(db_times.keys())
     for i in range(20):
         p = random.choice(paises_keys)
         t1, t2 = random.sample(db_times[p], 2)
-        confia = random.randint(82, 99)
+        confia = random.randint(85, 99)
         bilhetes.append({
-            "jogo": f"{t1} vs {t2}", "winner": f"{confia}% - {t1}", "gols": "Over 2.5",
-            "cartoes": f"T: {random.randint(4,6)} | HT: 1", "cantos": "9.5+", "meta": "16+",
-            "chutes": "10+", "defesas": "5+", "ia": f"{confia}%"
+            "jogo": f"{t1} vs {t2}", "winner": f"{confia}% - {t1}", "gols": "Over 2.5 (HT/FT)",
+            "cartoes": f"T: {random.randint(4,6)} | HT: 1", "cantos": "10.5+", "meta": "18+",
+            "chutes": "12+", "defesas": "6+", "ia": f"{confia}%"
         })
     return bilhetes
 
@@ -121,7 +121,7 @@ def carregar_jogos_diarios():
     return None
 df_diario = carregar_jogos_diarios()
 
-# 2. CAMADA DE ESTILO CSS INTEGRAL (UI v58.8 COMPLETA)
+# 2. CAMADA DE ESTILO CSS INTEGRAL (RESTAURAÇÃO v58.8 COMPLETA)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -148,24 +148,39 @@ st.markdown("""
     
     .header-left { display: flex; align-items: center; gap: 25px; }
     .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; text-decoration: none; cursor: pointer;}
+    
     .nav-links { display: flex; gap: 22px; align-items: center; }
-    .nav-item { color: #ffffff !important; font-size: 11px !important; text-transform: uppercase; font-weight: 600 !important; transition: 0.3s; cursor: pointer; white-space: nowrap; }
-    .nav-item:hover { color: #06b6d4 !important; }
+    .nav-item { 
+        color: #ffffff !important; font-size: 11px !important; text-transform: uppercase; 
+        font-weight: 600 !important; transition: 0.3s ease; cursor: pointer; white-space: nowrap; 
+    }
+    .nav-item:hover { color: #06b6d4 !important; transform: scale(1.05); }
 
     .header-right { display: flex; align-items: center; gap: 15px; }
-    .search-lupa { color: #ffffff; font-size: 15px; cursor: pointer; }
-    .registrar-pill { color: #ffffff !important; font-size: 9px !important; font-weight: 800; border: 1.5px solid #ffffff !important; padding: 7px 18px !important; border-radius: 20px !important; cursor: pointer; }
-    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 8px 22px !important; border-radius: 5px !important; font-weight: 800; font-size: 9.5px; cursor: pointer; }
+    .search-lupa { color: #ffffff; font-size: 15px; cursor: pointer; transition: 0.3s; }
+    .search-lupa:hover { transform: scale(1.2); }
+    
+    .registrar-pill { color: #ffffff !important; font-size: 9px !important; font-weight: 800; border: 1.5px solid #ffffff !important; padding: 7px 18px !important; border-radius: 20px !important; transition: 0.3s ease; cursor: pointer; }
+    .registrar-pill:hover { background: white !important; color: #001a4d !important; }
+    
+    .entrar-grad { 
+        background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; 
+        color: white !important; padding: 8px 22px !important; border-radius: 5px !important; 
+        font-weight: 800; font-size: 9.5px; transition: 0.3s ease; cursor: pointer;
+        box-shadow: 0 4px 10px rgba(109, 40, 217, 0.2);
+    }
+    .entrar-grad:hover { filter: brightness(1.1); box-shadow: 0 4px 15px rgba(109, 40, 217, 0.4); }
 
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
-    [data-testid="stSidebarContent"] { overflow: hidden !important; }
+    [data-testid="stSidebarContent"] { overflow-y: auto !important; overflow-x: hidden !important; }
     
     section[data-testid="stSidebar"] div.stButton > button { 
         background-color: transparent !important; color: #94a3b8 !important; border: none !important; 
         border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; 
         padding: 18px 25px !important; font-size: 10px !important; text-transform: uppercase !important;
+        border-radius: 0px !important; transition: all 0.2s ease !important;
     }
-    section[data-testid="stSidebar"] div.stButton > button:hover { background-color: #1e293b !important; color: #06b6d4 !important; border-left: 3px solid #6d28d9 !important; }
+    section[data-testid="stSidebar"] div.stButton > button:hover { background-color: #1e293b !important; color: #06b6d4 !important; border-left: 3px solid #6d28d9 !important; padding-left: 35px !important; }
 
     div.stButton > button:not([data-testid="stSidebar"] *) {
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
@@ -177,15 +192,16 @@ st.markdown("""
 
     div[data-baseweb="input"], div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
     
-    .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px; }
-    .banca-title-banner { background-color: #003399 !important; padding: 15px 25px; border-radius: 5px; color: white !important; font-size: 24px; font-weight: 800; margin-bottom: 35px; display: flex; align-items: center; gap: 15px; }
+    .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px; transition: 0.3s; }
+    .highlight-card:hover { border-color: #6d28d9; transform: translateY(-3px); }
+
     .history-card-box { background: #161b22 !important; border: 1px solid #30363d !important; padding: 15px 25px !important; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
     .bilhete-ouro-box { background: rgba(109, 40, 217, 0.03); border: 1px solid #1e293b; border-left: 4px solid #9d54ff; padding: 15px; border-radius: 8px; margin-bottom: 12px; }
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. HEADER INTEGRAL
+# 3. HEADER INTEGRAL (NA SIDEBAR PARA BLOQUEIO STREAMLIT)
 with st.sidebar:
     st.markdown("""
         <div class="betano-header">
@@ -234,10 +250,10 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v59.6", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v59.7", 100)
     
     st.markdown("### 📋 ANÁLISE DETALHADA (7 NÍVEIS)")
-    bilhetes = engine_bilhete_ouro()
+    bilhetes = engine_bilhete_ouro_v2()
     c_b_1, c_b_2 = st.columns(2)
     for i, b in enumerate(bilhetes):
         target = c_b_1 if i % 2 == 0 else c_b_2
@@ -288,9 +304,9 @@ elif st.session_state.aba_ativa == "historico":
                 if st.button("🗑️", key=f"del_{idx}"):
                     st.session_state.historico_calls.pop(idx); st.rerun()
 
-elif st.session_state.aba_ativa == "vencedores": st.markdown("<h2 style='color:white;'>🏆 VENCEDORES</h2>", unsafe_allow_html=True)
-elif st.session_state.aba_ativa == "gols": st.markdown("<h2 style='color:white;'>⚽ GOLS</h2>", unsafe_allow_html=True)
-elif st.session_state.aba_ativa == "escanteios": st.markdown("<h2 style='color:white;'>🚩 ESCANTEIOS</h2>", unsafe_allow_html=True)
-elif st.session_state.aba_ativa == "live": st.markdown("<h2 style='color:white;'>📡 LIVE</h2>", unsafe_allow_html=True)
+elif st.session_state.aba_ativa == "vencedores": st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
+elif st.session_state.aba_ativa == "gols": st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>", unsafe_allow_html=True)
+elif st.session_state.aba_ativa == "escanteios": st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
+elif st.session_state.aba_ativa == "live": st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v59.6</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v59.7</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
