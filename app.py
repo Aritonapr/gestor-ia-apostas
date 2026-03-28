@@ -3,7 +3,7 @@ import pandas as pd
 from datetime import datetime
 
 # ==========================================
-# CONFIGURAÇÃO E ESTILO (DESIGN DO PAINEL)
+# CONFIGURAÇÃO E DESIGN DO PAINEL
 # ==========================================
 st.set_page_config(
     page_title="GESTOR IA - TRADING PRO",
@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Estilização para garantir que os menus e botões fiquem alinhados
+# Estilização CSS para garantir a simetria e visibilidade
 st.markdown("""
 <style>
     .main { background-color: #0e1117; }
@@ -20,29 +20,32 @@ st.markdown("""
         max-width: 320px !important;
         background-color: #11151a !important;
     }
-    /* Estilo dos KPI Cards para Assertividade */
-    .kpi-card {
+    .nav-title { color: #8e44ad; font-weight: bold; font-size: 26px; }
+    
+    /* Ajuste para botões superiores não cortarem o texto */
+    .stButton > button {
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        background-color: #1e2530;
+        color: white;
+        border: 1px solid #2d343f;
+    }
+    
+    /* Estilo dos 8 KPI Cards */
+    div[data-testid="stMetric"] {
         background-color: #1e2530;
         padding: 15px;
         border-radius: 10px;
         border: 1px solid #2d343f;
         text-align: center;
     }
-    /* Títulos e Nav */
-    .nav-title { color: #8e44ad; font-weight: bold; font-size: 26px; }
-    
-    /* Ajuste para botões não cortarem o texto */
-    .stButton > button {
-        width: 100%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
 </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# GESTÃO DE ESTADO (MEMÓRIA DO APP)
+# MEMÓRIA DO SISTEMA (ESTADO)
 # ==========================================
 if 'aba_ativa' not in st.session_state:
     st.session_state.aba_ativa = "Apostas Esportivas"
@@ -62,33 +65,32 @@ if 'metrics_ia' not in st.session_state:
 # ==========================================
 # BARRA SUPERIOR (HEADER)
 # ==========================================
-# Corrigindo o layout que apareceu "quebrado" na imagem 10
-header_1, header_2, header_3 = st.columns([1.5, 5, 2])
+header_col1, header_col2, header_col3 = st.columns([1.5, 6, 2.5])
 
-with header_1:
+with header_col1:
     st.markdown('<span class="nav-title">GESTOR IA</span>', unsafe_allow_html=True)
 
-with header_2:
-    # Botões Horizontais Superiores
-    h_col1, h_col2, h_col3, h_col4, h_col5, h_col6 = st.columns(6)
-    with h_col1:
+with header_col2:
+    # Navegação Horizontal
+    h_cols = st.columns(6)
+    with h_cols[0]:
         if st.button("📊 ESPORTIVAS"): st.session_state.aba_ativa = "Apostas Esportivas"
-    with h_col2:
+    with h_cols[1]:
         if st.button("📡 AO VIVO"): st.session_state.aba_ativa = "Apostas Ao Vivo"
-    with h_col3:
+    with h_cols[2]:
         if st.button("🔍 ENCONTRADAS"): st.session_state.aba_ativa = "Apostas Encontradas"
-    with h_col4:
+    with h_cols[3]:
         if st.button("📈 ESTATÍSTICAS"): st.session_state.aba_ativa = "Estatísticas"
-    with h_col5:
+    with h_cols[4]:
         if st.button("⚖️ MERCADO"): st.session_state.aba_ativa = "Mercado"
-    with h_col6:
+    with h_cols[5]:
         if st.button("🎯 ASSERTIVIDADE"): st.session_state.aba_ativa = "assertividade"
 
-with header_3:
-    act_col1, act_col2, act_col3 = st.columns([1, 1, 0.5])
-    with act_col1: st.button("REGISTRAR")
-    with act_col2: st.button("ENTRAR")
-    with act_col3: st.markdown("🔍")
+with header_col3:
+    btn_col1, btn_col2, btn_col3 = st.columns([1, 1, 0.5])
+    with btn_col1: st.button("REGISTRAR")
+    with btn_col2: st.button("ENTRAR")
+    with btn_col3: st.markdown("🔍")
 
 # ==========================================
 # MENU LATERAL (SIDEBAR)
@@ -106,59 +108,64 @@ with st.sidebar:
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
 # ==========================================
-# ÁREA DE CONTEÚDO DINÂMICO
+# CONTEÚDO DAS SEÇÕES
 # ==========================================
 
-# 1. ABA DE ASSERTIVIDADE (COM OS 8 KPI CARDS)
+# 1. ASSERTIVIDADE IA (COM 8 KPI CARDS)
 if st.session_state.aba_ativa == "assertividade":
-    st.header("📊 ASSERTIVIDADE & IA")
+    st.header("🎯 ASSERTIVIDADE & IA")
     m = st.session_state.metrics_ia
     
-    # Linha 1 de KPIs
-    kpi_r1_1, kpi_r1_2, kpi_r1_3, kpi_r1_4 = st.columns(4)
-    kpi_r1_1.metric("Assertividade Geral", f"{m['assertividade_geral']}%")
-    kpi_r1_2.metric("Gols Over", f"{m['gols_over']}%")
-    kpi_r1_3.metric("Cantos Over", f"{m['cantos_over']}%")
-    kpi_r1_4.metric("Win Rate", f"{m['win_rate']}%")
+    # Primeira Linha - 4 Cards
+    row1_c1, row1_c2, row1_c3, row1_c4 = st.columns(4)
+    row1_c1.metric("Assertividade Geral", f"{m['assertividade_geral']}%")
+    row1_c2.metric("Gols Over", f"{m['gols_over']}%")
+    row1_c3.metric("Cantos Over", f"{m['cantos_over']}%")
+    row1_c4.metric("Win Rate", f"{m['win_rate']}%")
     
-    # Linha 2 de KPIs
-    kpi_r2_1, kpi_r2_2, kpi_r2_3, kpi_r2_4 = st.columns(4)
-    kpi_r2_1.metric("ROI", f"{m['roi']}%")
-    kpi_r2_2.metric("Lucro Mensal", f"R$ {m['lucro_mensal']:.2f}")
-    kpi_r2_3.metric("Total de Calls", m['total_calls'])
-    kpi_r2_4.metric("Erros de IA", f"{m['erros_ia']}%")
+    # Segunda Linha - 4 Cards
+    row2_c1, row2_c2, row2_c3, row2_c4 = st.columns(4)
+    row2_c1.metric("ROI", f"{m['roi']}%")
+    row2_c2.metric("Lucro Mensal", f"R$ {m['lucro_mensal']:.2f}")
+    row2_c3.metric("Total de Calls", m['total_calls'])
+    row2_c4.metric("Erros de IA", f"{m['erros_ia']}%")
 
 # 2. GESTÃO DE BANCA
 elif st.session_state.aba_ativa == "gestao_banca":
     st.header("💰 GESTÃO DE BANCA")
-    col_gb1, col_gb2 = st.columns(2)
-    with col_gb1:
-        st.number_input("Saldo Atual da Banca", value=1000.0)
-    with col_gb2:
-        st.number_input("Unidade (Stake)", value=10.0)
+    c1, c2 = st.columns(2)
+    with c1:
+        st.number_input("Saldo da Banca", value=1000.0)
+    with c2:
+        st.number_input("Stake Recomendada", value=10.0)
 
-# 3. SCANNER PRÉ-LIVE (CORREÇÃO DA SINTAXE)
+# 3. SCANNER PRÉ-LIVE (CORREÇÃO DE SINTAXE)
 elif st.session_state.aba_ativa == "scanner_pre":
     st.header("🎯 SCANNER PRÉ-LIVE")
-    # Corrigindo o erro de dicionário não fechado da imagem 7
+    # Correção do erro SyntaxError: '{' was never closed
     db_ligas = {
-        "Brasileirão Série A": "Ativo",
-        "Premier League": "Ativo",
-        "Bundesliga": "Ativo"
+        "Liga": "Brasileirão",
+        "Jogos": 10,
+        "Status": "Ativo"
     }
-    st.write("Monitorando ligas principais...", db_ligas)
+    st.write("Dados de Monitoramento:", db_ligas)
 
-# 4. HISTÓRICO DE CALLS
+# 4. HISTÓRICO
 elif st.session_state.aba_ativa == "historico":
     st.header("📜 HISTÓRICO DE CALLS")
-    st.success("[19:51] Athletico-PR x Atlético-MG | R$ 10.00 | REVISAR")
+    st.info("[19:51] Athletico-PR x Atlético-MG | R$ 10.00 | Pendente")
+
+# 5. BILHETE OURO
+elif st.session_state.aba_ativa == "bilhete_ouro":
+    st.header("📅 BILHETE OURO - TOP 20 IA")
+    st.success("Bilhete gerado com sucesso para os jogos de hoje.")
 
 else:
     st.header(f"Seção: {st.session_state.aba_ativa}")
-    st.info("Esta funcionalidade está sendo processada pela IA para a v59.00.")
+    st.info("Funcionalidade em processamento para a v59.00.")
 
 # ==========================================
-# RODAPÉ (FOOTER)
+# RODAPÉ
 # ==========================================
 st.markdown("---")
 st.caption(f"STATUS: ● IA OPERACIONAL | v59.00 | {datetime.now().strftime('%d/%m/%Y %H:%M')}")
