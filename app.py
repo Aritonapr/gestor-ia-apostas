@@ -5,13 +5,11 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v59.9 - FIDELIDADE VISUAL ABSOLUTA + FUNÇÕES TOTAIS]
-# DIRETRIZ 1: HEADER INTEGRAL NA SIDEBAR (DESIGN BETANO + HOVER EFFECTS)
-# DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
-# DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
-# DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO) - UI v58.8 FIDELIDADE
-# DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO (SEM ABREVIAÇÕES)
-# DIRETRIZ 6: BLOCO GEOGRÁFICO BLINDADO - NÃO ALTERAR SEM COMANDO ESPECÍFICO
+# [PROTOCOLO DE MANUTENÇÃO v60.0 - REPARO DE UI E NAVEGAÇÃO]
+# DIRETRIZ 1: CORREÇÃO DE SOBREPOSIÇÃO NO HEADER (Z-INDEX E FLEX-GAP)
+# DIRETRIZ 2: RESTAURAÇÃO INTEGRAL DOS BOTÕES GOLS/ESCANTOS NA SIDEBAR
+# DIRETRIZ 3: MANUTENÇÃO DO BLOCO GEOGRÁFICO BLINDADO
+# DIRETRIZ 4: ESTILIZAÇÃO ZERO WHITE (BETANO DARK MODE)
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -107,7 +105,7 @@ def engine_ia_gen(n=20):
         dados.append({"jogo": f"{t1} vs {t2}", "win": f"{confia}%", "gols": "Over 2.5", "cantos": "10.5+", "ia": f"{confia}%", "meta": "18+", "chutes": "12+", "defesas": "6+", "cards": "4.5+"})
     return dados
 
-# 2. CAMADA DE ESTILO CSS INTEGRAL (RESTAURAÇÃO UI IMAGEM + NO SCROLLBAR)
+# 2. CAMADA DE ESTILO CSS INTEGRAL
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -125,6 +123,7 @@ st.markdown("""
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
     
+    /* HEADER CORRIGIDO PARA EVITAR SOBREPOSIÇÃO */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; 
@@ -133,8 +132,9 @@ st.markdown("""
         transform: translate3d(0,0,0); -webkit-backface-visibility: hidden;
     }
     
-    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; text-decoration: none; cursor: pointer;}
-    .nav-links { display: flex; gap: 22px; align-items: center; }
+    .header-left { display: flex; align-items: center; gap: 30px; }
+    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; text-decoration: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+    .nav-links { display: flex; gap: 18px; align-items: center; }
     .nav-item { color: #ffffff !important; font-size: 10px !important; text-transform: uppercase; font-weight: 600 !important; transition: 0.3s ease; cursor: pointer; white-space: nowrap; }
     .nav-item:hover { color: #06b6d4 !important; transform: scale(1.05); }
 
@@ -168,10 +168,7 @@ st.markdown("""
         background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px; transition: 0.3s;
     }
     .highlight-card:hover { border-color: #6d28d9; }
-
-    .banca-banner { 
-        background-color: #003399 !important; padding: 15px 25px; border-radius: 5px; color: white !important; font-size: 24px; font-weight: 800; margin-bottom: 35px; display: flex; align-items: center; gap: 15px; 
-    }
+    .banca-banner { background-color: #003399 !important; padding: 15px 25px; border-radius: 5px; color: white !important; font-size: 24px; font-weight: 800; margin-bottom: 35px; display: flex; align-items: center; gap: 15px; }
     .history-card-box { background: #161b22 !important; border: 1px solid #30363d !important; padding: 15px 25px !important; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
     .bilhete-item-box { background: rgba(109, 40, 217, 0.03); border: 1px solid #1e293b; border-left: 4px solid #9d54ff; padding: 15px; border-radius: 8px; margin-bottom: 12px; }
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
@@ -183,7 +180,7 @@ with st.sidebar:
     st.markdown("""
         <div class="betano-header">
             <div class="header-left">
-                <a href="?go=home" class="logo-link">GESTOR IA</a>
+                <a href="#" class="logo-link">GESTOR IA</a>
                 <div class="nav-links">
                     <div class="nav-item">ESPORTES</div><div class="nav-item">AO VIVO</div>
                     <div class="nav-item">VIRTUAIS</div><div class="nav-item">E-SPORTS</div>
@@ -195,7 +192,7 @@ with st.sidebar:
         <div style="height:65px;"></div>
     """, unsafe_allow_html=True) 
 
-    # --- NAVEGAÇÃO LATERAL (BOTÕES RESTAURADOS) ---
+    # --- NAVEGAÇÃO LATERAL (LISTA COMPLETA RESTAURADA) ---
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
@@ -229,7 +226,7 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v59.9", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v60.0", 100)
     
     st.markdown("### 📋 ANÁLISE DETALHADA (7 NÍVEIS)")
     bilhetes = engine_ia_gen(20)
@@ -317,4 +314,4 @@ elif st.session_state.aba_ativa == "escanteios":
     st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
     for b in engine_ia_gen(15): st.markdown(f"<div class='bilhete-item-box'>{b['jogo']} | <b>PALPITE:</b> OVER 9.5 CANTOS</div>", unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v59.9</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v60.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
