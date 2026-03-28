@@ -195,7 +195,7 @@ with st.sidebar:
         <div style="height:65px;"></div>
     """, unsafe_allow_html=True) 
 
-    # --- NAVEGAÇÃO LATERAL RESTAURADA ---
+    # --- NAVEGAÇÃO LATERAL (BOTÕES RESTAURADOS) ---
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
