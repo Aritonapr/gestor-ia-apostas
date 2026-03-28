@@ -33,8 +33,6 @@ def aplicar_layout_blindado():
         .nav-item { color: #ffffff !important; font-size: 11px !important; text-transform: uppercase; opacity: 1 !important; font-weight: 600 !important; letter-spacing: 0.5px; transition: 0.3s ease; cursor: pointer; white-space: nowrap; }
         .nav-item:hover { color: #06b6d4 !important; transform: scale(1.05); }
         .header-right { display: flex; align-items: center; gap: 15px; }
-        .search-lupa { color: #ffffff; font-size: 15px; cursor: pointer; transition: 0.3s; }
-        .search-lupa:hover { color: #9d54ff; transform: scale(1.2); }
         .registrar-pill { color: #ffffff !important; font-size: 9px !important; font-weight: 800; border: 1.5px solid #ffffff !important; padding: 7px 18px !important; border-radius: 20px !important; transition: 0.3s ease; cursor: pointer; }
         .registrar-pill:hover { background: white !important; color: #001a4d !important; }
         .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 8px 22px !important; border-radius: 5px !important; font-weight: 800; font-size: 9.5px; transition: 0.3s ease; cursor: pointer; }
@@ -86,7 +84,8 @@ with st.sidebar:
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
     if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
-    if st.button("📅 BILHETE OURO"): st.session_state.aba_ativa = "home"
+    if st.button("📅 JOGOS DO DIA"): st.session_state.aba_ativa = "home"
+    if st.button("🏆 VENCEDORES DA COMPETIÇÃO"): st.session_state.aba_ativa = "vencedores"
     if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
@@ -94,55 +93,47 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">{title}</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:{color_footer}; height:100%; width:{perc}%;"></div></div></div>""", unsafe_allow_html=True)
 
 # ==============================================================================
-# [TELA: SCANNER PRÉ-LIVE - LISTA COMPLETA DE CAMPEONATOS]
+# [TELA: SCANNER PRÉ-LIVE - AJUSTADO CONFORME IMAGEM]
 # ==============================================================================
 if st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    db_competicoes = {
-        "BRASIL": ["BRASILEIRÃO SÉRIE A", "BRASILEIRÃO SÉRIE B", "BRASILEIRÃO SÉRIE C", "BRASILEIRÃO SÉRIE D", "BRASILEIRÃO SUB-20", "CARIOQUÃO", "PAULISTÃO", "MINEIRO", "GAÚCHO", "PARANAENSE", "CATARINENSE", "COPA DO BRASIL", "COPA DO NORDESTE", "COPA SUL-SUDESTE", "COPA VERDE"],
-        "INGLATERRA": ["PREMIER LEAGUE", "COPA DA LIGA INGLESA", "COPA DA INGLATERRA"],
-        "ESPANHA": ["LA LIGA", "COPA DO REI"],
-        "ITÁLIA": ["CAMPEONATO ITALIANO", "COPA DA ITÁLIA"],
-        "ALEMANHA": ["BUNDESLIGA", "COPA DA ALEMANHA"],
-        "FRANÇA": ["CAMPEONATO FRANCÊS", "COPA DA FRANÇA"],
-        "INTERNACIONAL (UEFA)": ["CHAMPIONS LEAGUE", "LIGA EUROPA", "LIGA CONFERÊNCIA"],
-        "SELEÇÕES / MUNDIAL": ["COPA DO MUNDO 2026", "ELIMINATÓRIAS EUROPA", "REPESCAGEM MUNDIAL"],
-        "ÁSIA / ARÁBIA": ["CAMPEONATO SAUDITA", "CHAMPIONS LEAGUE DA ÁSIA"],
-        "BASE / JOVENS": ["SUL-AMERICANO SUB 17"]
+    # Hierarquia conforme o print do usuário
+    db_hierarquia = {
+        "🏆 COPA DO MUNDO 2026": {"Seleções FIFA": ["Principais", "Eliminatórias"]},
+        "BR BRASIL (LIGAS & COPAS)": {"Série A": ["Rodada 1", "Rodada 2"], "Copa do Brasil": ["Oitavas"]},
+        "🌎 AMÉRICA DO SUL (CONMEBOL)": {"Libertadores": ["Fase de Grupos"], "Sul-Americana": ["Fase de Grupos"]},
+        "EU EUROPA (PRINCIPAIS LIGAS)": {"Premier League": ["Geral"], "Champions League": ["Mata-Mata"]},
+        "SA ORIENTE MÉDIO & ÁSIA": {"Saudi Pro League": ["Geral"]},
+        "US AMÉRICA DO NORTE (MLS)": {"MLS": ["Temporada Regular"]}
     }
 
-    db_times = {
-        "BRASIL": ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Fluminense", "Vasco", "Grêmio", "Inter", "Atlético-MG", "Cruzeiro", "Botafogo", "Bahia", "Athletico-PR", "Santos"],
-        "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Man United", "Chelsea", "Tottenham", "Aston Villa"],
-        "ESPANHA": ["Real Madrid", "Barcelona", "Atlético Madrid", "Sevilla", "Real Sociedad"],
-        "ITÁLIA": ["Inter", "Milan", "Juventus", "Napoli", "Roma", "Lazio", "Atalanta"],
-        "ALEMANHA": ["Bayern", "Leverkusen", "Dortmund", "RB Leipzig"],
-        "FRANÇA": ["PSG", "Monaco", "Marseille", "Lyon"],
-        "INTERNACIONAL (UEFA)": ["Real Madrid", "Man City", "Bayern", "PSG", "Inter", "Liverpool"],
-        "SELEÇÕES / MUNDIAL": ["Brasil", "França", "Argentina", "Espanha", "Inglaterra", "Portugal", "Alemanha"],
-        "ÁSIA / ARÁBIA": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli"],
-        "BASE / JOVENS": ["Brasil U17", "Argentina U17", "Uruguai U17", "Equador U17"]
-    }
+    # Linha 1: Três Seletores
+    c1, c2, c3 = st.columns(3)
+    with c1: 
+        sel_cat = st.selectbox("🌎 CATEGORIA", list(db_hierarquia.keys()))
+    with c2: 
+        sel_tipo = st.selectbox("📂 TIPO", list(db_hierarquia[sel_cat].keys()))
+    with c3: 
+        sel_camp = st.selectbox("🏆 CAMPEONATO", db_hierarquia[sel_cat][sel_tipo])
 
-    c1, c2 = st.columns(2)
-    with c1: sel_regiao = st.selectbox("🌎 REGIÃO / PAÍS", list(db_competicoes.keys()))
-    with c2: sel_liga = st.selectbox("🏆 COMPETIÇÃO", db_competicoes[sel_regiao])
-
-    c3, c4 = st.columns(2)
-    with c3: t_casa = st.selectbox("🏠 TIME CASA", db_times.get(sel_regiao, ["Time A", "Time B"]))
-    with c4: t_fora = st.selectbox("🚀 TIME FORA", [t for t in db_times.get(sel_regiao, ["Time A", "Time B"]) if t != t_casa])
+    # Linha 2: Dois Seletores (Times)
+    c4, c5 = st.columns(2)
+    with c4:
+        t_casa = st.selectbox("🏠 MANDANTE", ["Flamengo", "Palmeiras", "São Paulo", "Argentina", "Brasil", "Man City"])
+    with c5:
+        t_fora = st.selectbox("🚀 VISITANTE", ["Argentina", "Palmeiras", "Real Madrid", "França", "Alemanha"])
 
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
         st.session_state.analise_bloqueada = {
-            "liga": sel_liga, "casa": t_casa, "fora": t_fora, "vencedor": "CASA",
+            "liga": sel_camp, "casa": t_casa, "fora": t_fora, "vencedor": "FORA",
             "gols": "OVER 1.5", "stake": f"R$ {v_calc:,.2f}", "cantos": "9.5+", "data": datetime.now().strftime("%H:%M")
         }
 
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
-        st.markdown(f"<h3 style='color:#9d54ff; text-align:center; margin-top:20px;'>{m['casa']} vs {m['fora']} ({m['liga']})</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='color:#9d54ff; text-align:center; margin-top:20px;'>RESULTADO: {m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("GOLS", m['gols'], 70)
@@ -153,17 +144,12 @@ if st.session_state.aba_ativa == "analise":
             st.toast("✅ CALL SALVA NO HISTÓRICO!")
 
 elif st.session_state.aba_ativa == "home":
-    st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white;'>📅 JOGOS DO DIA</h2>", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
-    with h1:
-        draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
-    with h2:
-        draw_card("ASSERTIVIDADE", "92.4%", 92)
-    with h3:
-        draw_card("SUGESTÃO", "OVER 2.5", 88)
-    with h4:
-        draw_card("IA STATUS", "ONLINE", 100)
-    
+    with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
+    with h2: draw_card("ASSERTIVIDADE", "92.4%", 92)
+    with h3: draw_card("SUGESTÃO", "OVER 2.5", 88)
+    with h4: draw_card("IA STATUS", "ONLINE", 100)
     if df_diario is not None: st.dataframe(df_diario, use_container_width=True)
 
 elif st.session_state.aba_ativa == "gestao":
@@ -176,10 +162,10 @@ elif st.session_state.aba_ativa == "historico":
     if not st.session_state.historico_calls: st.info("Nenhuma call salva.")
     else:
         for call in reversed(st.session_state.historico_calls):
-            st.markdown(f"""<div class="history-card-box"><div style="color:white;"><b>[{call['data']}]</b> {call['casa']} x {call['fora']} <span style="color:#64748b; font-size:10px;">({call['liga']})</span> | <span style="color:#06b6d4;">{call['stake']}</span> | {call['gols']}</div></div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="history-card-box"><div style="color:white;"><b>[{call['data']}]</b> {call['casa']} x {call['fora']} | <span style="color:#06b6d4;">{call['stake']}</span> | {call['gols']}</div></div>""", unsafe_allow_html=True)
 
 else:
     st.markdown(f"<h2 style='color:white;'>{st.session_state.aba_ativa.upper()}</h2>", unsafe_allow_html=True)
-    st.info("Processando dados...")
+    st.info("Módulo em processamento...")
 
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.7</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
