@@ -5,7 +5,7 @@ from datetime import datetime
 import numpy as np
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v59.10 - DESIGN DE BILHETE REAL]
+# [PROTOCOLO DE MANUTENÇÃO v59.20 - CORREÇÃO DE SINTAXE E INTEGRIDADE]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -58,6 +58,7 @@ def processar_ia_bot():
         vips = []
         try:
             temp_df = df_diario.copy()
+            # Identifica a coluna de confiança dinamicamente
             col_conf = next((c for c in temp_df.columns if 'CONF' in c.upper()), None)
             
             if col_conf:
@@ -77,10 +78,11 @@ def processar_ia_bot():
         except:
             pass
 
+# Execução silenciosa do bot
 processar_ia_bot()
 
 # ==============================================================================
-# 2. CAMADA DE ESTILO CSS (INCLUINDO DESIGN DE BILHETE)
+# 2. CAMADA DE ESTILO CSS (DESIGN DE BILHETE E INTERFACE)
 # ==============================================================================
 st.markdown("""
     <style>
@@ -95,6 +97,7 @@ st.markdown("""
     }
 
     header, [data-testid="stHeader"] { display: none !important; height: 0px !important; }
+    [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
     
     .betano-header { 
@@ -109,20 +112,24 @@ st.markdown("""
     
     .nav-item { color: #ffffff !important; font-size: 11px !important; text-transform: uppercase; font-weight: 600 !important; cursor: pointer; white-space: nowrap; }
 
-    [data-testid="stSidebar"] { min-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
+    [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
+    [data-testid="stSidebarContent"] { overflow: hidden !important; }
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
     
     section[data-testid="stSidebar"] div.stButton > button { 
         background-color: transparent !important; color: #94a3b8 !important; border: none !important; 
         border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; 
         padding: 18px 25px !important; font-size: 10px !important; text-transform: uppercase !important;
-        border-radius: 0px !important;
+        border-radius: 0px !important; transition: all 0.2s ease !important;
     }
-    section[data-testid="stSidebar"] div.stButton > button:hover { background-color: #1e293b !important; color: #06b6d4 !important; }
+    section[data-testid="stSidebar"] div.stButton > button:hover { background-color: #1e293b !important; color: #06b6d4 !important; border-left: 3px solid #6d28d9 !important; }
 
     .highlight-card { 
         background: #11151a; border: 1px solid #1e293b; padding: 20px; 
         border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px;
+        transition: all 0.3s ease;
     }
+    .highlight-card:hover { transform: translateY(-5px); border-color: #6d28d9; }
 
     /* --- ESTILO BILHETE DE APONTAMENTO --- */
     .bet-ticket {
@@ -150,7 +157,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. HEADER SIDEBAR
+# 3. HEADER SIDEBAR (BLINDADO)
 with st.sidebar:
     st.markdown("""
         <div class="betano-header">
@@ -190,24 +197,28 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 4. LÓGICA DE TELAS (APARÊNCIA PRESERVADA + TICKETS)
+# 4. LÓGICA DE TELAS (RESPEITO AOS 8 CARDS E BILHETES)
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 BILHETE OURO - TOP 20 IA</h2>", unsafe_allow_html=True)
     
-    # OS 8 KPI CARDS (PRESERVADOS DO SEU ORIGINAL)
+    # CÁLCULO DE ENTRADA PARA OS CARDS
+    valor_entrada_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
+    
+    # PRIMEIRA LINHA DE KPI CARDS (1-4)
     h1, h2, h3, h4 = st.columns(4)
     with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
     with h2: draw_card("ASSERTIVIDADE", "92.4%", 92)
     with h3: draw_card("SUGESTÃO", "OVER 1.5", 88)
     with h4: draw_card("IA STATUS", "ONLINE", 100)
+    
+    # SEGUNDA LINHA DE KPI CARDS (5-8)
     h5, h6, h7, h8 = st.columns(4)
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
-    with k7_val := (st.session_state.banca_total * st.session_state.stake_padrao / 100):
-        with h7: draw_card("VALOR ENTRADA", f"R$ {k7_val:,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v59.1", 100)
+    with h7: draw_card("VALOR ENTRADA", f"R$ {valor_entrada_calc:,.2f}", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v59.2", 100)
     
     st.markdown("<br>", unsafe_allow_html=True)
 
@@ -239,21 +250,21 @@ if st.session_state.aba_ativa == "home":
                         </div>
                         <div class="ticket-footer">
                             <div class="barcode">|| ||| || |||| || ||| |||</div>
-                            <div style="margin-top:5px;">VALOR RECOMENDADO: R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}</div>
+                            <div style="margin-top:5px;">VALOR RECOMENDADO: R$ {valor_entrada_calc:,.2f}</div>
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
     else:
-        st.info("Aguardando processamento dos bilhetes...")
+        st.warning("Sincronizando dados para gerar os bilhetes do dia...")
 
 elif st.session_state.aba_ativa == "gestao":
-    st.markdown("""<div class="banca-title-banner" style="background:#003399; padding:15px; border-radius:5px; color:white; font-weight:800;">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
+    st.markdown("""<div style="background:#003399; padding:15px; border-radius:5px; color:white; font-weight:800; margin-bottom:20px;">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
     st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=float(st.session_state.banca_total), step=50.0)
     st.session_state.stake_padrao = st.slider("STAKE POR OPERAÇÃO (%)", 0.1, 10.0, float(st.session_state.stake_padrao))
 
-# (Restante das telas mantido conforme seu arquivo original)
+# Mantendo as outras abas funcionais
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
-    st.write("Função de scanner ativa conforme seu banco de dados.")
+    st.info("Scanner operando normalmente.")
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v59.1</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v59.2</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
