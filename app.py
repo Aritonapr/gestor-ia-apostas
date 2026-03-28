@@ -4,7 +4,7 @@ import os
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v58.7 - RENOMEAÇÃO DE MENU LATERAL]
+# [PROTOCOLO DE MANUTENÇÃO v58.6 - TRAVA GLOBAL DE DUPLICIDADE]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -193,7 +193,7 @@ with st.sidebar:
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
     if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
-    if st.button("📅 BILHETE OURO"): st.session_state.aba_ativa = "home"
+    if st.button("📅 JOGOS DO DIA"): st.session_state.aba_ativa = "home"
     if st.button("🏆 VENCEDORES DA COMPETIÇÃO"): st.session_state.aba_ativa = "vencedores"
     if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
@@ -212,7 +212,7 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
 # --- LÓGICA DE TELAS ---
 
 if st.session_state.aba_ativa == "home":
-    st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white;'>📅 JOGOS DO DIA</h2>", unsafe_allow_html=True)
     if df_diario is not None:
         h1, h2, h3, h4 = st.columns(4)
         with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
@@ -223,7 +223,7 @@ if st.session_state.aba_ativa == "home":
         with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
         with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
         with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-        with h8: draw_card("SISTEMA", "JARVIS v58.7", 100)
+        with h8: draw_card("SISTEMA", "JARVIS v58.6", 100)
         
         st.markdown("### 📋 ANÁLISE DETALHADA (7 NÍVEIS)")
         st.dataframe(df_diario, use_container_width=True)
@@ -260,7 +260,7 @@ elif st.session_state.aba_ativa == "gestao":
         with g7: draw_card("ENTRADAS/LOSS", f"{entradas_loss}", 100, "#00d2ff")
         with g8: st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div><div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:#00d2ff; height:100%; width:100%;"></div></div></div>""", unsafe_allow_html=True)
 
-# TELA 3: SCANNER PRÉ-LIVE (LOGICA DE BLOQUEIO ABSOLUTO v58.7)
+# TELA 3: SCANNER PRÉ-LIVE (LOGICA DE BLOQUEIO ABSOLUTO v58.6)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
@@ -334,6 +334,7 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
+    # --- LOGICA DE FILTRAGEM GEOGRÁFICA E BLOQUEIO DE DUPLICADOS UNIVERSAL ---
     lista_base_do_pais = sorted(db_times.get(sel_pais, ["Time A", "Time B"]))
     
     if df_diario is not None:
@@ -350,6 +351,7 @@ elif st.session_state.aba_ativa == "analise":
         if t_casa == "(Outro)": t_casa = st.text_input("NOME DO TIME CASA")
 
     with c2:
+        # TRAVA GLOBAL: O time selecionado em 'Casa' nunca aparecerá em 'Fora'
         lista_fora_filtrada = [t for t in lista_base_do_pais if t != t_casa]
         t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora_filtrada + ["(Outro)"])
         if t_fora == "(Outro)": t_fora = st.text_input("NOME DO TIME FORA")
@@ -402,7 +404,7 @@ elif st.session_state.aba_ativa == "analise":
         with r5: draw_card("IA CONF.", m['confia'], 94)
         with r6: draw_card("PRESSÃO", "ALTA" if m['luz'] == "🟢" else "MÉDIA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO" if m['luz'] == "🟢" else "ESTÁVEL", 60)
-        with r8: draw_card("SISTEMA", "v58.7", 100)
+        with r8: draw_card("SISTEMA", "v58.6", 100)
         
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
@@ -473,4 +475,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.7</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.6</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
