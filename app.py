@@ -5,9 +5,9 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v60.0 - REPARO DE UI E NAVEGAÇÃO]
-# DIRETRIZ 1: CORREÇÃO DE SOBREPOSIÇÃO NO HEADER (Z-INDEX E FLEX-GAP)
-# DIRETRIZ 2: RESTAURAÇÃO INTEGRAL DOS BOTÕES GOLS/ESCANTOS NA SIDEBAR
+# [PROTOCOLO DE MANUTENÇÃO v60.1 - REPARO FINAL DE UI E NAVEGAÇÃO]
+# DIRETRIZ 1: CORREÇÃO DE ESPAÇAMENTO NO HEADER (GAP AUMENTADO PARA 50PX)
+# DIRETRIZ 2: RESTAURAÇÃO INTEGRAL DOS BOTÕES GOLS/ESCANTEIOS NA SIDEBAR
 # DIRETRIZ 3: MANUTENÇÃO DO BLOCO GEOGRÁFICO BLINDADO
 # DIRETRIZ 4: ESTILIZAÇÃO ZERO WHITE (BETANO DARK MODE)
 # ==============================================================================
@@ -123,7 +123,7 @@ st.markdown("""
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
     
-    /* HEADER CORRIGIDO PARA EVITAR SOBREPOSIÇÃO */
+    /* HEADER REPARADO - GAP AUMENTADO PARA EVITAR SOBREPOSIÇÃO */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; 
@@ -132,8 +132,8 @@ st.markdown("""
         transform: translate3d(0,0,0); -webkit-backface-visibility: hidden;
     }
     
-    .header-left { display: flex; align-items: center; gap: 30px; }
-    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; text-decoration: none; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+    .header-left { display: flex; align-items: center; gap: 50px !important; } /* Aumento do espaço aqui */
+    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; text-decoration: none; cursor: pointer; white-space: nowrap; }
     .nav-links { display: flex; gap: 18px; align-items: center; }
     .nav-item { color: #ffffff !important; font-size: 10px !important; text-transform: uppercase; font-weight: 600 !important; transition: 0.3s ease; cursor: pointer; white-space: nowrap; }
     .nav-item:hover { color: #06b6d4 !important; transform: scale(1.05); }
@@ -180,7 +180,7 @@ with st.sidebar:
     st.markdown("""
         <div class="betano-header">
             <div class="header-left">
-                <a href="#" class="logo-link">GESTOR IA</a>
+                <div class="logo-link">GESTOR IA</div>
                 <div class="nav-links">
                     <div class="nav-item">ESPORTES</div><div class="nav-item">AO VIVO</div>
                     <div class="nav-item">VIRTUAIS</div><div class="nav-item">E-SPORTS</div>
@@ -226,7 +226,7 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v60.0", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v60.1", 100)
     
     st.markdown("### 📋 ANÁLISE DETALHADA (7 NÍVEIS)")
     bilhetes = engine_ia_gen(20)
@@ -314,4 +314,4 @@ elif st.session_state.aba_ativa == "escanteios":
     st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
     for b in engine_ia_gen(15): st.markdown(f"<div class='bilhete-item-box'>{b['jogo']} | <b>PALPITE:</b> OVER 9.5 CANTOS</div>", unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v60.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v60.1</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
