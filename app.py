@@ -4,15 +4,15 @@ import os
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v58.9 - ESTABILIZAÇÃO DE DADOS E FIX DE FLICKER]
-# DIRETRIZ 1: HEADER FIXO COM PRIORIDADE DE RENDERIZAÇÃO
-# DIRETRIZ 2: CARREGAMENTO DE DADOS COM FALLBACK (BILHETE OURO SEMPRE ATIVO)
-# DIRETRIZ 3: REMOÇÃO DE RERUNS DESNECESSÁRIOS (FIM DO PISCAR)
-# DIRETRIZ 4: ESTILIZAÇÃO ZERO WHITE v57.35 (IMUTÁVEL)
+# [PROTOCOLO DE MANUTENÇÃO v58.7 - RENOMEAÇÃO DE MENU LATERAL]
+# DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
+# DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
+# DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
+# DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO) - MANTER UI v57.35
 # DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO
 # ==============================================================================
 
-# 1. CONFIGURAÇÃO DE PÁGINA (Executada IMEDIATAMENTE)
+# 1. CONFIGURAÇÃO DE PÁGINA
 st.set_page_config(
     page_title="GESTOR IA - TRADING PRO", 
     layout="wide", 
@@ -28,31 +28,26 @@ if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
 if 'meta_diaria' not in st.session_state: st.session_state.meta_diaria = 3.0
 if 'stop_loss' not in st.session_state: st.session_state.stop_loss = 5.0
 
-# --- FUNÇÃO DE CARREGAMENTO DE DADOS (COM FALLBACK) ---
+# Redirecionamento Home via URL
+query_params = st.query_params
+if query_params.get("go") == "home":
+    st.session_state.aba_ativa = "home"
+    st.query_params.clear()
+
+# --- FUNÇÃO DE CARREGAMENTO DE DADOS ---
 def carregar_jogos_diarios():
     path = "data/database_diario.csv"
     if os.path.exists(path):
         try:
             df = pd.read_csv(path)
-            if not df.empty:
-                return df
+            return df
         except:
-            pass
-    # Se falhar ou não existir, cria um DataFrame exemplo para o Bilhete Ouro não ficar vazio
-    data_exemplo = {
-        'HORA': ['16:00', '18:30', '21:00'],
-        'PAIS': ['BRASIL', 'INGLATERRA', 'ESPANHA'],
-        'LIGA': ['BRASILEIRÃO', 'PREMIER LEAGUE', 'LA LIGA'],
-        'CASA': ['Palmeiras', 'Man City', 'Real Madrid'],
-        'FORA': ['Flamengo', 'Arsenal', 'Barcelona'],
-        'IA_PROB': ['94%', '88%', '91%'],
-        'SUGESTÃO': ['OVER 1.5', 'CASA VENCE', 'BTTS YES']
-    }
-    return pd.DataFrame(data_exemplo)
+            return None
+    return None
 
 df_diario = carregar_jogos_diarios()
 
-# 2. CAMADA DE ESTILO CSS INTEGRAL (PRIORIDADE MÁXIMA)
+# 2. CAMADA DE ESTILO CSS INTEGRAL (MANTIDA 100% DA v57.35)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -66,13 +61,7 @@ st.markdown("""
     }
 
     header, [data-testid="stHeader"] { display: none !important; height: 0px !important; }
-    [data-testid="stSidebarCollapseButton"] { 
-        background-color: transparent !important; 
-        color: white !important; 
-        top: 10px !important;
-        z-index: 1000001 !important;
-    }
-    
+    [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
     
     .betano-header { 
@@ -122,7 +111,7 @@ st.markdown("""
 
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
-    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: 20px !important; gap: 0px !important; }
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
     
     section[data-testid="stSidebar"] div.stButton > button { 
         background-color: transparent !important; color: #94a3b8 !important; border: none !important; 
@@ -176,31 +165,30 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. HEADER GLOBAL (RENDERIZAÇÃO IMEDIATA)
-st.markdown("""
-    <div class="betano-header">
-        <div class="header-left">
-            <div class="logo-link">GESTOR IA</div>
-            <div class="nav-links">
-                <div class="nav-item">APOSTAS ESPORTIVAS</div>
-                <div class="nav-item">APOSTAS AO VIVO</div>
-                <div class="nav-item">APOSTAS ENCONTRADAS</div>
-                <div class="nav-item">ESTATÍSTICAS AVANÇADAS</div>
-                <div class="nav-item">MERCADO PROBABILÍSTICO</div>
-                <div class="nav-item">ASSERTIVIDADE IA</div>
+# 3. HEADER SIDEBAR
+with st.sidebar:
+    st.markdown("""
+        <div class="betano-header">
+            <div class="header-left">
+                <a href="?go=home" class="logo-link">GESTOR IA</a>
+                <div class="nav-links">
+                    <div class="nav-item">APOSTAS ESPORTIVAS</div>
+                    <div class="nav-item">APOSTAS AO VIVO</div>
+                    <div class="nav-item">APOSTAS ENCONTRADAS</div>
+                    <div class="nav-item">ESTATÍSTICAS AVANÇADAS</div>
+                    <div class="nav-item">MERCADO PROBABILÍSTICO</div>
+                    <div class="nav-item">ASSERTIVIDADE IA</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="search-lupa">🔍</div>
+                <div class="registrar-pill">REGISTRAR</div>
+                <div class="entrar-grad">ENTRAR</div>
             </div>
         </div>
-        <div class="header-right">
-            <div class="search-lupa">🔍</div>
-            <div class="registrar-pill">REGISTRAR</div>
-            <div class="entrar-grad">ENTRAR</div>
-        </div>
-    </div>
-""", unsafe_allow_html=True) 
+        <div style="height:65px;"></div>
+    """, unsafe_allow_html=True) 
 
-# 4. SIDEBAR - MENU DE NAVEGAÇÃO (TRAVA DE SESSION_STATE)
-with st.sidebar:
-    st.markdown("<div style='height:40px;'></div>", unsafe_allow_html=True) 
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
@@ -225,21 +213,22 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
 
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
-    
-    h1, h2, h3, h4 = st.columns(4)
-    with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
-    with h2: draw_card("ASSERTIVIDADE", "92.4%", 92)
-    with h3: draw_card("SUGESTÃO", "OVER 2.5", 88)
-    with h4: draw_card("IA STATUS", "ONLINE", 100)
-    h5, h6, h7, h8 = st.columns(4)
-    with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
-    with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
-    with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v58.9", 100)
-    
-    st.markdown("### 📋 ANÁLISE DETALHADA (LISTA ATUALIZADA)")
-    # O DataFrame agora é carregado com fallback, nunca vindo nulo
-    st.dataframe(df_diario, use_container_width=True)
+    if df_diario is not None:
+        h1, h2, h3, h4 = st.columns(4)
+        with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
+        with h2: draw_card("ASSERTIVIDADE", "92.4%", 92)
+        with h3: draw_card("SUGESTÃO", "OVER 2.5", 88)
+        with h4: draw_card("IA STATUS", "ONLINE", 100)
+        h5, h6, h7, h8 = st.columns(4)
+        with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
+        with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
+        with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
+        with h8: draw_card("SISTEMA", "JARVIS v58.7", 100)
+        
+        st.markdown("### 📋 ANÁLISE DETALHADA (7 NÍVEIS)")
+        st.dataframe(df_diario, use_container_width=True)
+    else:
+        st.warning("Aguardando sincronização de dados diários...")
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
@@ -271,6 +260,7 @@ elif st.session_state.aba_ativa == "gestao":
         with g7: draw_card("ENTRADAS/LOSS", f"{entradas_loss}", 100, "#00d2ff")
         with g8: st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">SAÚDE BANCA</div><div style="color:{saude_color}; font-size:16px; font-weight:900; margin-top:10px;">{saude_label}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:#00d2ff; height:100%; width:100%;"></div></div></div>""", unsafe_allow_html=True)
 
+# TELA 3: SCANNER PRÉ-LIVE (LOGICA DE BLOQUEIO ABSOLUTO v58.7)
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
@@ -412,7 +402,7 @@ elif st.session_state.aba_ativa == "analise":
         with r5: draw_card("IA CONF.", m['confia'], 94)
         with r6: draw_card("PRESSÃO", "ALTA" if m['luz'] == "🟢" else "MÉDIA", 88)
         with r7: draw_card("TENDÊNCIA", "SUBINDO" if m['luz'] == "🟢" else "ESTÁVEL", 60)
-        with r8: draw_card("SISTEMA", "v58.9", 100)
+        with r8: draw_card("SISTEMA", "v58.7", 100)
         
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
@@ -483,4 +473,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.9</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.7</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
