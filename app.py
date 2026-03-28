@@ -2,15 +2,14 @@ import streamlit as st
 import pandas as pd
 import os
 import random
-import requests
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v59.2 - RESTAURAÇÃO DE UI + GRID 8 CARDS]
+# [PROTOCOLO DE MANUTENÇÃO v59.3 - RESTAURAÇÃO TOTAL DE INTERFACE]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
-# DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO) - MANTENDO UI v58.x
+# DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO) - FIDELIDADE v58.8
 # DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO (SEM ABREVIAÇÕES)
 # DIRETRIZ 6: BLOCO GEOGRÁFICO BLINDADO - NÃO ALTERAR SEM COMANDO ESPECÍFICO
 # ==============================================================================
@@ -118,7 +117,7 @@ if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
 if 'meta_diaria' not in st.session_state: st.session_state.meta_diaria = 3.0
 if 'stop_loss' not in st.session_state: st.session_state.stop_loss = 5.0
 
-# 2. CAMADA DE ESTILO CSS INTEGRAL (RESTAURADA E REFORÇADA)
+# 2. CAMADA DE ESTILO CSS INTEGRAL (REFORÇADA ZERO WHITE)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
@@ -153,26 +152,29 @@ st.markdown("""
     }
     section[data-testid="stSidebar"] div.stButton > button:hover { background-color: #1e293b !important; color: #06b6d4 !important; border-left: 3px solid #6d28d9 !important; }
 
-    /* ESTILO DOS SELECTS E INPUTS - MANTENDO DARK */
+    /* ESTILO DOS SELECTS E INPUTS - MANTENDO DARK TOTAL */
     div[data-baseweb="select"] > div, div[data-baseweb="input"] {
         background-color: #1a202c !important;
         color: white !important;
         border: 1px solid #334155 !important;
     }
     div[role="listbox"] { background-color: #1a202c !important; color: white !important; }
-    
+    label { color: #64748b !important; font-size: 10px !important; text-transform: uppercase !important; font-weight: 700 !important; }
+
+    /* BOTÃO GRANDE COM GRADIENTE */
     div.stButton > button:not([data-testid="stSidebar"] *) {
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
         color: #ffffff !important; border: none !important; padding: 15px 20px !important;
         font-weight: 900 !important; text-transform: uppercase !important;
-        border-radius: 6px !important; width: 100% !important; box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important;
+        border-radius: 6px !important; width: 100% !important; 
+        box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important;
+        margin-top: 15px !important;
     }
 
     .highlight-card { 
         background: #11151a; border: 1px solid #1e293b; padding: 20px; 
         border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px;
     }
-
     .bilhete-item { background: rgba(157, 84, 255, 0.03); border: 1px solid #1e293b; border-left: 4px solid #9d54ff; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     </style>
@@ -203,8 +205,6 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
 
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
-    
-    # GRID DE 8 CARDS (MANTENDO FIDELIDADE À IMAGEM)
     h1, h2, h3, h4 = st.columns(4)
     with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
     with h2: draw_card("ASSERTIVIDADE", "92.4%", 92)
@@ -214,7 +214,7 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v59.2", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v59.3", 100)
     
     st.markdown("### 📋 ANÁLISE DETALHADA (7 NÍVEIS)")
     bilhetes = jarvis_ai_engine_v2()
@@ -241,7 +241,7 @@ if st.session_state.aba_ativa == "home":
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    # RESTAURANDO A LINHA DE 3 COLUNAS DO TOPO
+    # --- TOPO: 3 COLUNAS (REGIÃO, GRUPO, COMPETIÇÃO) ---
     row_top = st.columns(3)
     with row_top[0]: sel_pais = st.selectbox("🌎 REGIÃO / PAÍS", list(db_paises.keys()))
     with row_top[1]: sel_grupo = st.selectbox("📂 GRUPO", db_paises[sel_pais])
@@ -249,7 +249,7 @@ elif st.session_state.aba_ativa == "analise":
     
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
-    # RESTAURANDO A LINHA DE 2 COLUNAS DOS TIMES
+    # --- MEIO: 2 COLUNAS (CASA E FORA) ---
     lista_base_do_pais = sorted(db_times.get(sel_pais, ["Time A", "Time B"]))
     c_team1, c_team2 = st.columns(2)
     with c_team1: t_casa = st.selectbox("🏠 TIME DA CASA", lista_base_do_pais + ["(Outro)"])
@@ -257,12 +257,13 @@ elif st.session_state.aba_ativa == "analise":
         lista_fora_filtrada = [t for t in lista_base_do_pais if t != t_casa]
         t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora_filtrada + ["(Outro)"])
 
-    if st.button("⚡ EXECUTAR ALGORITIMO"):
-        st.session_state.analise_bloqueada = {"casa": t_casa, "fora": t_fora, "vencedor": "ALTA PROB", "gols": "OVER 1.5", "data": datetime.now().strftime("%H:%M"), "stake_val": "R$ 10.00", "luz": "🟢", "motivo": "IA CONFIRMADA", "cor": "#00ff88", "confia": "94%"}
+    # --- BOTÃO GRANDE EM LARGURA TOTAL ---
+    if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
+        st.session_state.analise_bloqueada = {"casa": t_casa, "fora": t_fora, "vencedor": "ALTA PROB", "gols": "OVER 1.5", "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", "luz": "🟢", "motivo": "IA CONFIRMADA", "cor": "#00ff88", "confia": "94%"}
     
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
-        st.markdown(f"<div style='border-left: 5px solid {m['cor']}; padding:15px; background:rgba(255,255,255,0.02); color:white;'>{m['luz']} <b>JARVIS:</b> {m['motivo']}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='border-left: 5px solid {m['cor']}; padding:15px; background:rgba(255,255,255,0.02); color:white; margin-top:20px;'>{m['luz']} <b>JARVIS:</b> {m['motivo']}</div>", unsafe_allow_html=True)
         st.markdown(f"<h3 style='color:#9d54ff; text-align:center;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
@@ -275,4 +276,4 @@ elif st.session_state.aba_ativa == "gestao":
     st.session_state.banca_total = st.number_input("BANCA TOTAL", value=st.session_state.banca_total)
     st.session_state.stake_padrao = st.slider("STAKE (%)", 0.1, 10.0, st.session_state.stake_padrao)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v59.2</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v59.3</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
