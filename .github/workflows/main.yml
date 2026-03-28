@@ -23,6 +23,9 @@ jobs:
       - name: 🛠️ Instalando Ferramentas (Pandas e Requests)
         run: |
           pip install pandas requests
+          - name: 🛠️ Instalando Ferramentas
+        run: |
+          pip install pandas requests selenium webdriver-manager
 
       - name: 🤖 Executando o Bot Jarvis (sync_data.py)
         run: python sync_data.py
