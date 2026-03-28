@@ -58,36 +58,29 @@ def aplicar_layout_blindado():
     """, unsafe_allow_html=True)
 
     with st.sidebar:
-        st.markdown("""
-            <div class="betano-header">
-                <div class="header-left"><a href="?go=home" class="logo-link">GESTOR IA</a></div>
-                <div class="header-right"><div class="registrar-pill">REGISTRAR</div><div class="entrar-grad">ENTRAR</div></div>
-            </div>
-            <div style="height:65px;"></div>
-        """, unsafe_allow_html=True)
+        st.markdown("""<div class="betano-header"><div class="header-left"><a href="?go=home" class="logo-link">GESTOR IA</a></div><div class="header-right"><div class="registrar-pill">REGISTRAR</div><div class="entrar-grad">ENTRAR</div></div></div><div style="height:65px;"></div>""", unsafe_allow_html=True)
 
-# 1. CONFIGURAÇÃO DE PÁGINA
+# 1. CONFIGURAÇÃO
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 aplicar_layout_blindado()
 
-# --- INICIALIZAÇÃO DE MEMÓRIA ---
+# --- MEMÓRIA ---
 if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
 if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
 if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
 if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
 if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
 
-# --- CARREGAMENTO DE DADOS ---
+# --- DADOS ---
 def carregar_jogos_diarios():
     path = "data/database_diario.csv"
     if os.path.exists(path):
         try: return pd.read_csv(path)
         except: return None
     return None
-
 df_diario = carregar_jogos_diarios()
 
-# --- SIDEBAR NAVEGAÇÃO ---
+# --- NAVEGAÇÃO ---
 with st.sidebar:
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
@@ -98,55 +91,65 @@ with st.sidebar:
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
 def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, #06b6d4)"):
-    st.markdown(f"""
-        <div class="highlight-card">
-            <div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">{title}</div>
-            <div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div>
-            <div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;">
-                <div style="background:{color_footer}; height:100%; width:{perc}%;"></div>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">{title}</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:{color_footer}; height:100%; width:{perc}%;"></div></div></div>""", unsafe_allow_html=True)
 
 # ==============================================================================
-# [TELA: SCANNER PRÉ-LIVE - LÓGICA DE ESCOLHA DE TIMES]
+# [TELA: SCANNER PRÉ-LIVE - LISTA COMPLETA DE CAMPEONATOS]
 # ==============================================================================
 if st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    # Bancos de dados de exemplo para seleção
-    paises = ["BRASIL", "INGLATERRA", "ESPANHA", "ITÁLIA", "ALEMANHA", "CHAMPIONS LEAGUE"]
-    times_db = {
-        "BRASIL": ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Fluminense", "Vasco"],
-        "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Man United", "Chelsea"],
-        "ESPANHA": ["Real Madrid", "Barcelona", "Atlético Madrid"],
-        "ITÁLIA": ["Inter", "Milan", "Juventus", "Napoli"],
-        "ALEMANHA": ["Bayern", "Leverkusen", "Dortmund"],
-        "CHAMPIONS LEAGUE": ["Real Madrid", "Man City", "PSG", "Bayern"]
+    # 1. DEFINIÇÃO DA ESTRUTURA DE CATEGORIAS E LIGAS
+    db_competicoes = {
+        "BRASIL": ["BRASILEIRÃO SÉRIE A", "BRASILEIRÃO SÉRIE B", "BRASILEIRÃO SÉRIE C", "BRASILEIRÃO SÉRIE D", "BRASILEIRÃO SUB-20", "CARIOQUÃO", "PAULISTÃO", "MINEIRO", "GAÚCHO", "PARANAENSE", "CATARINENSE", "COPA DO BRASIL", "COPA DO NORDESTE", "COPA SUL-SUDESTE", "COPA VERDE"],
+        "INGLATERRA": ["PREMIER LEAGUE", "COPA DA LIGA INGLESA", "COPA DA INGLATERRA"],
+        "ESPANHA": ["LA LIGA", "COPA DO REI"],
+        "ITÁLIA": ["CAMPEONATO ITALIANO", "COPA DA ITÁLIA"],
+        "ALEMANHA": ["BUNDESLIGA", "COPA DA ALEMANHA"],
+        "FRANÇA": ["CAMPEONATO FRANCÊS", "COPA DA FRANÇA"],
+        "INTERNACIONAL (UEFA)": ["CHAMPIONS LEAGUE", "LIGA EUROPA", "LIGA CONFERÊNCIA"],
+        "SELEÇÕES / MUNDIAL": ["COPA DO MUNDO 2026", "ELIMINATÓRIAS EUROPA", "REPESCAGEM MUNDIAL"],
+        "ÁSIA / ARÁBIA": ["CAMPEONATO SAUDITA", "CHAMPIONS LEAGUE DA ÁSIA"],
+        "BASE / JOVENS": ["SUL-AMERICANO SUB 17"]
     }
 
-    c1, c2, c3 = st.columns(3)
-    with c1: sel_pais = st.selectbox("🌎 REGIÃO / PAÍS", paises)
-    with c2: t_casa = st.selectbox("🏠 TIME CASA", times_db.get(sel_pais, []))
-    with c3: t_fora = st.selectbox("🚀 TIME FORA", [t for t in times_db.get(sel_pais, []) if t != t_casa])
+    # 2. DEFINIÇÃO DE TIMES (TOP TIMES POR REGIÃO)
+    db_times = {
+        "BRASIL": ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Fluminense", "Vasco", "Grêmio", "Inter", "Atlético-MG", "Cruzeiro", "Botafogo", "Bahia", "Athletico-PR", "Santos"],
+        "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Man United", "Chelsea", "Tottenham", "Aston Villa"],
+        "ESPANHA": ["Real Madrid", "Barcelona", "Atlético Madrid", "Sevilla", "Real Sociedad"],
+        "ITÁLIA": ["Inter", "Milan", "Juventus", "Napoli", "Roma", "Lazio", "Atalanta"],
+        "ALEMANHA": ["Bayern", "Leverkusen", "Dortmund", "RB Leipzig"],
+        "FRANÇA": ["PSG", "Monaco", "Marseille", "Lyon"],
+        "INTERNACIONAL (UEFA)": ["Real Madrid", "Man City", "Bayern", "PSG", "Inter", "Liverpool"],
+        "SELEÇÕES / MUNDIAL": ["Brasil", "França", "Argentina", "Espanha", "Inglaterra", "Portugal", "Alemanha"],
+        "ÁSIA / ARÁBIA": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli"],
+        "BASE / JOVENS": ["Brasil U17", "Argentina U17", "Uruguai U17", "Equador U17"]
+    }
+
+    c1, c2 = st.columns(2)
+    with c1: sel_regiao = st.selectbox("🌎 REGIÃO / PAÍS", list(db_competicoes.keys()))
+    with c2: sel_liga = st.selectbox("🏆 COMPETIÇÃO", db_competicoes[sel_regiao])
+
+    c3, c4 = st.columns(2)
+    with c3: t_casa = st.selectbox("🏠 TIME CASA", db_times.get(sel_regiao, ["Time A", "Time B"]))
+    with c4: t_fora = st.selectbox("🚀 TIME FORA", [t for t in db_times.get(sel_regiao, ["Time A", "Time B"]) if t != t_casa])
 
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-        # Lógica simulada de palpite
         st.session_state.analise_bloqueada = {
-            "casa": t_casa, "fora": t_fora, "vencedor": "CASA" if len(t_casa) > len(t_fora) else "FORA",
+            "liga": sel_liga, "casa": t_casa, "fora": t_fora, "vencedor": "CASA",
             "gols": "OVER 1.5", "stake": f"R$ {v_calc:,.2f}", "cantos": "9.5+", "data": datetime.now().strftime("%H:%M")
         }
 
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
-        st.markdown(f"<h3 style='color:#9d54ff; text-align:center; margin-top:20px;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='color:#9d54ff; text-align:center; margin-top:20px;'>{m['casa']} vs {m['fora']} ({m['liga']})</h3>", unsafe_allow_html=True)
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("GOLS", m['gols'], 70)
         with r3: draw_card("STAKE", m['stake'], 100)
         with r4: draw_card("CANTOS", m['cantos'], 65)
-        
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ CALL SALVA NO HISTÓRICO!")
@@ -158,9 +161,7 @@ elif st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
     with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
-    with h2: draw_card("ASSERTIVIDADE", "92.4%", 92)
-    with h3: draw_card("SUGESTÃO", "OVER 2.5", 88)
-    with h4: draw_card("IA STATUS", "ONLINE", 100)
+    with h2: draw_card("ASSERTIVIDADE", "92.4%", 92); with h3: draw_card("SUGESTÃO", "OVER 2.5", 88); with h4: draw_card("IA STATUS", "ONLINE", 100)
     if df_diario is not None: st.dataframe(df_diario, use_container_width=True)
 
 elif st.session_state.aba_ativa == "gestao":
@@ -173,10 +174,10 @@ elif st.session_state.aba_ativa == "historico":
     if not st.session_state.historico_calls: st.info("Nenhuma call salva.")
     else:
         for call in reversed(st.session_state.historico_calls):
-            st.markdown(f"""<div class="history-card-box"><div style="color:white;"><b>[{call['data']}]</b> {call['casa']} x {call['fora']} | <span style="color:#06b6d4;">{call['stake']}</span> | {call['gols']}</div></div>""", unsafe_allow_html=True)
+            st.markdown(f"""<div class="history-card-box"><div style="color:white;"><b>[{call['data']}]</b> {call['casa']} x {call['fora']} <span style="color:#64748b; font-size:10px;">({call['liga']})</span> | <span style="color:#06b6d4;">{call['stake']}</span> | {call['gols']}</div></div>""", unsafe_allow_html=True)
 
 else:
     st.markdown(f"<h2 style='color:white;'>{st.session_state.aba_ativa.upper()}</h2>", unsafe_allow_html=True)
-    st.info("Módulo em processamento...")
+    st.info("Processando dados...")
 
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.7</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
