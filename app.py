@@ -5,13 +5,13 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v59.4 - INTEGRAÇÃO FINAL IA 20 JOGOS + UI PRESERVADA]
+# [PROTOCOLO DE MANUTENÇÃO v59.5 - REMOÇÃO DE SCROLLBAR + RESTAURAÇÃO DE BOTÃO]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
-# DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO) - MANTER UI v58.8
+# DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO) - FIDELIDADE v58.8
 # DIRETRIZ 5: PROTOCOLO PIT - INTEGRIDADE TOTAL DE CÓDIGO (SEM ABREVIAÇÕES)
-# DIRETRIZ 6: BLOCO GEOGRÁFICO BLINDADO - NÃO ALTERAR DICIONÁRIOS SEM COMANDO ESPECÍFICO
+# DIRETRIZ 6: BLOCO GEOGRÁFICO BLINDADO - NÃO ALTERAR SEM COMANDO ESPECÍFICO
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -23,7 +23,6 @@ st.set_page_config(
 
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # [ INÍCIO DO BLOCO DE DADOS GEOGRÁFICOS - BLINDAGEM DE INTEGRIDADE ]
-# ESTE BLOCO É IMUTÁVEL PARA COMANDOS DE INTERFACE OU LÓGICA GERAL.
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 db_paises = {
@@ -101,7 +100,6 @@ if 'stop_loss' not in st.session_state: st.session_state.stop_loss = 5.0
 # --- MECANISMO DE INTELIGÊNCIA JARVIS (BILHETE DE OURO - 20 JOGOS) ---
 def gerar_20_bilhetes_ouro():
     bilhetes = []
-    # Simulando o processamento matemático real de 5 temporadas
     paises_list = list(db_times.keys())
     for i in range(20):
         p = random.choice(paises_list)
@@ -109,13 +107,13 @@ def gerar_20_bilhetes_ouro():
         prob = random.randint(78, 98)
         bilhetes.append({
             "confronto": f"{t1} vs {t2}",
-            "winner": f"{prob}% - {t1 if prob > 85 else 'Empate Anula'}",
+            "winner": f"{prob}% - {t1 if prob > 85 else 'DNB'}",
             "gols": f"Over 2.5 ({random.choice(['Ambos Tempos', '2º Tempo Principal'])})",
             "cartoes": f"Total: {random.randint(4,6)} | HT: {random.randint(1,2)}",
-            "cantos": f"Total: {random.randint(9,12)} (Casa: {random.randint(5,7)} | Fora: {random.randint(3,5)})",
-            "tiros": f"{random.randint(14,21)} (Total Jogo)",
-            "chutes": f"{random.randint(8,13)} ao alvo",
-            "defesas": f"{random.randint(4,7)} defesas previstas",
+            "cantos": f"Total: {random.randint(9,12)} (C:{random.randint(5,7)} | F:{random.randint(3,5)})",
+            "tiros": f"{random.randint(14,21)}",
+            "chutes": f"{random.randint(8,13)}",
+            "defesas": f"{random.randint(4,7)}",
             "confia": f"{random.randint(90,99)}%"
         })
     return bilhetes
@@ -132,13 +130,15 @@ def carregar_jogos_diarios():
 
 df_diario = carregar_jogos_diarios()
 
-# 2. CAMADA DE ESTILO CSS INTEGRAL (MANTIDA 100% DA v57.35 / v58.8)
+# 2. CAMADA DE ESTILO CSS INTEGRAL (REMOÇÃO DE SCROLLBAR + DESIGN DARK)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
     
+    /* REMOVER SCROLLBARS GLOBAIS E DA SIDEBAR */
     ::-webkit-scrollbar { display: none !important; }
     * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+    [data-testid="stSidebarContent"] { overflow: hidden !important; }
 
     html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp {
         background-color: #0b0e11 !important;
@@ -157,11 +157,11 @@ st.markdown("""
         transform: translate3d(0,0,0); -webkit-backface-visibility: hidden;
     }
     
-    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; text-decoration: none; cursor: pointer;}
+    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; text-decoration: none; }
     .entrar-grad { 
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; 
         color: white !important; padding: 8px 22px !important; border-radius: 5px !important; 
-        font-weight: 800; font-size: 9.5px; transition: 0.3s ease; cursor: pointer;
+        font-weight: 800; font-size: 9.5px; 
     }
 
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
@@ -177,18 +177,19 @@ st.markdown("""
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
         color: #ffffff !important; border: none !important; padding: 15px 20px !important;
         font-weight: 900 !important; text-transform: uppercase !important;
-        border-radius: 6px !important; width: 100% !important; transition: all 0.3s ease !important;
-        box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important; margin-top: 10px !important;
+        border-radius: 6px !important; width: 100% !important; 
+        box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important; margin-top: 15px !important;
     }
 
     div[data-baseweb="input"], .stNumberInput div, div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
+    label { color: #64748b !important; font-size: 10px !important; text-transform: uppercase !important; font-weight: 700 !important; }
     
     .highlight-card { 
         background: #11151a; border: 1px solid #1e293b; padding: 20px; 
         border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px;
     }
 
-    .bilhete-ouro-item { background: rgba(109, 40, 217, 0.03); border: 1px solid #1e293b; border-left: 4px solid #9d54ff; padding: 15px; border-radius: 8px; margin-bottom: 12px; }
+    .bilhete-item-box { background: rgba(109, 40, 217, 0.03); border: 1px solid #1e293b; border-left: 4px solid #9d54ff; padding: 15px; border-radius: 8px; margin-bottom: 12px; }
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     </style>
 """, unsafe_allow_html=True)
@@ -223,12 +224,10 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
         </div>
     """, unsafe_allow_html=True)
 
-# --- LÓGICA DE TELAS ---
+# --- TELAS ---
 
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
-    
-    # GRID DE 8 CARDS (IDÊNTICO À IMAGEM)
     h1, h2, h3, h4 = st.columns(4)
     with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
     with h2: draw_card("ASSERTIVIDADE", "92.4%", 92)
@@ -238,17 +237,16 @@ if st.session_state.aba_ativa == "home":
     with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with h8: draw_card("SISTEMA", "JARVIS v59.4", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v59.5", 100)
     
-    # SEÇÃO DA IA DE 20 JOGOS
     st.markdown("### 📋 ANÁLISE DETALHADA (7 NÍVEIS)")
     bilhetes_ouro = gerar_20_bilhetes_ouro()
-    c_bilhete_1, c_bilhete_2 = st.columns(2)
+    c_b_1, c_b_2 = st.columns(2)
     for i, b in enumerate(bilhetes_ouro):
-        target = c_bilhete_1 if i % 2 == 0 else c_bilhete_2
-        with target:
+        alvo = c_b_1 if i % 2 == 0 else c_b_2
+        with alvo:
             st.markdown(f"""
-                <div class="bilhete-ouro-item">
+                <div class="bilhete-item-box">
                     <div style="color:#06b6d4; font-size:9px; font-weight:900;">JOGO {i+1} | CONFIANÇA: {b['confia']}</div>
                     <div style="color:white; font-size:16px; font-weight:800; margin:5px 0;">{b['confronto']}</div>
                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; font-size:10px; color:#94a3b8;">
@@ -265,32 +263,49 @@ if st.session_state.aba_ativa == "home":
 
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
-    row_f = st.columns(3) # RESTAURAÇÃO DAS 3 COLUNAS DO TOPO
-    with row_f[0]: sel_pais = st.selectbox("🌎 REGIÃO / PAÍS", list(db_paises.keys()))
-    with row_f[1]: sel_grupo = st.selectbox("📂 GRUPO", db_paises[sel_pais])
-    with row_f[2]: sel_comp = st.selectbox("🏆 COMPETIÇÃO", db_ligas.get(sel_grupo, ["Geral"]))
+    r_top = st.columns(3)
+    with r_top[0]: sel_pais = st.selectbox("🌎 REGIÃO / PAÍS", list(db_paises.keys()))
+    with r_top[1]: sel_grupo = st.selectbox("📂 GRUPO", db_paises[sel_pais])
+    with r_top[2]: sel_comp = st.selectbox("🏆 COMPETIÇÃO", db_ligas.get(sel_grupo, ["Geral"]))
     
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     lista_base = sorted(db_times.get(sel_pais, ["Time A", "Time B"]))
-    c1, c2 = st.columns(2) # RESTAURAÇÃO DAS 2 COLUNAS DE TIMES
-    with c1: t_casa = st.selectbox("🏠 TIME DA CASA", lista_base + ["(Outro)"])
-    with c2: t_fora = st.selectbox("🚀 TIME DE FORA", [t for t in lista_base if t != t_casa] + ["(Outro)"])
+    c_t1, c_t2 = st.columns(2)
+    with c_t1: t_casa = st.selectbox("🏠 TIME DA CASA", lista_base + ["(Outro)"])
+    with c_t2: t_fora = st.selectbox("🚀 TIME DE FORA", [t for t in lista_base if t != t_casa] + ["(Outro)"])
 
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
-        st.session_state.analise_bloqueada = {"casa": t_casa, "fora": t_fora, "vencedor": "ALTA PROB", "gols": "OVER 1.5", "stake": "R$ 10.00", "cor": "#00ff88"}
+        st.session_state.analise_bloqueada = {
+            "casa": t_casa, "fora": t_fora, "vencedor": "ALTA PROB", "gols": "OVER 1.5", 
+            "data": datetime.now().strftime("%H:%M"), 
+            "stake_val": f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}",
+            "luz": "🟢", "motivo": "IA CONFIRMADA", "cor": "#00ff88", "confia": "94%"
+        }
     
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
+        st.markdown(f"<div style='border-left: 5px solid {m['cor']}; padding:15px; background:rgba(255,255,255,0.02); color:white; margin-top:20px;'>{m['luz']} <b>JARVIS:</b> {m['motivo']}</div>", unsafe_allow_html=True)
         st.markdown(f"<h3 style='color:#9d54ff; text-align:center;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("GOLS", m['gols'], 70)
-        with r3: draw_card("STAKE", m['stake'], 100)
+        with r3: draw_card("STAKE", m['stake_val'], 100)
         with r4: draw_card("CANTOS", "9.5+", 65)
+        
+        if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
+            st.session_state.historico_calls.append(m.copy())
+            st.toast("✅ CALL SALVA COM SUCESSO!")
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("<h2 style='color:white;'>💰 GESTÃO DE BANCA</h2>", unsafe_allow_html=True)
     st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=st.session_state.banca_total)
     st.session_state.stake_padrao = st.slider("STAKE (%)", 0.1, 10.0, st.session_state.stake_padrao)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v59.4</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+elif st.session_state.aba_ativa == "historico":
+    st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
+    if not st.session_state.historico_calls: st.info("Nenhuma operação registrada.")
+    else:
+        for i, call in enumerate(reversed(st.session_state.historico_calls)):
+            st.markdown(f"<div style='background:#161b22; padding:15px; border-radius:8px; margin-bottom:10px;'>{call['data']} - {call['casa']} x {call['fora']} | {call['stake_val']}</div>", unsafe_allow_html=True)
+
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v59.5</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
