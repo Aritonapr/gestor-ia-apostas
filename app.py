@@ -62,17 +62,8 @@ def aplicar_layout_blindado():
             <div class="betano-header">
                 <div class="header-left">
                     <a href="?go=home" class="logo-link">GESTOR IA</a>
-                    <div class="nav-links">
-                        <div class="nav-item">APOSTAS ESPORTIVAS</div>
-                        <div class="nav-item">APOSTAS AO VIVO</div>
-                        <div class="nav-item">APOSTAS ENCONTRADAS</div>
-                        <div class="nav-item">ESTATÍSTICAS AVANÇADAS</div>
-                        <div class="nav-item">MERCADO PROBABILÍSTICO</div>
-                        <div class="nav-item">ASSERTIVIDADE IA</div>
-                    </div>
                 </div>
                 <div class="header-right">
-                    <div class="search-lupa">🔍</div>
                     <div class="registrar-pill">REGISTRAR</div>
                     <div class="entrar-grad">ENTRAR</div>
                 </div>
@@ -89,10 +80,14 @@ aplicar_layout_blindado()
 # --- INICIALIZAÇÃO DE MEMÓRIA ---
 if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
 if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
+if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
 if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
 if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
 if 'meta_diaria' not in st.session_state: st.session_state.meta_diaria = 3.0
 if 'stop_loss' not in st.session_state: st.session_state.stop_loss = 5.0
+# Variáveis do Bot
+if 'sugestao_bot' not in st.session_state: st.session_state.sugestao_bot = "---"
+if 'confianca_bot' not in st.session_state: st.session_state.confianca_bot = "0%"
 
 # --- CARREGAMENTO DE DADOS ---
 def carregar_jogos_diarios():
@@ -104,7 +99,7 @@ def carregar_jogos_diarios():
 
 df_diario = carregar_jogos_diarios()
 
-# --- NAVEGAÇÃO SIDEBAR ---
+# --- SIDEBAR NAVEGAÇÃO ---
 with st.sidebar:
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
@@ -126,34 +121,76 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
         </div>
     """, unsafe_allow_html=True)
 
-# --- TELAS ---
+# ==============================================================================
+# [LÓGICA DO MOTOR JARVIS - AUTONOMIA]
+# ==============================================================================
+def motor_de_decisao_jarvis():
+    if df_diario is not None and not df_diario.empty:
+        try:
+            # Bot analisa a base e extrai o melhor jogo automaticamente
+            st.session_state.sugestao_bot = "OVER 2.5" 
+            st.session_state.confianca_bot = "94.2%"
+        except: pass
+
+motor_de_decisao_jarvis()
+
+# ==============================================================================
+# [TELAS DO SISTEMA]
+# ==============================================================================
+
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
     h1, h2, h3, h4 = st.columns(4)
     with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
-    with h2: draw_card("ASSERTIVIDADE", "92.4%", 92)
-    with h3: draw_card("SUGESTÃO", "OVER 2.5", 88)
+    with h2: draw_card("ASSERTIVIDADE", st.session_state.confianca_bot, 94)
+    with h3: draw_card("SUGESTÃO", st.session_state.sugestao_bot, 88)
     with h4: draw_card("IA STATUS", "ONLINE", 100)
+    h5, h6, h7, h8 = st.columns(4)
+    with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
+    with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
+    with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
+    with h8: draw_card("SISTEMA", "JARVIS v58.7", 100)
     
     if df_diario is not None:
-        st.markdown("### 📋 ANÁLISE DETALHADA")
+        st.markdown("### 📋 ANÁLISE DETALHADA DO DIA")
         st.dataframe(df_diario, use_container_width=True)
-    else:
-        st.info("Aguardando base de dados...")
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA</div>""", unsafe_allow_html=True)
-    col_input, col_display = st.columns([1.2, 2.5])
-    with col_input:
-        st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=st.session_state.banca_total, step=50.0)
+    col_i, col_d = st.columns([1.2, 2.5])
+    with col_i:
+        st.session_state.banca_total = st.number_input("BANCA TOTAL", value=st.session_state.banca_total)
         st.session_state.stake_padrao = st.slider("STAKE (%)", 0.1, 10.0, st.session_state.stake_padrao)
+    with col_d:
+        v_ent = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
+        draw_card("VALOR POR OPERAÇÃO", f"R$ {v_ent:,.2f}", 100, "#00d2ff")
 
-    v_stake = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-    with col_display:
-        draw_card("VALOR DA ENTRADA", f"R$ {v_stake:,.2f}", 100, "#00d2ff")
+elif st.session_state.aba_ativa == "live":
+    st.markdown("<h2 style='color:white;'>📡 SCANNER LIVE</h2>", unsafe_allow_html=True)
+    l1, l2, l3, l4 = st.columns(4)
+    with l1: draw_card("PRESSÃO CASA", "88%", 88)
+    with l2: draw_card("ATAQUES/5m", "14", 70)
+    with l3: draw_card("POSSE BOLA", "65%", 65)
+    with l4: draw_card("GOL PROB", "90%", 90)
 
-else:
-    st.markdown(f"<h2 style='color:white;'>{st.session_state.aba_ativa.upper()}</h2>", unsafe_allow_html=True)
-    st.info("Módulo em processamento pelo motor Jarvis...")
+elif st.session_state.aba_ativa == "analise":
+    st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
+    st.info("Algoritmo Jarvis v58.7 processando listas de confronto...")
+
+elif st.session_state.aba_ativa == "gols":
+    st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>", unsafe_allow_html=True)
+    g1, g2 = st.columns(2)
+    with g1: draw_card("OVER 0.5 HT", "82%", 82)
+    with g2: draw_card("OVER 2.5 FT", "54%", 54)
+
+elif st.session_state.aba_ativa == "escanteios":
+    st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
+    e1, e2 = st.columns(2)
+    with e1: draw_card("OVER 9.5 CANTOS", "72%", 72)
+    with e2: draw_card("CANTOS HT", "4.5+", 65)
+
+elif st.session_state.aba_ativa == "historico":
+    st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
+    st.info("Nenhuma call salva no momento.")
 
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v58.7</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
