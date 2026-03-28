@@ -5,7 +5,7 @@ import random
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO DE RECUPERAÇÃO v60.2 - REPARO TOTAL DE NAVEGAÇÃO E UI]
+# [PROTOCOLO FINAL v60.3 - ZERO SCROLLBAR + 8 BOTÕES TOTAIS]
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -101,7 +101,15 @@ st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
     
-    ::-webkit-scrollbar { display: none !important; }
+    /* REMOVER SCROLLBARS DE TUDO (SIDEBAR E CORPO) */
+    ::-webkit-scrollbar { display: none !important; width: 0 !important; }
+    * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+
+    /* TRAVA ESPECÍFICA PARA A SIDEBAR NÃO MOSTRAR BARRA */
+    [data-testid="stSidebarContent"] { 
+        overflow: hidden !important; 
+    }
+
     html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp {
         background-color: #0b0e11 !important;
         font-family: 'Inter', sans-serif;
@@ -111,15 +119,15 @@ st.markdown("""
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 90px 40px 20px 40px !important; }
     
-    /* REPARO DO HEADER - LOGO SEPARADO DO MENU */
+    /* HEADER REPARADO - LOGO COM DISTÂNCIA SEGURA */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.1); 
         display: flex; align-items: center; justify-content: space-between; 
         padding: 0 30px !important; z-index: 9999999;
     }
-    .header-left { display: flex; align-items: center; }
-    .logo-box { color: #9d54ff !important; font-weight: 900; font-size: 20px; text-transform: uppercase; margin-right: 60px; min-width: 150px; }
+    .header-left { display: flex; align-items: center; gap: 50px !important; }
+    .logo-box { color: #9d54ff !important; font-weight: 900; font-size: 20px; text-transform: uppercase; white-space: nowrap; }
     .nav-links { display: flex; gap: 20px; align-items: center; }
     .nav-item { color: #ffffff !important; font-size: 10px; text-transform: uppercase; font-weight: 600; cursor: pointer; white-space: nowrap; }
     
@@ -127,17 +135,17 @@ st.markdown("""
     .registrar-pill { color: #ffffff; font-size: 9px; font-weight: 800; border: 1.5px solid #ffffff; padding: 7px 18px; border-radius: 20px; }
     .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%); color: white; padding: 8px 22px; border-radius: 5px; font-weight: 800; font-size: 9.5px; }
 
-    /* SIDEBAR ESTILO BETANO */
-    [data-testid="stSidebar"] { min-width: 320px !important; background-color: #11151a !important; }
+    /* SIDEBAR SEM SCROLLBAR E BOTÕES AJUSTADOS */
+    [data-testid="stSidebar"] { min-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
+    
     section[data-testid="stSidebar"] div.stButton > button { 
         background-color: transparent !important; color: #94a3b8 !important; border: none !important; 
         border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; 
-        padding: 16px 25px !important; font-size: 10px !important; text-transform: uppercase !important;
-        border-radius: 0px !important;
+        padding: 13px 25px !important; font-size: 10px !important; text-transform: uppercase !important;
+        border-radius: 0px !important; transition: 0.2s;
     }
     section[data-testid="stSidebar"] div.stButton > button:hover { background-color: #1e293b !important; color: #06b6d4 !important; border-left: 3px solid #6d28d9 !important; }
 
-    /* BOTÕES DA TELA CENTRAL */
     div.stButton > button:not([data-testid="stSidebar"] *) {
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
         color: #ffffff !important; border: none !important; padding: 15px 20px !important;
@@ -166,7 +174,7 @@ st.sidebar.markdown(f"""
     <div style="height:70px;"></div>
 """, unsafe_allow_html=True)
 
-# 4. MENU LATERAL (BOTÕES)
+# 4. MENU LATERAL (8 BOTÕES SEM SCROLLBAR)
 with st.sidebar:
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
@@ -180,7 +188,7 @@ with st.sidebar:
 def draw_card(title, value, perc=100, color_val="white", bar_color="#06b6d4"):
     st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">{title}</div><div style="color:{color_val}; font-size:16px; font-weight:900; margin-top:10px;">{value}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:{bar_color}; height:100%; width:{perc}%;"></div></div></div>""", unsafe_allow_html=True)
 
-# --- NAVEGAÇÃO ---
+# --- TELAS ---
 
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
@@ -218,11 +226,6 @@ elif st.session_state.aba_ativa == "analise":
             st.session_state.historico_calls.append({"data": datetime.now().strftime("%H:%M"), "casa": m['casa'], "fora": m['fora']})
             st.toast("✅ CALL SALVA!")
 
-elif st.session_state.aba_ativa == "gestao":
-    st.markdown("<h2 style='color:white;'>💰 GESTÃO DE BANCA</h2>", unsafe_allow_html=True)
-    st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=st.session_state.banca_total)
-    st.write(f"Sua stake atual é de 1%: R$ {st.session_state.banca_total * 0.01:,.2f}")
-
 elif st.session_state.aba_ativa == "gols":
     st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>", unsafe_allow_html=True)
     for b in engine_ia_gen(15): st.markdown(f"<div class='bilhete-item-box'>{b['jogo']} | <b>PALPITE:</b> OVER 2.5 FT</div>", unsafe_allow_html=True)
@@ -231,17 +234,4 @@ elif st.session_state.aba_ativa == "escanteios":
     st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
     for b in engine_ia_gen(15): st.markdown(f"<div class='bilhete-item-box'>{b['jogo']} | <b>PALPITE:</b> OVER 9.5 CANTOS</div>", unsafe_allow_html=True)
 
-elif st.session_state.aba_ativa == "historico":
-    st.markdown("<h2 style='color:white;'>📜 HISTÓRICO</h2>", unsafe_allow_html=True)
-    for call in reversed(st.session_state.historico_calls):
-        st.write(f"[{call['data']}] {call['casa']} x {call['fora']}")
-
-elif st.session_state.aba_ativa == "live":
-    st.markdown("<h2 style='color:white;'>📡 AO VIVO</h2>", unsafe_allow_html=True)
-    st.write("Scanner monitorando partidas em tempo real...")
-
-elif st.session_state.aba_ativa == "vencedores":
-    st.markdown("<h2 style='color:white;'>🏆 VENCEDORES</h2>", unsafe_allow_html=True)
-    st.write("Projeções de campeões por liga...")
-
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v60.2</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v60.3</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
