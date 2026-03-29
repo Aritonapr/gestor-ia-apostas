@@ -50,16 +50,15 @@ st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
     
-    /* 1. REMOÇÃO TOTAL DE SCROLLBARS (INCLUINDO SIDEBAR) */
-    ::-webkit-scrollbar { display: none !important; width: 0 !important; }
+    /* 1. REMOÇÃO DE BARRA DE ROLAGEM GLOBAL */
+    ::-webkit-scrollbar { display: none !important; width: 0px !important; }
     * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
-    
-    /* ALVO ESPECÍFICO PARA A SIDEBAR (MODERNO) */
-    [data-testid="stSidebar"] section, 
-    [data-testid="stSidebar"] .st-emotion-cache-6qob1r, 
-    [data-testid="stSidebar"] .st-emotion-cache-16idsys {
-        overflow: hidden !important;
-    }
+
+    /* 2. REMOÇÃO ESPECÍFICA DA BARRA DE ROLAGEM DA SIDEBAR (TRAVA DEFINITIVA) */
+    [data-testid="stSidebar"] *::-webkit-scrollbar { display: none !important; width: 0px !important; }
+    [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { scrollbar-width: none !important; }
+    [data-testid="stSidebarUserContent"] { scrollbar-width: none !important; -ms-overflow-style: none !important; }
+    [data-testid="stSidebarUserContent"]::-webkit-scrollbar { display: none !important; width: 0px !important; }
 
     html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp {
         background-color: #0b0e11 !important;
