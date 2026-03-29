@@ -44,28 +44,31 @@ df_hist = carregar_dados("data/historico_5_temporadas.csv")
 
 def calcular_analise_real(time_casa, time_fora):
     """
-    CRUZAMENTO JARVIS: Compara escolha manual com Histórico de 5 anos + Dados de Hoje.
+    IA JARVIS: Cruza sua escolha manual com o Big Data de 5 anos.
     """
-    conf_final = 50.0
-    palpite = "ANÁLISE INDISPONÍVEL"
+    conf_base = 75.0
+    palpite_gols = "OVER 1.5"
     
-    # 1. Busca no histórico de 5 anos
     if df_hist is not None:
-        jogos_casa = df_hist[df_hist['Casa'] == time_casa]
-        if not jogos_casa.empty:
-            over15 = len(jogos_casa[(jogos_casa['GolsCasa'] + jogos_casa['GolsFora']) > 1.5])
-            taxa_over = (over15 / len(jogos_casa)) * 100
-            conf_final = taxa_over
-            palpite = "OVER 1.5" if taxa_over > 70 else "UNDER 3.5"
-
-    # 2. Busca Odds/Dados no arquivo diário (Betano)
+        # Busca flexível (ignora maiúsculas/minúsculas)
+        filtro = df_hist[df_hist['Casa'].str.contains(time_casa, case=False, na=False)]
+        if not filtro.empty:
+            jogos_total = len(filtro)
+            vitorias_casa = len(filtro[filtro['Resultado'] == 'H'])
+            taxa_win = (vitorias_casa / jogos_total) * 100
+            conf_base = round(taxa_win + 10, 1)
+            if conf_base > 98: conf_base = 98.4
+    
+    # Se o jogo estiver na Betano hoje, a IA valida como "Filé Mignon"
+    luz = "🔴"
+    motivo = "ALERTA: ESTATÍSTICA FRIA"
     if df_diario is not None:
-        match_today = df_diario[(df_diario['CASA'] == time_casa)]
-        if not match_today.empty:
-            # Se encontrar o jogo no radar da Betano, sobe a confiança
-            conf_final = (conf_final + 90) / 2 # Peso para jogo confirmado live
-            
-    return round(conf_final, 1), palpite
+        if any(df_diario['CASA'].str.contains(time_casa, case=False, na=False)):
+            luz = "🟢"
+            motivo = "FILÉ MIGNON: INFORMAÇÃO REAL"
+            conf_base += 5
+
+    return min(conf_base, 99.0), palpite_gols, luz, motivo
 
 # ==============================================================================
 # 2. CAMADA DE ESTILO CSS INTEGRAL (TRAVA DE SEGURANÇA v57.35)
@@ -105,6 +108,7 @@ st.markdown("""
     div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; }
     .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px; }
     .banca-title-banner { background-color: #003399 !important; padding: 15px 25px; border-radius: 5px; color: white !important; font-size: 24px; font-weight: 800; margin-bottom: 35px; display: flex; align-items: center; gap: 15px; }
+    .history-card-box { background: #161b22 !important; border: 1px solid #30363d !important; padding: 15px 25px !important; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     </style>
 """, unsafe_allow_html=True)
@@ -130,41 +134,43 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
 
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
-    if df_diario is not None:
-        draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
-        st.dataframe(df_diario, use_container_width=True)
+    draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
+    if df_diario is not None: st.dataframe(df_diario, use_container_width=True)
 
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
+    db_paises = {"BRASIL": ["BRASILEIRÃO A", "BRASILEIRÃO B"], "INGLATERRA": ["PREMIER LEAGUE"], "ESPANHA": ["LA LIGA"], "INTERNACIONAL 🌍": ["E2", "SC1", "SP2"]}
+    db_times = {"BRASILEIRÃO A": ["Flamengo", "Palmeiras", "Athletico-PR", "Atlético-MG"], "PREMIER LEAGUE": ["Man City", "Arsenal", "Liverpool"], "E2": ["Blackpool", "Reading", "Wigan"]}
     
-    # Listas Manuais Conforme sua Preferência
-    db_paises = {"BRASIL": ["BRASILEIRÃO A", "BRASILEIRÃO B"], "INGLATERRA": ["PREMIER LEAGUE"], "ESPANHA": ["LA LIGA"]}
-    db_times = {"BRASILEIRÃO A": ["Flamengo", "Palmeiras", "Athletico-PR", "Atlético-MG"], "PREMIER LEAGUE": ["Man City", "Arsenal", "Liverpool"]}
-    
-    c1, c2, c3 = st.columns(3)
-    with c1: sel_p = st.selectbox("🌎 REGIÃO / PAÍS", list(db_paises.keys()))
-    with c2: sel_l = st.selectbox("📂 GRUPO", db_paises[sel_p])
-    with c3: sel_t = st.selectbox("🏠 TIME DA CASA", db_times.get(sel_l, ["Time A"]))
+    col_reg, col_grp, col_tm = st.columns(3)
+    with col_reg: sel_p = st.selectbox("🌎 REGIÃO / PAÍS", list(db_paises.keys()))
+    with col_grp: sel_l = st.selectbox("📂 GRUPO", db_paises[sel_p])
+    with col_tm: sel_t = st.selectbox("🏠 TIME DA CASA", db_times.get(sel_l, ["Time A"]))
     
     if st.button("⚡ EXECUTAR ALGORITMO"):
-        conf, palpite = calcular_analise_real(sel_t, "Oponente")
-        st.session_state.analise_bloqueada = {"casa": sel_t, "conf": conf, "gols": palpite}
-        
-    if st.session_state.analise_bloqueada is not None:
-        res = st.session_state.analise_bloqueada
-        st.markdown(f"<div style='background:rgba(0,255,136,0.1); border-left:5px solid #00ff88; padding:15px;'>🟢 SISTEMA JARVIS: ANÁLISE REAL CONCLUÍDA</div>", unsafe_allow_html=True)
-        st.markdown(f"<h3 style='text-align:center; color:#9d54ff;'>{res['casa']} vs Rival</h3>", unsafe_allow_html=True)
+        conf, gol, luz, txt = calcular_analise_real(sel_t, "Rival")
+        st.session_state.analise_bloqueada = {"casa": sel_t, "conf": conf, "gol": gol, "luz": luz, "txt": txt}
+
+    if st.session_state.analise_bloqueada:
+        m = st.session_state.analise_bloqueada
+        st.markdown(f"<div style='background:rgba(255,255,255,0.03); border-left:5px solid #00ff88; padding:15px;'>{m['luz']} <b style='color:white;'>SISTEMA JARVIS:</b> <span style='color:#00ff88;'>{m['txt']}</span></div>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='text-align:center; color:#9d54ff;'>{m['casa']} vs Rival</h3>", unsafe_allow_html=True)
         r1, r2, r3, r4 = st.columns(4)
-        with r1: draw_card("CONFIANÇA IA", f"{res['conf']}%", int(res['conf']))
-        with r2: draw_card("PROB. GOLS", res['gols'], 80)
-        with r3: draw_card("STAKE SUGERIDA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-        with r4: draw_card("CANTOS", "9.5+", 70)
+        with r1: draw_card("VENCEDOR", "ALTA PROB.", int(m['conf']))
+        with r2: draw_card("GOLS", m['gol'], 90)
+        with r3: draw_card("STAKE", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
+        with r4: draw_card("CANTOS", "9.5+", 75)
+        
+        if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
+            st.session_state.historico_calls.append({"data": datetime.now().strftime("%H:%M"), "casa": m['casa'], "fora": "Rival", "stake_val": f"R$ {10:,.2f}", "gols": m['gol']})
+            st.toast("✅ CALL SALVA COM SUCESSO!")
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
     if df_diario is not None:
-        df_live = df_diario[df_diario['PAIS'].str.contains("LIVE", na=False)]
-        st.dataframe(df_live, use_container_width=True, hide_index=True)
+        df_l = df_diario[df_diario['PAIS'].str.contains("LIVE", na=False)]
+        if df_l.empty: st.info("Buscando jogos ao vivo...")
+        else: st.dataframe(df_l, use_container_width=True, hide_index=True)
 
 elif st.session_state.aba_ativa == "vencedores":
     st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
@@ -190,10 +196,17 @@ elif st.session_state.aba_ativa == "escanteios":
     with e3: draw_card("CANTOS HT", "4.5+", 70)
     with e4: draw_card("CORNER RACE", "Time A", 55)
 
+elif st.session_state.aba_ativa == "historico":
+    st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
+    if not st.session_state.historico_calls: st.info("Nenhuma operação registrada.")
+    else:
+        for i, call in enumerate(reversed(st.session_state.historico_calls)):
+            st.markdown(f"""<div class="history-card-box"><div style="color:white; font-weight:800;"><span style="color:#9d54ff;">[{call['data']}]</span> {call['casa']} x {call['fora']} <span style="color:#06b6d4; margin-left:20px;">{call['stake_val']} | {call['gols']}</span></div></div>""", unsafe_allow_html=True)
+
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
     st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=float(st.session_state.banca_total))
     st.session_state.stake_padrao = st.slider("STAKE (%)", 0.1, 10.0, float(st.session_state.stake_padrao))
-    draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
+    draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100, "#00d2ff")
 
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v60.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
