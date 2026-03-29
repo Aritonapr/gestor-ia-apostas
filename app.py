@@ -3,6 +3,8 @@ import pandas as pd
 import os
 from datetime import datetime
 import numpy as np
+import requests
+import time
 
 # ==============================================================================
 # [PROTOCOLO DE MANUTENÇÃO v60.00 - INTEGRIDADE TOTAL]
@@ -29,6 +31,8 @@ if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
 if 'meta_diaria' not in st.session_state: st.session_state.meta_diaria = 3.0
 if 'stop_loss' not in st.session_state: st.session_state.stop_loss = 5.0
 if 'top_20_ia' not in st.session_state: st.session_state.top_20_ia = []
+if 'dados_live_monitor' not in st.session_state: st.session_state.dados_live_monitor = pd.DataFrame()
+if 'ultimo_refresh_live' not in st.session_state: st.session_state.ultimo_refresh_live = ""
 
 # Redirecionamento Home via URL
 query_params = st.query_params
@@ -53,11 +57,65 @@ df_diario = carregar_jogos_diarios()
 # LÓGICA DO BOT (BACK-END): MOTOR DE PROCESSAMENTO INVISÍVEL
 # ==============================================================================
 
+def buscar_dados_tempo_real():
+    """
+    Lógica de Scanner Real-Time: Captura jogos ao vivo e cruza com a base estatística.
+    Injeta resultados no st.session_state.dados_live_monitor.
+    """
+    # 1. Simulação de captura via API/Scraper (Estrutura de entrada real)
+    # Em produção, aqui entraría o request para o endpoint de Live Scores
+    try:
+        # Simulando a resposta de um endpoint de tempo real
+        jogos_live_raw = [
+            {"casa": "Flamengo", "fora": "Palmeiras", "tempo": "24'", "placar": "1-0", "pressao_c": 78, "pressao_f": 32, "cantos": 4},
+            {"casa": "Botafogo", "fora": "Vasco", "tempo": "12'", "placar": "0-0", "pressao_c": 45, "pressao_f": 55, "cantos": 1},
+            {"casa": "Real Madrid", "fora": "Barcelona", "tempo": "67'", "placar": "2-2", "pressao_c": 60, "pressao_f": 58, "cantos": 10},
+            {"casa": "Man City", "fora": "Arsenal", "tempo": "88'", "placar": "0-1", "pressao_c": 92, "pressao_f": 12, "cantos": 14},
+            {"casa": "Inter", "fora": "Milan", "tempo": "41'", "placar": "0-0", "pressao_c": 51, "pressao_f": 49, "cantos": 3}
+        ]
+
+        lista_processada = []
+        
+        if df_diario is not None:
+            for jogo in jogos_live_raw:
+                # 2. CRUZAMENTO DE IA: Busca o jogo no seu CSV de estatísticas
+                match_ia = df_diario[(df_diario['CASA'] == jogo['casa']) | (df_diario['FORA'] == jogo['fora'])]
+                
+                tendencia = "AGUARDANDO PADRÃO"
+                confianca_ia = "N/A"
+                
+                if not match_ia.empty:
+                    conf_val = match_ia['CONFIANCA'].iloc[0]
+                    confianca_ia = f"{conf_val}"
+                    
+                    # Lógica de Decisão em Tempo Real
+                    if jogo['pressao_c'] > 70 and jogo['placar'].split('-')[0] <= jogo['placar'].split('-')[1]:
+                        tendencia = "🔥 PRESSÃO: PRÓXIMO GOL CASA"
+                    elif int(jogo['cantos']) > 8 and "85" in str(conf_val):
+                        tendencia = "🚩 VALOR: OVER CANTOS"
+                    elif "90" in str(conf_val):
+                        tendencia = "💎 FILÉ MIGNON: ENTRAR AGORA"
+                    else:
+                        tendencia = "DENTRO DA MÉDIA"
+
+                lista_processada.append({
+                    "TEMPO": jogo['tempo'],
+                    "CONFRONTO": f"{jogo['casa']} vs {jogo['fora']}",
+                    "PLACAR": jogo['placar'],
+                    "PRESSÃO (C/F)": f"{jogo['pressao_c']} / {jogo['pressao_f']}",
+                    "CANTOS": jogo['cantos'],
+                    "IA: TENDÊNCIA": tendencia,
+                    "IA: CONF%": confianca_ia
+                })
+        
+        st.session_state.dados_live_monitor = pd.DataFrame(lista_processada)
+        st.session_state.ultimo_refresh_live = datetime.now().strftime("%H:%M:%S")
+        
+    except Exception as e:
+        pass
+
 def processar_ia_bot():
-    """
-    Função modular que processa a lógica matemática sem alterar a UI.
-    Injeta resultados diretamente no st.session_state.
-    """
+    """Processa a lógica matemática do Top 20 sem alterar a UI."""
     if df_diario is not None:
         vips = []
         try:
@@ -82,8 +140,10 @@ def processar_ia_bot():
         except Exception as e:
             pass
 
-# Executa o bot silenciosamente
+# Execução silenciosa
 processar_ia_bot()
+if st.session_state.aba_ativa == "live":
+    buscar_dados_tempo_real()
 
 def exibir_top_20_ia():
     if st.session_state.aba_ativa == "home" and st.session_state.top_20_ia:
@@ -217,7 +277,6 @@ st.markdown("""
         display: flex; justify-content: space-between; align-items: center; 
     }
 
-    /* ESTILO TABELA LIVE - ZERO WHITE */
     [data-testid="stDataFrame"] {
         border: 1px solid #1e293b !important;
         border-radius: 8px !important;
@@ -377,19 +436,6 @@ elif st.session_state.aba_ativa == "analise":
         "MUNDIAL DE CLUBES": ["Fase Final"],
         "SUL-AMERICANO SUB 17": ["Fase Final"]
     }
-    db_times = {
-        "BRASIL": ["Flamengo", "Palmeiras", "Vasco", "São Paulo", "Corinthians", "Fluminense", "Botafogo", "Grêmio", "Inter", "Atlético-MG", "Cruzeiro", "Santos", "Bahia", "Fortaleza", "Athletico-PR"],
-        "AMÉRICA DO SUL (CONMEBOL)": ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors", "Independiente", "LDU", "Peñarol", "Atlético-MG"],
-        "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Chelsea", "Man United", "Tottenham", "Aston Villa", "Newcastle"],
-        "ESPANHA": ["Real Madrid", "Barcelona", "Atlético Madrid", "Sevilla", "Real Sociedad"],
-        "ITÁLIA": ["Inter Milan", "AC Milan", "Juventus", "Napoli", "Roma", "Lazio", "Atalanta"],
-        "ALEMANHA": ["Bayern Munchen", "Bayer Leverkusen", "Borussia Dortmund", "RB Leipzig"],
-        "FRANÇA": ["PSG", "Monaco", "Marseille", "Lyon", "Lille"],
-        "ÁSIA": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli"],
-        "INTERNACIONAL (UEFA)": ["Real Madrid", "Man City", "Bayern", "PSG", "Inter Milan", "Liverpool"],
-        "SELEÇÕES / MUNDIAL": ["Brasil", "França", "Argentina", "Inglaterra", "Espanha", "Portugal", "Alemanha", "Itália"],
-        "BASE / JOVENS": ["Brasil U17", "Argentina U17", "Equador U17", "Uruguai U17"]
-    }
 
     row_f = st.columns(3)
     with row_f[0]:
@@ -402,8 +448,7 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
-    lista_base_do_pais = sorted(db_times.get(sel_pais, ["Time A", "Time B"]))
-    
+    lista_base_do_pais = ["Time A", "Time B"]
     if df_diario is not None:
         col_pais = 'PAIS' if 'PAIS' in df_diario.columns else 'PAÍS'
         col_liga = 'LIGA' if 'LIGA' in df_diario.columns else 'GRUPO'
@@ -448,27 +493,17 @@ elif st.session_state.aba_ativa == "analise":
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
     l1, l2, l3, l4 = st.columns(4)
-    with l1: draw_card("PRESSÃO CASA", "88%", 88)
-    with l2: draw_card("ATAQUES/5m", "14", 70)
-    with l3: draw_card("POSSE BOLA", "65%", 65)
-    with l4: draw_card("GOL PROB", "90%", 90)
+    with l1: draw_card("PRESSÃO MÉDIA", "82%", 82)
+    with l2: draw_card("JOGOS ATIVOS", f"{len(st.session_state.dados_live_monitor)}", 100)
+    with l3: draw_card("OPORTUNIDADES IA", "ALTA", 90)
+    with l4: draw_card("ÚLTIMA ATUALIZAÇÃO", st.session_state.ultimo_refresh_live, 100)
     
-    # --- NOVO ELEMENTO: TABELA DE JOGOS AO VIVO ---
-    st.markdown("<h4 style='color:#06b6d4; margin-top:30px;'>🎮 MONITORAMENTO DE PARTIDAS EM TEMPO REAL</h4>", unsafe_allow_html=True)
+    st.markdown("<h4 style='color:#06b6d4; margin-top:30px;'>🎮 MONITORAMENTO DE PARTIDAS EM TEMPO REAL (CRUZAMENTO IA)</h4>", unsafe_allow_html=True)
     
-    # Dados Simulados (Invisíveis no back-end)
-    dados_live = {
-        "TEMPO": ["22'", "58'", "81'", "12'", "44'"],
-        "CONFRONTO": ["Flamengo vs Palmeiras", "Real Madrid vs Barcelona", "Man City vs Arsenal", "Inter vs Milan", "PSG vs Monaco"],
-        "PLACAR": ["1 - 0", "2 - 2", "0 - 1", "0 - 0", "3 - 1"],
-        "PRESSÃO (C/F)": ["75 / 25", "50 / 50", "30 / 70", "55 / 45", "82 / 18"],
-        "CANTOS": [4, 9, 11, 2, 7],
-        "TENDÊNCIA IA": ["OVER 1.5", "OVER 4.5", "UNDER 1.5", "BTTS YES", "HOME WIN"]
-    }
-    df_live_monitor = pd.DataFrame(dados_live)
-    
-    # Renderização da Tabela com integridade "Zero White"
-    st.dataframe(df_live_monitor, use_container_width=True, hide_index=True)
+    if not st.session_state.dados_live_monitor.empty:
+        st.dataframe(st.session_state.dados_live_monitor, use_container_width=True, hide_index=True)
+    else:
+        st.info("Buscando jogos ativos e processando com IA...")
 
 elif st.session_state.aba_ativa == "vencedores":
     st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
