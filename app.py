@@ -30,12 +30,6 @@ if 'meta_diaria' not in st.session_state: st.session_state.meta_diaria = 3.0
 if 'stop_loss' not in st.session_state: st.session_state.stop_loss = 5.0
 if 'top_20_ia' not in st.session_state: st.session_state.top_20_ia = []
 
-# Redirecionamento Home via URL
-query_params = st.query_params
-if query_params.get("go") == "home":
-    st.session_state.aba_ativa = "home"
-    st.query_params.clear()
-
 # --- FUNÇÃO DE CARREGAMENTO DE DADOS ---
 def carregar_jogos_diarios():
     path = "data/database_diario.csv"
@@ -62,21 +56,25 @@ def processar_ia_bot():
         vips = []
         try:
             temp_df = df_diario.copy()
-            if 'CONFIANCA' in temp_df.columns:
-                temp_df['CONF_NUM'] = temp_df['CONFIANCA'].astype(str).str.replace('%', '').astype(float)
-                vips_df = temp_df[temp_df['CONF_NUM'] >= 85].head(20)
+            # Ajuste Jarvis: Detecta se a coluna é CONF ou CONFIANCA
+            col_conf = 'CONF' if 'CONF' in temp_df.columns else 'CONFIANCA'
+            
+            if col_conf in temp_df.columns:
+                temp_df['CONF_NUM'] = temp_df[col_conf].astype(str).str.replace('%', '').astype(float)
+                # Ordena pelos melhores e pega os 20 primeiros
+                vips_df = temp_df.sort_values(by='CONF_NUM', ascending=False).head(20)
                 
                 for _, jogo in vips_df.iterrows():
                     vips.append({
                         "C": jogo.get('CASA', 'Time A'),
                         "F": jogo.get('FORA', 'Time B'),
                         "P": f"{jogo.get('CONF_NUM', 0)}%",
-                        "G": "OVER 1.5 (PROB. 94% - AMBOS TEMPOS)",
-                        "CT": "4.5+ NO TOTAL (DISTRIBUIÇÃO 2/2)",
-                        "E": f"9.5 total (C:{jogo.get('C_CASA', 5)} | F:{jogo.get('C_FORA', 4)})",
-                        "TM": "16+ (8 POR TEMPO)",
-                        "CH": "9+ AO GOL (CONSTÂNCIA ALTA)",
-                        "DF": "7+ ESPERADAS (GOLEIROS ATIVOS)"
+                        "G": jogo.get('GOLS', 'OVER 1.5'),
+                        "CT": jogo.get('CARTOES', '3+'),
+                        "E": jogo.get('CANTOS', '9.5 total'),
+                        "TM": jogo.get('TMETA', '16+'),
+                        "CH": jogo.get('CHUTES', '9+'),
+                        "DF": jogo.get('DEFESAS', '7+')
                     })
                 st.session_state.top_20_ia = vips
         except Exception as e:
@@ -102,7 +100,7 @@ def exibir_top_20_ia():
                     st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🧤 DEFESAS: <b style='color:white;'>{j['DF']}</b></p>", unsafe_allow_html=True)
 
 # ==============================================================================
-# 2. CAMADA DE ESTILO CSS INTEGRAL (MANTIDA 100% DA v57.35)
+# 2. CAMADA DE ESTILO CSS INTEGRAL (TRAVA DE SEGURANÇA v57.35)
 # ==============================================================================
 st.markdown("""
     <style>
@@ -217,7 +215,6 @@ st.markdown("""
         display: flex; justify-content: space-between; align-items: center; 
     }
 
-    /* ESTILO TABELA LIVE - ZERO WHITE */
     [data-testid="stDataFrame"] {
         border: 1px solid #1e293b !important;
         border-radius: 8px !important;
@@ -334,165 +331,41 @@ elif st.session_state.aba_ativa == "gestao":
 
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
-    db_paises = {
-        "BRASIL": ["BRASILEIRÃO", "BRASILEIRÃO SUB-20", "CAMPEONATOS ESTADUAIS", "COPAS NACIONAIS / REGIONAIS"],
-        "AMÉRICA DO SUL (CONMEBOL)": ["COPA LIBERTADORES", "COPA SUL-AMERICANA", "COPA AMÉRICA"],
-        "INGLATERRA": ["PREMIER LEAGUE", "COPAS DA INGLATERRA"],
-        "ESPANHA": ["LA LIGA", "COPA DO REI DA ESPANHA"],
-        "ITÁLIA": ["CAMPEONATO ITALIANO", "COPA DA ITÁLIA"],
-        "ALEMANHA": ["BUNDESLIGA", "COPA DA ALEMANHA"],
-        "FRANÇA": ["CAMPEONATO FRANCÊS", "COPA DA FRANÇA"],
-        "INTERNACIONAL (UEFA)": ["CHAMPIONS LEAGUE", "LIGA EUROPA", "LIGA CONFERÊNCIA", "EUROCOPA"],
-        "ÁSIA": ["CAMPEONATO SAUDITA", "CHAMPIONS LEAGUE DA ÁSIA"],
-        "SELEÇÕES / MUNDIAL": ["COPA DO MUNDO 2026", "ELIMINATÓRIAS DA COPA-EUROPA", "ELIMINATÓRIAS - REPESCAGEM", "MUNDIAL DE CLUBES"],
-        "BASE / JOVENS": ["SUL-AMERICANO SUB 17"]
-    }
-    db_ligas = {
-        "BRASILEIRÃO": ["Série A", "Série B", "Série C", "Série D"],
-        "BRASILEIRÃO SUB-20": ["Temporada Regular", "Fase Final"],
-        "CAMPEONATOS ESTADUAIS": ["Campeonato Carioca", "Campeonato Paulistano", "Campeonato Mineiro", "Campeonato Gaucho", "Campeonato Paranaense", "Campeonato Catarinense"],
-        "COPAS NACIONAIS / REGIONAIS": ["Copa do Brasil", "Copa do Nordeste", "Copa Sul-Sudeste", "Copa Verde"],
-        "COPA LIBERTADORES": ["Fase de Grupos", "Oitavas", "Quartas", "Semi", "Final"],
-        "COPA SUL-AMERICANA": ["Fase de Grupos", "Mata-Mata"],
-        "COPA AMÉRICA": ["Fase de Grupos", "Mata-Mata"],
-        "PREMIER LEAGUE": ["Premier League (1ª Div)", "EFL Championship (2ª)"],
-        "COPAS DA INGLATERRA": ["FA Cup (Copa da Inglaterra)", "EFL Cup (Copa da Liga Inglesa)"],
-        "LA LIGA": ["Primeira Divisão"],
-        "COPA DO REI DA ESPANHA": ["Fases Finais"],
-        "CAMPEONATO ITALIANO": ["Serie A TIM"],
-        "COPA DA ITÁLIA": ["Coppa Italia"],
-        "BUNDESLIGA": ["1. Bundesliga"],
-        "COPA DA ALEMANHA": ["DFB Pokal"],
-        "CAMPEONATO FRANCÊS": ["Ligue 1"],
-        "COPA DA FRANÇA": ["Coupe de France"],
-        "CHAMPIONS LEAGUE": ["Fase de Grupos", "Mata-Mata"],
-        "LIGA EUROPA": ["Fase de Grupos", "Mata-Mata"],
-        "LIGA CONFERÊNCIA": ["Fase de Grupos", "Mata-Mata"],
-        "EUROCOPA": ["Fase de Grupos", "Mata-Mata"],
-        "CAMPEONATO SAUDITA": ["Saudi Pro League"],
-        "CHAMPIONS LEAGUE DA ÁSIA": ["Champions League Ásia"],
-        "COPA DO MUNDO 2026": ["Fase de Grupos", "Mata-Mata"],
-        "ELIMINATÓRIAS DA COPA-EUROPA": ["Qualificação"],
-        "ELIMINATÓRIAS - REPESCAGEM": ["Playoffs Intercontinentais"],
-        "MUNDIAL DE CLUBES": ["Fase Final"],
-        "SUL-AMERICANO SUB 17": ["Fase Final"]
-    }
-    db_times = {
-        "BRASIL": ["Flamengo", "Palmeiras", "Vasco", "São Paulo", "Corinthians", "Fluminense", "Botafogo", "Grêmio", "Inter", "Atlético-MG", "Cruzeiro", "Santos", "Bahia", "Fortaleza", "Athletico-PR"],
-        "AMÉRICA DO SUL (CONMEBOL)": ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors", "Independiente", "LDU", "Peñarol", "Atlético-MG"],
-        "INGLATERRA": ["Man City", "Arsenal", "Liverpool", "Chelsea", "Man United", "Tottenham", "Aston Villa", "Newcastle"],
-        "ESPANHA": ["Real Madrid", "Barcelona", "Atlético Madrid", "Sevilla", "Real Sociedad"],
-        "ITÁLIA": ["Inter Milan", "AC Milan", "Juventus", "Napoli", "Roma", "Lazio", "Atalanta"],
-        "ALEMANHA": ["Bayern Munchen", "Bayer Leverkusen", "Borussia Dortmund", "RB Leipzig"],
-        "FRANÇA": ["PSG", "Monaco", "Marseille", "Lyon", "Lille"],
-        "ÁSIA": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli"],
-        "INTERNACIONAL (UEFA)": ["Real Madrid", "Man City", "Bayern", "PSG", "Inter Milan", "Liverpool"],
-        "SELEÇÕES / MUNDIAL": ["Brasil", "França", "Argentina", "Inglaterra", "Espanha", "Portugal", "Alemanha", "Itália"],
-        "BASE / JOVENS": ["Brasil U17", "Argentina U17", "Equador U17", "Uruguai U17"]
-    }
-
-    row_f = st.columns(3)
-    with row_f[0]:
-        sel_pais = st.selectbox("🌎 REGIÃO / PAÍS", list(db_paises.keys()))
-    with row_f[1]:
-        sel_grupo = st.selectbox("📂 GRUPO", db_paises[sel_pais])
-    with row_f[2]:
-        sel_comp = st.selectbox("🏆 COMPETIÇÃO", db_ligas.get(sel_grupo, ["Geral"]))
-
-    st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
-    st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
-    
-    lista_base_do_pais = sorted(db_times.get(sel_pais, ["Time A", "Time B"]))
-    
     if df_diario is not None:
-        col_pais = 'PAIS' if 'PAIS' in df_diario.columns else 'PAÍS'
-        col_liga = 'LIGA' if 'LIGA' in df_diario.columns else 'GRUPO'
-        col_casa = 'CASA' if 'CASA' in df_diario.columns else 'TIME_CASA'
-        filtro_db = df_diario[(df_diario[col_pais] == sel_pais) & (df_diario[col_liga] == sel_grupo)]
-        if not filtro_db.empty:
-            lista_base_do_pais = sorted(filtro_db[col_casa].unique().tolist())
-
-    c1, c2 = st.columns(2)
-    with c1:
-        t_casa = st.selectbox("🏠 TIME DA CASA", lista_base_do_pais + ["(Outro)"])
-        if t_casa == "(Outro)": t_casa = st.text_input("NOME DO TIME CASA")
-    with c2:
-        lista_fora_filtrada = [t for t in lista_base_do_pais if t != t_casa]
-        t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora_filtrada + ["(Outro)"])
-        if t_fora == "(Outro)": t_fora = st.text_input("NOME DO TIME FORA")
-
-    if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
-        v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-        status_luz = "🟢" if df_diario is not None else "🔴"
-        validacao_txt = "FILÉ MIGNON: INFORMAÇÃO REAL" if status_luz == "🟢" else "ALERTA: ESTATÍSTICA FRIA"
-        cor_luz = "#00ff88" if status_luz == "🟢" else "#ff4b4b"
-        st.session_state.analise_bloqueada = {
-            "casa": t_casa, "fora": t_fora, "vencedor": "ALTA PROB.", "gols": "OVER 1.5", 
-            "data": datetime.now().strftime("%H:%M"), "stake_val": f"R$ {v_calc:,.2f}",
-            "luz": status_luz, "motivo": validacao_txt, "cor": cor_luz, "confia": "94.2%"
-        }
-    
-    if st.session_state.analise_bloqueada:
-        m = st.session_state.analise_bloqueada
-        st.markdown(f"""<div style="background: rgba(255,255,255,0.03); border-left: 5px solid {m['cor']}; padding: 18px; border-radius: 6px; margin-bottom: 25px;"><span style="font-size: 20px;">{m['luz']}</span> <b style="color: white; margin-left: 10px; letter-spacing: 1px; font-size: 11px;">SISTEMA JARVIS:</b> <span style="color: {m['cor']}; font-weight: 800; font-size: 11px;">{m['motivo']}</span></div>""", unsafe_allow_html=True)
-        st.markdown(f"<h3 style='color:#9d54ff; text-align:center;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
+        st.markdown("### Selecione um confronto para análise profunda")
+        # Injeta os dados reais do CSV para o usuário escolher
+        lista_times = sorted(df_diario['CASA'].unique().tolist())
+        t_escolhido = st.selectbox("Escolha o Time da Casa", lista_times)
+        
+        jogo_info = df_diario[df_diario['CASA'] == t_escolhido].iloc[0]
+        
+        st.markdown(f"<h3 style='color:#9d54ff; text-align:center;'>{jogo_info['CASA']} vs {jogo_info['FORA']}</h3>", unsafe_allow_html=True)
         r1, r2, r3, r4 = st.columns(4)
-        with r1: draw_card("VENCEDOR", m['vencedor'], 85)
-        with r2: draw_card("GOLS", m['gols'], 70)
-        with r3: draw_card("STAKE", m['stake_val'], 100)
-        with r4: draw_card("CANTOS", "9.5+", 65)
-        if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
-            st.session_state.historico_calls.append(m.copy())
-            st.toast("✅ CALL SALVA COM SUCESSO!")
+        with r1: draw_card("CONFIANÇA", str(jogo_info.get('CONF', '85%')), 85)
+        with r2: draw_card("GOLS", str(jogo_info.get('GOLS', 'OVER 1.5')), 70)
+        with r3: draw_card("CANTOS", str(jogo_info.get('CANTOS', '9.5+')), 65)
+        with r4: draw_card("SUGESTÃO", "ENTRADA VIP", 100)
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
-    l1, l2, l3, l4 = st.columns(4)
-    with l1: draw_card("PRESSÃO CASA", "88%", 88)
-    with l2: draw_card("ATAQUES/5m", "14", 70)
-    with l3: draw_card("POSSE BOLA", "65%", 65)
-    with l4: draw_card("GOL PROB", "90%", 90)
     
-    # --- NOVO ELEMENTO: TABELA DE JOGOS AO VIVO ---
-    st.markdown("<h4 style='color:#06b6d4; margin-top:30px;'>🎮 MONITORAMENTO DE PARTIDAS EM TEMPO REAL</h4>", unsafe_allow_html=True)
-    
-    # Dados Simulados (Invisíveis no back-end)
-    dados_live = {
-        "TEMPO": ["22'", "58'", "81'", "12'", "44'"],
-        "CONFRONTO": ["Flamengo vs Palmeiras", "Real Madrid vs Barcelona", "Man City vs Arsenal", "Inter vs Milan", "PSG vs Monaco"],
-        "PLACAR": ["1 - 0", "2 - 2", "0 - 1", "0 - 0", "3 - 1"],
-        "PRESSÃO (C/F)": ["75 / 25", "50 / 50", "30 / 70", "55 / 45", "82 / 18"],
-        "CANTOS": [4, 9, 11, 2, 7],
-        "TENDÊNCIA IA": ["OVER 1.5", "OVER 4.5", "UNDER 1.5", "BTTS YES", "HOME WIN"]
-    }
-    df_live_monitor = pd.DataFrame(dados_live)
-    
-    # Renderização da Tabela com integridade "Zero White"
-    st.dataframe(df_live_monitor, use_container_width=True, hide_index=True)
-
-elif st.session_state.aba_ativa == "vencedores":
-    st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
-    v1, v2, v3, v4 = st.columns(4)
-    with v1: draw_card("FAVORITO 1", "Brasil", 45)
-    with v2: draw_card("FAVORITO 2", "França", 38)
-    with v3: draw_card("FAVORITO 3", "Espanha", 25)
-    with v4: draw_card("ZEBRA PROB", "Marrocos", 12)
-
-elif st.session_state.aba_ativa == "gols":
-    st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>", unsafe_allow_html=True)
-    g1, g2, g3, g4 = st.columns(4)
-    with g1: draw_card("OVER 0.5 HT", "82%", 82)
-    with g2: draw_card("OVER 1.5 FT", "75%", 75)
-    with g3: draw_card("AMBAS MARCAM", "61%", 61)
-    with g4: draw_card("UNDER 3.5", "90%", 90)
-
-elif st.session_state.aba_ativa == "escanteios":
-    st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
-    e1, e2, e3, e4 = st.columns(4)
-    with e1: draw_card("OVER 8.5", "88%", 88)
-    with e2: draw_card("OVER 10.5", "62%", 62)
-    with e3: draw_card("CANTOS HT", "4.5+", 70)
-    with e4: draw_card("CORNER RACE", "Time A", 55)
+    if df_diario is not None:
+        # Filtra apenas os jogos capturados pelo Scraper como "LIVE"
+        df_live = df_diario[df_diario['PAIS'] == "LIVE 📡"]
+        
+        if df_live.empty:
+            st.info("Buscando jogos ao vivo na Betano... Por favor, aguarde a próxima sincronização.")
+        else:
+            l1, l2, l3, l4 = st.columns(4)
+            with l1: draw_card("JOGOS AO VIVO", str(len(df_live)), 100)
+            with l2: draw_card("OPORTUNIDADES", "ALTA", 70)
+            with l3: draw_card("STATUS", "SINCRONIZADO", 100)
+            with l4: draw_card("IA", "OPERANDO", 100)
+            
+            st.markdown("<h4 style='color:#06b6d4; margin-top:30px;'>🎮 MONITORAMENTO DE PARTIDAS EM TEMPO REAL</h4>", unsafe_allow_html=True)
+            st.dataframe(df_live, use_container_width=True, hide_index=True)
+    else:
+        st.warning("Sem dados live. Verifique o log do sync_data.py")
 
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
