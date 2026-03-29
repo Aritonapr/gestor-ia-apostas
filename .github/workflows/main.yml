@@ -2,14 +2,14 @@ name: Automação Diária Jarvis
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Roda todo dia à meia-noite
-  workflow_dispatch: # Permite que o senhor rode manualmente clicando no botão
+    - cron: '0 0 * * *' # Execução automática à meia-noite
+  workflow_dispatch: # Permite execução manual pelo painel do GitHub
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # ESSENCIAL: Permite que o robô salve o arquivo CSV
+      contents: write # Permissão essencial para o Bot salvar o arquivo CSV no repositório
     
     steps:
       - name: 📥 Clonando o Repositório
@@ -20,11 +20,14 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: 🛠️ Instalando Ferramentas (Pandas e Requests)
+      - name: 🌐 Instalando Google Chrome (Ambiente Jarvis)
         run: |
-          pip install pandas requests
-          - name: 🛠️ Instalando Ferramentas
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+      - name: 🛠️ Instalando Dependências do Sistema
         run: |
+          python -m pip install --upgrade pip
           pip install pandas requests selenium webdriver-manager
 
       - name: 🤖 Executando o Bot Jarvis (sync_data.py)
@@ -34,6 +37,6 @@ jobs:
         run: |
           git config --global user.name "Jarvis Bot"
           git config --global user.email "jarvis@bot.com"
-          git add data/*.csv
-          git commit -m "📊 Jarvis: Dados Diários Atualizados" || echo "Sem mudanças para salvar"
+          git add data/database_diario.csv
+          git commit -m "📊 Jarvis: Dados Diários Atualizados [v60.0]" || echo "Sem mudanças para salvar"
           git push
