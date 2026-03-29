@@ -25,11 +25,27 @@ if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
 # --- CARREGAMENTO DE DADOS ---
 @st.cache_data
 def carregar_dados_globais():
-    d = pd.read_csv("data/database_diario.csv") if os.path.exists("data/database_diario.csv") else None
-    h = pd.read_csv("data/historico_5_temporadas.csv") if os.path.exists("data/historico_5_temporadas.csv") else None
-    return d, h
+    try:
+        d = pd.read_csv("data/database_diario.csv") if os.path.exists("data/database_diario.csv") else None
+        h = pd.read_csv("data/historico_5_temporadas.csv") if os.path.exists("data/historico_5_temporadas.csv") else None
+        return d, h
+    except:
+        return None, None
 
 df_diario, df_hist = carregar_dados_globais()
+
+# ==============================================================================
+# LÓGICA DO BOT (BACK-END): MOTOR JARVIS
+# ==============================================================================
+
+def calcular_ia_manual(time_casa):
+    conf = 75.0
+    if df_hist is not None:
+        f = df_hist[df_hist['Casa'].str.contains(str(time_casa)[:5], case=False, na=False)]
+        if not f.empty:
+            taxa = (len(f[f['Resultado']=='H']) / len(f)) * 100
+            conf = round(taxa + 10, 1)
+    return min(conf, 98.4)
 
 # ==============================================================================
 # 2. CAMADA DE ESTILO CSS INTEGRAL (TRAVA v57.35)
@@ -55,7 +71,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. SIDEBAR
+# 3. SIDEBAR E HEADER
 with st.sidebar:
     st.markdown("""<div class="betano-header"><div class="logo-link">GESTOR IA</div><div style="display:flex;"><div class="nav-item">LIVE</div><div class="nav-item">STATS</div></div></div><div style="height:65px;"></div>""", unsafe_allow_html=True) 
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
@@ -77,22 +93,17 @@ def draw_card(title, value, perc):
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
     draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
-    if df_diario is not None:
-        st.markdown("### 📋 JOGOS MONITORADOS")
-        st.dataframe(df_diario, use_container_width=True)
+    if df_diario is not None: st.dataframe(df_diario, use_container_width=True)
 
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     col1, col2, col3 = st.columns(3)
-    with col1: s_pais = st.selectbox("🌎 REGIÃO", ["BRASIL", "EUROPA", "MUNDO"])
-    with col2: s_liga = st.selectbox("📂 GRUPO", ["SÉRIE A", "COPAS", "LIGA PRINCIPAL"])
+    with col1: s_pais = st.selectbox("🌎 REGIÃO", ["BRASIL", "EUROPA", "INTERNACIONAL"])
+    with col2: s_liga = st.selectbox("📂 GRUPO", ["SÉRIE A", "PREMIER LEAGUE", "E2", "SC1"])
     with col3: s_time = st.text_input("🏠 TIME DA CASA", "Flamengo")
     
     if st.button("⚡ EXECUTAR ALGORITMO"):
-        conf = 85.0
-        if df_hist is not None:
-            f = df_hist[df_hist['Casa'].str.contains(s_time[:5], case=False, na=False)]
-            if not f.empty: conf = round((len(f[f['Resultado']=='H'])/len(f))*100 + 10, 1)
+        conf = calcular_ia_manual(s_time)
         st.session_state.analise_bloqueada = {"casa": s_time, "conf": conf}
         
     if st.session_state.analise_bloqueada:
@@ -103,15 +114,16 @@ elif st.session_state.aba_ativa == "analise":
         with r2: draw_card("PROB. GOLS", "OVER 1.5", 90)
         with r3: draw_card("STAKE", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
         with r4: draw_card("CANTOS", "9.5+", 75)
-        if st.button("📥 SALVAR NO HISTÓRICO", use_container_width=True):
-            st.session_state.historico_calls.append({"data": datetime.now().strftime("%H:%M"), "casa": m['casa'], "fora": "Rival", "status": "OK"})
+        if st.button("📥 SALVAR CALL", use_container_width=True):
+            st.session_state.historico_calls.append({"data": datetime.now().strftime("%H:%M"), "casa": m['casa'], "fora": "Rival"})
             st.toast("✅ SALVO!")
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
     if df_diario is not None:
-        # Colunas Personalizadas para o Live
-        st.dataframe(df_diario[['STATUS', 'CASA', 'FORA', 'GOLS', 'CONF', 'CANTOS']], use_container_width=True, hide_index=True)
+        # TRAVA DE SEGURANÇA: Só mostra colunas que realmente existem no arquivo
+        cols_existentes = [c for c in ['STATUS', 'PAIS', 'LIGA', 'CASA', 'FORA', 'GOLS', 'CONF', 'CANTOS'] if c in df_diario.columns]
+        st.dataframe(df_diario[cols_existentes], use_container_width=True, hide_index=True)
     else: st.info("Aguardando sincronização...")
 
 elif st.session_state.aba_ativa == "vencedores":
@@ -141,7 +153,7 @@ elif st.session_state.aba_ativa == "escanteios":
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
     for c in reversed(st.session_state.historico_calls):
-        st.markdown(f"""<div class="history-card-box"><div style="color:white; font-weight:800;">[{c['data']}] {c['casa']} x {c['fora']} | STATUS: {c['status']}</div></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div class="history-card-box"><div style="color:white; font-weight:800;">[{c['data']}] {c['casa']} x {c['fora']}</div></div>""", unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA</div>""", unsafe_allow_html=True)
