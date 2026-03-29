@@ -12,7 +12,6 @@ from io import StringIO
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
 # DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO) - UI v57.35
 # DIRETRIZ 5: CÓDIGO 100% ÍNTEGRO - SEM ABREVIAÇÕES
-# MODIFICAÇÃO ATUAL: REMOÇÃO CIRÚRGICA DA BARRA DE ROLAGEM DA SIDEBAR
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -51,19 +50,8 @@ st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
     
-    /* REMOÇÃO GLOBAL DE SCROLLBAR */
     ::-webkit-scrollbar { display: none !important; }
     * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
-
-    /* REMOÇÃO ESPECÍFICA DA BARRA DE ROLAGEM DA SIDEBAR (LATERAL ESQUERDA) */
-    [data-testid="stSidebar"] > div:first-child {
-        overflow-y: hidden !important;
-        -ms-overflow-style: none !important;
-        scrollbar-width: none !important;
-    }
-    [data-testid="stSidebar"] > div:first-child::-webkit-scrollbar {
-        display: none !important;
-    }
 
     html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp {
         background-color: #0b0e11 !important;
@@ -147,12 +135,10 @@ st.markdown("""
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     
     .banner-green { background: rgba(0,255,136,0.05); border-left: 5px solid #00ff88; padding: 18px; border-radius: 6px; margin-bottom: 25px; color: white; font-size: 11px; font-weight: 800; letter-spacing: 1px; }
-    
-    .history-card-box { background: #1a202c; padding: 15px; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #6d28d9; }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. HEADER SUPERIOR FIXO
+# 3. HEADER SUPERIOR (RESTAURAÇÃO TOTAL DOS BOTÕES E TEXTOS)
 with st.sidebar:
     st.markdown("""
         <div class="betano-header">
@@ -197,7 +183,7 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 4. LÓGICA DE TELAS (INTEGRIDADE TOTAL)
+# 4. LÓGICA DE TELAS (RESTAURADA)
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
@@ -278,5 +264,4 @@ elif st.session_state.aba_ativa == "historico":
     for c in reversed(st.session_state.historico_calls):
         st.markdown(f"""<div class="history-card-box"><div style="color:white; font-weight:800;">[{c['data']}] {c['casa']} x {c['fora']}</div></div>""", unsafe_allow_html=True)
 
-# FOOTER ESTATUTÁRIO
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v62.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
