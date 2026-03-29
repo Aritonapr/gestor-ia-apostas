@@ -7,17 +7,18 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 
-def calcular_metricas_jarvis(time_casa, df_hist):
-    confianca = 75.0
+def calcular_ia_jarvis(time_casa, df_hist):
+    conf = 72.0
     if df_hist is not None:
         filtro = df_hist[df_hist['Casa'].str.contains(str(time_casa)[:5], case=False, na=False)]
         if not filtro.empty:
-            taxa = (len(filtro[filtro['Resultado'] == 'H']) / len(filtro)) * 100
-            confianca = round(taxa + 15, 1)
-    return f"{min(confianca, 98.4)}%"
+            taxa = (len(f[f['Resultado']=='H']) / len(f)) * 100 if len(f) > 0 else 72.0
+            conf = round(taxa + 10, 1)
+    return f"{min(conf, 98.4)}%"
 
 def sync():
-    print("🤖 JARVIS v60.0 | Capturando Horários e Jogos...")
+    print("🚀 JARVIS v60.0 | Iniciando Limpeza e Busca Real-Time...")
+    
     path_hist = "data/historico_5_temporadas.csv"
     df_hist = pd.read_csv(path_hist) if os.path.exists(path_hist) else None
 
@@ -28,36 +29,34 @@ def sync():
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     
     try:
+        # Acessa a agenda da Betano para HOJE
         driver.get("https://br.betano.com/sport/futebol/jogos-de-hoje/")
-        time.sleep(15)
+        time.sleep(20) # Tempo extra para o site carregar totalmente
         
-        eventos = driver.find_elements(By.CSS_SELECTOR, "[data-testid='event-card']")
-        lista_jogos = []
+        # Procura todos os blocos de jogos
+        cards = driver.find_elements(By.XPATH, "//div[contains(@class, 'events-list__grid__event')]")
+        
+        novos_jogos = []
+        print(f"🔎 Analisando {len(cards)} possíveis confrontos...")
 
-        for evento in eventos:
+        for card in cards:
             try:
-                texto_completo = evento.text.split('\n')
-                # A Betano coloca o horário ou 'AO VIVO' nas primeiras linhas do card
-                status_hora = texto_completo[0] 
+                texto = card.text.split('\n')
+                # Na Betano, o horário ou status fica no topo
+                status = texto[0]
                 
-                # Identifica times (lógica robusta de pulo de mercados)
-                casa = ""
-                fora = ""
-                for i in range(1, len(texto_completo)):
-                    if " - " in texto_completo[i]:
-                        partes = texto_completo[i].split(" - ")
-                        casa = partes[0].strip()
-                        fora = partes[1].strip()
+                # Procura o separador " - " para identificar os times
+                casa, fora = "", ""
+                for linha in texto:
+                    if " - " in linha:
+                        partes = linha.split(" - ")
+                        casa, fora = partes[0].strip(), partes[1].strip()
                         break
                 
-                if not casa: # Fallback caso os nomes estejam em linhas separadas
-                    casa = texto_completo[1]
-                    fora = texto_completo[2]
-
                 if casa and fora:
-                    conf = calcular_metricas_jarvis(casa, df_hist)
-                    lista_jogos.append({
-                        "STATUS": status_hora,
+                    conf = calcular_ia_jarvis(casa, df_hist)
+                    novos_jogos.append({
+                        "STATUS": status,
                         "LIGA": "BETANO",
                         "CASA": casa,
                         "FORA": fora,
@@ -65,18 +64,20 @@ def sync():
                         "CONF": conf,
                         "CANTOS": "9.5+",
                         "CHUTES": "10+",
-                        "DEFESAS": "7+",
-                        "TMETA": "15+"
+                        "DEFESAS": "6+",
+                        "TMETA": "14+"
                     })
             except: continue
         
-        if lista_jogos:
-            df_final = pd.DataFrame(lista_jogos)
+        if novos_jogos:
+            df_final = pd.DataFrame(novos_jogos)
             if not os.path.exists('data'): os.makedirs('data')
             df_final.to_csv("data/database_diario.csv", index=False)
-            print(f"✅ SUCESSO: {len(df_final)} jogos com horários capturados.")
+            print(f"✅ JARVIS ATUALIZADO: {len(df_final)} jogos reais encontrados.")
+        else:
+            print("⚠️ ERRO: O robô não encontrou jogos novos. O arquivo não foi alterado.")
             
-    except Exception as e: print(f"❌ ERRO: {e}")
+    except Exception as e: print(f"❌ FALHA NO SCANNER: {e}")
     finally: driver.quit()
 
 if __name__ == "__main__":
