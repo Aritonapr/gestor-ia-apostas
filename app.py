@@ -50,17 +50,15 @@ st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
     
-    /* REMOÇÃO DE BARRA DE ROLAGEM - GLOBAL E SIDEBAR (ATUALIZADO) */
-    ::-webkit-scrollbar { display: none !important; }
+    /* 1. REMOÇÃO TOTAL DE SCROLLBARS (INCLUINDO SIDEBAR) */
+    ::-webkit-scrollbar { display: none !important; width: 0 !important; }
+    * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
     
-    [data-testid="stSidebar"] > div:first-child {
-        scrollbar-width: none !important;
-        -ms-overflow-style: none !important;
-    }
-    
-    [data-testid="stSidebar"] > div:first-child::-webkit-scrollbar {
-        display: none !important;
-        width: 0 !important;
+    /* ALVO ESPECÍFICO PARA A SIDEBAR (MODERNO) */
+    [data-testid="stSidebar"] section, 
+    [data-testid="stSidebar"] .st-emotion-cache-6qob1r, 
+    [data-testid="stSidebar"] .st-emotion-cache-16idsys {
+        overflow: hidden !important;
     }
 
     html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp {
@@ -158,7 +156,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. HEADER SUPERIOR (RESTAURAÇÃO TOTAL DOS BOTÕES E TEXTOS)
+# 3. HEADER SUPERIOR
 with st.sidebar:
     st.markdown("""
         <div class="betano-header">
@@ -203,7 +201,7 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 4. LÓGICA DE TELAS (RESTAURADA)
+# 4. LÓGICA DE TELAS
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
