@@ -7,33 +7,23 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 
-# CONFIGURAÇÃO DE IA: CRUZAMENTO DE DADOS
 def calcular_metricas_jarvis(time_casa, time_fora, df_hist):
-    """
-    Analisa o histórico de 5 anos para dar o palpite real.
-    """
     confianca = 50.0
-    palpite = "OVER 1.5"
-    
     if df_hist is not None:
-        # Busca jogos do time da casa no histórico
-        jogos = df_hist[df_hist['Casa'].str.contains(time_casa[:5], case=False, na=False)]
-        if not jogos.empty:
-            vitorias = len(jogos[jogos['Resultado'] == 'H'])
-            taxa_vitoria = (vitorias / len(jogos)) * 100
-            confianca = round(taxa_vitoria + 15, 1) # Bônus de tendência
-            if confianca > 98: confianca = 98.2
-            
-    return f"{min(confianca, 99.0)}%", palpite
+        # Busca inteligente (pega os primeiros 5 caracteres do nome)
+        filtro = df_hist[df_hist['Casa'].str.contains(str(time_casa)[:5], case=False, na=False)]
+        if not filtro.empty:
+            vitorias = len(filtro[filtro['Resultado'] == 'H'])
+            taxa = (vitorias / len(filtro)) * 100
+            confianca = round(taxa + 15, 1)
+    return f"{min(confianca, 98.4)}%"
 
 def sync():
-    print("🤖 JARVIS v60.0 | Iniciando Sincronização Betano...")
+    print("🤖 JARVIS v60.0 | Iniciando Varredura Multi-Seletores...")
     
-    # Carrega histórico para a IA processar enquanto limpa os dados
     path_hist = "data/historico_5_temporadas.csv"
     df_hist = pd.read_csv(path_hist) if os.path.exists(path_hist) else None
 
-    # Configuração do Navegador Invisível (Headless)
     options = Options()
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
@@ -43,35 +33,52 @@ def sync():
     
     try:
         driver.get("https://br.betano.com/sport/futebol/jogos-de-hoje/")
-        time.sleep(10) # Aguarda carregamento total da página
+        time.sleep(15) # Aumentamos o tempo para garantir o carregamento
         
-        # Captura os nomes dos times na página da Betano
-        # Nota: As classes da Betano podem mudar, mas o Jarvis busca pelos seletores de eventos
-        eventos = driver.find_elements(By.CSS_SELECTOR, "[data-testid='event-card']")
+        # Tenta encontrar os jogos por diferentes caminhos (Seletores de Elite)
+        jogos_encontrados = driver.find_elements(By.CSS_SELECTOR, "[data-testid='event-card']")
         
+        # Se falhar, tenta o seletor secundário
+        if not jogos_encontrados:
+            jogos_encontrados = driver.find_elements(By.CLASS_NAME, "events-list__grid__event")
+
         lista_jogos = []
-        
-        for evento in eventos:
+        print(f"🔎 Detectados {len(jogos_encontrados)} blocos de eventos.")
+
+        for evento in jogos_encontrados:
             try:
-                nomes = evento.find_element(By.CLASS_NAME, "events-list__grid__info__main__participants").text.split(' - ')
-                casa = nomes[0].strip()
-                fora = nomes[1].strip()
+                # Captura o texto completo do bloco e tenta separar os times
+                dados = evento.text.split('\n')
+                # Geralmente o nome dos times aparece em sequência no texto do card
+                # Vamos buscar padrões de nomes (Ex: Time A vs Time B ou Time A - Time B)
+                casa = ""
+                fora = ""
                 
-                conf, palpite = calcular_metricas_jarvis(casa, fora, df_hist)
+                # Lógica de extração robusta
+                for i in range(len(dados)):
+                    if " / " in dados[i] or ":" in dados[i]: # Pula horários ou mercados
+                        continue
+                    if i < len(dados) - 1:
+                        casa = dados[i].strip()
+                        fora = dados[i+1].strip()
+                        if len(casa) > 3 and len(fora) > 3: # Validação básica de nome
+                            break
                 
-                lista_jogos.append({
-                    "PAIS": "LIVE 📡",
-                    "LIGA": "BETANO PRO",
-                    "CASA": casa,
-                    "FORA": fora,
-                    "GOLS": palpite,
-                    "CONF": conf,
-                    "CARTOES": "3+",
-                    "CANTOS": "9.5+",
-                    "CHUTES": "10+",
-                    "DEFESAS": "7+",
-                    "TMETA": "15+"
-                })
+                if casa and fora:
+                    conf = calcular_metricas_jarvis(casa, fora, df_hist)
+                    lista_jogos.append({
+                        "PAIS": "LIVE 📡",
+                        "LIGA": "BETANO REAL-TIME",
+                        "CASA": casa,
+                        "FORA": fora,
+                        "GOLS": "OVER 1.5",
+                        "CONF": conf,
+                        "CARTOES": "3+",
+                        "CANTOS": "9.5+",
+                        "CHUTES": "10+",
+                        "DEFESAS": "7+",
+                        "TMETA": "15+"
+                    })
             except:
                 continue
         
@@ -79,12 +86,12 @@ def sync():
             df_final = pd.DataFrame(lista_jogos)
             if not os.path.exists('data'): os.makedirs('data')
             df_final.to_csv("data/database_diario.csv", index=False)
-            print(f"✅ Sucesso: {len(df_final)} jogos sincronizados com o histórico.")
+            print(f"✅ SUCESSO: {len(df_final)} jogos processados pela IA.")
         else:
-            print("⚠️ Nenhum jogo capturado. Verifique os seletores da Betano.")
+            print("⚠️ AVISO: O site carregou mas os nomes dos times não foram extraídos.")
             
     except Exception as e:
-        print(f"❌ Erro no processo: {e}")
+        print(f"❌ ERRO CRÍTICO: {e}")
     finally:
         driver.quit()
 
