@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import os
 from datetime import datetime
+import requests
+from io import StringIO
 
 # ==============================================================================
 # [PROTOCOLO DE MANUTENÇÃO v60.00 - INTEGRIDADE TOTAL]
@@ -22,24 +24,31 @@ if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloquea
 if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
 if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
 
-# --- CARREGAMENTO DE DADOS ---
-@st.cache_data
-def carregar_dados_globais():
+# --- MOTOR DE BUSCA DE DADOS REAIS (CONTRA CACHE ANTIGO) ---
+@st.cache_data(ttl=300) # Limpa a memória a cada 5 minutos
+def buscar_dados_frescos():
+    url_diario = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
+    url_hist = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/historico_5_temporadas.csv"
+    
     try:
-        d = pd.read_csv("data/database_diario.csv") if os.path.exists("data/database_diario.csv") else None
-        h = pd.read_csv("data/historico_5_temporadas.csv") if os.path.exists("data/historico_5_temporadas.csv") else None
+        # Busca o arquivo diário direto do GitHub para garantir que é de hoje
+        res_d = requests.get(f"{url_diario}?nocache={datetime.now().timestamp()}")
+        res_h = requests.get(url_hist)
+        
+        d = pd.read_csv(StringIO(res_d.text)) if res_d.status_code == 200 else None
+        h = pd.read_csv(StringIO(res_h.text)) if res_h.status_code == 200 else None
         return d, h
     except:
         return None, None
 
-df_diario, df_hist = carregar_dados_globais()
+df_diario, df_hist = buscar_dados_frescos()
 
 # ==============================================================================
-# LÓGICA DO BOT (BACK-END): MOTOR JARVIS
+# LÓGICA DO BOT (BACK-END): CÉREBRO JARVIS
 # ==============================================================================
 
 def calcular_ia_manual(time_casa):
-    conf = 75.0
+    conf = 70.0
     if df_hist is not None:
         f = df_hist[df_hist['Casa'].str.contains(str(time_casa)[:5], case=False, na=False)]
         if not f.empty:
@@ -87,20 +96,23 @@ def draw_card(title, value, perc):
     st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase;">{title}</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div><div style="background:#1e293b; height:4px; border-radius:10px; margin-top:10px;"><div style="background:linear-gradient(90deg, #6d28d9, #06b6d4); height:100%; width:{perc}%;"></div></div></div>""", unsafe_allow_html=True)
 
 # ==============================================================================
-# 4. TELAS
+# 4. LÓGICA DE TELAS
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
     draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
-    if df_diario is not None: st.dataframe(df_diario, use_container_width=True)
+    if df_diario is not None: 
+        st.success(f"Dados atualizados do GitHub em: {datetime.now().strftime('%H:%M:%S')}")
+        st.dataframe(df_diario, use_container_width=True)
+    else: st.error("❌ ERRO: O arquivo database_diario.csv não foi encontrado no GitHub.")
 
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
-    col1, col2, col3 = st.columns(3)
-    with col1: s_pais = st.selectbox("🌎 REGIÃO", ["BRASIL", "EUROPA", "INTERNACIONAL"])
-    with col2: s_liga = st.selectbox("📂 GRUPO", ["SÉRIE A", "PREMIER LEAGUE", "E2", "SC1"])
-    with col3: s_time = st.text_input("🏠 TIME DA CASA", "Flamengo")
+    c1, c2, c3 = st.columns(3)
+    with c1: s_pais = st.selectbox("🌎 REGIÃO", ["BRASIL", "EUROPA", "INTERNACIONAL"])
+    with c2: s_liga = st.selectbox("📂 GRUPO", ["SÉRIE A", "PREMIER LEAGUE", "LA LIGA"])
+    with c3: s_time = st.text_input("🏠 TIME DA CASA", "Flamengo")
     
     if st.button("⚡ EXECUTAR ALGORITMO"):
         conf = calcular_ia_manual(s_time)
@@ -121,10 +133,11 @@ elif st.session_state.aba_ativa == "analise":
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
     if df_diario is not None:
-        # TRAVA DE SEGURANÇA: Só mostra colunas que realmente existem no arquivo
-        cols_existentes = [c for c in ['STATUS', 'PAIS', 'LIGA', 'CASA', 'FORA', 'GOLS', 'CONF', 'CANTOS'] if c in df_diario.columns]
-        st.dataframe(df_diario[cols_existentes], use_container_width=True, hide_index=True)
-    else: st.info("Aguardando sincronização...")
+        # Filtra colunas que existem para evitar erros de visualização
+        cols = [c for c in ['STATUS', 'PAIS', 'LIGA', 'CASA', 'FORA', 'GOLS', 'CONF', 'CANTOS'] if c in df_diario.columns]
+        st.dataframe(df_diario[cols], use_container_width=True, hide_index=True)
+        if st.button("🔄 FORÇAR ATUALIZAÇÃO AGORA"): st.rerun()
+    else: st.info("Sincronizando com a Betano via GitHub...")
 
 elif st.session_state.aba_ativa == "vencedores":
     st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
