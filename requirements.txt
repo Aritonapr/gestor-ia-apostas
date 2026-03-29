@@ -1,5 +1,6 @@
-streamlit>=1.31.0
+streamlit
 pandas
 requests
+beautifulsoup4
+lxml
 numpy
-altair<5.0.0
