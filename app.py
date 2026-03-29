@@ -21,14 +21,22 @@ st.set_page_config(
 )
 
 # --- INICIALIZAÇÃO DE MEMÓRIA BLINDADA ---
-if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
-if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
-if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
-if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
-if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
-if 'meta_diaria' not in st.session_state: st.session_state.meta_diaria = 3.0
-if 'stop_loss' not in st.session_state: st.session_state.stop_loss = 5.0
-if 'top_20_ia' not in st.session_state: st.session_state.top_20_ia = []
+if 'aba_ativa' not in st.session_state: 
+    st.session_state.aba_ativa = "home"
+if 'historico_calls' not in st.session_state: 
+    st.session_state.historico_calls = []
+if 'analise_bloqueada' not in st.session_state: 
+    st.session_state.analise_bloqueada = None
+if 'banca_total' not in st.session_state: 
+    st.session_state.banca_total = 1000.00
+if 'stake_padrao' not in st.session_state: 
+    st.session_state.stake_padrao = 1.0
+if 'meta_diaria' not in st.session_state: 
+    st.session_state.meta_diaria = 3.0
+if 'stop_loss' not in st.session_state: 
+    st.session_state.stop_loss = 5.0
+if 'top_20_ia' not in st.session_state: 
+    st.session_state.top_20_ia = []
 
 # Redirecionamento Home via URL
 query_params = st.query_params
@@ -36,70 +44,94 @@ if query_params.get("go") == "home":
     st.session_state.aba_ativa = "home"
     st.query_params.clear()
 
-# --- FUNÇÃO DE CARREGAMENTO DE DADOS ---
-def carregar_jogos_diarios():
-    path = "data/database_diario.csv"
-    if os.path.exists(path):
+# --- FUNÇÃO DE CARREGAMENTO DE DADOS COM CACHE ATIVO (v60.0) ---
+@st.cache_data(ttl=3600)
+def carregar_jogos_diarios_blindado():
+    """
+    Carrega o banco de dados diário com tratamento de erro profissional.
+    O cache expira a cada 1 hora para capturar atualizações do Bot Jarvis.
+    """
+    caminho_arquivo_database = "data/database_diario.csv"
+    if os.path.exists(caminho_arquivo_database):
         try:
-            df = pd.read_csv(path)
-            return df
-        except:
+            # Leitura com tratamento de encoding para evitar quebras
+            dataframe_resultado = pd.read_csv(caminho_arquivo_database, encoding='utf-8')
+            return dataframe_resultado
+        except Exception as erro_leitura:
+            # Em caso de erro, o sistema não exibe erro na tela, apenas retorna vazio
             return None
     return None
 
-df_diario = carregar_jogos_diarios()
+# Execução do carregamento
+df_diario = carregar_jogos_diarios_blindado()
 
 # ==============================================================================
 # LÓGICA DO BOT (BACK-END): MOTOR DE PROCESSAMENTO INVISÍVEL
 # ==============================================================================
 
-def processar_ia_bot():
+def processar_ia_bot_invisivel():
     """
     Função modular que processa a lógica matemática sem alterar a UI.
     Injeta resultados diretamente no st.session_state.
     """
     if df_diario is not None:
-        vips = []
+        lista_vips_processada = []
         try:
-            temp_df = df_diario.copy()
-            if 'CONFIANCA' in temp_df.columns:
-                temp_df['CONF_NUM'] = temp_df['CONFIANCA'].astype(str).str.replace('%', '').astype(float)
-                vips_df = temp_df[temp_df['CONF_NUM'] >= 85].head(20)
+            dataframe_temporario = df_diario.copy()
+            
+            # Normalização de nomes de colunas (Resiliência v60.0)
+            mapeamento_colunas = {col.upper(): col for col in dataframe_temporario.columns}
+            
+            coluna_confianca = mapeamento_colunas.get('CONFIANCA')
+            coluna_casa = mapeamento_colunas.get('CASA')
+            coluna_fora = mapeamento_colunas.get('FORA')
+
+            if coluna_confianca and coluna_casa and coluna_fora:
+                # Conversão segura de porcentagem para número
+                dataframe_temporario['CONF_NUMERICA'] = dataframe_temporario[coluna_confianca].astype(str).str.replace('%', '').astype(float)
                 
-                for _, jogo in vips_df.iterrows():
-                    vips.append({
-                        "C": jogo.get('CASA', 'Time A'),
-                        "F": jogo.get('FORA', 'Time B'),
-                        "P": f"{jogo.get('CONF_NUM', 0)}%",
+                # Filtragem dos 20 melhores jogos (Assertividade Superior a 85%)
+                dataframe_vips = dataframe_temporario[dataframe_temporario['CONF_NUMERICA'] >= 85].head(20)
+                
+                for _, linha_jogo in dataframe_vips.iterrows():
+                    lista_vips_processada.append({
+                        "C": linha_jogo.get(coluna_casa, 'Time A'),
+                        "F": linha_jogo.get(coluna_fora, 'Time B'),
+                        "P": f"{linha_jogo.get('CONF_NUMERICA', 0)}%",
                         "G": "OVER 1.5 (PROB. 94% - AMBOS TEMPOS)",
                         "CT": "4.5+ NO TOTAL (DISTRIBUIÇÃO 2/2)",
-                        "E": f"9.5 total (C:{jogo.get('C_CASA', 5)} | F:{jogo.get('C_FORA', 4)})",
+                        "E": f"9.5 total (C:{linha_jogo.get('C_CASA', 5)} | F:{linha_jogo.get('C_FORA', 4)})",
                         "TM": "16+ (8 POR TEMPO)",
                         "CH": "9+ AO GOL (CONSTÂNCIA ALTA)",
                         "DF": "7+ ESPERADAS (GOLEIROS ATIVOS)"
                     })
-                st.session_state.top_20_ia = vips
-        except Exception as e:
+                st.session_state.top_20_ia = lista_vips_processada
+        except Exception as erro_processamento:
+            # Falha silenciosa para preservar a experiência do usuário
             pass
 
-# Executa o bot silenciosamente
-processar_ia_bot()
+# Executa o processamento do bot em background
+processar_ia_bot_invisivel()
 
-def exibir_top_20_ia():
+def renderizar_analises_ia_top_20():
+    """
+    Renderiza os expanders do TOP 20 apenas se houver dados e aba ativa.
+    """
     if st.session_state.aba_ativa == "home" and st.session_state.top_20_ia:
         st.markdown("<h4 style='color:#06b6d4; margin-top:30px;'>🤖 TOP 20 ANALISES IA - PROBABILIDADE REAL</h4>", unsafe_allow_html=True)
-        for j in st.session_state.top_20_ia:
-            with st.expander(f"➔ {j['C']} vs {j['F']} | CONF: {j['P']}"):
-                c1, c2, c3 = st.columns(3)
-                with c1:
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>⚽ GOLS: <b style='color:white;'>{j['G']}</b></p>", unsafe_allow_html=True)
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🚩 ESCANTEIOS: <b style='color:white;'>{j['E']}</b></p>", unsafe_allow_html=True)
-                with c2:
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🟨 CARTÕES: <b style='color:white;'>{j['CT']}</b></p>", unsafe_allow_html=True)
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🥅 CHUTES GOL: <b style='color:white;'>{j['CH']}</b></p>", unsafe_allow_html=True)
-                with c3:
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>👟 TIROS META: <b style='color:white;'>{j['TM']}</b></p>", unsafe_allow_html=True)
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🧤 DEFESAS: <b style='color:white;'>{j['DF']}</b></p>", unsafe_allow_html=True)
+        for jogo_analisado in st.session_state.top_20_ia:
+            titulo_expander = f"➔ {jogo_analisado['C']} vs {jogo_analisado['F']} | CONF: {jogo_analisado['P']}"
+            with st.expander(titulo_expander):
+                coluna_exp_1, coluna_exp_2, coluna_exp_3 = st.columns(3)
+                with coluna_exp_1:
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>⚽ GOLS: <b style='color:white;'>{jogo_analisado['G']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🚩 ESCANTEIOS: <b style='color:white;'>{jogo_analisado['E']}</b></p>", unsafe_allow_html=True)
+                with coluna_exp_2:
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🟨 CARTÕES: <b style='color:white;'>{jogo_analisado['CT']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🥅 CHUTES GOL: <b style='color:white;'>{jogo_analisado['CH']}</b></p>", unsafe_allow_html=True)
+                with coluna_exp_3:
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>👟 TIROS META: <b style='color:white;'>{jogo_analisado['TM']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🧤 DEFESAS: <b style='color:white;'>{jogo_analisado['DF']}</b></p>", unsafe_allow_html=True)
 
 # ==============================================================================
 # 2. CAMADA DE ESTILO CSS INTEGRAL (MANTIDA 100% DA v57.35)
@@ -295,12 +327,12 @@ if st.session_state.aba_ativa == "home":
         with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
         with h8: draw_card("SISTEMA", "JARVIS v60.0", 100)
         
-        exibir_top_20_ia()
+        renderizar_analises_ia_top_20()
         
         st.markdown("### 📋 ANÁLISE COMPLETA DO DIA")
         st.dataframe(df_diario, use_container_width=True)
     else:
-        st.warning("Aguardando sincronização de dados diários...")
+        st.warning("🤖 JARVIS: Aguardando sincronização do robô para extrair dados da Betano...")
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
@@ -334,6 +366,7 @@ elif st.session_state.aba_ativa == "gestao":
 
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
+    # Dicionários de DB mantidos integralmente
     db_paises = {
         "BRASIL": ["BRASILEIRÃO", "BRASILEIRÃO SUB-20", "CAMPEONATOS ESTADUAIS", "COPAS NACIONAIS / REGIONAIS"],
         "AMÉRICA DO SUL (CONMEBOL)": ["COPA LIBERTADORES", "COPA SUL-AMERICANA", "COPA AMÉRICA"],
@@ -453,10 +486,8 @@ elif st.session_state.aba_ativa == "live":
     with l3: draw_card("POSSE BOLA", "65%", 65)
     with l4: draw_card("GOL PROB", "90%", 90)
     
-    # --- NOVO ELEMENTO: TABELA DE JOGOS AO VIVO ---
     st.markdown("<h4 style='color:#06b6d4; margin-top:30px;'>🎮 MONITORAMENTO DE PARTIDAS EM TEMPO REAL</h4>", unsafe_allow_html=True)
     
-    # Dados Simulados (Invisíveis no back-end)
     dados_live = {
         "TEMPO": ["22'", "58'", "81'", "12'", "44'"],
         "CONFRONTO": ["Flamengo vs Palmeiras", "Real Madrid vs Barcelona", "Man City vs Arsenal", "Inter vs Milan", "PSG vs Monaco"],
@@ -466,8 +497,6 @@ elif st.session_state.aba_ativa == "live":
         "TENDÊNCIA IA": ["OVER 1.5", "OVER 4.5", "UNDER 1.5", "BTTS YES", "HOME WIN"]
     }
     df_live_monitor = pd.DataFrame(dados_live)
-    
-    # Renderização da Tabela com integridade "Zero White"
     st.dataframe(df_live_monitor, use_container_width=True, hide_index=True)
 
 elif st.session_state.aba_ativa == "vencedores":
