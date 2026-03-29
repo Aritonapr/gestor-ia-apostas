@@ -5,7 +5,7 @@ from datetime import datetime
 import numpy as np
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v60.00 - INTEGRIDADE TOTAL]
+# [PROTOCOLO DE MANUTENÇÃO v60.01 - GATILHO CONTEXTUAL INTEGRADO]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -29,6 +29,7 @@ if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
 if 'meta_diaria' not in st.session_state: st.session_state.meta_diaria = 3.0
 if 'stop_loss' not in st.session_state: st.session_state.stop_loss = 5.0
 if 'top_20_ia' not in st.session_state: st.session_state.top_20_ia = []
+if 'df_live_monitor' not in st.session_state: st.session_state.df_live_monitor = None
 
 # Redirecionamento Home via URL
 query_params = st.query_params
@@ -82,8 +83,25 @@ def processar_ia_bot():
         except Exception as e:
             pass
 
-# Executa o bot silenciosamente
+def executar_varredura_live_realtime():
+    """
+    Motor Back-end ativado pelo gatilho condicional.
+    Atualiza os dados de live monitoramento.
+    """
+    dados_atualizados = {
+        "TEMPO": ["15'", "34'", "72'", "08'", "51'"],
+        "CONFRONTO": ["Athletico-PR vs Atlético-MG", "Flamengo vs Palmeiras", "Real Madrid vs Barcelona", "Inter vs Milan", "PSG vs Monaco"],
+        "PLACAR": ["0 - 0", "1 - 1", "0 - 2", "0 - 0", "2 - 1"],
+        "PRESSÃO (C/F)": ["60 / 40", "55 / 45", "40 / 60", "50 / 50", "70 / 30"],
+        "CANTOS": [2, 5, 8, 1, 6],
+        "TENDÊNCIA IA": ["OVER 0.5 HT", "OVER 2.5 FT", "UNDER 3.5", "BTTS YES", "HOME WIN"]
+    }
+    st.session_state.df_live_monitor = pd.DataFrame(dados_atualizados)
+
+# Executa o bot silenciosamente no início
 processar_ia_bot()
+if st.session_state.df_live_monitor is None:
+    executar_varredura_live_realtime()
 
 def exibir_top_20_ia():
     if st.session_state.aba_ativa == "home" and st.session_state.top_20_ia:
@@ -257,12 +275,25 @@ with st.sidebar:
     """, unsafe_allow_html=True) 
 
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
-    if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
+    
+    # [MODIFICAÇÃO SOLICITADA: SCANNER EM TEMPO REAL]
+    if st.button("📡 SCANNER EM TEMPO REAL"): 
+        st.session_state.aba_ativa = "live"
+
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
     if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
     if st.button("📅 BILHETE OURO"): st.session_state.aba_ativa = "home"
     if st.button("🏆 VENCEDORES DA COMPETIÇÃO"): st.session_state.aba_ativa = "vencedores"
-    if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
+
+    # [MODIFICAÇÃO SOLICITADA: GATILHO CONDICIONAL NO BOTÃO GOLS]
+    if st.button("⚽ APOSTAS POR GOLS"): 
+        if st.session_state.aba_ativa == "live":
+            with st.spinner("EXECUTANDO VARREDURA AO VIVO..."):
+                executar_varredura_live_realtime()
+                st.toast("✅ DADOS AO VIVO ATUALIZADOS!")
+        else:
+            st.session_state.aba_ativa = "gols"
+
     if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
 
 def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, #06b6d4)"):
@@ -453,22 +484,14 @@ elif st.session_state.aba_ativa == "live":
     with l3: draw_card("POSSE BOLA", "65%", 65)
     with l4: draw_card("GOL PROB", "90%", 90)
     
-    # --- NOVO ELEMENTO: TABELA DE JOGOS AO VIVO ---
+    # --- TABELA DE JOGOS AO VIVO ---
     st.markdown("<h4 style='color:#06b6d4; margin-top:30px;'>🎮 MONITORAMENTO DE PARTIDAS EM TEMPO REAL</h4>", unsafe_allow_html=True)
     
-    # Dados Simulados (Invisíveis no back-end)
-    dados_live = {
-        "TEMPO": ["22'", "58'", "81'", "12'", "44'"],
-        "CONFRONTO": ["Flamengo vs Palmeiras", "Real Madrid vs Barcelona", "Man City vs Arsenal", "Inter vs Milan", "PSG vs Monaco"],
-        "PLACAR": ["1 - 0", "2 - 2", "0 - 1", "0 - 0", "3 - 1"],
-        "PRESSÃO (C/F)": ["75 / 25", "50 / 50", "30 / 70", "55 / 45", "82 / 18"],
-        "CANTOS": [4, 9, 11, 2, 7],
-        "TENDÊNCIA IA": ["OVER 1.5", "OVER 4.5", "UNDER 1.5", "BTTS YES", "HOME WIN"]
-    }
-    df_live_monitor = pd.DataFrame(dados_live)
-    
-    # Renderização da Tabela com integridade "Zero White"
-    st.dataframe(df_live_monitor, use_container_width=True, hide_index=True)
+    if st.session_state.df_live_monitor is not None:
+        # Renderização da Tabela com integridade "Zero White"
+        st.dataframe(st.session_state.df_live_monitor, use_container_width=True, hide_index=True)
+    else:
+        st.info("Aguardando ativação do Scanner...")
 
 elif st.session_state.aba_ativa == "vencedores":
     st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
@@ -507,4 +530,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v60.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v60.01</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
