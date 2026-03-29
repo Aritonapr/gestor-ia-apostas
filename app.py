@@ -4,6 +4,7 @@ import os
 import requests
 from datetime import datetime
 from io import StringIO
+import math
 
 # ==============================================================================
 # [PROTOCOLO DE MANUTENÇÃO v62.00 - INTEGRIDADE TOTAL]
@@ -27,13 +28,14 @@ if 'historico_calls' not in st.session_state: st.session_state.historico_calls =
 if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
 if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
 if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
+if 'meta_gain' not in st.session_state: st.session_state.meta_gain = 3.0
+if 'stop_loss' not in st.session_state: st.session_state.stop_loss = 5.0
 
-# --- CARREGAMENTO DE DADOS REAIS (CONTRA CACHE ANTIGO) ---
+# --- CARREGAMENTO DE DADOS REAIS ---
 def carregar_dados_vivos():
     url_d = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
     url_h = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/historico_5_temporadas.csv"
     try:
-        # Pula o cache usando o timestamp
         r_d = requests.get(f"{url_d}?v={datetime.now().timestamp()}", timeout=10)
         r_h = requests.get(url_h, timeout=10)
         d = pd.read_csv(StringIO(r_d.text)) if r_d.status_code == 200 else None
@@ -44,7 +46,7 @@ def carregar_dados_vivos():
 df_diario, df_hist = carregar_dados_vivos()
 
 # ==============================================================================
-# 2. CAMADA DE ESTILO CSS INTEGRAL (RESTAURAÇÃO TOTAL v57.35)
+# 2. CAMADA DE ESTILO CSS INTEGRAL (RESTAURAÇÃO TOTAL v57.35 + AJUSTES)
 # ==============================================================================
 st.markdown("""
     <style>
@@ -108,8 +110,10 @@ st.markdown("""
     }
     .entrar-grad:hover { filter: brightness(1.15); box-shadow: 0 0 15px rgba(109, 40, 217, 0.4); }
 
-    /* SIDEBAR CUSTOM */
+    /* SIDEBAR CUSTOM - SEM SCROLL */
     [data-testid="stSidebar"] { min-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
+    [data-testid="stSidebarContent"] { overflow: hidden !important; }
+    
     section[data-testid="stSidebar"] div.stButton > button { 
         background-color: transparent !important; color: #94a3b8 !important; border: none !important; 
         border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; 
@@ -135,10 +139,16 @@ st.markdown("""
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     
     .banner-green { background: rgba(0,255,136,0.05); border-left: 5px solid #00ff88; padding: 18px; border-radius: 6px; margin-bottom: 25px; color: white; font-size: 11px; font-weight: 800; letter-spacing: 1px; }
+
+    /* GESTÃO DE BANCA REFINED */
+    .resumo-bloco { background: #11151a; border: 1px solid #1e293b; padding: 15px; border-radius: 8px; text-align: center; height: 125px; margin-bottom: 10px; }
+    .resumo-title { color: #64748b; font-size: 9px; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;}
+    .resumo-value { color: white; font-size: 17px; font-weight: 900; margin-top: 5px;}
+    .resumo-bar { height: 3px; width: 50%; border-radius: 10px; margin: 10px auto; }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. HEADER SUPERIOR (RESTAURAÇÃO TOTAL DOS BOTÕES E TEXTOS)
+# 3. HEADER SUPERIOR
 with st.sidebar:
     st.markdown("""
         <div class="betano-header">
@@ -182,8 +192,17 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
         </div>
     """, unsafe_allow_html=True)
 
+def draw_resumo(title, value, color_bar="#06b6d4"):
+    st.markdown(f"""
+        <div class="resumo-bloco">
+            <div class="resumo-title">{title}</div>
+            <div class="resumo-value">{value}</div>
+            <div class="resumo-bar" style="background:{color_bar};"></div>
+        </div>
+    """, unsafe_allow_html=True)
+
 # ==============================================================================
-# 4. LÓGICA DE TELAS (RESTAURADA)
+# 4. LÓGICA DE TELAS (RESTAURADA E REFINADA)
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
@@ -222,9 +241,6 @@ elif st.session_state.aba_ativa == "analise":
         with r2: draw_card("GOLS", "OVER 1.5", 90)
         with r3: draw_card("STAKE", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
         with r4: draw_card("CANTOS", "9.5+", 75)
-        if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
-            st.session_state.historico_calls.append({"data": datetime.now().strftime("%H:%M"), "casa": a['casa'], "fora": a['fora']})
-            st.toast("✅ CALL SALVA COM SUCESSO!")
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
@@ -237,6 +253,11 @@ elif st.session_state.aba_ativa == "vencedores":
     with v2: draw_card("FAVORITO 2", "França", 38)
     with v3: draw_card("FAVORITO 3", "Espanha", 25)
     with v4: draw_card("ZEBRA PROB", "Marrocos", 12)
+    v5, v6, v7, v8 = st.columns(4)
+    with v5: draw_card("FAVORITO 4", "Inglaterra", 22)
+    with v6: draw_card("FAVORITO 5", "Portugal", 18)
+    with v7: draw_card("DARK HORSE", "Holanda", 15)
+    with v8: draw_card("OUTSIDER", "Uruguai", 10)
 
 elif st.session_state.aba_ativa == "gols":
     st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>", unsafe_allow_html=True)
@@ -245,6 +266,11 @@ elif st.session_state.aba_ativa == "gols":
     with g2: draw_card("OVER 1.5 FT", "75%", 75)
     with g3: draw_card("AMBAS MARCAM", "61%", 61)
     with g4: draw_card("UNDER 3.5", "90%", 90)
+    g5, g6, g7, g8 = st.columns(4)
+    with g5: draw_card("OVER 2.5 FT", "55%", 55)
+    with g6: draw_card("MULTIGOLS 2-4", "72%", 72)
+    with g7: draw_card("CASA OVER 1.5", "48%", 48)
+    with g8: draw_card("FORA OVER 0.5", "66%", 66)
 
 elif st.session_state.aba_ativa == "escanteios":
     st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
@@ -253,15 +279,43 @@ elif st.session_state.aba_ativa == "escanteios":
     with e2: draw_card("OVER 10.5", "62%", 62)
     with e3: draw_card("CANTOS HT", "4.5+", 70)
     with e4: draw_card("CORNER RACE", "Time A", 55)
+    e5, e6, e7, e8 = st.columns(4)
+    with e5: draw_card("OVER 7.5", "94%", 94)
+    with e6: draw_card("OVER 9.5", "74%", 74)
+    with e7: draw_card("CANTOS 2T", "5.5+", 68)
+    with e8: draw_card("LIMIT CORNER", "SIM", 80)
 
 elif st.session_state.aba_ativa == "gestao":
-    st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
-    st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=float(st.session_state.banca_total))
-    st.session_state.stake_padrao = st.slider("STAKE POR OPERAÇÃO (%)", 0.1, 10.0, float(st.session_state.stake_padrao))
+    st.markdown("""<div class="banner-green">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
+    col_input, col_resumo = st.columns([1.5, 2.5])
+    
+    with col_input:
+        st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=float(st.session_state.banca_total), step=10.0)
+        st.session_state.stake_padrao = st.slider("STAKE POR OPERAÇÃO (%)", 0.1, 10.0, float(st.session_state.stake_padrao))
+        st.session_state.meta_gain = st.slider("META DIÁRIA - STOP GAIN (%)", 0.1, 20.0, float(st.session_state.meta_gain))
+        st.session_state.stop_loss = st.slider("LIMITE DE PERDA - STOP LOSS (%)", 0.1, 30.0, float(st.session_state.stop_loss))
+
+    with col_resumo:
+        val_ent = st.session_state.banca_total * st.session_state.stake_padrao / 100
+        gain_r = st.session_state.banca_total * st.session_state.meta_gain / 100
+        loss_r = st.session_state.banca_total * st.session_state.stop_loss / 100
+        alvo = st.session_state.banca_total + gain_r
+        
+        r1, r2, r3, r4 = st.columns(4)
+        with r1: draw_resumo("VALOR ENTRADA", f"R$ {val_ent:,.2f}", "#06b6d4")
+        with r2: draw_resumo("STOP GAIN (R$)", f"R$ {gain_r:,.2f}", "#00ff88")
+        with r3: draw_resumo("STOP LOSS (R$)", f"R$ {loss_r:,.2f}", "#ff4444")
+        with r4: draw_resumo("ALVO FINAL", f"R$ {alvo:,.2f}", "#06b6d4")
+        
+        r5, r6, r7, r8 = st.columns(4)
+        with r5: draw_resumo("RISCO TOTAL", f"{st.session_state.stop_loss}%", "#ff4444")
+        with r6: draw_resumo("ENTRADAS/META", f"{math.ceil(gain_r/val_ent) if val_ent > 0 else 0}", "#00ff88")
+        with r7: draw_resumo("ENTRADAS/LOSS", f"{math.ceil(loss_r/val_ent) if val_ent > 0 else 0}", "#ff4444")
+        with r8: draw_resumo("SAÚDE BANCA", "EXCELENTE", "#06b6d4")
 
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
     for c in reversed(st.session_state.historico_calls):
-        st.markdown(f"""<div class="history-card-box"><div style="color:white; font-weight:800;">[{c['data']}] {c['casa']} x {c['fora']}</div></div>""", unsafe_allow_html=True)
+        st.markdown(f"""<div style="background:#11151a; border:1px solid #1e293b; padding:15px; border-radius:8px; margin-bottom:10px;"><div style="color:white; font-weight:800;">[{c['data']}] {c['casa']} x {c['fora']}</div></div>""", unsafe_allow_html=True)
 
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v62.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
