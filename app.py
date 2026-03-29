@@ -21,7 +21,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- INICIALIZAÇÃO DE MEMÓRIA BLINDADA (DIRETRIZ 4.3) ---
+# --- INICIALIZAÇÃO DE MEMÓRIA BLINDADA ---
 if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
 if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
 if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
@@ -33,7 +33,7 @@ def carregar_dados_vivos():
     url_d = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
     url_h = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/historico_5_temporadas.csv"
     try:
-        # Pula o cache usando o timestamp (DIRETRIZ 2.3)
+        # Pula o cache usando o timestamp
         r_d = requests.get(f"{url_d}?v={datetime.now().timestamp()}", timeout=10)
         r_h = requests.get(url_h, timeout=10)
         d = pd.read_csv(StringIO(r_d.text)) if r_d.status_code == 200 else None
@@ -44,19 +44,23 @@ def carregar_dados_vivos():
 df_diario, df_hist = carregar_dados_vivos()
 
 # ==============================================================================
-# 2. CAMADA DE ESTILO CSS INTEGRAL (RESTAURAÇÃO TOTAL v57.35 + AJUSTE SIDEBAR)
+# 2. CAMADA DE ESTILO CSS INTEGRAL (RESTAURAÇÃO TOTAL v57.35)
 # ==============================================================================
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
     
-    /* REMOÇÃO DE SCROLLBAR GLOBAL E SIDEBAR */
+    /* REMOÇÃO DE BARRA DE ROLAGEM - GLOBAL E SIDEBAR (ATUALIZADO) */
     ::-webkit-scrollbar { display: none !important; }
-    [data-testid="stSidebar"]::-webkit-scrollbar { display: none !important; }
     
-    * { 
-        -ms-overflow-style: none !important; 
-        scrollbar-width: none !important; 
+    [data-testid="stSidebar"] > div:first-child {
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+    }
+    
+    [data-testid="stSidebar"] > div:first-child::-webkit-scrollbar {
+        display: none !important;
+        width: 0 !important;
     }
 
     html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp {
@@ -68,7 +72,7 @@ st.markdown("""
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
     
-    /* HEADER SUPERIOR DINÂMICO (DIRETRIZ 1.2) */
+    /* HEADER SUPERIOR DINÂMICO */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; 
@@ -114,7 +118,7 @@ st.markdown("""
     }
     .entrar-grad:hover { filter: brightness(1.15); box-shadow: 0 0 15px rgba(109, 40, 217, 0.4); }
 
-    /* SIDEBAR CUSTOM (DIRETRIZ 1.1) */
+    /* SIDEBAR CUSTOM */
     [data-testid="stSidebar"] { min-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
     section[data-testid="stSidebar"] div.stButton > button { 
         background-color: transparent !important; color: #94a3b8 !important; border: none !important; 
@@ -154,7 +158,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. HEADER SUPERIOR (ESTRUTURA FIXA DIRETRIZ 1.2)
+# 3. HEADER SUPERIOR (RESTAURAÇÃO TOTAL DOS BOTÕES E TEXTOS)
 with st.sidebar:
     st.markdown("""
         <div class="betano-header">
@@ -178,7 +182,6 @@ with st.sidebar:
         <div style="height:65px;"></div>
     """, unsafe_allow_html=True) 
 
-    # BOTÕES DA SIDEBAR (ESTRUTURA IMUTÁVEL)
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
@@ -200,24 +203,21 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 4. LÓGICA DE TELAS (RESPEITANDO A ESTRUTURA FIXA)
+# 4. LÓGICA DE TELAS (RESTAURADA)
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
-    # LINHA 1 (DIRETRIZ 1.3)
     c1, c2, c3, c4 = st.columns(4)
     with c1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
     with c2: draw_card("ASSERTIVIDADE", "92.4%", 92)
     with c3: draw_card("SUGESTÃO", "OVER 2.5", 88)
     with c4: draw_card("IA STATUS", "ONLINE", 100)
-    # LINHA 2
     c5, c6, c7, c8 = st.columns(4)
     with c5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with c6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with c7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
     with c8: draw_card("SISTEMA", "JARVIS v62.0", 100)
-    
     st.markdown("### 📋 ANÁLISE COMPLETA DO DIA")
     if df_diario is not None: 
         st.dataframe(df_diario, use_container_width=True, hide_index=True)
@@ -228,16 +228,12 @@ elif st.session_state.aba_ativa == "analise":
     c1, c2 = st.columns(2)
     with c1: t_casa = st.text_input("🏠 TIME DA CASA", "Athletico-PR")
     with c2: t_fora = st.text_input("🚀 TIME DE FORA", "Atlético-MG")
-    
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         conf = 85.0
         if df_hist is not None:
-            # LÓGICA DE BUSCA FLEXÍVEL (DIRETRIZ 2.2)
             f = df_hist[df_hist['Casa'].str.contains(t_casa[:5], case=False, na=False)]
-            if not f.empty: 
-                conf = round((len(f[f['Resultado']=='H'])/len(f))*100 + 10, 1)
+            if not f.empty: conf = round((len(f[f['Resultado']=='H'])/len(f))*100 + 10, 1)
         st.session_state.analise_bloqueada = {"casa": t_casa, "fora": t_fora, "conf": conf}
-    
     if st.session_state.analise_bloqueada:
         a = st.session_state.analise_bloqueada
         st.markdown(f'<div class="banner-green">🟢 &nbsp; SISTEMA JARVIS: <span style="color:#00ff88">FILÉ MIGNON: INFORMAÇÃO REAL</span></div>', unsafe_allow_html=True)
@@ -247,7 +243,6 @@ elif st.session_state.aba_ativa == "analise":
         with r2: draw_card("GOLS", "OVER 1.5", 90)
         with r3: draw_card("STAKE", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
         with r4: draw_card("CANTOS", "9.5+", 75)
-        
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append({"data": datetime.now().strftime("%H:%M"), "casa": a['casa'], "fora": a['fora']})
             st.toast("✅ CALL SALVA COM SUCESSO!")
@@ -291,5 +286,4 @@ elif st.session_state.aba_ativa == "historico":
     for c in reversed(st.session_state.historico_calls):
         st.markdown(f"""<div class="history-card-box"><div style="color:white; font-weight:800;">[{c['data']}] {c['casa']} x {c['fora']}</div></div>""", unsafe_allow_html=True)
 
-# FOOTER FINAL (DIRETRIZ 3.1)
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v62.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
