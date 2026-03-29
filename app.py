@@ -33,6 +33,7 @@ def carregar_dados_vivos():
     url_d = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
     url_h = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/historico_5_temporadas.csv"
     try:
+        # Pula o cache usando o timestamp
         r_d = requests.get(f"{url_d}?v={datetime.now().timestamp()}", timeout=10)
         r_h = requests.get(url_h, timeout=10)
         d = pd.read_csv(StringIO(r_d.text)) if r_d.status_code == 200 else None
@@ -43,7 +44,7 @@ def carregar_dados_vivos():
 df_diario, df_hist = carregar_dados_vivos()
 
 # ==============================================================================
-# 2. CAMADA DE ESTILO CSS INTEGRAL (MANTIDA 100% DA v57.35)
+# 2. CAMADA DE ESTILO CSS INTEGRAL (TRAVA v57.35)
 # ==============================================================================
 st.markdown("""
     <style>
@@ -66,11 +67,8 @@ st.markdown("""
         transform: translate3d(0,0,0); -webkit-backface-visibility: hidden;
     }
     .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; text-decoration: none; cursor: pointer;}
-    .nav-links { display: flex; gap: 22px; align-items: center; }
-    .nav-item { color: #ffffff !important; font-size: 11px !important; text-transform: uppercase; font-weight: 600 !important; letter-spacing: 0.5px; cursor: pointer; white-space: nowrap;}
-
+    
     [data-testid="stSidebar"] { min-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
-    [data-testid="stSidebarContent"] { overflow: hidden !important; }
     section[data-testid="stSidebar"] div.stButton > button { 
         background-color: transparent !important; color: #94a3b8 !important; border: none !important; 
         border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; 
@@ -83,30 +81,22 @@ st.markdown("""
     div.stButton > button:not([data-testid="stSidebar"] *) {
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
         color: #ffffff !important; border: none !important; padding: 15px 20px !important;
-        font-weight: 900 !important; text-transform: uppercase !important;
-        letter-spacing: 1.2px !important; border-radius: 6px !important;
-        width: 100% !important; box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important;
+        font-weight: 900 !important; border-radius: 6px !important; width: 100% !important; 
+        box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important;
     }
     .highlight-card { 
         background: #11151a; border: 1px solid #1e293b; padding: 20px; 
         border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px;
     }
+    .banca-title-banner { background-color: #003399 !important; padding: 15px 25px; border-radius: 5px; color: white !important; font-size: 24px; font-weight: 800; margin-bottom: 35px; }
+    .history-card-box { background: #161b22 !important; border: 1px solid #30363d !important; padding: 15px 25px !important; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     </style>
 """, unsafe_allow_html=True)
 
 # 3. HEADER SIDEBAR (BLINDADO)
 with st.sidebar:
-    st.markdown("""
-        <div class="betano-header">
-            <div class="header-left"><div class="logo-link">GESTOR IA</div></div>
-            <div class="nav-links">
-                <div class="nav-item">APOSTAS AO VIVO</div>
-                <div class="nav-item">MERCADO PROBABILÍSTICO</div>
-            </div>
-        </div><div style="height:65px;"></div>
-    """, unsafe_allow_html=True) 
-
+    st.markdown("""<div class="betano-header"><div class="logo-link">GESTOR IA</div></div><div style="height:65px;"></div>""", unsafe_allow_html=True) 
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
@@ -128,79 +118,90 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 4. LÓGICA DE TELAS (RESTAURAÇÃO TOTAL DO VISUAL)
+# 4. LÓGICA DE TELAS (RESTAURAÇÃO TOTAL)
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
-    # RESTAURAÇÃO DOS 8 CARDS DA IMAGEM
     c1, c2, c3, c4 = st.columns(4)
     with c1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
     with c2: draw_card("ASSERTIVIDADE", "92.4%", 92)
     with c3: draw_card("SUGESTÃO", "OVER 2.5", 88)
     with c4: draw_card("IA STATUS", "ONLINE", 100)
-    
     c5, c6, c7, c8 = st.columns(4)
     with c5: draw_card("VOL. GLOBAL", "ALTO", 75)
     with c6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
     with c7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
     with c8: draw_card("SISTEMA", "JARVIS v62.0", 100)
-    
     st.markdown("### 📋 ANÁLISE COMPLETA DO DIA")
-    if df_diario is not None:
-        st.dataframe(df_diario, use_container_width=True)
-    else: st.warning("Aguardando sincronização de dados...")
+    if df_diario is not None: st.dataframe(df_diario, use_container_width=True)
 
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
-    t_casa = st.text_input("🏠 TIME DA CASA", "Flamengo")
+    t_casa = st.text_input("🏠 NOME DO TIME", "Flamengo")
     if st.button("⚡ EXECUTAR ALGORITMO"):
         conf = 85.0
         if df_hist is not None:
             f = df_hist[df_hist['Casa'].str.contains(t_casa[:5], case=False, na=False)]
             if not f.empty: conf = round((len(f[f['Resultado']=='H'])/len(f))*100 + 10, 1)
         st.session_state.analise_bloqueada = {"casa": t_casa, "conf": conf}
-    
     if st.session_state.analise_bloqueada:
         a = st.session_state.analise_bloqueada
-        st.markdown(f"<div style='background:rgba(0,255,136,0.1); border-left:5px solid #00ff88; padding:15px;'>🟢 SISTEMA JARVIS: FILÉ MIGNON - INFORMAÇÃO REAL</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='background:rgba(0,255,136,0.1); border-left:5px solid #00ff88; padding:15px;'>🟢 SISTEMA JARVIS: ANÁLISE REAL CONCLUÍDA</div>", unsafe_allow_html=True)
         st.markdown(f"<h3 style='text-align:center; color:#9d54ff;'>{a['casa']} vs Rival</h3>", unsafe_allow_html=True)
         r1, r2, r3, r4 = st.columns(4)
-        with r1: draw_card("VENCEDOR", "ALTA PROB.", int(a['conf']))
+        with r1: draw_card("CONFIANÇA IA", f"{a['conf']}%", int(a['conf']))
         with r2: draw_card("GOLS", "OVER 1.5", 90)
         with r3: draw_card("STAKE", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
         with r4: draw_card("CANTOS", "9.5+", 75)
-        if st.button("📥 SALVAR CALL NO HISTÓRICO"):
+        if st.button("📥 SALVAR CALL"):
             st.session_state.historico_calls.append({"data": datetime.now().strftime("%H:%M"), "casa": a['casa'], "fora": "Rival"})
             st.toast("✅ SALVO!")
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
-    if df_diario is not None:
-        st.dataframe(df_diario, use_container_width=True, hide_index=True)
+    if df_diario is not None: st.dataframe(df_diario, use_container_width=True, hide_index=True)
 
 elif st.session_state.aba_ativa == "vencedores":
     st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
     v1, v2, v3, v4 = st.columns(4)
-    with v1: draw_card("FAVORITO 1", "Brasil", 45); with v2: draw_card("FAVORITO 2", "França", 38)
-    with v3: draw_card("FAVORITO 3", "Espanha", 25); with v4: draw_card("ZEBRA PROB", "Marrocos", 12)
+    with v1:
+        draw_card("FAVORITO 1", "Brasil", 45)
+    with v2:
+        draw_card("FAVORITO 2", "França", 38)
+    with v3:
+        draw_card("FAVORITO 3", "Espanha", 25)
+    with v4:
+        draw_card("ZEBRA PROB", "Marrocos", 12)
 
 elif st.session_state.aba_ativa == "gols":
     st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>", unsafe_allow_html=True)
     g1, g2, g3, g4 = st.columns(4)
-    with g1: draw_card("OVER 0.5 HT", "82%", 82); with g2: draw_card("OVER 1.5 FT", "75%", 75)
-    with g3: draw_card("AMBAS MARCAM", "61%", 61); with g4: draw_card("UNDER 3.5", "90%", 90)
+    with g1:
+        draw_card("OVER 0.5 HT", "82%", 82)
+    with g2:
+        draw_card("OVER 1.5 FT", "75%", 75)
+    with g3:
+        draw_card("AMBAS MARCAM", "61%", 61)
+    with g4:
+        draw_card("UNDER 3.5", "90%", 90)
 
 elif st.session_state.aba_ativa == "escanteios":
     st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
     e1, e2, e3, e4 = st.columns(4)
-    with e1: draw_card("OVER 8.5", "88%", 88); with e2: draw_card("OVER 10.5", "62%", 62)
-    with e3: draw_card("CANTOS HT", "4.5+", 70); with e4: draw_card("CORNER RACE", "Time A", 55)
+    with e1:
+        draw_card("OVER 8.5", "88%", 88)
+    with e2:
+        draw_card("OVER 10.5", "62%", 62)
+    with e3:
+        draw_card("CANTOS HT", "4.5+", 70)
+    with e4:
+        draw_card("CORNER RACE", "Time A", 55)
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
     st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=float(st.session_state.banca_total))
-    st.session_state.stake_padrao = st.slider("STAKE POR OPERAÇÃO (%)", 0.1, 10.0, float(st.session_state.stake_padrao))
+    st.session_state.stake_padrao = st.slider("STAKE (%)", 0.1, 10.0, float(st.session_state.stake_padrao))
 
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
