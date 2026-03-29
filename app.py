@@ -1,321 +1,167 @@
 import streamlit as st
 import pandas as pd
-import os
 import requests
 from datetime import datetime
 from io import StringIO
 import math
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v62.00 - INTEGRIDADE TOTAL]
-# DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
-# DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
-# DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
-# DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO) - UI v57.35
-# DIRETRIZ 5: CÓDIGO 100% ÍNTEGRO - SEM ABREVIAÇÕES
+# [PROTOCOLO DE RESTAURAÇÃO SIMÉTRICA v63.0]
+# FOCO: ALINHAMENTO GEOMÉTRICO IDENTICO À IMAGEM REFERÊNCIA
 # ==============================================================================
 
-# 1. CONFIGURAÇÃO DE PÁGINA
 st.set_page_config(
     page_title="GESTOR IA - TRADING PRO", 
     layout="wide", 
     initial_sidebar_state="expanded"
 )
 
-# --- INICIALIZAÇÃO DE MEMÓRIA BLINDADA ---
-if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
-if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
-if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
+# --- MEMÓRIA DO SISTEMA ---
+if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "gestao"
 if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
 if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
 if 'meta_gain' not in st.session_state: st.session_state.meta_gain = 3.0
 if 'stop_loss' not in st.session_state: st.session_state.stop_loss = 5.0
 
-# --- CARREGAMENTO DE DADOS REAIS ---
-def carregar_dados_vivos():
-    url_d = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
-    url_h = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/historico_5_temporadas.csv"
-    try:
-        r_d = requests.get(f"{url_d}?v={datetime.now().timestamp()}", timeout=10)
-        r_h = requests.get(url_h, timeout=10)
-        d = pd.read_csv(StringIO(r_d.text)) if r_d.status_code == 200 else None
-        h = pd.read_csv(StringIO(r_h.text)) if r_h.status_code == 200 else None
-        return d, h
-    except: return None, None
-
-df_diario, df_hist = carregar_dados_vivos()
-
 # ==============================================================================
-# 2. CAMADA DE ESTILO CSS INTEGRAL (RESTAURAÇÃO TOTAL v57.35 + AJUSTES)
+# CSS DE ALTA PRECISÃO (ZERO WHITE & SYMMETRY)
 # ==============================================================================
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
     
     ::-webkit-scrollbar { display: none !important; }
-    * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
-
-    html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp {
+    
+    html, body, [data-testid="stAppViewContainer"], .stApp {
         background-color: #0b0e11 !important;
         font-family: 'Inter', sans-serif;
     }
 
-    header, [data-testid="stHeader"] { display: none !important; height: 0px !important; }
-    [data-testid="stSidebarCollapseButton"] { display: none !important; }
+    header, [data-testid="stHeader"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
     
-    /* HEADER SUPERIOR DINÂMICO */
+    /* HEADER (ESTILO BETANO IDENTICO) */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
-        background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; 
+        background-color: #001a4d !important; border-bottom: 1px solid #1e293b;
         display: flex; align-items: center; justify-content: space-between; 
-        padding: 0 40px !important; z-index: 1000000; 
-        transform: translate3d(0,0,0); -webkit-backface-visibility: hidden;
+        padding: 0 40px; z-index: 1000;
     }
-    
-    .header-left { display: flex; align-items: center; gap: 25px; }
-    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; cursor: pointer;}
-    .logo-link:hover { filter: brightness(1.2); }
-    
-    .nav-links { display: flex; gap: 22px; align-items: center; }
-    
-    .nav-item { 
-        color: #ffffff !important; 
-        font-size: 11px !important; 
-        text-transform: uppercase; 
-        opacity: 1 !important; 
-        font-weight: 600 !important; 
-        letter-spacing: 0.5px; 
-        transition: 0.3s ease; 
-        cursor: pointer;
-        white-space: nowrap;
-    }
-    .nav-item:hover { color: #06b6d4 !important; transform: scale(1.05); }
+    .logo-text { color: #9d54ff; font-weight: 900; font-size: 22px; text-transform: uppercase; }
+    .nav-container { display: flex; gap: 20px; }
+    .nav-link { color: #ffffff; font-size: 11px; font-weight: 700; text-transform: uppercase; opacity: 0.9; }
 
-    .header-right { display: flex; align-items: center; gap: 15px; }
-    .search-lupa { color: #ffffff; font-size: 15px; cursor: pointer; transition: 0.3s; }
-    .search-lupa:hover { color: #9d54ff; transform: scale(1.2); }
-    
-    .registrar-pill { 
-        color: #ffffff !important; font-size: 9px !important; font-weight: 800; 
-        border: 1.5px solid #ffffff !important; padding: 7px 18px !important; 
-        border-radius: 20px !important; transition: 0.3s ease; cursor: pointer;
-    }
-    .registrar-pill:hover { background: white !important; color: #001a4d !important; }
-    
-    .entrar-grad { 
-        background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; 
-        color: white !important; padding: 8px 22px !important; border-radius: 5px !important; 
-        font-weight: 800; font-size: 9.5px; transition: 0.3s ease; cursor: pointer;
-    }
-    .entrar-grad:hover { filter: brightness(1.15); box-shadow: 0 0 15px rgba(109, 40, 217, 0.4); }
-
-    /* SIDEBAR CUSTOM - SEM SCROLL */
-    [data-testid="stSidebar"] { min-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
+    /* SIDEBAR SEM SCROLL */
+    [data-testid="stSidebar"] { background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     
-    section[data-testid="stSidebar"] div.stButton > button { 
-        background-color: transparent !important; color: #94a3b8 !important; border: none !important; 
-        border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; 
+    .stButton > button {
+        background: transparent !important; color: #94a3b8 !important; border: none !important;
+        border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important;
         padding: 18px 25px !important; font-size: 10px !important; text-transform: uppercase !important;
-        border-radius: 0px !important; transition: all 0.2s ease !important;
     }
-    section[data-testid="stSidebar"] div.stButton > button:hover {
-        background-color: #1e293b !important; color: #06b6d4 !important; border-left: 3px solid #6d28d9 !important;
-    }
+    .stButton > button:hover { color: #06b6d4 !important; background: #1e293b !important; }
 
-    div.stButton > button:not([data-testid="stSidebar"] *) {
-        background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
-        color: #ffffff !important; border: none !important; padding: 15px 20px !important;
-        font-weight: 900 !important; text-transform: uppercase !important;
-        letter-spacing: 1.2px !important; border-radius: 6px !important;
-        width: 100% !important; box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important;
-    }
+    /* TITULO BANCA COM ICONE DINHEIRO */
+    .banca-header-box { display: flex; align-items: center; gap: 15px; margin-bottom: 30px; }
+    .banca-title { background: #003399; color: white; font-size: 28px; font-weight: 800; padding: 5px 15px; border-radius: 4px; }
 
-    .highlight-card { 
-        background: #11151a; border: 1px solid #1e293b; padding: 20px; 
-        border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px;
+    /* CARDS DE RESUMO (GRID 4x2) */
+    .card-resumo {
+        background: #11151a; border: 1px solid #1e293b; border-radius: 8px;
+        padding: 20px; text-align: center; height: 150px; display: flex;
+        flex-direction: column; justify-content: center; align-items: center;
     }
-    .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
+    .card-label { color: #64748b; font-size: 9px; font-weight: 700; text-transform: uppercase; margin-bottom: 12px; }
+    .card-value { color: #ffffff; font-size: 18px; font-weight: 900; }
+    .card-indicator { height: 4px; width: 60px; border-radius: 10px; margin-top: 15px; }
+
+    /* INPUTS LATERAIS */
+    .stNumberInput label, .stSlider label { color: #64748b !important; font-size: 11px !important; font-weight: 700 !important; text-transform: uppercase !important; }
     
-    .banner-green { background: rgba(0,255,136,0.05); border-left: 5px solid #00ff88; padding: 18px; border-radius: 6px; margin-bottom: 25px; color: white; font-size: 11px; font-weight: 800; letter-spacing: 1px; }
-
-    /* GESTÃO DE BANCA REFINED */
-    .resumo-bloco { background: #11151a; border: 1px solid #1e293b; padding: 15px; border-radius: 8px; text-align: center; height: 125px; margin-bottom: 10px; }
-    .resumo-title { color: #64748b; font-size: 9px; text-transform: uppercase; font-weight: 700; margin-bottom: 8px;}
-    .resumo-value { color: white; font-size: 17px; font-weight: 900; margin-top: 5px;}
-    .resumo-bar { height: 3px; width: 50%; border-radius: 10px; margin: 10px auto; }
+    .footer-bar { position: fixed; bottom: 0; left: 0; width: 100%; background: #0d0d12; padding: 5px 20px; font-size: 9px; color: #475569; border-top: 1px solid #1e293b; z-index: 1000; }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. HEADER SUPERIOR
+# --- ESTRUTURA LATERAL ---
 with st.sidebar:
-    st.markdown("""
-        <div class="betano-header">
-            <div class="header-left">
-                <a href="#" class="logo-link">GESTOR IA</a>
-                <div class="nav-links">
-                    <div class="nav-item">APOSTAS ESPORTIVAS</div>
-                    <div class="nav-item">APOSTAS AO VIVO</div>
-                    <div class="nav-item">APOSTAS ENCONTRADAS</div>
-                    <div class="nav-item">ESTATÍSTICAS AVANÇADAS</div>
-                    <div class="nav-item">MERCADO PROBABILÍSTICO</div>
-                    <div class="nav-item">ASSERTIVIDADE IA</div>
-                </div>
-            </div>
-            <div class="header-right">
-                <div class="search-lupa">🔍</div>
-                <div class="registrar-pill">REGISTRAR</div>
-                <div class="entrar-grad">ENTRAR</div>
-            </div>
-        </div>
-        <div style="height:65px;"></div>
-    """, unsafe_allow_html=True) 
-
-    if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
+    st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True)
+    if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "pre"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
-    if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
+    if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "hist"
     if st.button("📅 BILHETE OURO"): st.session_state.aba_ativa = "home"
-    if st.button("🏆 VENCEDORES DA COMPETIÇÃO"): st.session_state.aba_ativa = "vencedores"
+    if st.button("🏆 VENCEDORES DA COMPETIÇÃO"): st.session_state.aba_ativa = "venc"
     if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
-    if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "escanteios"
+    if st.button("🚩 APOSTAS POR ESCANTEIOS"): st.session_state.aba_ativa = "esc"
 
-def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, #06b6d4)"):
-    st.markdown(f"""
-        <div class="highlight-card">
-            <div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">{title}</div>
-            <div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div>
-            <div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;">
-                <div style="background:{color_footer}; height:100%; width:{perc}%;"></div>
+# --- HEADER FIXO ---
+st.markdown("""
+    <div class="betano-header">
+        <div style="display:flex; align-items:center; gap:25px;">
+            <div class="logo-text">GESTOR IA</div>
+            <div class="nav-container">
+                <div class="nav-link">ESPORTES</div><div class="nav-link">AO VIVO</div>
+                <div class="nav-link">VIRTUAIS</div><div class="nav-link">E-SPORTS</div>
+                <div class="nav-link">OPORTUNIDADES IA</div><div class="nav-link">RESULTADOS</div>
             </div>
         </div>
-    """, unsafe_allow_html=True)
+        <div style="display:flex; gap:15px; align-items:center;">
+            <div style="color:white;">🔍</div>
+            <div style="border:1.5px solid white; padding:6px 15px; border-radius:20px; font-size:9px; font-weight:800; color:white;">REGISTRAR</div>
+            <div style="background:linear-gradient(90deg, #6d28d9, #06b6d4); padding:7px 20px; border-radius:5px; font-size:9px; font-weight:800; color:white;">ENTRAR</div>
+        </div>
+    </div>
+""", unsafe_allow_html=True)
 
-def draw_resumo(title, value, color_bar="#06b6d4"):
-    st.markdown(f"""
-        <div class="resumo-bloco">
-            <div class="resumo-title">{title}</div>
-            <div class="resumo-value">{value}</div>
-            <div class="resumo-bar" style="background:{color_bar};"></div>
+# --- ABA GESTÃO DE BANCA (SIMETRIA IDENTICA) ---
+if st.session_state.aba_ativa == "gestao":
+    st.markdown("""
+        <div class="banca-header-box">
+            <span style="font-size:35px;">💰</span>
+            <div class="banca-title">GESTÃO DE BANCA INTELIGENTE</div>
         </div>
     """, unsafe_allow_html=True)
 
-# ==============================================================================
-# 4. LÓGICA DE TELAS (RESTAURADA E REFINADA)
-# ==============================================================================
+    # Divisão Simétrica: Esquerda (Inputs) | Direita (Cards)
+    col_left, col_right = st.columns([1.2, 2.8])
 
-if st.session_state.aba_ativa == "home":
-    st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
-    c1, c2, c3, c4 = st.columns(4)
-    with c1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
-    with c2: draw_card("ASSERTIVIDADE", "92.4%", 92)
-    with c3: draw_card("SUGESTÃO", "OVER 2.5", 88)
-    with c4: draw_card("IA STATUS", "ONLINE", 100)
-    c5, c6, c7, c8 = st.columns(4)
-    with c5: draw_card("VOL. GLOBAL", "ALTO", 75)
-    with c6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
-    with c7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-    with c8: draw_card("SISTEMA", "JARVIS v62.0", 100)
-    st.markdown("### 📋 ANÁLISE COMPLETA DO DIA")
-    if df_diario is not None: st.dataframe(df_diario, use_container_width=True)
-
-elif st.session_state.aba_ativa == "analise":
-    st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
-    st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
-    c1, c2 = st.columns(2)
-    with c1: t_casa = st.text_input("🏠 TIME DA CASA", "Athletico-PR")
-    with c2: t_fora = st.text_input("🚀 TIME DE FORA", "Atlético-MG")
-    if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
-        conf = 85.0
-        if df_hist is not None:
-            f = df_hist[df_hist['Casa'].str.contains(t_casa[:5], case=False, na=False)]
-            if not f.empty: conf = round((len(f[f['Resultado']=='H'])/len(f))*100 + 10, 1)
-        st.session_state.analise_bloqueada = {"casa": t_casa, "fora": t_fora, "conf": conf}
-    if st.session_state.analise_bloqueada:
-        a = st.session_state.analise_bloqueada
-        st.markdown(f'<div class="banner-green">🟢 &nbsp; SISTEMA JARVIS: <span style="color:#00ff88">FILÉ MIGNON: INFORMAÇÃO REAL</span></div>', unsafe_allow_html=True)
-        st.markdown(f"<h3 style='text-align:center; color:#9d54ff;'>{a['casa']} vs {a['fora']}</h3>", unsafe_allow_html=True)
-        r1, r2, r3, r4 = st.columns(4)
-        with r1: draw_card("VENCEDOR", "ALTA PROB.", int(a['conf']))
-        with r2: draw_card("GOLS", "OVER 1.5", 90)
-        with r3: draw_card("STAKE", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-        with r4: draw_card("CANTOS", "9.5+", 75)
-
-elif st.session_state.aba_ativa == "live":
-    st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
-    if df_diario is not None: st.dataframe(df_diario, use_container_width=True, hide_index=True)
-
-elif st.session_state.aba_ativa == "vencedores":
-    st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
-    v1, v2, v3, v4 = st.columns(4)
-    with v1: draw_card("FAVORITO 1", "Brasil", 45)
-    with v2: draw_card("FAVORITO 2", "França", 38)
-    with v3: draw_card("FAVORITO 3", "Espanha", 25)
-    with v4: draw_card("ZEBRA PROB", "Marrocos", 12)
-    v5, v6, v7, v8 = st.columns(4)
-    with v5: draw_card("FAVORITO 4", "Inglaterra", 22)
-    with v6: draw_card("FAVORITO 5", "Portugal", 18)
-    with v7: draw_card("DARK HORSE", "Holanda", 15)
-    with v8: draw_card("OUTSIDER", "Uruguai", 10)
-
-elif st.session_state.aba_ativa == "gols":
-    st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>", unsafe_allow_html=True)
-    g1, g2, g3, g4 = st.columns(4)
-    with g1: draw_card("OVER 0.5 HT", "82%", 82)
-    with g2: draw_card("OVER 1.5 FT", "75%", 75)
-    with g3: draw_card("AMBAS MARCAM", "61%", 61)
-    with g4: draw_card("UNDER 3.5", "90%", 90)
-    g5, g6, g7, g8 = st.columns(4)
-    with g5: draw_card("OVER 2.5 FT", "55%", 55)
-    with g6: draw_card("MULTIGOLS 2-4", "72%", 72)
-    with g7: draw_card("CASA OVER 1.5", "48%", 48)
-    with g8: draw_card("FORA OVER 0.5", "66%", 66)
-
-elif st.session_state.aba_ativa == "escanteios":
-    st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
-    e1, e2, e3, e4 = st.columns(4)
-    with e1: draw_card("OVER 8.5", "88%", 88)
-    with e2: draw_card("OVER 10.5", "62%", 62)
-    with e3: draw_card("CANTOS HT", "4.5+", 70)
-    with e4: draw_card("CORNER RACE", "Time A", 55)
-    e5, e6, e7, e8 = st.columns(4)
-    with e5: draw_card("OVER 7.5", "94%", 94)
-    with e6: draw_card("OVER 9.5", "74%", 74)
-    with e7: draw_card("CANTOS 2T", "5.5+", 68)
-    with e8: draw_card("LIMIT CORNER", "SIM", 80)
-
-elif st.session_state.aba_ativa == "gestao":
-    st.markdown("""<div class="banner-green">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
-    col_input, col_resumo = st.columns([1.5, 2.5])
-    
-    with col_input:
-        st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=float(st.session_state.banca_total), step=10.0)
+    with col_left:
+        st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=float(st.session_state.banca_total), step=50.0)
+        st.markdown("<br>", unsafe_allow_html=True)
         st.session_state.stake_padrao = st.slider("STAKE POR OPERAÇÃO (%)", 0.1, 10.0, float(st.session_state.stake_padrao))
         st.session_state.meta_gain = st.slider("META DIÁRIA - STOP GAIN (%)", 0.1, 20.0, float(st.session_state.meta_gain))
         st.session_state.stop_loss = st.slider("LIMITE DE PERDA - STOP LOSS (%)", 0.1, 30.0, float(st.session_state.stop_loss))
 
-    with col_resumo:
-        val_ent = st.session_state.banca_total * st.session_state.stake_padrao / 100
-        gain_r = st.session_state.banca_total * st.session_state.meta_gain / 100
-        loss_r = st.session_state.banca_total * st.session_state.stop_loss / 100
-        alvo = st.session_state.banca_total + gain_r
+    with col_right:
+        # Cálculos Matemáticos
+        v_entrada = st.session_state.banca_total * (st.session_state.stake_padrao / 100)
+        v_gain = st.session_state.banca_total * (st.session_state.meta_gain / 100)
+        v_loss = st.session_state.banca_total * (st.session_state.stop_loss / 100)
+        alvo = st.session_state.banca_total + v_gain
         
-        r1, r2, r3, r4 = st.columns(4)
-        with r1: draw_resumo("VALOR ENTRADA", f"R$ {val_ent:,.2f}", "#06b6d4")
-        with r2: draw_resumo("STOP GAIN (R$)", f"R$ {gain_r:,.2f}", "#00ff88")
-        with r3: draw_resumo("STOP LOSS (R$)", f"R$ {loss_r:,.2f}", "#ff4444")
-        with r4: draw_resumo("ALVO FINAL", f"R$ {alvo:,.2f}", "#06b6d4")
-        
-        r5, r6, r7, r8 = st.columns(4)
-        with r5: draw_resumo("RISCO TOTAL", f"{st.session_state.stop_loss}%", "#ff4444")
-        with r6: draw_resumo("ENTRADAS/META", f"{math.ceil(gain_r/val_ent) if val_ent > 0 else 0}", "#00ff88")
-        with r7: draw_resumo("ENTRADAS/LOSS", f"{math.ceil(loss_r/val_ent) if val_ent > 0 else 0}", "#ff4444")
-        with r8: draw_resumo("SAÚDE BANCA", "EXCELENTE", "#06b6d4")
+        # Grid de 8 Cards (Exatamente como na imagem)
+        r1_c1, r1_c2, r1_c3, r1_c4 = st.columns(4)
+        with r1_c1:
+            st.markdown(f'<div class="card-resumo"><div class="card-label">VALOR ENTRADA</div><div class="card-value">R$ {v_entrada:,.2f}</div><div class="card-indicator" style="background:#06b6d4;"></div></div>', unsafe_allow_html=True)
+        with r1_c2:
+            st.markdown(f'<div class="card-resumo"><div class="card-label">STOP GAIN (R$)</div><div class="card-value">R$ {v_gain:,.2f}</div><div class="card-indicator" style="background:#06b6d4;"></div></div>', unsafe_allow_html=True)
+        with r1_c3:
+            st.markdown(f'<div class="card-resumo"><div class="card-label">STOP LOSS (R$)</div><div class="card-value">R$ {v_loss:,.2f}</div><div class="card-indicator" style="background:#6d28d9;"></div></div>', unsafe_allow_html=True)
+        with r1_c4:
+            st.markdown(f'<div class="card-resumo"><div class="card-label">ALVO FINAL</div><div class="card-value">R$ {alvo:,.2f}</div><div class="card-indicator" style="background:#6d28d9;"></div></div>', unsafe_allow_html=True)
 
-elif st.session_state.aba_ativa == "historico":
-    st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
-    for c in reversed(st.session_state.historico_calls):
-        st.markdown(f"""<div style="background:#11151a; border:1px solid #1e293b; padding:15px; border-radius:8px; margin-bottom:10px;"><div style="color:white; font-weight:800;">[{c['data']}] {c['casa']} x {c['fora']}</div></div>""", unsafe_allow_html=True)
+        st.markdown("<div style='height:15px;'></div>", unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v62.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+        r2_c1, r2_c2, r2_c3, r2_c4 = st.columns(4)
+        with r2_c1:
+            st.markdown(f'<div class="card-resumo"><div class="card-label">RISCO TOTAL</div><div class="card-value">{st.session_state.stake_padrao}%</div><div class="card-indicator" style="background:#06b6d4;"></div></div>', unsafe_allow_html=True)
+        with r2_c2:
+            st.markdown(f'<div class="card-resumo"><div class="card-label">ENTRADAS/META</div><div class="card-value">{math.ceil(v_gain/v_entrada) if v_entrada > 0 else 0}</div><div class="card-indicator" style="background:#06b6d4;"></div></div>', unsafe_allow_html=True)
+        with r2_c3:
+            st.markdown(f'<div class="card-resumo"><div class="card-label">ENTRADAS/LOSS</div><div class="card-value">{math.ceil(v_loss/v_entrada) if v_entrada > 0 else 0}</div><div class="card-indicator" style="background:#6d28d9;"></div></div>', unsafe_allow_html=True)
+        with r2_c4:
+            st.markdown(f'<div class="card-resumo"><div class="card-label">SAÚDE BANCA</div><div class="card-value" style="color:#00ff88; font-size:14px;">EXCELENTE</div><div class="card-indicator" style="background:#00ff88;"></div></div>', unsafe_allow_html=True)
+
+# --- FOOTER ---
+st.markdown("""<div class="footer-bar">STATUS: ● IA OPERACIONAL | v63.0 | JARVIS PROTECT</div>""", unsafe_allow_html=True)
