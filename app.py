@@ -24,37 +24,17 @@ if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloquea
 if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
 if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
 
-# --- MOTOR DE BUSCA DE DADOS REAIS (CONTRA CACHE ANTIGO) ---
-@st.cache_data(ttl=300) # Limpa a memória a cada 5 minutos
-def buscar_dados_frescos():
-    url_diario = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
-    url_hist = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/historico_5_temporadas.csv"
-    
+# --- BUSCA DE DADOS DIRETAMENTE NO GITHUB (SEM CACHE ANTIGO) ---
+def carregar_dados_reais():
+    url = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
+    url_h = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/historico_5_temporadas.csv"
     try:
-        # Busca o arquivo diário direto do GitHub para garantir que é de hoje
-        res_d = requests.get(f"{url_diario}?nocache={datetime.now().timestamp()}")
-        res_h = requests.get(url_hist)
-        
-        d = pd.read_csv(StringIO(res_d.text)) if res_d.status_code == 200 else None
-        h = pd.read_csv(StringIO(res_h.text)) if res_h.status_code == 200 else None
+        d = pd.read_csv(f"{url}?t={datetime.now().timestamp()}")
+        h = pd.read_csv(url_h)
         return d, h
-    except:
-        return None, None
+    except: return None, None
 
-df_diario, df_hist = buscar_dados_frescos()
-
-# ==============================================================================
-# LÓGICA DO BOT (BACK-END): CÉREBRO JARVIS
-# ==============================================================================
-
-def calcular_ia_manual(time_casa):
-    conf = 70.0
-    if df_hist is not None:
-        f = df_hist[df_hist['Casa'].str.contains(str(time_casa)[:5], case=False, na=False)]
-        if not f.empty:
-            taxa = (len(f[f['Resultado']=='H']) / len(f)) * 100
-            conf = round(taxa + 10, 1)
-    return min(conf, 98.4)
+df_diario, df_hist = carregar_dados_reais()
 
 # ==============================================================================
 # 2. CAMADA DE ESTILO CSS INTEGRAL (TRAVA v57.35)
@@ -71,22 +51,18 @@ st.markdown("""
     .nav-item { color: #ffffff !important; font-size: 11px !important; text-transform: uppercase; font-weight: 600; margin-left: 20px; }
     [data-testid="stSidebar"] { min-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
     section[data-testid="stSidebar"] div.stButton > button { background-color: transparent !important; color: #94a3b8 !important; border: none; border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; padding: 18px 25px !important; font-size: 10px !important; text-transform: uppercase !important; border-radius: 0px !important;}
-    section[data-testid="stSidebar"] div.stButton > button:hover { background-color: #1e293b !important; color: #06b6d4 !important; }
     div.stButton > button:not([data-testid="stSidebar"] *) { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: #ffffff !important; border: none !important; padding: 15px 20px !important; font-weight: 900 !important; border-radius: 6px !important; width: 100% !important; margin-top: 10px !important;}
     .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px; }
-    .banca-title-banner { background-color: #003399 !important; padding: 15px 25px; border-radius: 5px; color: white !important; font-size: 24px; font-weight: 800; margin-bottom: 35px; }
-    .history-card-box { background: #161b22 !important; border: 1px solid #30363d !important; padding: 15px 25px !important; border-radius: 8px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. SIDEBAR E HEADER
+# 3. SIDEBAR
 with st.sidebar:
     st.markdown("""<div class="betano-header"><div class="logo-link">GESTOR IA</div><div style="display:flex;"><div class="nav-item">LIVE</div><div class="nav-item">STATS</div></div></div><div style="height:65px;"></div>""", unsafe_allow_html=True) 
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
-    if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
     if st.button("📅 BILHETE OURO"): st.session_state.aba_ativa = "home"
     if st.button("🏆 VENCEDORES DA COMPETIÇÃO"): st.session_state.aba_ativa = "vencedores"
     if st.button("⚽ APOSTAS POR GOLS"): st.session_state.aba_ativa = "gols"
@@ -102,42 +78,34 @@ def draw_card(title, value, perc):
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
     draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
-    if df_diario is not None: 
-        st.success(f"Dados atualizados do GitHub em: {datetime.now().strftime('%H:%M:%S')}")
+    if df_diario is not None:
         st.dataframe(df_diario, use_container_width=True)
-    else: st.error("❌ ERRO: O arquivo database_diario.csv não foi encontrado no GitHub.")
 
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
-    c1, c2, c3 = st.columns(3)
-    with c1: s_pais = st.selectbox("🌎 REGIÃO", ["BRASIL", "EUROPA", "INTERNACIONAL"])
-    with c2: s_liga = st.selectbox("📂 GRUPO", ["SÉRIE A", "PREMIER LEAGUE", "LA LIGA"])
-    with c3: s_time = st.text_input("🏠 TIME DA CASA", "Flamengo")
-    
+    t_casa = st.text_input("🏠 TIME DA CASA", "Digite aqui")
     if st.button("⚡ EXECUTAR ALGORITMO"):
-        conf = calcular_ia_manual(s_time)
-        st.session_state.analise_bloqueada = {"casa": s_time, "conf": conf}
-        
+        conf = 75.0
+        if df_hist is not None:
+            f = df_hist[df_hist['Casa'].str.contains(str(t_casa)[:5], case=False, na=False)]
+            if not f.empty: conf = round((len(f[f['Resultado']=='H'])/len(f))*100 + 10, 1)
+        st.session_state.analise_bloqueada = {"casa": t_casa, "conf": conf}
+    
     if st.session_state.analise_bloqueada:
-        m = st.session_state.analise_bloqueada
-        st.markdown(f"<div style='background:rgba(0,255,136,0.1); border-left:5px solid #00ff88; padding:15px;'>🟢 SISTEMA JARVIS: ANÁLISE REAL CONCLUÍDA</div>", unsafe_allow_html=True)
-        r1, r2, r3, r4 = st.columns(4)
-        with r1: draw_card("CONFIANÇA IA", f"{m['conf']}%", int(m['conf']))
-        with r2: draw_card("PROB. GOLS", "OVER 1.5", 90)
-        with r3: draw_card("STAKE", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-        with r4: draw_card("CANTOS", "9.5+", 75)
-        if st.button("📥 SALVAR CALL", use_container_width=True):
-            st.session_state.historico_calls.append({"data": datetime.now().strftime("%H:%M"), "casa": m['casa'], "fora": "Rival"})
-            st.toast("✅ SALVO!")
+        a = st.session_state.analise_bloqueada
+        st.markdown(f"<h3 style='text-align:center; color:#9d54ff;'>{a['casa']} vs Rival</h3>", unsafe_allow_html=True)
+        draw_card("CONFIANÇA IA", f"{a['conf']}%", int(a['conf']))
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
     if df_diario is not None:
-        # Filtra colunas que existem para evitar erros de visualização
-        cols = [c for c in ['STATUS', 'PAIS', 'LIGA', 'CASA', 'FORA', 'GOLS', 'CONF', 'CANTOS'] if c in df_diario.columns]
-        st.dataframe(df_diario[cols], use_container_width=True, hide_index=True)
-        if st.button("🔄 FORÇAR ATUALIZAÇÃO AGORA"): st.rerun()
-    else: st.info("Sincronizando com a Betano via GitHub...")
+        # Só mostra se não for o arquivo velho do Blackpool
+        if "Blackpool" in df_diario.values:
+            st.warning("⚠️ Os dados do servidor ainda são de Abril. Rode o robô no GitHub novamente.")
+            st.dataframe(df_diario, use_container_width=True)
+        else:
+            st.dataframe(df_diario, use_container_width=True, hide_index=True)
+    else: st.info("Sincronizando...")
 
 elif st.session_state.aba_ativa == "vencedores":
     st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
@@ -163,14 +131,8 @@ elif st.session_state.aba_ativa == "escanteios":
     with e3: draw_card("CANTOS HT", "4.5+", 70)
     with e4: draw_card("CORNER RACE", "Time A", 55)
 
-elif st.session_state.aba_ativa == "historico":
-    st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
-    for c in reversed(st.session_state.historico_calls):
-        st.markdown(f"""<div class="history-card-box"><div style="color:white; font-weight:800;">[{c['data']}] {c['casa']} x {c['fora']}</div></div>""", unsafe_allow_html=True)
-
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA</div>""", unsafe_allow_html=True)
     st.session_state.banca_total = st.number_input("BANCA TOTAL", value=float(st.session_state.banca_total))
-    st.session_state.stake_padrao = st.slider("STAKE (%)", 0.1, 10.0, float(st.session_state.stake_padrao))
 
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v60.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
