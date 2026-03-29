@@ -15,21 +15,35 @@ from datetime import datetime
 # 1. CONFIGURAÇÃO DE PÁGINA
 st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
-# --- MEMÓRIA SESSION STATE ---
+# --- INICIALIZAÇÃO DE MEMÓRIA BLINDADA ---
 if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
 if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
 if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
 if 'banca_total' not in st.session_state: st.session_state.banca_total = 1000.00
 if 'stake_padrao' not in st.session_state: st.session_state.stake_padrao = 1.0
 
-# --- CARREGAMENTO DE DADOS ---
-def carregar_csv(path):
-    if os.path.exists(path):
-        return pd.read_csv(path)
-    return None
+# --- CARREGAMENTO DE DADOS (FORA DAS ABAS PARA NÃO TRAVAR) ---
+@st.cache_data
+def carregar_dados_globais():
+    d = pd.read_csv("data/database_diario.csv") if os.path.exists("data/database_diario.csv") else None
+    h = pd.read_csv("data/historico_5_temporadas.csv") if os.path.exists("data/historico_5_temporadas.csv") else None
+    return d, h
 
-df_diario = carregar_csv("data/database_diario.csv")
-df_hist = carregar_csv("data/historico_5_temporadas.csv")
+df_diario, df_hist = carregar_dados_globais()
+
+# ==============================================================================
+# LÓGICA DO BOT (BACK-END): CÉREBRO JARVIS
+# ==============================================================================
+
+def calcular_ia_manual(time_casa):
+    conf = 50.0
+    if df_hist is not None:
+        # Busca no histórico de 5 anos
+        f = df_hist[df_hist['Casa'].str.contains(str(time_casa)[:5], case=False, na=False)]
+        if not f.empty:
+            taxa = (len(f[f['Resultado']=='H']) / len(f)) * 100
+            conf = round(taxa + 10, 1)
+    return min(conf, 98.4)
 
 # ==============================================================================
 # 2. CAMADA DE ESTILO CSS INTEGRAL (TRAVA v57.35)
@@ -81,18 +95,13 @@ if st.session_state.aba_ativa == "home":
 
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
-    paises = ["BRASIL", "INGLATERRA", "ESPANHA"]
-    times = {"BRASIL": ["Flamengo", "Palmeiras", "Athletico-PR", "Atlético-MG"], "INGLATERRA": ["Man City", "Arsenal"], "ESPANHA": ["Real Madrid", "Barcelona"]}
-    c1, c2, c3 = st.columns(3)
-    with c1: s_p = st.selectbox("🌎 REGIÃO", paises)
-    with c2: s_l = st.selectbox("📂 GRUPO", ["SÉRIE A" if s_p=="BRASIL" else "LIGA PRINCIPAL"])
-    with c3: s_t = st.selectbox("🏠 TIME CASA", times.get(s_p))
+    col1, col2, col3 = st.columns(3)
+    with col1: s_p = st.selectbox("🌎 REGIÃO", ["BRASIL", "INGLATERRA", "INTERNACIONAL 🌍"])
+    with col2: s_l = st.selectbox("📂 GRUPO", ["SÉRIE A", "PREMIER LEAGUE", "E2", "SC1"])
+    with col3: s_t = st.text_input("🏠 TIME CASA (Digite o nome)", "Flamengo")
     
     if st.button("⚡ EXECUTAR ALGORITMO"):
-        conf = 85.0 # IA simplificada para manual
-        if df_hist is not None:
-            f = df_hist[df_hist['Casa'].str.contains(s_t[:5], case=False, na=False)]
-            if not f.empty: conf = round((len(f[f['Resultado']=='H'])/len(f))*100 + 10, 1)
+        conf = calcular_ia_manual(s_t)
         st.session_state.analise_bloqueada = {"casa": s_t, "conf": conf}
         
     if st.session_state.analise_bloqueada:
@@ -102,17 +111,19 @@ elif st.session_state.aba_ativa == "analise":
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("CONFIANÇA IA", f"{a['conf']}%", int(a['conf']))
         with r2: draw_card("PROB. GOLS", "OVER 1.5", 90)
-        with r3: draw_card("STAKE", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
+        with r3: draw_card("STAKE SUGERIDA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
         with r4: draw_card("CANTOS", "9.5+", 75)
+        # BOTÃO SALVAR CALL
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
-            st.session_state.historico_calls.append({"data": datetime.now().strftime("%H:%M"), "casa": a['casa'], "fora": "Rival", "stake_val": f"R$ {10:,.2f}", "gols": "OVER 1.5"})
-            st.toast("✅ CALL SALVA!")
+            st.session_state.historico_calls.append({"data": datetime.now().strftime("%H:%M"), "casa": a['casa'], "fora": "Rival", "stake": f"R$ {10:,.2f}"})
+            st.toast("✅ CALL SALVA COM SUCESSO!")
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
     if df_diario is not None:
-        st.dataframe(df_diario[df_diario['PAIS'].str.contains("LIVE", na=False)], use_container_width=True, hide_index=True)
-    else: st.info("Aguardando sincronização de jogos ao vivo...")
+        # Mostra todos os jogos do arquivo diário (Sem filtros que escondem dados)
+        st.dataframe(df_diario, use_container_width=True, hide_index=True)
+    else: st.info("Aguardando carregamento do database_diario.csv...")
 
 elif st.session_state.aba_ativa == "vencedores":
     st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
@@ -123,30 +134,4 @@ elif st.session_state.aba_ativa == "vencedores":
     with v4: draw_card("ZEBRA PROB", "Marrocos", 12)
 
 elif st.session_state.aba_ativa == "gols":
-    st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>", unsafe_allow_html=True)
-    g1, g2, g3, g4 = st.columns(4)
-    with g1: draw_card("OVER 0.5 HT", "82%", 82)
-    with g2: draw_card("OVER 1.5 FT", "75%", 75)
-    with g3: draw_card("AMBAS MARCAM", "61%", 61)
-    with g4: draw_card("UNDER 3.5", "90%", 90)
-
-elif st.session_state.aba_ativa == "escanteios":
-    st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
-    e1, e2, e3, e4 = st.columns(4)
-    with e1: draw_card("OVER 8.5", "88%", 88)
-    with e2: draw_card("OVER 10.5", "62%", 62)
-    with e3: draw_card("CANTOS HT", "4.5+", 70)
-    with e4: draw_card("CORNER RACE", "Time A", 55)
-
-elif st.session_state.aba_ativa == "historico":
-    st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
-    for call in reversed(st.session_state.historico_calls):
-        st.markdown(f"""<div class="history-card-box"><div style="color:white; font-weight:800;"><span style="color:#9d54ff;">[{call['data']}]</span> {call['casa']} x {call['fora']} <span style="color:#06b6d4; margin-left:20px;">{call['stake_val']} | {call['gols']}</span></div></div>""", unsafe_allow_html=True)
-
-elif st.session_state.aba_ativa == "gestao":
-    st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
-    st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=float(st.session_state.banca_total))
-    st.session_state.stake_padrao = st.slider("STAKE (%)", 0.1, 10.0, float(st.session_state.stake_padrao))
-    draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v60.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>
