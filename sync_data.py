@@ -7,20 +7,17 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 
-def calcular_metricas_jarvis(time_casa, time_fora, df_hist):
-    confianca = 50.0
+def calcular_metricas_jarvis(time_casa, df_hist):
+    confianca = 75.0
     if df_hist is not None:
-        # Busca inteligente (pega os primeiros 5 caracteres do nome)
         filtro = df_hist[df_hist['Casa'].str.contains(str(time_casa)[:5], case=False, na=False)]
         if not filtro.empty:
-            vitorias = len(filtro[filtro['Resultado'] == 'H'])
-            taxa = (vitorias / len(filtro)) * 100
+            taxa = (len(filtro[filtro['Resultado'] == 'H']) / len(filtro)) * 100
             confianca = round(taxa + 15, 1)
     return f"{min(confianca, 98.4)}%"
 
 def sync():
-    print("🤖 JARVIS v60.0 | Iniciando Varredura Multi-Seletores...")
-    
+    print("🤖 JARVIS v60.0 | Capturando Horários e Jogos...")
     path_hist = "data/historico_5_temporadas.csv"
     df_hist = pd.read_csv(path_hist) if os.path.exists(path_hist) else None
 
@@ -28,72 +25,59 @@ def sync():
     options.add_argument("--headless")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
-    
     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
     
     try:
         driver.get("https://br.betano.com/sport/futebol/jogos-de-hoje/")
-        time.sleep(15) # Aumentamos o tempo para garantir o carregamento
+        time.sleep(15)
         
-        # Tenta encontrar os jogos por diferentes caminhos (Seletores de Elite)
-        jogos_encontrados = driver.find_elements(By.CSS_SELECTOR, "[data-testid='event-card']")
-        
-        # Se falhar, tenta o seletor secundário
-        if not jogos_encontrados:
-            jogos_encontrados = driver.find_elements(By.CLASS_NAME, "events-list__grid__event")
-
+        eventos = driver.find_elements(By.CSS_SELECTOR, "[data-testid='event-card']")
         lista_jogos = []
-        print(f"🔎 Detectados {len(jogos_encontrados)} blocos de eventos.")
 
-        for evento in jogos_encontrados:
+        for evento in eventos:
             try:
-                # Captura o texto completo do bloco e tenta separar os times
-                dados = evento.text.split('\n')
-                # Geralmente o nome dos times aparece em sequência no texto do card
-                # Vamos buscar padrões de nomes (Ex: Time A vs Time B ou Time A - Time B)
+                texto_completo = evento.text.split('\n')
+                # A Betano coloca o horário ou 'AO VIVO' nas primeiras linhas do card
+                status_hora = texto_completo[0] 
+                
+                # Identifica times (lógica robusta de pulo de mercados)
                 casa = ""
                 fora = ""
+                for i in range(1, len(texto_completo)):
+                    if " - " in texto_completo[i]:
+                        partes = texto_completo[i].split(" - ")
+                        casa = partes[0].strip()
+                        fora = partes[1].strip()
+                        break
                 
-                # Lógica de extração robusta
-                for i in range(len(dados)):
-                    if " / " in dados[i] or ":" in dados[i]: # Pula horários ou mercados
-                        continue
-                    if i < len(dados) - 1:
-                        casa = dados[i].strip()
-                        fora = dados[i+1].strip()
-                        if len(casa) > 3 and len(fora) > 3: # Validação básica de nome
-                            break
-                
+                if not casa: # Fallback caso os nomes estejam em linhas separadas
+                    casa = texto_completo[1]
+                    fora = texto_completo[2]
+
                 if casa and fora:
-                    conf = calcular_metricas_jarvis(casa, fora, df_hist)
+                    conf = calcular_metricas_jarvis(casa, df_hist)
                     lista_jogos.append({
-                        "PAIS": "LIVE 📡",
-                        "LIGA": "BETANO REAL-TIME",
+                        "STATUS": status_hora,
+                        "LIGA": "BETANO",
                         "CASA": casa,
                         "FORA": fora,
                         "GOLS": "OVER 1.5",
                         "CONF": conf,
-                        "CARTOES": "3+",
                         "CANTOS": "9.5+",
                         "CHUTES": "10+",
                         "DEFESAS": "7+",
                         "TMETA": "15+"
                     })
-            except:
-                continue
+            except: continue
         
         if lista_jogos:
             df_final = pd.DataFrame(lista_jogos)
             if not os.path.exists('data'): os.makedirs('data')
             df_final.to_csv("data/database_diario.csv", index=False)
-            print(f"✅ SUCESSO: {len(df_final)} jogos processados pela IA.")
-        else:
-            print("⚠️ AVISO: O site carregou mas os nomes dos times não foram extraídos.")
+            print(f"✅ SUCESSO: {len(df_final)} jogos com horários capturados.")
             
-    except Exception as e:
-        print(f"❌ ERRO CRÍTICO: {e}")
-    finally:
-        driver.quit()
+    except Exception as e: print(f"❌ ERRO: {e}")
+    finally: driver.quit()
 
 if __name__ == "__main__":
     sync()
