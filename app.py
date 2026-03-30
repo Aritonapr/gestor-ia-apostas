@@ -38,10 +38,10 @@ if query_params.get("go") == "home":
 
 # --- FUNÇÃO DE CARREGAMENTO DE DADOS (DIRETRIZ GITHUB + CACHE) ---
 def carregar_dados_ia():
+    # Tenta carregar do ambiente local primeiro com trava de cache
     path_local = "data/database_diario.csv"
     if os.path.exists(path_local):
         try:
-            # Trava de Cache via timestamp para garantir dados em tempo real
             df = pd.read_csv(f"{path_local}?v={datetime.now().timestamp()}", on_bad_lines='skip')
             return df
         except:
@@ -322,8 +322,8 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
-    # --- LÓGICA DE FILTRAGEM POR PASTA/CAMPEONATO ---
-    lista_base = ["Selecione..."]
+    # --- LÓGICA DE FILTRAGEM REFORÇADA (BLINDAGEM DE LIGA) ---
+    lista_base = []
     if df_diario is not None:
         try:
             col_comp = next((c for c in df_diario.columns if c.upper() in ['LIGA', 'COMPETIÇÃO', 'COMPETICAO', 'GRUPO']), None)
@@ -331,30 +331,37 @@ elif st.session_state.aba_ativa == "analise":
             col_fora = next((c for c in df_diario.columns if c.upper() in ['FORA', 'AWAY']), 'FORA')
             
             if col_comp:
-                # Pega a primeira palavra da seleção (ex: "PREMIER") para filtrar no CSV
-                termo = sel_comp.split(' ')[0].upper()
+                # Busca robusta: tenta encontrar o nome da liga selecionada dentro da coluna do CSV
+                termo = sel_comp.replace("(", "").replace(")", "").split(' ')[0].upper()
                 filtro = df_diario[df_diario[col_comp].astype(str).str.upper().str.contains(termo, na=False)]
                 
                 if not filtro.empty:
-                    # Coleta apenas times daquela competição específica
                     lista_base = sorted(list(set(filtro[col_casa].unique().tolist() + filtro[col_fora].unique().tolist())))
         except:
             pass
 
-    # Fallback caso não haja dados no CSV para o campeonato selecionado
-    if len(lista_base) <= 1:
-        if "BRASILEIRÃO" in sel_grupo: lista_base = ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Galo", "Grêmio", "Botafogo"]
-        elif "PREMIER" in sel_comp: lista_base = ["Arsenal", "Man City", "Liverpool", "Chelsea", "Man United", "Tottenham"]
-        elif "LA LIGA" in sel_comp: lista_base = ["Real Madrid", "Barcelona", "Atlético Madrid"]
-        else: lista_base = ["Time A", "Time B", "Time C", "Time D"]
+    # --- BASE DE DADOS INTERNA DE ELITE (ELIMINA TIME A / TIME B) ---
+    if not lista_base:
+        if "BRASILEIRÃO" in sel_grupo or "BRASIL" in sel_pais:
+            lista_base = ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Galo", "Grêmio", "Botafogo", "Fluminense", "Internacional", "Cruzeiro"]
+        elif "CHAMPIONS" in sel_comp or "UEFA" in sel_comp:
+            lista_base = ["Real Madrid", "Man City", "Bayern Munich", "PSG", "Arsenal", "Barcelona", "Inter Milan", "Liverpool", "Bayer Leverkusen"]
+        elif "PREMIER" in sel_comp:
+            lista_base = ["Arsenal", "Man City", "Liverpool", "Chelsea", "Man United", "Tottenham", "Aston Villa", "Newcastle"]
+        elif "LA LIGA" in sel_comp:
+            lista_base = ["Real Madrid", "Barcelona", "Atlético Madrid", "Girona", "Real Sociedad"]
+        elif "ARGENTINO" in sel_comp:
+            lista_base = ["Boca Juniors", "River Plate", "Racing Club", "Independiente", "Talleres"]
+        else:
+            lista_base = ["Selecione um Time...", "Time Titular A", "Time Titular B"]
 
     c1, c2 = st.columns(2)
     with c1:
         t_casa = st.selectbox("🏠 TIME DA CASA", lista_base)
     with c2:
-        # LÓGICA ANTI-ESPELHO: Filtra o time da casa da lista de fora
+        # LÓGICA ANTI-ESPELHO: O time da casa é removido da lista de fora
         lista_fora = [t for t in lista_base if t != t_casa]
-        t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora if lista_fora else lista_base)
+        t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora if lista_fora else ["Selecione..."])
 
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
