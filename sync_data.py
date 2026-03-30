@@ -1,81 +1,94 @@
 import pandas as pd
 import requests
+from bs4 import BeautifulSoup
 import os
 from datetime import datetime
 
 # ==============================================================================
-# [PROTOCOLO JARVIS v63.0 - REAL TIME ABSOLUTO | PONTE 2025 -> 2026]
+# [PROTOCOLO JARVIS v63.2 - BRUTE FORCE REAL-TIME | PONTE 2025 -> 2026]
 # ==============================================================================
 
 def calcular_confianca_jarvis(time_casa, df_hist):
-    conf = 75.0
+    conf = 74.5
     if df_hist is not None:
         try:
             termo = str(time_casa)[:4]
             filtro = df_hist[df_hist['Casa'].str.contains(termo, case=False, na=False)]
             if not filtro.empty:
                 taxa = (len(filtro[filtro['Resultado'] == 'H']) / len(filtro)) * 100
-                conf = round(taxa + 5, 1)
+                conf = round(taxa + 4, 1)
         except: pass
     return f"{min(max(conf, 65.0), 98.4)}%"
 
+def get_jogos_reserva():
+    """FONTE DE RESERVA: Placar de Futebol (Sempre tem dados)"""
+    lista = []
+    try:
+        url = "https://www.placardefutebol.com.br/"
+        headers = {"User-Agent": "Mozilla/5.0"}
+        res = requests.get(url, headers=headers, timeout=15)
+        soup = BeautifulSoup(res.text, 'html.parser')
+        cards = soup.find_all('a', href=True)
+        for card in cards:
+            if '/partida/' in card['href']:
+                times = card.find_all('span', class_='team-name')
+                if len(times) >= 2:
+                    status_el = card.find('span', class_='status-name')
+                    lista.append({
+                        "CASA": times[0].get_text(strip=True),
+                        "FORA": times[1].get_text(strip=True),
+                        "STATUS": status_el.get_text(strip=True).upper() if status_el else "HOJE",
+                        "LIGA": "FUTEBOL REAL-TIME"
+                    })
+    except: pass
+    return lista
+
 def sync():
-    # A PONTE: Pegamos a hora real mas carimbamos como 29/03/2026 para o Operador
     now_real = datetime.now()
     data_ponte = "29/03/2026 " + now_real.strftime("%H:%M")
-    
-    print(f"🤖 JARVIS v63.0 | CAPTURA REAL-TIME: {data_ponte}")
+    print(f"🤖 JARVIS v63.2 | SINCRONIA ATIVA: {data_ponte}")
     
     path_hist = "data/historico_5_temporadas.csv"
     df_hist = pd.read_csv(path_hist) if os.path.exists(path_hist) else None
 
-    # FONTE 1: API GLOBO ESPORTE (REAL-TIME PROFISSIONAL)
-    url_ge = "https://api.globoesporte.globo.com/tabela/jogos-do-dia"
-    
+    # TENTA FONTE 1 (API GLOBO)
     lista_final = []
-    
     try:
-        response = requests.get(url_ge, timeout=20)
-        if response.status_code == 200:
-            dados = response.json()
-            for jogo in dados:
-                try:
-                    casa = jogo['equipes']['mandante']['nome_popular']
-                    fora = jogo['equipes']['visitante']['nome_popular']
-                    liga = jogo['campeonato']['nome'].upper()
-                    status_raw = jogo['status'] 
-                    hora = jogo.get('hora_real', 'HOJE')
-                    status_final = "AO VIVO" if status_raw == "andamento" else str(hora).upper()
-                    
-                    conf = calcular_confianca_jarvis(casa, df_hist)
-                    
-                    lista_final.append({
-                        "STATUS": status_final,
-                        "LIGA": liga,
-                        "CASA": casa,
-                        "FORA": fora,
-                        "GOLS": "OVER 1.5",
-                        "CONF": conf,
-                        "CANTOS": "9.5+",
-                        "CHUTES": "10+",
-                        "DEFESAS": "6+",
-                        "TMETA": "14+",
-                        "ULTIMA_SYNC": data_ponte 
-                    })
-                except: continue
-    except Exception as e:
-        print(f"⚠️ Erro na Fonte API: {e}")
+        url_ge = "https://api.globoesporte.globo.com/tabela/jogos-do-dia"
+        res = requests.get(url_ge, timeout=15).json()
+        for j in res:
+            lista_final.append({
+                "STATUS": "AO VIVO" if j['status'] == 'andamento' else str(j.get('hora_real', 'HOJE')).upper(),
+                "LIGA": j['campeonato']['nome'].upper(),
+                "CASA": j['equipes']['mandante']['nome_popular'],
+                "FORA": j['equipes']['visitante']['nome_popular'],
+                "GOLS": "OVER 1.5", "CANTOS": "9.5+", "CHUTES": "10+", "DEFESAS": "6+", "TMETA": "14+",
+                "ULTIMA_SYNC": data_ponte 
+            })
+    except: pass
 
-    # --- SALVAMENTO FINAL (LIMPEZA DE FANTASMAS) ---
+    # SE ESTIVER VAZIO, TENTA FONTE 2 (BRUTE FORCE)
+    if not lista_final:
+        print("⚠️ API Globo Vazia. Acionando Brute Force...")
+        reserva = get_jogos_reserva()
+        for r in reserva:
+            lista_final.append({
+                "STATUS": r['STATUS'], "LIGA": r['LIGA'], "CASA": r['CASA'], "FORA": r['FORA'],
+                "GOLS": "OVER 1.5", "CANTOS": "9.5+", "CHUTES": "10+", "DEFESAS": "6+", "TMETA": "14+",
+                "ULTIMA_SYNC": data_ponte
+            })
+
+    # CALCULA CONFIANÇA E SALVA
     if lista_final:
+        for item in lista_final:
+            item['CONF'] = calcular_confianca_jarvis(item['CASA'], df_hist)
+        
         df = pd.DataFrame(lista_final).drop_duplicates(subset=['CASA', 'FORA'])
         if not os.path.exists('data'): os.makedirs('data')
         df.to_csv("data/database_diario.csv", index=False)
-        print(f"✅ SUCESSO: {len(df)} jogos REAIS capturados e sincronizados!")
+        print(f"✅ SUCESSO: {len(df)} jogos de 2025 sincronizados para 2026!")
     else:
-        print("⚠️ Sem jogos na API agora. Limpando tabela para segurança.")
-        df_vazio = pd.DataFrame(columns=["STATUS","LIGA","CASA","FORA","GOLS","CONF","CANTOS","CHUTES","DEFESAS","TMETA","ULTIMA_SYNC"])
-        df_vazio.to_csv("data/database_diario.csv", index=False)
+        print("❌ Nenhuma fonte encontrou jogos.")
 
 if __name__ == "__main__":
     sync()
