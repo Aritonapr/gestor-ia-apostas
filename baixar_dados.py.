@@ -1,0 +1,42 @@
+import pandas as pd
+import requests
+import io
+
+def baixar_historico_confiavel():
+    print("🚀 Iniciando captura de dados reais (2021-2025)...")
+    
+    # Lista de ligas e anos para garantir volume de dados
+    # Usando a fonte Football-Data.co.uk (uma das mais estáveis para análise)
+    temporadas = ['2425', '2324', '2223', '2122', '2021']
+    ligas = ['E0', 'SP1', 'I1', 'D1', 'F1'] # Inglaterra, Espanha, Itália, Alemanha, França
+    
+    base_url = "https://www.football-data.co.uk/mmz4281/"
+    df_final = pd.DataFrame()
+
+    for temp in temporadas:
+        for liga in ligas:
+            url = f"{base_url}{temp}/{liga}.csv"
+            try:
+                response = requests.get(url)
+                if response.status_code == 200:
+                    df_temp = pd.read_csv(io.StringIO(response.text))
+                    # Padronização para o padrão GESTOR IA
+                    df_resumo = df_temp[['HomeTeam', 'AwayTeam', 'FTHG', 'FTAG']].copy()
+                    df_resumo.columns = ['CASA', 'FORA', 'GOLS_CASA', 'GOLS_FORA']
+                    df_resumo['TEMPORADA'] = temp
+                    df_final = pd.concat([df_final, df_resumo], ignore_index=True)
+                    print(f"✅ Sucesso: Liga {liga} | Temp {temp}")
+            except Exception as e:
+                print(f"❌ Erro na Liga {liga} {temp}: {e}")
+
+    # Salva na pasta data para o app.py ler
+    if not df_final.empty:
+        os.makedirs('data', exist_ok=True)
+        df_final.to_csv('data/historico_5_temporadas.csv', index=False)
+        print(f"\n✨ ARQUIVO ATUALIZADO: {len(df_final)} jogos processados com sucesso!")
+    else:
+        print("⚠️ Nenhum dado foi capturado. Verifique a conexão.")
+
+if __name__ == "__main__":
+    import os
+    baixar_historico_confiavel()
