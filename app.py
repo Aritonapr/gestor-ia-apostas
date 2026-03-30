@@ -41,7 +41,7 @@ def carregar_jogos_diarios():
     path = "data/database_diario.csv"
     if os.path.exists(path):
         try:
-            # Trava de Cache via timestamp para evitar erro de dados antigos
+            # Trava de Cache via timestamp para garantir dados em tempo real
             df = pd.read_csv(f"{path}?v={datetime.now().timestamp()}", on_bad_lines='skip')
             return df
         except:
@@ -63,7 +63,6 @@ def processar_ia_bot():
         vips = []
         try:
             temp_df = df_diario.copy()
-            # Identificação dinâmica de colunas para evitar KeyError
             col_conf = 'CONF' if 'CONF' in temp_df.columns else 'CONFIANCA'
             if col_conf in temp_df.columns:
                 temp_df['CONF_NUM'] = temp_df[col_conf].astype(str).str.replace('%', '').astype(float)
@@ -290,56 +289,62 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
     # --------------------------------------------------------------------------
-    # BANCO DE DADOS DE COMPETIÇÕES (ATUALIZADO v62.0)
+    # ESTRUTURA HIERÁRQUICA DE PASTAS (BRASIL - CAMPEONATO - SÉRIE)
     # --------------------------------------------------------------------------
-    db_paises = {
-        "BRASIL": [
-            "BRASILEIRÃO: SÉRIE A", "BRASILEIRÃO: SÉRIE B", "BRASILEIRÃO: SÉRIE C", "BRASILEIRÃO: SÉRIE D",
-            "COPA DO BRASIL", "SUPERCOPA DO BRASIL", "COPA DO NORDESTE", 
-            "PAULISTÃO", "CARIOCA", "MINEIRO", "GAÚCHO"
-        ],
-        "INTERNACIONAL (CLUBES BR)": [
-            "COPA LIBERTADORES", "COPA SUL-AMERICANA"
-        ],
-        "INGLATERRA": [
-            "PREMIER LEAGUE", "COPA DA LIGA INGLESA", "COPA DA INGLATERRA"
-        ],
-        "ESPANHA": [
-            "LA LIGA", "COPA DO REI DA ESPANHA"
-        ],
-        "ITÁLIA": [
-            "CAMPEONATO ITALIANO (SERIE A)", "COPA DA ITÁLIA"
-        ],
-        "ALEMANHA": [
-            "BUNDESLIGA"
-        ],
-        "FRANÇA": [
-            "LIGUE 1"
-        ],
-        "EUROPA (UEFA)": [
-            "UEFA CHAMPIONS LEAGUE", "UEFA EUROPA LEAGUE", "UEFA CONFERENCE LEAGUE", "EUROCOPA"
-        ]
+    db_hierarquia = {
+        "BRASIL": {
+            "CAMPEONATO BRASILEIRO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D"],
+            "COPAS NACIONAIS": ["COPA DO BRASIL", "SUPERCOPA DO BRASIL", "COPA DO NORDESTE"],
+            "CAMPEONATOS ESTADUAIS": ["PAULISTÃO", "CARIOCA", "MINEIRO", "GAÚCHO"]
+        },
+        "INTERNACIONAL (CLUBES BR)": {
+            "CONMEBOL": ["COPA LIBERTADORES", "COPA SUL-AMERICANA"]
+        },
+        "INGLATERRA": {
+            "LIGAS NACIONAIS": ["PREMIER LEAGUE"],
+            "COPAS NACIONAIS": ["COPA DA INGLATERRA", "COPA DA LIGA INGLESA"]
+        },
+        "ESPANHA": {
+            "LIGAS NACIONAIS": ["LA LIGA"],
+            "COPAS NACIONAIS": ["COPA DO REI DA ESPANHA"]
+        },
+        "ITÁLIA": {
+            "LIGAS NACIONAIS": ["SERIE A (ITALIANO)"],
+            "COPAS NACIONAIS": ["COPA DA ITÁLIA"]
+        },
+        "ALEMANHA": {
+            "LIGAS NACIONAIS": ["BUNDESLIGA"]
+        },
+        "FRANÇA": {
+            "LIGAS NACIONAIS": ["LIGUE 1"]
+        },
+        "EUROPA (UEFA)": {
+            "COMPETIÇÕES CONTINENTAIS": ["UEFA CHAMPIONS LEAGUE", "UEFA EUROPA LEAGUE", "UEFA CONFERENCE LEAGUE", "EUROCOPA"]
+        }
     }
     
+    # FILTROS HIERÁRQUICOS EM 3 COLUNAS
     row_f = st.columns(3)
     with row_f[0]:
-        sel_pais = st.selectbox("🌎 REGIÃO / PAÍS", list(db_paises.keys()))
+        sel_pais = st.selectbox("🌎 REGIÃO / PAÍS", list(db_hierarquia.keys()))
     with row_f[1]:
-        sel_comp = st.selectbox("🏆 COMPETIÇÃO", db_paises[sel_pais])
+        sel_grupo = st.selectbox("📂 GRUPO", list(db_hierarquia[sel_pais].keys()))
     with row_f[2]:
-        sel_temporada = st.selectbox("📅 TEMPORADA", ["2025/2026", "2024/2025"])
+        sel_comp = st.selectbox("🏆 COMPETIÇÃO", db_hierarquia[sel_pais][sel_grupo])
 
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
+    # LÓGICA DE CARREGAMENTO DE TIMES DO CSV
     lista_base = ["Selecione..."]
     if df_diario is not None:
         try:
-            col_comp = next((c for c in df_diario.columns if c.upper() in ['LIGA', 'COMPETIÇÃO', 'COMPETICAO', 'GRUPO']), None)
-            col_casa = next((c for c in df_diario.columns if c.upper() in ['CASA', 'TIME_CASA', 'HOME']), 'CASA')
+            col_comp = next((c for c in df_diario.columns if c.upper() in ['LIGA', 'COMPETIÇÃO', 'GRUPO']), None)
+            col_casa = next((c for c in df_diario.columns if c.upper() in ['CASA', 'HOME']), 'CASA')
             
             if col_comp:
-                filtro = df_diario[df_diario[col_comp].astype(str).str.contains(sel_comp.split(':')[0], case=False, na=False)]
+                # Busca flexível: tenta achar o nome da competição na coluna de liga do CSV
+                filtro = df_diario[df_diario[col_comp].astype(str).str.contains(sel_comp.split(' ')[0], case=False, na=False)]
                 if not filtro.empty:
                     lista_base = sorted(filtro[col_casa].unique().tolist())
         except:
