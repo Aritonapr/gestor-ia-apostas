@@ -289,30 +289,31 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
     # --------------------------------------------------------------------------
-    # ESTRUTURA TOQUE FINAL (HÍBRIDA PROFISSIONAL)
+    # ESTRUTURA HIERÁRQUICA FINAL (VERSÃO BLINDADA v62.5)
     # --------------------------------------------------------------------------
     db_hierarquia = {
-        "BRASIL (ELITE & NACIONAL)": {
+        "BRASIL (NACIONAL)": {
             "CAMPEONATO BRASILEIRO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D"],
-            "COPAS E SUPERCOP": ["COPA DO BRASIL", "SUPERCOPA DO BRASIL", "COPA DO NORDESTE", "COPA VERDE"]
+            "COPAS E SUPERCOPA": ["COPA DO BRASIL", "SUPERCOPA DO BRASIL", "COPA DO NORDESTE", "COPA VERDE"]
         },
         "BRASIL (ESTADUAIS)": {
             "ESTADUAIS 2025/26": ["PAULISTÃO", "CARIOCA", "MINEIRO", "GAÚCHO", "PARANAENSE", "CATARINENSE", "BAIANO", "PERNAMBUCANO", "CEARENSE", "GOIANO"]
         },
         "AMÉRICAS (CONMEBOL & MLS)": {
-            "CLUBES BRASILEIROS": ["COPA LIBERTADORES", "COPA SUL-AMERICANA"],
-            "OUTRAS LIGAS": ["CAMPEONATO ARGENTINO", "MAJOR LEAGUE SOCCER (EUA)", "LIGA MX (MÉXICO)"]
+            "CONTINENTAL (CLUBES AM)": ["COPA LIBERTADORES", "COPA SUL-AMERICANA"],
+            "LIGAS NACIONAIS": ["CAMPEONATO ARGENTINO", "MAJOR LEAGUE SOCCER (EUA)", "LIGA MX (MÉXICO)"]
         },
-        "EUROPA: ELITE (AS 5 GRANDES)": {
-            "LIGAS NACIONAIS": ["PREMIER LEAGUE (INGLÊS)", "LA LIGA (ESPANHOL)", "SERIE A (ITALIANO)", "BUNDESLIGA (ALEMÃO)", "LIGUE 1 (FRANCÊS)"]
+        "EUROPA: LIGAS NACIONAIS (ELITE)": {
+            "AS 5 GRANDES LIGAS": ["PREMIER LEAGUE (INGLÊS)", "LA LIGA (ESPANHOL)", "SERIE A (ITALIANO)", "BUNDESLIGA (ALEMÃO)", "LIGUE 1 (FRANCÊS)"],
+            "OUTRAS LIGAS NACIONAIS": ["CAMPEONATO BELGA", "CHAMPIONSHIP (2ª INGLESA)", "LIGA PORTUGUESA", "EREDIVISIE (HOLANDA)"]
         },
-        "EUROPA: CONTINENTAL & COPAS": {
-            "UEFA": ["CHAMPIONS LEAGUE", "EUROPA LEAGUE", "CONFERENCE LEAGUE", "EUROCOPA"],
+        "EUROPA: INTERNACIONAL (UEFA)": {
+            "COMPETIÇÕES DE CLUBES": ["UEFA CHAMPIONS LEAGUE", "UEFA EUROPA LEAGUE", "UEFA CONFERENCE LEAGUE"],
             "COPAS NACIONAIS": ["FA CUP", "COPA DA LIGA INGLESA", "COPA DO REI (ESPANHA)", "COPA DA ITÁLIA"]
         },
-        "OUTRAS LIGAS & SELEÇÕES": {
-            "DIVERSOS": ["CAMPEONATO BELGA", "CHAMPIONSHIP (2ª INGLESA)", "SAUDI PRO LEAGUE"],
-            "SELEÇÕES": ["ELIMINATÓRIAS COPA 2026", "UEFA NATIONS LEAGUE", "AMISTOSOS"]
+        "MUNDO & SELEÇÕES (FIFA)": {
+            "FIFA WORLD CUP": ["COPA DO MUNDO 2026", "ELIMINATÓRIAS COPA 2026"],
+            "CONTINENTAL E LIGAS": ["UEFA EUROCOPA", "UEFA NATIONS LEAGUE", "COPA AMÉRICA", "SAUDI PRO LEAGUE"]
         }
     }
     
@@ -341,7 +342,7 @@ elif st.session_state.aba_ativa == "analise":
             pass
 
     if len(lista_base) <= 1:
-        lista_base = ["Time A", "Time B", "Flamengo", "Palmeiras", "Real Madrid", "Man City", "Arsenal", "Barcelona", "Al-Nassr", "Inter Miami", "Brasil", "Argentina"]
+        lista_base = ["Time A", "Time B", "Flamengo", "Palmeiras", "Real Madrid", "Man City", "Arsenal", "Barcelona", "Boca Juniors", "River Plate", "Brasil", "Argentina"]
 
     c1, c2 = st.columns(2)
     with c1:
@@ -474,4 +475,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v62.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v62.5</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
