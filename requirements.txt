@@ -2,5 +2,4 @@ pandas
 requests
 streamlit
 numpy
-datetime
 beautifulsoup4
