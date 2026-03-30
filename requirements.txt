@@ -1,5 +1,6 @@
-streamlit
 pandas
 requests
+streamlit
+numpy
+datetime
 beautifulsoup4
-lxml
