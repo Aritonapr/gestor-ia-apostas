@@ -289,41 +289,67 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
     # --------------------------------------------------------------------------
-    # ESTRUTURA HIERÁRQUICA DE PASTAS (BRASIL - CAMPEONATO - SÉRIE)
+    # ESTRUTURA HIERÁRQUICA AMPLIADA (2025/2026)
     # --------------------------------------------------------------------------
     db_hierarquia = {
         "BRASIL": {
-            "CAMPEONATO BRASILEIRO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D"],
-            "COPAS NACIONAIS": ["COPA DO BRASIL", "SUPERCOPA DO BRASIL", "COPA DO NORDESTE"],
-            "CAMPEONATOS ESTADUAIS": ["PAULISTÃO", "CARIOCA", "MINEIRO", "GAÚCHO"]
+            "BRASILEIRÃO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D", "SÉRIE A (SUB-20)"],
+            "COPAS NACIONAIS": ["COPA DO BRASIL", "SUPERCOPA DO BRASIL", "COPA DO NORDESTE", "COPA VERDE"],
+            "ESTADUAIS": ["PAULISTÃO", "CARIOCA", "MINEIRO", "GAÚCHO", "PARANAENSE", "CATARINENSE", "BAIANO", "PERNAMBUCANO", "CEARENSE", "GOIANO"]
         },
-        "INTERNACIONAL (CLUBES BR)": {
-            "CONMEBOL": ["COPA LIBERTADORES", "COPA SUL-AMERICANA"]
+        "AMÉRICA DO SUL (CONMEBOL)": {
+            "COMPETIÇÕES CONTINENTAIS": ["COPA LIBERTADORES", "COPA SUL-AMERICANA", "RECOPA SUL-AMERICANA"],
+            "ARGENTINA": ["LIGA PROFESIONAL", "COPA DE LA LIGA"],
+            "OUTRAS LIGAS": ["CAMPEONATO URUGUAI", "CAMPEONATO CHILENO", "CAMPEONATO COLOMBIANO"]
+        },
+        "AMÉRICA DO NORTE (CONCACAF)": {
+            "ESTADOS UNIDOS": ["MLS (MAJOR LEAGUE SOCCER)", "US OPEN CUP"],
+            "MÉXICO": ["LIGA MX", "COPA MX"],
+            "CONTINENTAL": ["LEAGUES CUP", "CONCACAF CHAMPIONS CUP"]
         },
         "INGLATERRA": {
-            "LIGAS NACIONAIS": ["PREMIER LEAGUE"],
-            "COPAS NACIONAIS": ["COPA DA INGLATERRA", "COPA DA LIGA INGLESA"]
+            "LIGAS NACIONAIS": ["PREMIER LEAGUE", "EFL CHAMPIONSHIP", "LEAGUE ONE"],
+            "COPAS NACIONAIS": ["FA CUP", "EFL CUP (COPA DA LIGA)"]
         },
         "ESPANHA": {
-            "LIGAS NACIONAIS": ["LA LIGA"],
-            "COPAS NACIONAIS": ["COPA DO REI DA ESPANHA"]
+            "LIGAS NACIONAIS": ["LA LIGA", "LA LIGA 2"],
+            "COPAS NACIONAIS": ["COPA DEL REY", "SUPERCOPA ESPANHA"]
         },
         "ITÁLIA": {
-            "LIGAS NACIONAIS": ["SERIE A (ITALIANO)"],
-            "COPAS NACIONAIS": ["COPA DA ITÁLIA"]
+            "LIGAS NACIONAIS": ["SERIE A TIM", "SERIE B"],
+            "COPAS NACIONAIS": ["COPA DA ITÁLIA", "SUPERCOPPA ITALIANA"]
         },
         "ALEMANHA": {
-            "LIGAS NACIONAIS": ["BUNDESLIGA"]
+            "LIGAS NACIONAIS": ["BUNDESLIGA", "2. BUNDESLIGA"],
+            "COPAS NACIONAIS": ["DFB POKAL"]
         },
         "FRANÇA": {
-            "LIGAS NACIONAIS": ["LIGUE 1"]
+            "LIGAS NACIONAIS": ["LIGUE 1", "LIGUE 2"],
+            "COPAS NACIONAIS": ["COUPE DE FRANCE"]
         },
-        "EUROPA (UEFA)": {
-            "COMPETIÇÕES CONTINENTAIS": ["UEFA CHAMPIONS LEAGUE", "UEFA EUROPA LEAGUE", "UEFA CONFERENCE LEAGUE", "EUROCOPA"]
+        "OUTRAS LIGAS EUROPA": {
+            "PORTUGAL": ["LIGA PORTUGAL (BETCLIC)", "TAÇA DE PORTUGAL"],
+            "HOLANDA": ["EREDIVISIE"],
+            "TURQUIA": ["SÜPER LIG"],
+            "BÉLGICA": ["JUPILER PRO LEAGUE"],
+            "ESCÓCIA": ["SCOTTISH PREMIERSHIP"]
+        },
+        "EUROPA CONTINENTAL (UEFA)": {
+            "CHAMPIONS LEAGUE": ["FASE DE GRUPOS", "MATA-MATA"],
+            "EUROPA LEAGUE": ["FASE DE GRUPOS", "MATA-MATA"],
+            "CONFERENCE LEAGUE": ["FASE DE GRUPOS", "MATA-MATA"]
+        },
+        "ÁSIA E ORIENTE MÉDIO": {
+            "ARÁBIA SAUDITA": ["SAUDI PRO LEAGUE", "KING CUP"],
+            "JAPÃO": ["J1 LEAGUE"],
+            "CONTINENTAL": ["AFC CHAMPIONS LEAGUE ELITE"]
+        },
+        "SELEÇÕES NACIONAIS": {
+            "ELIMINATÓRIAS COPA 2026": ["CONMEBOL (SUL-AMÉRICA)", "UEFA (EUROPA)", "AFC (ÁSIA)"],
+            "LIGAS E COPAS": ["UEFA NATIONS LEAGUE", "COPA AMÉRICA", "EUROCOPA", "AMISTOSOS INTERNACIONAIS"]
         }
     }
     
-    # FILTROS HIERÁRQUICOS EM 3 COLUNAS
     row_f = st.columns(3)
     with row_f[0]:
         sel_pais = st.selectbox("🌎 REGIÃO / PAÍS", list(db_hierarquia.keys()))
@@ -335,23 +361,21 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
-    # LÓGICA DE CARREGAMENTO DE TIMES DO CSV
     lista_base = ["Selecione..."]
     if df_diario is not None:
         try:
             col_comp = next((c for c in df_diario.columns if c.upper() in ['LIGA', 'COMPETIÇÃO', 'GRUPO']), None)
             col_casa = next((c for c in df_diario.columns if c.upper() in ['CASA', 'HOME']), 'CASA')
-            
             if col_comp:
-                # Busca flexível: tenta achar o nome da competição na coluna de liga do CSV
-                filtro = df_diario[df_diario[col_comp].astype(str).str.contains(sel_comp.split(' ')[0], case=False, na=False)]
+                termo_busca = sel_comp.split(' ')[0]
+                filtro = df_diario[df_diario[col_comp].astype(str).str.contains(termo_busca, case=False, na=False)]
                 if not filtro.empty:
                     lista_base = sorted(filtro[col_casa].unique().tolist())
         except:
             pass
 
     if len(lista_base) <= 1:
-        lista_base = ["Time A", "Time B", "Flamengo", "Palmeiras", "Real Madrid", "Man City", "Arsenal", "Barcelona"]
+        lista_base = ["Time A", "Time B", "Flamengo", "Palmeiras", "Real Madrid", "Man City", "Arsenal", "Barcelona", "Al-Nassr", "Inter Miami", "Brasil", "Argentina"]
 
     c1, c2 = st.columns(2)
     with c1:
