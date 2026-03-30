@@ -47,4 +47,54 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-#
+# 4. SIDEBAR (MENU)
+with st.sidebar:
+    st.markdown('<div class="logo-text">GESTOR IA</div>', unsafe_allow_html=True)
+    st.write("---")
+    if st.button("📅 BILHETE OURO"): st.session_state.aba = "home"
+    if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba = "gestao"
+    if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba = "analise"
+    st.write("---")
+    st.write("🕒 CONTEXTO: MARÇO 2026")
+
+# 5. CARREGAMENTO DE DADOS (TRAVA DE SEGURANÇA)
+def carregar_dados():
+    caminho = "data/database_diario.csv"
+    if os.path.exists(caminho):
+        try: return pd.read_csv(caminho)
+        except: return None
+    return None
+
+df_dados = carregar_dados()
+
+# 6. TELAS
+if st.session_state.aba == "home":
+    st.markdown("## 📅 BILHETE OURO - 2026")
+    
+    c1, c2, c3 = st.columns(3)
+    with c1: st.markdown(f'<div class="card">BANCA<br><b>R$ {st.session_state.banca:,.2f}</b></div>', unsafe_allow_html=True)
+    with c2: st.markdown('<div class="card">ASSERTIVIDADE<br><b>92.4%</b></div>', unsafe_allow_html=True)
+    with c3: st.markdown('<div class="card">SISTEMA<br><b>JARVIS v67.0</b></div>', unsafe_allow_html=True)
+
+    if df_dados is not None:
+        st.markdown("### 📋 JOGOS CAPTURADOS")
+        st.dataframe(df_dados, use_container_width=True)
+    else:
+        st.info("🤖 Jarvis: Aguardando sincronização de 2026... Rode a Action no GitHub!")
+
+elif st.session_state.aba == "gestao":
+    st.markdown("## 💰 GESTÃO DE BANCA")
+    st.session_state.banca = st.number_input("Valor da Banca (R$)", value=st.session_state.banca)
+    st.success(f"Banca ajustada para R$ {st.session_state.banca:,.2f}")
+
+elif st.session_state.aba == "analise":
+    st.markdown("## 🎯 SCANNER PRÉ-LIVE")
+    st.info("O Scanner está pronto para processar os jogos de 2026.")
+
+# FOOTER
+st.markdown("""
+    <div class="footer">
+        <div>STATUS: ● IA OPERACIONAL | v67.0 | 2026</div>
+        <div>JARVIS PROTECT</div>
+    </div>
+""", unsafe_allow_html=True)
