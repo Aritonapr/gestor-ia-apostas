@@ -5,7 +5,7 @@ from datetime import datetime
 import numpy as np
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v62.0 - INTEGRIDADE TOTAL]
+# [PROTOCOLO DE MANUTENÇÃO v62.6 - INTEGRIDADE TOTAL]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -276,7 +276,7 @@ if st.session_state.aba_ativa == "home":
         with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
         with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
         with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-        with h8: draw_card("SISTEMA", "JARVIS v62.0", 100)
+        with h8: draw_card("SISTEMA", "JARVIS v62.6", 100)
         
         exibir_top_20_ia()
         
@@ -289,15 +289,13 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
     # --------------------------------------------------------------------------
-    # ESTRUTURA HIERÁRQUICA FINAL (VERSÃO BLINDADA v62.5)
+    # ESTRUTURA HIERÁRQUICA FINAL (BRASIL PURO)
     # --------------------------------------------------------------------------
     db_hierarquia = {
-        "BRASIL (NACIONAL)": {
-            "CAMPEONATO BRASILEIRO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D"],
-            "COPAS E SUPERCOPA": ["COPA DO BRASIL", "SUPERCOPA DO BRASIL", "COPA DO NORDESTE", "COPA VERDE"]
-        },
-        "BRASIL (ESTADUAIS)": {
-            "ESTADUAIS 2025/26": ["PAULISTÃO", "CARIOCA", "MINEIRO", "GAÚCHO", "PARANAENSE", "CATARINENSE", "BAIANO", "PERNAMBUCANO", "CEARENSE", "GOIANO"]
+        "BRASIL": {
+            "BRASILEIRÃO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D"],
+            "ESTADUAIS": ["PAULISTÃO", "CARIOCA", "MINEIRO", "GAÚCHO", "PARANAENSE", "CATARINENSE", "BAIANO", "PERNAMBUCANO", "CEARENSE", "GOIANO"],
+            "COPAS": ["COPA DO BRASIL", "SUPERCOPA DO BRASIL", "COPA DO NORDESTE", "COPA VERDE"]
         },
         "AMÉRICAS (CONMEBOL & MLS)": {
             "CONTINENTAL (CLUBES AM)": ["COPA LIBERTADORES", "COPA SUL-AMERICANA"],
@@ -475,4 +473,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v62.5</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v62.6</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
