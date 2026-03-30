@@ -38,17 +38,17 @@ if query_params.get("go") == "home":
 
 # --- FUNÇÃO DE CARREGAMENTO DE DADOS (DIRETRIZ GITHUB + CACHE) ---
 def carregar_dados_ia():
-    # URL Bruta do GitHub para garantir dados em tempo real (Substituir pela sua URL real quando necessário)
-    url_diario = "https://raw.githubusercontent.com/SEU_USUARIO/SEU_REPOSITORIO/main/data/database_diario.csv"
     path_local = "data/database_diario.csv"
-    
-    try:
-        # Tenta carregar do GitHub com trava de cache via timestamp
-        df = pd.read_csv(f"{url_diario}?v={datetime.now().timestamp()}", on_bad_lines='skip')
-        return df
-    except:
-        if os.path.exists(path_local):
-            return pd.read_csv(path_local, on_bad_lines='skip')
+    if os.path.exists(path_local):
+        try:
+            # Trava de Cache via timestamp para garantir dados em tempo real
+            df = pd.read_csv(f"{path_local}?v={datetime.now().timestamp()}", on_bad_lines='skip')
+            return df
+        except:
+            try:
+                return pd.read_csv(path_local)
+            except:
+                return None
     return None
 
 df_diario = carregar_dados_ia()
@@ -290,67 +290,74 @@ elif st.session_state.aba_ativa == "analise":
     db_hierarquia = {
         "BRASIL": {
             "BRASILEIRÃO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D"],
-            "ESTADUAIS": ["PAULISTÃO", "CARIOCA", "MINEIRO", "GAÚCHO"],
-            "COPAS": ["COPA DO BRASIL", "COPA DO NORDESTE"]
+            "ESTADUAIS": ["PAULISTÃO", "CARIOCA", "MINEIRO", "GAÚCHO", "PARANAENSE", "CATARINENSE", "BAIANO", "PERNAMBUCANO", "CEARENSE", "GOIANO"],
+            "COPAS": ["COPA DO BRASIL", "SUPERCOPA DO BRASIL", "COPA DO NORDESTE", "COPA VERDE"]
         },
-        "AMÉRICAS": {
-            "CONTINENTAL": ["COPA LIBERTADORES", "COPA SUL-AMERICANA"],
-            "LIGAS": ["CAMPEONATO ARGENTINO", "MLS (EUA)", "LIGA MX"]
+        "AMÉRICAS (CONMEBOL & MLS)": {
+            "CONTINENTAL (CLUBES AM)": ["COPA LIBERTADORES", "COPA SUL-AMERICANA"],
+            "LIGAS NACIONAIS": ["CAMPEONATO ARGENTINO", "MAJOR LEAGUE SOCCER (EUA)", "LIGA MX (MÉXICO)"]
         },
-        "EUROPA (ELITE)": {
-            "LIGAS NACIONAIS": ["PREMIER LEAGUE", "LA LIGA", "SERIE A", "BUNDESLIGA", "LIGUE 1"],
-            "COMPETIÇÕES UEFA": ["CHAMPIONS LEAGUE", "EUROPA LEAGUE", "CONFERENCE LEAGUE"]
+        "EUROPA: LIGAS NACIONAIS (ELITE)": {
+            "AS 5 GRANDES LIGAS": ["PREMIER LEAGUE (INGLÊS)", "LA LIGA (ESPANHOL)", "SERIE A (ITALIANO)", "BUNDESLIGA (ALEMÃO)", "LIGUE 1 (FRANCÊS)"],
+            "OUTRAS LIGAS NACIONAIS": ["CAMPEONATO BELGA", "CHAMPIONSHIP (2ª INGLESA)", "LIGA PORTUGUESA", "EREDIVISIE (HOLANDA)"]
+        },
+        "EUROPA: INTERNACIONAL (UEFA)": {
+            "COMPETIÇÕES DE CLUBES": ["UEFA CHAMPIONS LEAGUE", "UEFA EUROPA LEAGUE", "UEFA CONFERENCE LEAGUE"],
+            "COPAS NACIONAIS": ["FA CUP", "COPA DA LIGA INGLESA", "COPA DO REI (ESPANHA)", "COPA DA ITÁLIA"]
+        },
+        "MUNDO & SELEÇÕES (FIFA)": {
+            "FIFA WORLD CUP": ["COPA DO MUNDO 2026", "ELIMINATÓRIAS COPA 2026"],
+            "CONTINENTAL E LIGAS": ["UEFA EUROCOPA", "UEFA NATIONS LEAGUE", "COPA AMÉRICA", "SAUDI PRO LEAGUE"]
         }
     }
     
     row_f = st.columns(3)
-    with row_f[0]: sel_pais = st.selectbox("🌎 REGIÃO / PAÍS", list(db_hierarquia.keys()))
-    with row_f[1]: sel_grupo = st.selectbox("📂 GRUPO", list(db_hierarquia[sel_pais].keys()))
-    with row_f[2]: sel_comp = st.selectbox("🏆 COMPETIÇÃO", db_hierarquia[sel_pais][sel_grupo])
+    with row_f[0]:
+        sel_pais = st.selectbox("🌎 REGIÃO / PAÍS", list(db_hierarquia.keys()))
+    with row_f[1]:
+        sel_grupo = st.selectbox("📂 GRUPO", list(db_hierarquia[sel_pais].keys()))
+    with row_f[2]:
+        sel_comp = st.selectbox("🏆 COMPETIÇÃO", db_hierarquia[sel_pais][sel_grupo])
 
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
-    # --- LÓGICA DE FILTRAGEM POR CAMPEONATO (EVITA MISTURA DE TIMES) ---
-    lista_casa = ["Selecione..."]
+    # --- LÓGICA DE FILTRAGEM POR PASTA/CAMPEONATO ---
+    lista_base = ["Selecione..."]
     if df_diario is not None:
         try:
-            # Identifica colunas de Liga e Time
             col_comp = next((c for c in df_diario.columns if c.upper() in ['LIGA', 'COMPETIÇÃO', 'COMPETICAO', 'GRUPO']), None)
             col_casa = next((c for c in df_diario.columns if c.upper() in ['CASA', 'HOME']), 'CASA')
             col_fora = next((c for c in df_diario.columns if c.upper() in ['FORA', 'AWAY']), 'FORA')
             
             if col_comp:
-                # Busca flexível: Pega a primeira palavra da competição selecionada para filtrar no CSV
-                termo_busca = sel_comp.split(' ')[0].upper()
-                df_filtrado = df_diario[df_diario[col_comp].astype(str).str.upper().str.contains(termo_busca, na=False)]
+                # Pega a primeira palavra da seleção (ex: "PREMIER") para filtrar no CSV
+                termo = sel_comp.split(' ')[0].upper()
+                filtro = df_diario[df_diario[col_comp].astype(str).str.upper().str.contains(termo, na=False)]
                 
-                if not df_filtrado.empty:
-                    # Coleta apenas os times que pertencem àquela liga filtrada
-                    times_na_liga = sorted(list(set(df_filtrado[col_casa].unique().tolist() + df_filtrado[col_fora].unique().tolist())))
-                    lista_casa = times_na_liga
-        except Exception:
+                if not filtro.empty:
+                    # Coleta apenas times daquela competição específica
+                    lista_base = sorted(list(set(filtro[col_casa].unique().tolist() + filtro[col_fora].unique().tolist())))
+        except:
             pass
 
-    # Fallback caso não encontre no CSV (Mantendo a separação lógica mesmo no manual)
-    if len(lista_casa) <= 1:
-        if "BRASILEIRÃO" in sel_grupo: lista_casa = ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Galo", "Grêmio", "Botafogo"]
-        elif "PREMIER LEAGUE" in sel_comp: lista_casa = ["Arsenal", "Man City", "Liverpool", "Chelsea", "Man United"]
-        elif "LA LIGA" in sel_comp: lista_casa = ["Real Madrid", "Barcelona", "Atlético Madrid"]
-        else: lista_casa = ["Time A", "Time B", "Time C"]
+    # Fallback caso não haja dados no CSV para o campeonato selecionado
+    if len(lista_base) <= 1:
+        if "BRASILEIRÃO" in sel_grupo: lista_base = ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Galo", "Grêmio", "Botafogo"]
+        elif "PREMIER" in sel_comp: lista_base = ["Arsenal", "Man City", "Liverpool", "Chelsea", "Man United", "Tottenham"]
+        elif "LA LIGA" in sel_comp: lista_base = ["Real Madrid", "Barcelona", "Atlético Madrid"]
+        else: lista_base = ["Time A", "Time B", "Time C", "Time D"]
 
     c1, c2 = st.columns(2)
     with c1:
-        t_casa = st.selectbox("🏠 TIME DA CASA", lista_casa)
+        t_casa = st.selectbox("🏠 TIME DA CASA", lista_base)
     with c2:
-        # LÓGICA ANTI-ESPELHO: O Time da Casa não pode aparecer como Time de Fora
-        lista_fora = [t for t in lista_casa if t != t_casa]
-        t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora if lista_fora else ["Selecione..."])
+        # LÓGICA ANTI-ESPELHO: Filtra o time da casa da lista de fora
+        lista_fora = [t for t in lista_base if t != t_casa]
+        t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora if lista_fora else lista_base)
 
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-        
-        # Cruzamento de dados com database_diario para validação
         is_real = False
         if df_diario is not None:
             col_c = next((c for c in df_diario.columns if c.upper() in ['CASA', 'HOME']), 'CASA')
@@ -376,7 +383,7 @@ elif st.session_state.aba_ativa == "analise":
             </div>
         """, unsafe_allow_html=True)
         
-        st.markdown(f<h3 style='color:white; text-align:center; font-weight: 800; margin-bottom: 30px;'>{m['casa']} vs {m['fora']}</h3>, unsafe_allow_html=True)
+        st.markdown(f"<h3 style='color:white; text-align:center; font-weight: 800; margin-bottom: 30px;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
         
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
