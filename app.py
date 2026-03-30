@@ -5,7 +5,7 @@ from datetime import datetime
 import numpy as np
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v63.0 - EVOLUÇÃO BIG DATA 2026]
+# [PROTOCOLO DE MANUTENÇÃO v63.1 - CORREÇÃO SINTAXE E EVOLUÇÃO 2026]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -80,8 +80,8 @@ def processar_ia_bot():
                 # BUSCA NO HISTÓRICO DE 5 TEMPORADAS (BUSCA FLEXÍVEL)
                 confianca_real = "85%" # Default
                 if df_historico is not None:
-                    hist_casa = df_historico[df_historico['CASA'].astype(str).str.contains(casa_nome[:5], case=False, na=False)]
-                    if len(hist_casa) > 10: confianca_real = "94.8%" # Alta amostragem
+                    hist_casa = df_historico[df_historico['CASA'].astype(str).str.contains(casa_nome[:4], case=False, na=False)]
+                    if len(hist_casa) > 5: confianca_real = "94.8%" # Alta amostragem
                 
                 vips.append({
                     "C": casa_nome,
@@ -283,7 +283,7 @@ if st.session_state.aba_ativa == "home":
         h1, h2, h3, h4 = st.columns(4)
         with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
         with h2: draw_card("ASSERTIVIDADE", "94.8%", 94)
-        with h3: draw_card("SISTEMA", "JARVIS v63.0", 100)
+        with h3: draw_card("SISTEMA", "JARVIS v63.1", 100)
         with h4: draw_card("IA STATUS", "ONLINE", 100)
         
         h5, h6, h7, h8 = st.columns(4)
@@ -359,7 +359,7 @@ elif st.session_state.aba_ativa == "analise":
         conf_algoritmo = "94.2%"
         is_real = False
         if df_historico is not None:
-            check = df_historico[df_historico['CASA'].astype(str).str.contains(t_casa[:5], case=False, na=False)]
+            check = df_historico[df_historico['CASA'].astype(str).str.contains(t_casa[:4], case=False, na=False)]
             if not check.empty:
                 is_real = True
                 conf_algoritmo = "96.5%"
@@ -388,7 +388,7 @@ elif st.session_state.aba_ativa == "analise":
             </div>
         """, unsafe_allow_html=True)
         
-        st.markdown(f<h3 style='color:white; text-align:center; font-weight: 800; margin-bottom: 30px;'>{m['casa']} vs {m['fora']}</h3>, unsafe_allow_html=True)
+        st.markdown(f"<h3 style='color:white; text-align:center; font-weight: 800; margin-bottom: 30px;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
         
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
@@ -511,4 +511,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v63.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v63.1</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
