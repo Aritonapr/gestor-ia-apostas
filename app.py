@@ -5,49 +5,45 @@ from datetime import datetime
 import numpy as np
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v63.0 - BLINDAGEM TOTAL]
-# DIRETRIZ 1: INICIALIZAÇÃO IMEDIATA (EVITA ERRO DE MEMÓRIA)
-# DIRETRIZ 2: LEITURA SEGURA DE CSV (EVITA ERRO DE COLUNA)
-# DIRETRIZ 3: DESIGN ZERO WHITE PRO IMUTÁVEL
+# [PROTOCOLO DE MANUTENÇÃO v63.1 - BLINDAGEM DE AÇO]
+# DIRETRIZ: INICIALIZAÇÃO À PROVA DE FALHAS E ZERO WHITE PRO
 # ==============================================================================
 
-# 1. CONFIGURAÇÃO DE PÁGINA
+# 1. CONFIGURAÇÃO DE PÁGINA (Sempre a primeira linha de código)
 st.set_page_config(
     page_title="GESTOR IA - TRADING PRO", 
     layout="wide", 
     initial_sidebar_state="expanded"
 )
 
-# --- INICIALIZAÇÃO DE MEMÓRIA (EXECUTAR ANTES DE TUDO) ---
-def inicializar_estado():
-    chaves = {
-        'aba_ativa': "home",
-        'historico_calls': [],
-        'analise_bloqueada': None,
-        'banca_total': 1000.00,
-        'stake_padrao': 1.0,
-        'meta_diaria': 3.0,
-        'stop_loss': 5.0,
-        'top_20_ia': []
-    }
-    for chave, valor in chaves.items():
-        if chave not in st.session_state:
-            st.session_state[chave] = valor
+# --- INICIALIZAÇÃO DE MEMÓRIA (BLINDAGEM TOTAL) ---
+# Garantimos que todas as variáveis existam antes de qualquer outra linha rodar
+if 'aba_ativa' not in st.session_state:
+    st.session_state.aba_ativa = "home"
+if 'historico_calls' not in st.session_state:
+    st.session_state.historico_calls = []
+if 'analise_bloqueada' not in st.session_state:
+    st.session_state.analise_bloqueada = None
+if 'banca_total' not in st.session_state:
+    st.session_state.banca_total = 1000.00
+if 'stake_padrao' not in st.session_state:
+    st.session_state.stake_padrao = 1.0
+if 'meta_diaria' not in st.session_state:
+    st.session_state.meta_diaria = 3.0
+if 'stop_loss' not in st.session_state:
+    st.session_state.stop_loss = 5.0
+if 'top_20_ia' not in st.session_state:
+    st.session_state.top_20_ia = []
 
-inicializar_estado()
-
-# --- FUNÇÃO DE CARREGAMENTO SEGURO (TRAVA DE SEGURANÇA) ---
+# --- FUNÇÃO DE CARREGAMENTO SEGURO (NÃO QUEBRA SE O ARQUIVO ESTIVER SENDO CRIADO) ---
 def carregar_dados_ia():
     path_local = "data/database_diario.csv"
     if os.path.exists(path_local):
         try:
             df = pd.read_csv(path_local)
-            # Verifica se as colunas essenciais existem para evitar KeyError
-            colunas_obrigatorias = ['CASA', 'FORA', 'CONF', 'STATUS']
-            if all(col in df.columns for col in colunas_obrigatorias):
+            # Verifica se o arquivo tem as colunas que o Jarvis v63.0 precisa
+            if 'CASA' in df.columns and 'FORA' in df.columns:
                 return df
-            else:
-                return None
         except:
             return None
     return None
@@ -55,7 +51,7 @@ def carregar_dados_ia():
 df_diario = carregar_dados_ia()
 
 # ==============================================================================
-# LÓGICA DO BOT (BACK-END): MOTOR DE PROCESSAMENTO
+# LÓGICA DO BOT: PROCESSAMENTO DE DADOS DE 2026
 # ==============================================================================
 
 def processar_ia_bot():
@@ -63,23 +59,25 @@ def processar_ia_bot():
         vips = []
         try:
             temp_df = df_diario.copy()
-            if 'CONF' in temp_df.columns:
-                temp_df['CONF_NUM'] = temp_df['CONF'].astype(str).str.replace('%', '').astype(float)
-                vips_df = temp_df.sort_values(by='CONF_NUM', ascending=False).head(20)
-                
-                for _, jogo in vips_df.iterrows():
-                    vips.append({
-                        "C": jogo.get('CASA', 'Time A'),
-                        "F": jogo.get('FORA', 'Time B'),
-                        "P": f"{jogo.get('CONF_NUM', 0)}%",
-                        "G": jogo.get('GOLS', 'OVER 1.5'),
-                        "CT": "4.5+ NO TOTAL",
-                        "E": f"{jogo.get('CANTOS', '9.5 total')}",
-                        "TM": f"{jogo.get('TMETA', '16+')}",
-                        "CH": f"{jogo.get('CHUTES', '9+ GOL')}",
-                        "DF": f"{jogo.get('DEFESAS', '7+')}"
-                    })
-                st.session_state.top_20_ia = vips
+            # Tratamento de confiança para não dar erro de coluna
+            col_conf = 'CONF' if 'CONF' in temp_df.columns else temp_df.columns[-1]
+            
+            temp_df['CONF_NUM'] = temp_df[col_conf].astype(str).str.replace('%', '').str.extract('(\d+)').astype(float)
+            vips_df = temp_df.sort_values(by='CONF_NUM', ascending=False).head(20)
+            
+            for _, jogo in vips_df.iterrows():
+                vips.append({
+                    "C": jogo.get('CASA', 'Time A'),
+                    "F": jogo.get('FORA', 'Time B'),
+                    "P": f"{int(jogo.get('CONF_NUM', 0))}%",
+                    "G": jogo.get('GOLS', 'OVER 1.5'),
+                    "CT": "4.5+ NO TOTAL",
+                    "E": f"{jogo.get('CANTOS', '9.5 total')}",
+                    "TM": f"{jogo.get('TMETA', '16+')}",
+                    "CH": f"{jogo.get('CHUTES', '9+ GOL')}",
+                    "DF": f"{jogo.get('DEFESAS', '7+')}"
+                })
+            st.session_state.top_20_ia = vips
         except:
             pass
 
@@ -91,12 +89,16 @@ processar_ia_bot()
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    
     ::-webkit-scrollbar { display: none !important; }
+    * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
+
     html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp {
         background-color: #0b0e11 !important;
         font-family: 'Inter', sans-serif;
     }
-    header, [data-testid="stHeader"] { display: none !important; }
+
+    header, [data-testid="stHeader"] { display: none !important; height: 0px !important; }
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
     
@@ -106,6 +108,7 @@ st.markdown("""
         display: flex; align-items: center; justify-content: space-between; 
         padding: 0 40px !important; z-index: 1000000; 
     }
+    
     .header-left { display: flex; align-items: center; gap: 25px; }
     .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; text-decoration: none;}
     .nav-links { display: flex; gap: 22px; align-items: center; }
@@ -136,7 +139,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. SIDEBAR E HEADER
+# 3. SIDEBAR E HEADER (FIXO)
 with st.sidebar:
     st.markdown("""
         <div class="betano-header">
@@ -159,7 +162,6 @@ with st.sidebar:
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "analise"
     if st.button("📡 SCANNER EM TEMPO REAL"): st.session_state.aba_ativa = "live"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
-    if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
     if st.button("📅 BILHETE OURO"): st.session_state.aba_ativa = "home"
 
 def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, #06b6d4)"):
@@ -174,7 +176,7 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 4. LÓGICA DE TELAS
+# 4. LÓGICA DE TELAS (RESPEITANDO ABA_ATIVA)
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
@@ -184,7 +186,7 @@ if st.session_state.aba_ativa == "home":
         with h1: draw_card("BANCA ATUAL", f"R$ {st.session_state.banca_total:,.2f}", 100)
         with h2: draw_card("ASSERTIVIDADE", "92.4%", 92)
         with h3: draw_card("SUGESTÃO", "OVER 2.5", 88)
-        with h4: draw_card("SISTEMA", "JARVIS v63.0", 100)
+        with h4: draw_card("SISTEMA", "JARVIS v63.1", 100)
         
         if st.session_state.top_20_ia:
             st.markdown("<h4 style='color:#06b6d4; margin-top:30px;'>🤖 TOP 20 ANALISES IA - 2026</h4>", unsafe_allow_html=True)
@@ -195,8 +197,8 @@ if st.session_state.aba_ativa == "home":
         st.markdown("### 📋 GRADE DE JOGOS SINCRONIZADA")
         st.dataframe(df_diario, use_container_width=True, hide_index=True)
     else:
-        st.info("🤖 Jarvis: O robô de 2026 está capturando os jogos agora. Aguarde 1 minuto e atualize a página.")
-        st.image("https://i.gifer.com/ZZ5H.gif", width=50) # Gif discreto de loading
+        st.info("🤖 Jarvis: Sincronizando com a internet de 2026... Aguarde o robô do GitHub terminar.")
+        st.image("https://i.gifer.com/ZZ5H.gif", width=40)
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA</div>""", unsafe_allow_html=True)
@@ -214,6 +216,6 @@ elif st.session_state.aba_ativa == "analise":
         if st.button("⚡ ANALISAR AGORA"):
             st.success(f"Análise de {t_casa} x {t_fora} concluída para 2026!")
     else:
-        st.warning("Aguardando banco de dados...")
+        st.warning("🤖 Jarvis: Sem dados para análise no momento.")
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v63.0 | 2026</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v63.1 | 2026</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
