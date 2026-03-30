@@ -318,7 +318,6 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
-    # --- MOTOR DE FILTRAGEM BLINDADO (LEAGUE TO TEAM ISOLATION) ---
     lista_base = []
     if df_diario is not None:
         try:
@@ -332,7 +331,6 @@ elif st.session_state.aba_ativa == "analise":
                     lista_base = sorted(list(set(filtro[col_casa].unique().tolist() + filtro[col_fora].unique().tolist())))
         except: pass
 
-    # --- DICIONÁRIO GLOBAL DE ELITE (FILTRAGEM POR PASTA) ---
     if not lista_base:
         if "BRASIL" in sel_pais:
             lista_base = ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Galo", "Grêmio", "Botafogo", "Fluminense", "Internacional", "Cruzeiro", "Vasco", "Bahia", "Fortaleza", "Athletico-PR", "Santos"]
@@ -349,7 +347,6 @@ elif st.session_state.aba_ativa == "analise":
     with c1:
         t_casa = st.selectbox("🏠 TIME DA CASA", lista_base)
     with c2:
-        # LÓGICA ANTI-ESPELHO (TRAVA FINAL)
         lista_fora = [t for t in lista_base if t != t_casa]
         t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora)
 
@@ -422,11 +419,18 @@ elif st.session_state.aba_ativa == "gestao":
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
+    # Linha 1 de KPIs
     l1, l2, l3, l4 = st.columns(4)
     with l1: draw_card("PRESSÃO CASA", "88%", 88)
     with l2: draw_card("ATAQUES/5m", "14", 70)
     with l3: draw_card("POSSE BOLA", "65%", 65)
     with l4: draw_card("GOL PROB", "90%", 90)
+    # Linha 2 de KPIs
+    l5, l6, l7, l8 = st.columns(4)
+    with l5: draw_card("CANTOS LIVE", "12", 85)
+    with l6: draw_card("CARTÕES", "4", 50)
+    with l7: draw_card("PERIGO ATAQUE", "ALTO", 95)
+    with l8: draw_card("IA CONFIANÇA", "94.2%", 94)
     
     st.markdown("<h4 style='color:#06b6d4; margin-top:30px;'>🎮 MONITORAMENTO DE PARTIDAS EM TEMPO REAL</h4>", unsafe_allow_html=True)
     dados_live = {
@@ -441,27 +445,48 @@ elif st.session_state.aba_ativa == "live":
 
 elif st.session_state.aba_ativa == "vencedores":
     st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
+    # Linha 1 de KPIs
     v1, v2, v3, v4 = st.columns(4)
     with v1: draw_card("FAVORITO 1", "Brasil", 45)
     with v2: draw_card("FAVORITO 2", "França", 38)
     with v3: draw_card("FAVORITO 3", "Espanha", 25)
     with v4: draw_card("ZEBRA PROB", "Marrocos", 12)
+    # Linha 2 de KPIs
+    v5, v6, v7, v8 = st.columns(4)
+    with v5: draw_card("MELHOR ATAQUE", "Alemanha", 88)
+    with v6: draw_card("MELHOR DEFESA", "Itália", 92)
+    with v7: draw_card("PROJEÇÃO GOLS", "3.2 p/j", 75)
+    with v8: draw_card("ODDS VALOR", "Inglaterra", 60)
 
 elif st.session_state.aba_ativa == "gols":
     st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>", unsafe_allow_html=True)
+    # Linha 1 de KPIs
     g1, g2, g3, g4 = st.columns(4)
     with g1: draw_card("OVER 0.5 HT", "82%", 82)
     with g2: draw_card("OVER 1.5 FT", "75%", 75)
     with g3: draw_card("AMBAS MARCAM", "61%", 61)
     with g4: draw_card("UNDER 3.5", "90%", 90)
+    # Linha 2 de KPIs
+    g5, g6, g7, g8 = st.columns(4)
+    with g5: draw_card("OVER 2.5 FT", "58%", 58)
+    with g6: draw_card("GOLS CASA", "1.5+", 70)
+    with g7: draw_card("GOLS FORA", "0.5+", 85)
+    with g8: draw_card("BTTS NO", "39%", 39)
 
 elif st.session_state.aba_ativa == "escanteios":
     st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
+    # Linha 1 de KPIs
     e1, e2, e3, e4 = st.columns(4)
     with e1: draw_card("OVER 8.5", "88%", 88)
     with e2: draw_card("OVER 10.5", "62%", 62)
     with e3: draw_card("CANTOS HT", "4.5+", 70)
     with e4: draw_card("CORNER RACE", "Time A", 55)
+    # Linha 2 de KPIs
+    e5, e6, e7, e8 = st.columns(4)
+    with e5: draw_card("UNDER 12.5", "92%", 92)
+    with e6: draw_card("CANTOS CASA", "5.5+", 75)
+    with e7: draw_card("CANTOS FORA", "4.5+", 65)
+    with e8: draw_card("RACE TO 7", "Ninguém", 40)
 
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
