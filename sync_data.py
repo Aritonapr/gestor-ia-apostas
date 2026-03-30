@@ -20,7 +20,7 @@ def calcular_confianca_jarvis(time_casa, df_hist):
     return f"{min(max(conf, 65.0), 98.4)}%"
 
 def sync():
-    # A PONTE: Pegamos a hora real (2025) mas carimbamos como 29/03/2026
+    # A PONTE: Pegamos a hora real mas carimbamos como 29/03/2026 para o Operador
     now_real = datetime.now()
     data_ponte = "29/03/2026 " + now_real.strftime("%H:%M")
     
@@ -29,7 +29,7 @@ def sync():
     path_hist = "data/historico_5_temporadas.csv"
     df_hist = pd.read_csv(path_hist) if os.path.exists(path_hist) else None
 
-    # FONTE 1: API GLOBO ESPORTE (REAL-TIME BRASIL/MUNDO)
+    # FONTE 1: API GLOBO ESPORTE (REAL-TIME PROFISSIONAL)
     url_ge = "https://api.globoesporte.globo.com/tabela/jogos-do-dia"
     
     lista_final = []
@@ -44,8 +44,8 @@ def sync():
                     fora = jogo['equipes']['visitante']['nome_popular']
                     liga = jogo['campeonato']['nome'].upper()
                     status_raw = jogo['status'] 
-                    hora = jogo['hora_real'] if jogo.get('hora_real') else "HOJE"
-                    status_final = "AO VIVO" if status_raw == "andamento" else hora.upper()
+                    hora = jogo.get('hora_real', 'HOJE')
+                    status_final = "AO VIVO" if status_raw == "andamento" else str(hora).upper()
                     
                     conf = calcular_confianca_jarvis(casa, df_hist)
                     
@@ -66,15 +66,14 @@ def sync():
     except Exception as e:
         print(f"⚠️ Erro na Fonte API: {e}")
 
-    # --- SALVAMENTO FINAL (SEM SIMULAÇÕES) ---
+    # --- SALVAMENTO FINAL (LIMPEZA DE FANTASMAS) ---
     if lista_final:
         df = pd.DataFrame(lista_final).drop_duplicates(subset=['CASA', 'FORA'])
         if not os.path.exists('data'): os.makedirs('data')
         df.to_csv("data/database_diario.csv", index=False)
-        print(f"✅ SUCESSO: {len(df)} jogos REAIS capturados agora!")
+        print(f"✅ SUCESSO: {len(df)} jogos REAIS capturados e sincronizados!")
     else:
-        # Se for madrugada ou não houver jogos, limpamos a tabela
-        print("⚠️ Sem jogos acontecendo no mundo real agora. Limpando tabela.")
+        print("⚠️ Sem jogos na API agora. Limpando tabela para segurança.")
         df_vazio = pd.DataFrame(columns=["STATUS","LIGA","CASA","FORA","GOLS","CONF","CANTOS","CHUTES","DEFESAS","TMETA","ULTIMA_SYNC"])
         df_vazio.to_csv("data/database_diario.csv", index=False)
 
