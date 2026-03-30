@@ -1,8 +1,10 @@
 name: Automação Diária Jarvis
+
 on:
   schedule:
     - cron: '0 * * * *'
   workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -11,18 +13,25 @@ jobs:
     steps:
       - name: 📥 Clonar Repositório
         uses: actions/checkout@v4
+
       - name: 🐍 Configurar Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
+
       - name: 🛠️ Instalar Dependências
         run: pip install pandas requests beautifulsoup4 lxml
+
+      - name: 📂 Baixar Histórico 5 Temporadas (2021-2025)
+        run: python atualizar_historico.py
+
       - name: 🤖 Rodar Jarvis (sync_data.py)
         run: python sync_data.py
+
       - name: 💾 Salvar no GitHub
         run: |
           git config --global user.name "Jarvis Bot"
           git config --global user.email "jarvis@bot.com"
-          git add data/database_diario.csv
-          git commit -m "📊 Sincronia Temporal v63.0" || echo "Sem mudanças"
+          git add data/database_diario.csv data/historico_5_temporadas.csv
+          git commit -m "📊 Sincronia Temporal v63.0 - 5 Temporadas" || echo "Sem mudanças"
           git push
