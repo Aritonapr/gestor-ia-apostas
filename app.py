@@ -85,7 +85,6 @@ def processar_ia_bot():
         except Exception:
             pass
 
-# Executa o bot silenciosamente
 processar_ia_bot()
 
 def exibir_top_20_ia():
@@ -262,7 +261,7 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 4. LÓGICA DE TELAS (RESPEITANDO AS DIRETRIZES DE DESIGN)
+# 4. LÓGICA DE TELAS (APARÊNCIA IMUTÁVEL)
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
@@ -278,7 +277,7 @@ if st.session_state.aba_ativa == "home":
         with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
         with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
         with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-        with h8: draw_card("SISTEMA", "JARVIS v60.0", 100)
+        with h8: draw_card("SISTEMA", "JARVIS v62.0", 100)
         
         exibir_top_20_ia()
         
@@ -290,60 +289,74 @@ if st.session_state.aba_ativa == "home":
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    # BANCOS DE DADOS DE UI (PADRÃO)
+    # --------------------------------------------------------------------------
+    # BANCO DE DADOS DE COMPETIÇÕES (ATUALIZADO v62.0)
+    # --------------------------------------------------------------------------
     db_paises = {
-        "BRASIL": ["BRASILEIRÃO", "BRASILEIRÃO SUB-20", "ESTADUAIS"],
-        "INGLATERRA": ["PREMIER LEAGUE", "CHAMPIONSHIP"],
-        "ESPANHA": ["LA LIGA"],
-        "ITÁLIA": ["SERIE A"],
-        "ALEMANHA": ["BUNDESLIGA"],
-        "FRANÇA": ["LIGUE 1"],
-        "INTERNACIONAL": ["CHAMPIONS LEAGUE", "LIGA EUROPA"]
+        "BRASIL": [
+            "BRASILEIRÃO: SÉRIE A", "BRASILEIRÃO: SÉRIE B", "BRASILEIRÃO: SÉRIE C", "BRASILEIRÃO: SÉRIE D",
+            "COPA DO BRASIL", "SUPERCOPA DO BRASIL", "COPA DO NORDESTE", 
+            "PAULISTÃO", "CARIOCA", "MINEIRO", "GAÚCHO"
+        ],
+        "INTERNACIONAL (CLUBES BR)": [
+            "COPA LIBERTADORES", "COPA SUL-AMERICANA"
+        ],
+        "INGLATERRA": [
+            "PREMIER LEAGUE", "COPA DA LIGA INGLESA", "COPA DA INGLATERRA"
+        ],
+        "ESPANHA": [
+            "LA LIGA", "COPA DO REI DA ESPANHA"
+        ],
+        "ITÁLIA": [
+            "CAMPEONATO ITALIANO (SERIE A)", "COPA DA ITÁLIA"
+        ],
+        "ALEMANHA": [
+            "BUNDESLIGA"
+        ],
+        "FRANÇA": [
+            "LIGUE 1"
+        ],
+        "EUROPA (UEFA)": [
+            "UEFA CHAMPIONS LEAGUE", "UEFA EUROPA LEAGUE", "UEFA CONFERENCE LEAGUE", "EUROCOPA"
+        ]
     }
     
-    # 1. LINHA DE SELEÇÃO DE LIGA (IDENTIFICAÇÃO DINÂMICA)
     row_f = st.columns(3)
     with row_f[0]:
         sel_pais = st.selectbox("🌎 REGIÃO / PAÍS", list(db_paises.keys()))
     with row_f[1]:
-        sel_grupo = st.selectbox("📂 GRUPO", db_paises.get(sel_pais, ["BRASILEIRÃO"]))
+        sel_comp = st.selectbox("🏆 COMPETIÇÃO", db_paises[sel_pais])
     with row_f[2]:
-        sel_comp = st.selectbox("🏆 COMPETIÇÃO", ["Série A", "Série B", "Geral"])
+        sel_temporada = st.selectbox("📅 TEMPORADA", ["2025/2026", "2024/2025"])
 
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
-    # LÓGICA DE FILTRAGEM SEGURA (EVITA KEYERROR)
-    lista_times = ["Selecione..."]
+    lista_base = ["Selecione..."]
     if df_diario is not None:
         try:
-            # Busca flexível por colunas de Pais/Liga
-            col_p = next((c for c in df_diario.columns if c.upper() in ['PAIS', 'PAÍS', 'REGION']), None)
-            col_l = next((c for c in df_diario.columns if c.upper() in ['LIGA', 'GRUPO', 'LEAGUE']), None)
-            col_c = next((c for c in df_diario.columns if c.upper() in ['CASA', 'HOME', 'HOMETEAM']), 'CASA')
+            col_comp = next((c for c in df_diario.columns if c.upper() in ['LIGA', 'COMPETIÇÃO', 'COMPETICAO', 'GRUPO']), None)
+            col_casa = next((c for c in df_diario.columns if c.upper() in ['CASA', 'TIME_CASA', 'HOME']), 'CASA')
             
-            if col_p and col_l:
-                filtro = df_diario[(df_diario[col_p].astype(str).str.contains(sel_pais, case=False, na=False)) & 
-                                   (df_diario[col_l].astype(str).str.contains(sel_grupo, case=False, na=False))]
+            if col_comp:
+                filtro = df_diario[df_diario[col_comp].astype(str).str.contains(sel_comp.split(':')[0], case=False, na=False)]
                 if not filtro.empty:
-                    lista_times = sorted(filtro[col_c].unique().tolist())
+                    lista_base = sorted(filtro[col_casa].unique().tolist())
         except:
             pass
-            
-    if len(lista_times) <= 1:
-        lista_times = ["Athletico-PR", "Atlético-MG", "Flamengo", "Palmeiras", "Corinthians", "São Paulo"]
+
+    if len(lista_base) <= 1:
+        lista_base = ["Time A", "Time B", "Flamengo", "Palmeiras", "Real Madrid", "Man City", "Arsenal", "Barcelona"]
 
     c1, c2 = st.columns(2)
     with c1:
-        t_casa = st.selectbox("🏠 TIME DA CASA", lista_times)
+        t_casa = st.selectbox("🏠 TIME DA CASA", lista_base)
     with c2:
-        lista_fora = [t for t in lista_times if t != t_casa]
-        t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora if lista_fora else lista_times)
+        lista_fora = [t for t in lista_base if t != t_casa]
+        t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora if lista_fora else lista_base)
 
-    # BOTÃO DE EXECUÇÃO
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-        # Lógica de validação do status "Filé Mignon"
         is_real = False
         if df_diario is not None:
             col_c = next((c for c in df_diario.columns if c.upper() in ['CASA', 'HOME']), 'CASA')
@@ -359,7 +372,6 @@ elif st.session_state.aba_ativa == "analise":
             "luz": "🟢" if is_real else "🔴", "motivo": status_txt, "cor": cor_luz, "confia": "94.2%"
         }
     
-    # EXIBIÇÃO DO RESULTADO (CONFORME IMAGEM DE REFERÊNCIA)
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
         st.markdown(f"""
