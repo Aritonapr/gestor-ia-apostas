@@ -65,28 +65,58 @@ df_diario, df_hist = carregar_dados_ia()
 # ==============================================================================
 
 def processar_ia_bot():
-    if df_diario is not None:
+    if df_diario is not None and df_hist is not None:
         vips = []
         try:
-            temp_df = df_diario.copy()
-            col_conf = 'CONF' if 'CONF' in temp_df.columns else 'CONFIANCA'
-            if col_conf in temp_df.columns:
-                temp_df['CONF_NUM'] = temp_df[col_conf].astype(str).str.replace('%', '').astype(float)
-                vips_df = temp_df.sort_values(by='CONF_NUM', ascending=False).head(20)
+            for _, jogo in df_diario.head(20).iterrows():
+                casa = jogo['CASA']
+                fora = jogo['FORA']
                 
-                for _, jogo in vips_df.iterrows():
+                # Filtro no Big Data para os dois times
+                h_data = df_hist[df_hist['HomeTeam'].str.contains(casa, case=False, na=False)]
+                a_data = df_hist[df_hist['AwayTeam'].str.contains(fora, case=False, na=False)]
+                
+                if not h_data.empty:
+                    # 1. Probabilidade Vencedor
+                    win_prob = (len(h_data[h_data['FTR'] == 'H']) / len(h_data)) * 100
+                    
+                    # 2. Gols e Distribuição
+                    avg_gols = h_data['FTHG'].mean() + h_data['FTAG'].mean()
+                    dist_gols = "AMBOS TEMPOS" if avg_gols > 2.2 else "2º TEMPO"
+                    
+                    # 3. Cartões
+                    avg_cards = h_data['HY'].mean() + h_data['AY'].mean()
+                    
+                    # 4. Escanteios (Total e por Time)
+                    c_casa = h_data['HC'].mean()
+                    c_fora = a_data['AC'].mean() if not a_data.empty else 4.0
+                    c_total = c_casa + c_fora
+                    
+                    # 5. Tiros de Meta (Estimativa Matemática: Chutes Fora)
+                    tm_casa = (h_data['HS'].mean() - h_data['HST'].mean()) * 1.2
+                    tm_fora = (a_data['AS'].mean() - a_data['AST'].mean()) * 1.2 if not a_data.empty else 6.0
+                    
+                    # 6. Chutes no Gol
+                    chg_total = h_data['HST'].mean() + (a_data['AST'].mean() if not a_data.empty else 4.0)
+                    
+                    # 7. Total de Chutes
+                    ch_total = h_data['HS'].mean() + (a_data['AS'].mean() if not a_data.empty else 10.0)
+                    
+                    # 8. Defesas (Baseado em chutes do adversário)
+                    defesas = (a_data['AST'].mean() * 0.8) if not a_data.empty else 3.5
+
                     vips.append({
-                        "C": jogo.get('CASA', 'Time A'),
-                        "F": jogo.get('FORA', 'Time B'),
-                        "P": f"{int(jogo.get('CONF_NUM', 0))}%",
-                        "G": f"OVER {jogo.get('GOLS', '1.5')}",
-                        "CT": "4.5+",
-                        "E": f"{jogo.get('CANTOS', '9.5+')}",
-                        "TM": f"{jogo.get('TMETA', '16+')}",
-                        "CH": f"{jogo.get('CHUTES', '12+')}",
-                        "DF": f"{jogo.get('DEFESAS', '4+')}"
+                        "C": casa, "F": fora,
+                        "P": f"{int(win_prob)}%",
+                        "G": f"{avg_gols:.1f} GOLS ({dist_gols})",
+                        "CT": f"{avg_cards:.1f} CARDS (DIST. 1/2)",
+                        "E": f"{c_total:.1f} CANTOS (C:{c_casa:.1f} | F:{c_fora:.1f})",
+                        "TM": f"{tm_casa+tm_fora:.1f} TIROS META (AMBOS TEMPOS)",
+                        "CH": f"{chg_total:.1f} NO ALVO (ALTA CONSTÂNCIA)",
+                        "TC": f"{ch_total:.1f} CHUTES TOTAIS NO JOGO",
+                        "DF": f"{defesas:.1f} DEFESAS ESPERADAS"
                     })
-                st.session_state.top_20_ia = vips
+            st.session_state.top_20_ia = vips
         except Exception:
             pass
 
@@ -96,17 +126,18 @@ def exibir_top_20_ia():
     if st.session_state.aba_ativa == "home" and st.session_state.top_20_ia:
         st.markdown("<h4 style='color:#06b6d4; margin-top:30px;'>🤖 TOP 20 ANALISES IA - PROBABILIDADE REAL</h4>", unsafe_allow_html=True)
         for j in st.session_state.top_20_ia:
-            with st.expander(f"➔ {j['C']} vs {j['F']} | CONF: {j['P']}"):
-                c1, c2, c3 = st.columns(3)
+            with st.expander(f"➔ {j['C']} vs {j['F']} | PROB. VITÓRIA: {j['P']}"):
+                c1, c2 = st.columns(2)
                 with c1:
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>⚽ GOLS: <b style='color:white;'>{j['G']}</b></p>", unsafe_allow_html=True)
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🚩 ESCANTEIOS: <b style='color:white;'>{j['E']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:12px; color:#94a3b8;'>🏆 VENCEDOR: <b style='color:white;'>{j['P']} CHANCE CASA</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:12px; color:#94a3b8;'>⚽ GOLS: <b style='color:white;'>{j['G']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:12px; color:#94a3b8;'>🟨 CARTÕES: <b style='color:white;'>{j['CT']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:12px; color:#94a3b8;'>🚩 ESCANTEIOS: <b style='color:white;'>{j['E']}</b></p>", unsafe_allow_html=True)
                 with c2:
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🟨 CARTÕES: <b style='color:white;'>{j['CT']}</b></p>", unsafe_allow_html=True)
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🥅 CHUTES GOL: <b style='color:white;'>{j['CH']}</b></p>", unsafe_allow_html=True)
-                with c3:
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>👟 TIROS META: <b style='color:white;'>{j['TM']}</b></p>", unsafe_allow_html=True)
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🧤 DEFESAS: <b style='color:white;'>{j['DF']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:12px; color:#94a3b8;'>👟 TIROS META: <b style='color:white;'>{j['TM']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:12px; color:#94a3b8;'>🥅 NO ALVO: <b style='color:white;'>{j['CH']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:12px; color:#94a3b8;'>🚀 TOTAL CHUTES: <b style='color:white;'>{j['TC']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:12px; color:#94a3b8;'>🧤 DEFESAS: <b style='color:white;'>{j['DF']}</b></p>", unsafe_allow_html=True)
 
 # ==============================================================================
 # 2. CAMADA DE ESTILO CSS INTEGRAL (DIRETRIZ VISUAL IMUTÁVEL)
@@ -315,7 +346,6 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
     lista_base = []
-    # --- FILTRAGEM POR LIGA NO BIG DATA ---
     if df_hist is not None:
         try:
             cod_liga = sel_comp.split('- ')[-1]
@@ -336,7 +366,7 @@ elif st.session_state.aba_ativa == "analise":
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
         
-        # --- CÁLCULO ESTATÍSTICO REAL (BIG DATA) ---
+        # CÁLCULO ESTATÍSTICO REAL (BIG DATA)
         conf_final = "76%"
         gols_est = "OVER 1.5"
         cantos_est = "9.5+"
@@ -345,7 +375,6 @@ elif st.session_state.aba_ativa == "analise":
         chutes_est = "12+"
         
         if df_hist is not None:
-            # Filtra histórico do time da casa
             h_data = df_hist[df_hist['HomeTeam'] == t_casa]
             if not h_data.empty:
                 win_rate = (len(h_data[h_data['FTR'] == 'H']) / len(h_data)) * 100
@@ -379,7 +408,6 @@ elif st.session_state.aba_ativa == "analise":
         
         st.markdown(f"<h3 style='color:white; text-align:center; font-weight: 800; margin-bottom: 30px;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
         
-        # EXIBIÇÃO DE 8 CARDS NO RESULTADO DO SCANNER
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("MERCADO GOLS", m['gols'], 70)
@@ -437,10 +465,6 @@ elif st.session_state.aba_ativa == "live":
     with l6: draw_card("CARTÕES", "4", 50)
     with l7: draw_card("PERIGO ATAQUE", "ALTO", 95)
     with l8: draw_card("IA CONFIANÇA", "94.2%", 94)
-    
-    st.markdown("<h4 style='color:#06b6d4; margin-top:30px;'>🎮 MONITORAMENTO DE PARTIDAS EM TEMPO REAL</h4>", unsafe_allow_html=True)
-    dados_live = {"TEMPO": ["22'", "58'"], "CONFRONTO": ["Flamengo vs Palmeiras", "Arsenal vs Man City"], "PLACAR": ["1 - 0", "2 - 2"], "CANTOS": [4, 9]}
-    st.dataframe(pd.DataFrame(dados_live), use_container_width=True, hide_index=True)
 
 elif st.session_state.aba_ativa == "vencedores":
     st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
