@@ -38,7 +38,6 @@ if query_params.get("go") == "home":
 
 # --- FUNÇÃO DE CARREGAMENTO DE DADOS (DIRETRIZ GITHUB + CACHE) ---
 def carregar_dados_ia():
-    # Tenta carregar do ambiente local primeiro com trava de cache
     path_local = "data/database_diario.csv"
     if os.path.exists(path_local):
         try:
@@ -290,86 +289,76 @@ elif st.session_state.aba_ativa == "analise":
     db_hierarquia = {
         "BRASIL": {
             "BRASILEIRÃO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D"],
-            "ESTADUAIS": ["PAULISTÃO", "CARIOCA", "MINEIRO", "GAÚCHO", "PARANAENSE", "CATARINENSE", "BAIANO", "PERNAMBUCANO", "CEARENSE", "GOIANO"],
-            "COPAS": ["COPA DO BRASIL", "SUPERCOPA DO BRASIL", "COPA DO NORDESTE", "COPA VERDE"]
+            "ESTADUAIS": ["PAULISTÃO", "CARIOCA", "MINEIRO", "GAÚCHO"],
+            "COPAS": ["COPA DO BRASIL", "COPA DO NORDESTE"]
         },
         "AMÉRICAS (CONMEBOL & MLS)": {
-            "CONTINENTAL (CLUBES AM)": ["COPA LIBERTADORES", "COPA SUL-AMERICANA"],
-            "LIGAS NACIONAIS": ["CAMPEONATO ARGENTINO", "MAJOR LEAGUE SOCCER (EUA)", "LIGA MX (MÉXICO)"]
+            "CONTINENTAL": ["COPA LIBERTADORES", "COPA SUL-AMERICANA"],
+            "LIGAS NACIONAIS": ["ARGENTINO", "MLS (EUA)", "LIGA MX (MÉXICO)"]
         },
-        "EUROPA: LIGAS NACIONAIS (ELITE)": {
-            "AS 5 GRANDES LIGAS": ["PREMIER LEAGUE (INGLÊS)", "LA LIGA (ESPANHOL)", "SERIE A (ITALIANO)", "BUNDESLIGA (ALEMÃO)", "LIGUE 1 (FRANCÊS)"],
-            "OUTRAS LIGAS NACIONAIS": ["CAMPEONATO BELGA", "CHAMPIONSHIP (2ª INGLESA)", "LIGA PORTUGUESA", "EREDIVISIE (HOLANDA)"]
+        "EUROPA: LIGAS (ELITE)": {
+            "AS 5 GRANDES": ["PREMIER LEAGUE", "LA LIGA", "SERIE A", "BUNDESLIGA", "LIGUE 1"],
+            "OUTRAS LIGAS": ["CAMPEONATO BELGA", "CHAMPIONSHIP", "LIGA PORTUGUESA", "EREDIVISIE"]
         },
         "EUROPA: INTERNACIONAL (UEFA)": {
-            "COMPETIÇÕES DE CLUBES": ["UEFA CHAMPIONS LEAGUE", "UEFA EUROPA LEAGUE", "UEFA CONFERENCE LEAGUE"],
-            "COPAS NACIONAIS": ["FA CUP", "COPA DA LIGA INGLESA", "COPA DO REI (ESPANHA)", "COPA DA ITÁLIA"]
+            "CLUBES": ["UEFA CHAMPIONS LEAGUE", "UEFA EUROPA LEAGUE", "UEFA CONFERENCE LEAGUE"],
+            "COPAS": ["FA CUP", "COPA DO REI", "COPA DA ITÁLIA"]
         },
         "MUNDO & SELEÇÕES (FIFA)": {
-            "FIFA WORLD CUP": ["COPA DO MUNDO 2026", "ELIMINATÓRIAS COPA 2026"],
-            "CONTINENTAL E LIGAS": ["UEFA EUROCOPA", "UEFA NATIONS LEAGUE", "COPA AMÉRICA", "SAUDI PRO LEAGUE"]
+            "FIFA WORLD CUP": ["COPA DO MUNDO 2026", "ELIMINATÓRIAS 2026"],
+            "CONTINENTAL": ["UEFA EUROCOPA", "COPA AMÉRICA", "SAUDI PRO LEAGUE"]
         }
     }
     
     row_f = st.columns(3)
-    with row_f[0]:
-        sel_pais = st.selectbox("🌎 REGIÃO / PAÍS", list(db_hierarquia.keys()))
-    with row_f[1]:
-        sel_grupo = st.selectbox("📂 GRUPO", list(db_hierarquia[sel_pais].keys()))
-    with row_f[2]:
-        sel_comp = st.selectbox("🏆 COMPETIÇÃO", db_hierarquia[sel_pais][sel_grupo])
+    with row_f[0]: sel_pais = st.selectbox("🌎 REGIÃO / PAÍS", list(db_hierarquia.keys()))
+    with row_f[1]: sel_grupo = st.selectbox("📂 GRUPO", list(db_hierarquia[sel_pais].keys()))
+    with row_f[2]: sel_comp = st.selectbox("🏆 COMPETIÇÃO", db_hierarquia[sel_pais][sel_grupo])
 
     st.markdown("<div style='margin-top:20px; border-bottom: 1px solid #1e293b;'></div>", unsafe_allow_html=True)
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
-    # --- LÓGICA DE FILTRAGEM REFORÇADA (BLINDAGEM DE LIGA) ---
+    # --- MOTOR DE FILTRAGEM BLINDADO (LEAGUE TO TEAM ISOLATION) ---
     lista_base = []
     if df_diario is not None:
         try:
             col_comp = next((c for c in df_diario.columns if c.upper() in ['LIGA', 'COMPETIÇÃO', 'COMPETICAO', 'GRUPO']), None)
             col_casa = next((c for c in df_diario.columns if c.upper() in ['CASA', 'HOME']), 'CASA')
             col_fora = next((c for c in df_diario.columns if c.upper() in ['FORA', 'AWAY']), 'FORA')
-            
             if col_comp:
-                # Busca robusta: tenta encontrar o nome da liga selecionada dentro da coluna do CSV
-                termo = sel_comp.replace("(", "").replace(")", "").split(' ')[0].upper()
+                termo = sel_comp.split(' ')[0].upper()
                 filtro = df_diario[df_diario[col_comp].astype(str).str.upper().str.contains(termo, na=False)]
-                
                 if not filtro.empty:
                     lista_base = sorted(list(set(filtro[col_casa].unique().tolist() + filtro[col_fora].unique().tolist())))
-        except:
-            pass
+        except: pass
 
-    # --- BASE DE DADOS INTERNA DE ELITE (ELIMINA TIME A / TIME B) ---
+    # --- DICIONÁRIO GLOBAL DE ELITE (FILTRAGEM POR PASTA) ---
     if not lista_base:
-        if "BRASILEIRÃO" in sel_grupo or "BRASIL" in sel_pais:
-            lista_base = ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Galo", "Grêmio", "Botafogo", "Fluminense", "Internacional", "Cruzeiro"]
-        elif "CHAMPIONS" in sel_comp or "UEFA" in sel_comp:
-            lista_base = ["Real Madrid", "Man City", "Bayern Munich", "PSG", "Arsenal", "Barcelona", "Inter Milan", "Liverpool", "Bayer Leverkusen"]
-        elif "PREMIER" in sel_comp:
-            lista_base = ["Arsenal", "Man City", "Liverpool", "Chelsea", "Man United", "Tottenham", "Aston Villa", "Newcastle"]
-        elif "LA LIGA" in sel_comp:
-            lista_base = ["Real Madrid", "Barcelona", "Atlético Madrid", "Girona", "Real Sociedad"]
-        elif "ARGENTINO" in sel_comp:
-            lista_base = ["Boca Juniors", "River Plate", "Racing Club", "Independiente", "Talleres"]
+        if "BRASIL" in sel_pais:
+            lista_base = ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Galo", "Grêmio", "Botafogo", "Fluminense", "Internacional", "Cruzeiro", "Vasco", "Bahia", "Fortaleza", "Athletico-PR", "Santos"]
+        elif "FIFA" in sel_grupo or "MUNDO" in sel_pais:
+            lista_base = ["Brasil", "Argentina", "França", "Inglaterra", "Espanha", "Alemanha", "Portugal", "Holanda", "Itália", "Uruguai", "Marrocos", "Japão", "Colômbia", "Bélgica", "Croácia"]
+        elif "EUROPA" in sel_pais:
+            lista_base = ["Real Madrid", "Man City", "Bayern Munich", "Arsenal", "Barcelona", "Inter Milan", "PSG", "Liverpool", "Bayer Leverkusen", "Chelsea", "Juventus", "Atletico Madrid", "Milan", "Dortmund"]
+        elif "AMÉRICAS" in sel_pais:
+            lista_base = ["River Plate", "Boca Juniors", "Flamengo", "Palmeiras", "Inter Miami", "LA Galaxy", "Club América", "Monterrey", "Colo-Colo", "Peñarol", "Nacional", "Ind. del Valle"]
         else:
-            lista_base = ["Selecione um Time...", "Time Titular A", "Time Titular B"]
+            lista_base = ["Time Elite A", "Time Elite B", "Time Elite C"]
 
     c1, c2 = st.columns(2)
     with c1:
         t_casa = st.selectbox("🏠 TIME DA CASA", lista_base)
     with c2:
-        # LÓGICA ANTI-ESPELHO: O time da casa é removido da lista de fora
+        # LÓGICA ANTI-ESPELHO (TRAVA FINAL)
         lista_fora = [t for t in lista_base if t != t_casa]
-        t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora if lista_fora else ["Selecione..."])
+        t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora)
 
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
         is_real = False
         if df_diario is not None:
             col_c = next((c for c in df_diario.columns if c.upper() in ['CASA', 'HOME']), 'CASA')
-            if not df_diario[df_diario[col_c] == t_casa].empty:
-                is_real = True
+            if not df_diario[df_diario[col_c] == t_casa].empty: is_real = True
         
         status_txt = "FILÉ MIGNON: INFORMAÇÃO REAL" if is_real else "ALERTA: ESTATÍSTICA FRIA"
         cor_luz = "#00ff88" if is_real else "#ff4b4b"
