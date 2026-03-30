@@ -289,64 +289,30 @@ elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
     # --------------------------------------------------------------------------
-    # ESTRUTURA HIERÁRQUICA AMPLIADA (2025/2026)
+    # ESTRUTURA TOQUE FINAL (HÍBRIDA PROFISSIONAL)
     # --------------------------------------------------------------------------
     db_hierarquia = {
-        "BRASIL": {
-            "BRASILEIRÃO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D", "SÉRIE A (SUB-20)"],
-            "COPAS NACIONAIS": ["COPA DO BRASIL", "SUPERCOPA DO BRASIL", "COPA DO NORDESTE", "COPA VERDE"],
-            "ESTADUAIS": ["PAULISTÃO", "CARIOCA", "MINEIRO", "GAÚCHO", "PARANAENSE", "CATARINENSE", "BAIANO", "PERNAMBUCANO", "CEARENSE", "GOIANO"]
+        "BRASIL (ELITE & NACIONAL)": {
+            "CAMPEONATO BRASILEIRO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D"],
+            "COPAS E SUPERCOP": ["COPA DO BRASIL", "SUPERCOPA DO BRASIL", "COPA DO NORDESTE", "COPA VERDE"]
         },
-        "AMÉRICA DO SUL (CONMEBOL)": {
-            "COMPETIÇÕES CONTINENTAIS": ["COPA LIBERTADORES", "COPA SUL-AMERICANA", "RECOPA SUL-AMERICANA"],
-            "ARGENTINA": ["LIGA PROFESIONAL", "COPA DE LA LIGA"],
-            "OUTRAS LIGAS": ["CAMPEONATO URUGUAI", "CAMPEONATO CHILENO", "CAMPEONATO COLOMBIANO"]
+        "BRASIL (ESTADUAIS)": {
+            "ESTADUAIS 2025/26": ["PAULISTÃO", "CARIOCA", "MINEIRO", "GAÚCHO", "PARANAENSE", "CATARINENSE", "BAIANO", "PERNAMBUCANO", "CEARENSE", "GOIANO"]
         },
-        "AMÉRICA DO NORTE (CONCACAF)": {
-            "ESTADOS UNIDOS": ["MLS (MAJOR LEAGUE SOCCER)", "US OPEN CUP"],
-            "MÉXICO": ["LIGA MX", "COPA MX"],
-            "CONTINENTAL": ["LEAGUES CUP", "CONCACAF CHAMPIONS CUP"]
+        "AMÉRICAS (CONMEBOL & MLS)": {
+            "CLUBES BRASILEIROS": ["COPA LIBERTADORES", "COPA SUL-AMERICANA"],
+            "OUTRAS LIGAS": ["CAMPEONATO ARGENTINO", "MAJOR LEAGUE SOCCER (EUA)", "LIGA MX (MÉXICO)"]
         },
-        "INGLATERRA": {
-            "LIGAS NACIONAIS": ["PREMIER LEAGUE", "EFL CHAMPIONSHIP", "LEAGUE ONE"],
-            "COPAS NACIONAIS": ["FA CUP", "EFL CUP (COPA DA LIGA)"]
+        "EUROPA: ELITE (AS 5 GRANDES)": {
+            "LIGAS NACIONAIS": ["PREMIER LEAGUE (INGLÊS)", "LA LIGA (ESPANHOL)", "SERIE A (ITALIANO)", "BUNDESLIGA (ALEMÃO)", "LIGUE 1 (FRANCÊS)"]
         },
-        "ESPANHA": {
-            "LIGAS NACIONAIS": ["LA LIGA", "LA LIGA 2"],
-            "COPAS NACIONAIS": ["COPA DEL REY", "SUPERCOPA ESPANHA"]
+        "EUROPA: CONTINENTAL & COPAS": {
+            "UEFA": ["CHAMPIONS LEAGUE", "EUROPA LEAGUE", "CONFERENCE LEAGUE", "EUROCOPA"],
+            "COPAS NACIONAIS": ["FA CUP", "COPA DA LIGA INGLESA", "COPA DO REI (ESPANHA)", "COPA DA ITÁLIA"]
         },
-        "ITÁLIA": {
-            "LIGAS NACIONAIS": ["SERIE A TIM", "SERIE B"],
-            "COPAS NACIONAIS": ["COPA DA ITÁLIA", "SUPERCOPPA ITALIANA"]
-        },
-        "ALEMANHA": {
-            "LIGAS NACIONAIS": ["BUNDESLIGA", "2. BUNDESLIGA"],
-            "COPAS NACIONAIS": ["DFB POKAL"]
-        },
-        "FRANÇA": {
-            "LIGAS NACIONAIS": ["LIGUE 1", "LIGUE 2"],
-            "COPAS NACIONAIS": ["COUPE DE FRANCE"]
-        },
-        "OUTRAS LIGAS EUROPA": {
-            "PORTUGAL": ["LIGA PORTUGAL (BETCLIC)", "TAÇA DE PORTUGAL"],
-            "HOLANDA": ["EREDIVISIE"],
-            "TURQUIA": ["SÜPER LIG"],
-            "BÉLGICA": ["JUPILER PRO LEAGUE"],
-            "ESCÓCIA": ["SCOTTISH PREMIERSHIP"]
-        },
-        "EUROPA CONTINENTAL (UEFA)": {
-            "CHAMPIONS LEAGUE": ["FASE DE GRUPOS", "MATA-MATA"],
-            "EUROPA LEAGUE": ["FASE DE GRUPOS", "MATA-MATA"],
-            "CONFERENCE LEAGUE": ["FASE DE GRUPOS", "MATA-MATA"]
-        },
-        "ÁSIA E ORIENTE MÉDIO": {
-            "ARÁBIA SAUDITA": ["SAUDI PRO LEAGUE", "KING CUP"],
-            "JAPÃO": ["J1 LEAGUE"],
-            "CONTINENTAL": ["AFC CHAMPIONS LEAGUE ELITE"]
-        },
-        "SELEÇÕES NACIONAIS": {
-            "ELIMINATÓRIAS COPA 2026": ["CONMEBOL (SUL-AMÉRICA)", "UEFA (EUROPA)", "AFC (ÁSIA)"],
-            "LIGAS E COPAS": ["UEFA NATIONS LEAGUE", "COPA AMÉRICA", "EUROCOPA", "AMISTOSOS INTERNACIONAIS"]
+        "OUTRAS LIGAS & SELEÇÕES": {
+            "DIVERSOS": ["CAMPEONATO BELGA", "CHAMPIONSHIP (2ª INGLESA)", "SAUDI PRO LEAGUE"],
+            "SELEÇÕES": ["ELIMINATÓRIAS COPA 2026", "UEFA NATIONS LEAGUE", "AMISTOSOS"]
         }
     }
     
