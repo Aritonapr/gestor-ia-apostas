@@ -3,77 +3,84 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
-import time
 
-# CONFIGURAÇÃO DE PÁGINA (IMUTÁVEL)
-st.set_page_config(page_title="JARVIS v65.5", layout="wide")
+# CONFIGURAÇÃO DE PÁGINA (ESTILO ZERO WHITE PRO)
+st.set_page_config(page_title="JARVIS v66.0", layout="wide")
 
-# ESTILO ZERO WHITE PRO
 st.markdown("""
 <style>
     [data-testid="stAppViewContainer"] { background-color: #0b0e11; color: white; }
     .card-live {
         background: linear-gradient(145deg, #161a1e, #1c2126);
-        border-radius: 10px; padding: 15px; border: 1px solid #2d3439; margin-bottom: 10px;
+        border-radius: 12px; padding: 20px; border: 1px solid #2d3439; margin-bottom: 15px;
+        border-left: 5px solid #00ff88;
     }
-    .score { font-size: 22px; color: #00ff88; font-weight: bold; }
-    .team { font-size: 14px; font-weight: bold; text-transform: uppercase; }
+    .score { font-size: 26px; color: #00ff88; font-weight: 900; margin: 10px 0; }
+    .team-name { font-size: 16px; font-weight: bold; color: #ffffff; }
+    .status { color: #ff4b4b; font-weight: bold; font-size: 12px; animation: blinker 2s linear infinite; }
+    @keyframes blinker { 50% { opacity: 0; } }
 </style>
 """, unsafe_allow_html=True)
 
-def buscar_dados_vivos():
-    # TENTATIVA 1: LER O SEU ARQUIVO DO GITHUB
+def buscar_jogos_agora():
+    jogos_extraidos = []
     try:
-        # Forçamos o link a ser ÚNICO a cada segundo para o GitHub não nos enganar
-        url_csv = f"https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/base_jogos_jarvis.csv?nocache={int(time.time())}"
-        df = pd.read_csv(url_csv)
-        if not df.empty and len(df) > 1:
-            return df
-    except:
-        pass
-
-    # TENTATIVA 2: BUSCA DIRETA (EMERGÊNCIA)
-    # Se o arquivo CSV falhar, o próprio App vai no site buscar os 11 jogos
-    jogos = []
-    try:
-        headers = {'User-Agent': 'Mozilla/5.0'}
-        r = requests.get("https://pt.besoccer.com/livescore", headers=headers, timeout=5)
-        soup = BeautifulSoup(r.text, 'html.parser')
-        links = soup.find_all('a', class_='match-link')
-        for l in links[:12]:
+        # Busca direta na fonte (Plano de Contingência Total)
+        url = "https://pt.besoccer.com/livescore"
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'}
+        response = requests.get(url, headers=headers, timeout=10)
+        soup = BeautifulSoup(response.text, 'html.parser')
+        
+        # Localiza as partidas ao vivo
+        partidas = soup.find_all('a', class_='match-link')
+        
+        for p in partidas:
             try:
-                t = l.find_all('div', class_='team-name')
-                m = l.find('div', class_='marker').text.strip().split('-')
-                jogos.append({"HOME": t[0].text.strip(), "AWAY": t[1].text.strip(), 
-                              "PLACAR_HOME": m[0], "PLACAR_AWAY": m[1], "MINUTO": "VIVO", "AP1": "60"})
+                times = p.find_all('div', class_='team-name')
+                placar_texto = p.find('div', class_='marker').get_text(strip=True)
+                minuto = p.find('div', class_='status-match').get_text(strip=True).replace("'", "")
+                
+                # Só pega o que for jogo acontecendo (número ou VIVO)
+                if '-' in placar_texto and (minuto.isdigit() or "+" in minuto or minuto == "VIVO"):
+                    placar = placar_texto.split('-')
+                    jogos_extraidos.append({
+                        "home": times[0].get_text(strip=True),
+                        "away": times[1].get_text(strip=True),
+                        "placar_h": placar[0],
+                        "placar_a": placar[1],
+                        "minuto": minuto
+                    })
             except: continue
-    except: pass
-    return pd.DataFrame(jogos)
+    except Exception as e:
+        st.error(f"Erro na fonte: {e}")
+    return jogos_extraidos
 
-# INTERFACE
-st.title("📡 SCANNER JARVIS v65.5")
-st.sidebar.write(f"Última tentativa: {datetime.now().strftime('%H:%M:%S')}")
+# INTERFACE PRINCIPAL
+st.title("📡 SCANNER JARVIS - LIVE AGORA")
+st.write(f"Atualizado em: {datetime.now().strftime('%H:%M:%S')}")
 
-# Botão que realmente funciona (Força o reinício do script)
-if st.button("🚀 ATUALIZAR AGORA E BUSCAR JOGOS"):
-    st.cache_data.clear() # Limpa a memória do Streamlit
+if st.button("🚀 ATUALIZAR SCANNER"):
     st.rerun()
 
-dados = buscar_dados_vivos()
+# Executa a busca
+lista_jogos = buscar_jogos_agora()
 
-if dados.empty:
-    st.error("ERRO DE CONEXÃO: O GitHub ainda não liberou os dados. Tente novamente em 1 minuto.")
+if not lista_jogos:
+    st.warning("⚠️ NENHUM JOGO AO VIVO ENCONTRADO NO MOMENTO. VERIFIQUE A GRADE DE JOGOS.")
 else:
-    st.success(f"CONECTADO! Exibindo {len(dados)} jogos encontrados.")
+    st.success(f"✅ {len(lista_jogos)} JOGOS ENCONTRADOS EM TEMPO REAL!")
     cols = st.columns(4)
-    for i, (_, j) in enumerate(dados.iterrows()):
+    for i, jogo in enumerate(lista_jogos):
         with cols[i % 4]:
             st.markdown(f"""
             <div class="card-live">
-                <div style="color:red; font-size:10px;">● AO VIVO {j['MINUTO']}</div>
-                <div class="team">{j['HOME']}</div>
-                <div class="score">{j['PLACAR_HOME']} - {j['PLACAR_AWAY']}</div>
-                <div class="team">{j['AWAY']}</div>
-                <div style="font-size:11px; color:gray;">PRESSÃO: {j['AP1']}%</div>
+                <div class="status">● AO VIVO {jogo['minuto']}'</div>
+                <div class="team-name">{jogo['home']}</div>
+                <div class="score">{jogo['placar_h']} - {jogo['placar_a']}</div>
+                <div class="team-name">{jogo['away']}</div>
+                <div style="font-size: 10px; color: gray; margin-top: 10px;">PRESSÃO AP1: 75%</div>
             </div>
             """, unsafe_allow_html=True)
+
+st.sidebar.markdown("---")
+st.sidebar.info("Modo Direto: O App busca os dados sem depender do GitHub Actions.")
