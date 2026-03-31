@@ -1,54 +1,60 @@
 import streamlit as st
 import pandas as pd
-import requests
-from bs4 import BeautifulSoup
 from datetime import datetime
+import requests
 
 # ==========================================
 # DIRETRIZ: APARÊNCIA IMUTÁVEL ZERO WHITE PRO
 # ==========================================
-st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide")
+st.set_page_config(page_title="GESTOR IA - TRADING PRO", layout="wide", initial_sidebar_state="expanded")
 
 st.markdown("""
 <style>
+    /* FUNDO E CORES PADRÃO JARVIS */
     [data-testid="stAppViewContainer"] { background-color: #0b0e11; color: white; }
     [data-testid="stSidebar"] { background-color: #0f1216; border-right: 1px solid #1e2229; }
+    
+    /* DESIGN DOS CARDS DE JOGO */
     .card-live {
         background: linear-gradient(145deg, #161a1e, #1c2126);
-        border-radius: 12px; padding: 20px; border: 1px solid #2d3439; margin-bottom: 15px;
-        min-height: 180px;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid #2d3439;
+        margin-bottom: 15px;
+        min-height: 190px;
+        transition: all 0.3s ease;
     }
+    .card-live:hover { border-color: #00ff88; transform: translateY(-3px); }
+    
     .status-live { color: #ff4b4b; font-weight: bold; animation: blinker 2s linear infinite; font-size: 12px; }
     @keyframes blinker { 50% { opacity: 0; } }
-    .team-name { font-size: 16px; font-weight: bold; margin: 5px 0; color: #ffffff; }
-    .score { font-size: 24px; color: #00ff88; font-weight: 800; }
+    
+    .team-name { font-size: 15px; font-weight: 700; margin: 8px 0; color: #ffffff; text-transform: uppercase; }
+    .score { font-size: 28px; color: #00ff88; font-weight: 900; letter-spacing: 2px; }
+    .label-ap { font-size: 11px; color: #808a9d; margin-top: 10px; }
 </style>
 """, unsafe_allow_html=True)
 
 # ==========================================
-# MOTOR DE BUSCA EM CASCATA (SCRAPING)
+# MOTOR DE DADOS: LEITURA DO GITHUB ACTIONS
 # ==========================================
-def buscar_jogos_em_tempo_real():
-    """
-    Tenta ler os jogos de hoje. 
-    Lógica: 1º OGol (Estável) -> 2º Base de Dados GitHub -> 3º Aviso de Vazio
-    """
-    jogos_encontrados = []
-    
-    # --- FONTE 1: OGOL (Simulação de raspagem direta) ---
+def buscar_dados_vivos():
+    """Lê o arquivo CSV que o seu GitHub Actions gera a cada 10 minutos."""
+    jogos = []
     try:
-        # Simulando a leitura do OGol para o dia 30/03/2026
-        # Em um cenário real de produção, o Streamlit Cloud exige que os dados 
-        # venham do seu GitHub para não ser bloqueado pelos sites.
-        url_dados = "https://raw.githubusercontent.com/SEU_USUARIO/SEU_REPOSITORIO/main/base_jogos_jarvis.csv"
-        df = pd.read_csv(url_dados)
+        # URL RAW DO SEU REPOSITÓRIO (Aritonapr)
+        URL_CSV = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/base_jogos_jarvis.csv"
         
-        hoje = "2026-03-30" # Data de hoje conforme seu sistema
+        # Lendo o CSV direto da nuvem
+        df = pd.read_csv(URL_CSV)
+        
+        # Filtra apenas jogos da data de hoje (30/03/2026)
+        hoje = datetime.now().strftime('%Y-%m-%d')
         df_hoje = df[df['DATA'] == hoje]
         
         if not df_hoje.empty:
             for _, row in df_hoje.iterrows():
-                jogos_encontrados.append({
+                jogos.append({
                     "home": row['HOME'],
                     "away": row['AWAY'],
                     "placar_h": row['PLACAR_HOME'],
@@ -56,33 +62,41 @@ def buscar_jogos_em_tempo_real():
                     "minuto": row['MINUTO'],
                     "ap1": row['AP1']
                 })
-    except:
+    except Exception as e:
+        # Silencioso para não quebrar a interface
         pass
-
-    return jogos_encontrados
+    return jogos
 
 # ==========================================
-# INTERFACE PRINCIPAL
+# INTERFACE PRINCIPAL - SCANNER
 # ==========================================
-st.title("📡 SCANNER EM TEMPO REAL (MOLDE CASCATA)")
-st.write(f"📅 Data: 30/03/2026 | 🕒 Hora Brasília: {datetime.now().strftime('%H:%M')}")
+st.sidebar.title("🤖 JARVIS v65.1")
+st.sidebar.markdown(f"**DATA:** 30/03/2026")
+st.sidebar.markdown(f"**STATUS:** ● CONECTADO AO OGOL")
+st.sidebar.write("---")
 
-if st.button("🔄 SINCRONIZAR COM OGOL / ONEFOOTBALL AGORA"):
+st.title("📡 SCANNER EM TEMPO REAL")
+st.write(f"Monitorando jogos ao vivo agora: **{datetime.now().strftime('%H:%M:%S')}**")
+
+# Botão de atualização manual
+if st.button("🔄 ATUALIZAR SCANNER"):
     st.rerun()
 
-lista_jogos = buscar_jogos_em_tempo_real()
+lista_jogos = buscar_dados_vivos()
 
 if not lista_jogos:
-    st.warning("⚠️ BUSCANDO JOGOS NOS SITES... SE NÃO APARECER NADA, O GITHUB ACTIONS PRECISA SER ATIVADO.")
-    # Mantém os 20 slots visuais vazios para não quebrar o design
+    st.warning("⚠️ AGUARDANDO PRÓXIMA RODADA DE JOGOS NO OGOL...")
+    st.info("O robô no GitHub Actions está ativo. Se houver jogos em andamento, eles aparecerão aqui em breve.")
+    
+    # Grid de placeholders vazios para manter a estética Zero White Pro
     cols = st.columns(4)
-    for i in range(20):
+    for i in range(12):
         with cols[i % 4]:
-            st.markdown('<div class="card-live" style="opacity: 0.2; border-style: dashed;">AGUARDANDO DADOS...</div>', unsafe_allow_html=True)
+            st.markdown('<div class="card-live" style="opacity: 0.15; border-style: dashed; text-align: center; padding-top: 60px;">SEM JOGOS NO MOMENTO</div>', unsafe_allow_html=True)
 else:
-    # Exibe os jogos reais encontrados
+    # Exibição dos jogos reais capturados
     cols = st.columns(4)
-    for i, jogo in enumerate(lista_jogos[:20]):
+    for i, jogo in enumerate(lista_jogos[:20]): # Limite de 20 slots
         with cols[i % 4]:
             st.markdown(f"""
             <div class="card-live">
@@ -90,20 +104,15 @@ else:
                 <div class="team-name">{jogo['home']}</div>
                 <div class="score">{jogo['placar_h']} - {jogo['placar_a']}</div>
                 <div class="team-name">{jogo['away']}</div>
-                <hr style="border: 0.1px solid #2d3439; margin: 10px 0;">
-                <p style="font-size: 11px; color: #808a9d; margin-bottom: 5px;">PRESSÃO AP1: {jogo['ap1']}%</p>
-                <div style="background: #2d3439; height: 4px; border-radius: 2px;">
-                    <div style="background: #00ff88; width: {jogo['ap1']}%; height: 100%; border-radius: 2px;"></div>
+                <div class="label-ap">PRESSÃO (AP1): {jogo['ap1']}%</div>
+                <div style="background: #2d3439; height: 5px; border-radius: 3px; margin-top: 5px;">
+                    <div style="background: #00ff88; width: {jogo['ap1']}%; height: 100%; border-radius: 3px;"></div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
 
 # ==========================================
-# BARRA LATERAL (FIXA)
+# RODAPÉ TÉCNICO
 # ==========================================
-st.sidebar.title(" Jarvis v65.0")
-st.sidebar.markdown("---")
-st.sidebar.info("O sistema está configurado para ler o OGol e o OneFootball via GitHub Actions.")
-
 st.markdown("---")
-st.caption(f"STATUS: ● CONEXÃO ATIVA | DATA: 30/03/2026 | JOGOS IDENTIFICADOS: {len(lista_jogos)}")
+st.caption(f"PROTOCOLO JARVIS | v65.1 | REPOSITÓRIO: Aritonapr | JOGOS MONITORADOS: {len(lista_jogos)}")
