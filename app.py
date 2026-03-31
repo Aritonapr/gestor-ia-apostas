@@ -5,7 +5,7 @@ from datetime import datetime
 import numpy as np
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v62.1 - INTEGRIDADE TOTAL + CONEXÃO GITHUB 2026]
+# [PROTOCOLO DE MANUTENÇÃO v62.2 - EXPANSÃO LIVE 20 JOGOS + INTEGRIDADE TOTAL]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -215,6 +215,15 @@ st.markdown("""
         display: flex; justify-content: space-between; align-items: center; 
     }
     
+    /* ESTILO ADICIONAL PARA SCANNER LIVE GRID */
+    .live-slot-card {
+        background: #161b22; border: 1px solid #30363d; border-radius: 6px;
+        padding: 12px; margin-bottom: 10px; transition: 0.3s;
+    }
+    .live-slot-card:hover { border-color: #06b6d4; background: #1c222a; }
+    .slot-status { color: #ff4b4b; font-size: 9px; font-weight: bold; animation: blinker 1.5s linear infinite; }
+    @keyframes blinker { 50% { opacity: 0; } }
+
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     </style>
 """, unsafe_allow_html=True)
@@ -264,7 +273,7 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 4. LÓGICA DE TELAS (APARÊNCIA IMUTÁVEL)
+# 4. LÓGICA DE TELAS (APARÊNCIA IMUTÁVEL + EXPANSÃO LIVE)
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
@@ -280,7 +289,7 @@ if st.session_state.aba_ativa == "home":
         with h5: draw_card("VOL. GLOBAL", "ALTO", 75)
         with h6: draw_card("STAKE PADRÃO", f"{st.session_state.stake_padrao}%", 100)
         with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
-        with h8: draw_card("SISTEMA", "JARVIS v62.1", 100)
+        with h8: draw_card("SISTEMA", "JARVIS v62.2", 100)
         
         exibir_top_20_ia()
         
@@ -366,7 +375,6 @@ elif st.session_state.aba_ativa == "analise":
         status_txt = "FILÉ MIGNON: INFORMAÇÃO REAL" if is_real else "ALERTA: ESTATÍSTICA FRIA"
         cor_luz = "#00ff88" if is_real else "#ff4b4b"
         
-        # INJEÇÃO DE 8 MÉTRICAS PARA O RESULTADO DO ALGORITMO
         st.session_state.analise_bloqueada = {
             "casa": t_casa, "fora": t_fora, 
             "vencedor": "ALTA PROB.", "gols": "OVER 1.5", 
@@ -390,14 +398,12 @@ elif st.session_state.aba_ativa == "analise":
         
         st.markdown(f"<h3 style='color:white; text-align:center; font-weight: 800; margin-bottom: 30px;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
         
-        # LINHA 1 DE RESULTADOS (4 CARDS)
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("MERCADO GOLS", m['gols'], 70)
         with r3: draw_card("VALOR STAKE", m['stake_val'], 100)
         with r4: draw_card("ESCANTEIOS", m['cantos'], 65)
 
-        # LINHA 2 DE RESULTADOS (4 CARDS)
         r5, r6, r7, r8 = st.columns(4)
         with r5: draw_card("AMBAS MARCAM", m['btss'], 74)
         with r6: draw_card("CARTÕES", m['cartoes'], 60)
@@ -437,29 +443,57 @@ elif st.session_state.aba_ativa == "gestao":
         with g7: draw_card("SAÚDE BANCA", saude_label, 100, saude_color)
         with g8: draw_card("SISTEMA", "GESTOR PRO", 100, "#00d2ff")
 
+# ==============================================================================
+# EXPANSÃO DO SCANNER EM TEMPO REAL PARA 20 JOGOS (MANTENDO VISUAL)
+# ==============================================================================
 elif st.session_state.aba_ativa == "live":
-    st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
-    l1, l2, l3, l4 = st.columns(4)
-    with l1: draw_card("PRESSÃO CASA", "88%", 88)
-    with l2: draw_card("ATAQUES/5m", "14", 70)
-    with l3: draw_card("POSSE BOLA", "65%", 65)
-    with l4: draw_card("GOL PROB", "90%", 90)
-    l5, l6, l7, l8 = st.columns(4)
-    with l5: draw_card("CANTOS LIVE", "12", 85)
-    with l6: draw_card("CARTÕES", "4", 50)
-    with l7: draw_card("PERIGO ATAQUE", "ALTO", 95)
-    with l8: draw_card("IA CONFIANÇA", "94.2%", 94)
+    st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL - 20 SLOTS ATIVOS</h2>", unsafe_allow_html=True)
     
-    st.markdown("<h4 style='color:#06b6d4; margin-top:30px;'>🎮 MONITORAMENTO DE PARTIDAS EM TEMPO REAL</h4>", unsafe_allow_html=True)
-    dados_live = {
-        "TEMPO": ["22'", "58'", "81'", "12'"],
-        "CONFRONTO": ["Flamengo vs Palmeiras", "Real Madrid vs Barcelona", "Man City vs Arsenal", "Inter vs Milan"],
-        "PLACAR": ["1 - 0", "2 - 2", "0 - 1", "0 - 0"],
-        "PRESSÃO (C/F)": ["75 / 25", "50 / 50", "30 / 70", "55 / 45"],
-        "CANTOS": [4, 9, 11, 2],
-        "TENDÊNCIA IA": ["OVER 1.5", "OVER 4.5", "UNDER 1.5", "BTTS YES"]
-    }
-    st.dataframe(pd.DataFrame(dados_live), use_container_width=True, hide_index=True)
+    # 8 KPI CARDS SUPERIORES (RESUMO GERAL DO LIVE)
+    l1, l2, l3, l4 = st.columns(4)
+    with l1: draw_card("LIVE MONITOR", "20 JOGOS", 100, "#ff4b4b")
+    with l2: draw_card("PRESSÃO MÉDIA", "74%", 74)
+    with l3: draw_card("ODDS VALOR", "18/20", 90)
+    with l4: draw_card("GOL PROB (M)", "88%", 88)
+    l5, l6, l7, l8 = st.columns(4)
+    with l5: draw_card("CANTOS/10m", "4.2", 65)
+    with l6: draw_card("CARTÕES HT", "12", 40)
+    with l7: draw_card("ALERTAS IA", "4 ATIVOS", 100, "#ffcc00")
+    with l8: draw_card("IA CONFIANÇA", "94.2%", 94)
+
+    st.markdown("<h4 style='color:#06b6d4; margin-top:30px;'>🎯 GRADE DE MONITORAMENTO PRO (20 SLOTS)</h4>", unsafe_allow_html=True)
+    
+    # Simulação de dados para 20 jogos (Pode ser substituído pela sua API de Live)
+    times_casa = ["Flamengo", "Arsenal", "Real Madrid", "Palmeiras", "Man City", "Inter", "Bayern", "PSG", "Chelsea", "Liverpool", "Juventus", "Ajax", "Porto", "Benfica", "Dortmund", "Napoli", "Galo", "Grêmio", "São Paulo", "Boca"]
+    times_fora = ["Corinthians", "Chelsea", "Barcelona", "Santos", "United", "Milan", "Leverkusen", "Marseille", "Spurs", "Everton", "Roma", "PSV", "Sporting", "Braga", "Leipzig", "Lazio", "Cruzeiro", "Inter-RS", "Vasco", "River"]
+
+    # Criação do Grid 4 colunas x 5 linhas = 20 jogos
+    grid_live = st.columns(4)
+    
+    for i in range(20):
+        with grid_live[i % 4]:
+            ap1 = np.random.randint(40, 98)
+            cor_slot = "#00ff88" if ap1 > 80 else "#06b6d4"
+            
+            st.markdown(f"""
+                <div class="live-slot-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span class="slot-status">● LIVE</span>
+                        <span style="color:#8b949e; font-size:9px;">{np.random.randint(10,88)}' min</span>
+                    </div>
+                    <div style="color:white; font-weight:700; font-size:11px; margin:8px 0;">{times_casa[i]} vs {times_fora[i]}</div>
+                    <div style="color:#06b6d4; font-size:16px; font-weight:900;">{np.random.randint(0,3)} - {np.random.randint(0,3)}</div>
+                    <div style="margin-top:10px; display:flex; justify-content:space-between; font-size:9px; color:#94a3b8;">
+                        <span>PRESSÃO AP1: <b style="color:{cor_slot};">{ap1}%</b></span>
+                        <span>CANTOS: {np.random.randint(2,12)}</span>
+                    </div>
+                    <div style="background:#1e293b; height:3px; width:100%; border-radius:10px; margin-top:5px;">
+                        <div style="background:{cor_slot}; height:100%; width:{ap1}%;"></div>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+            if st.button(f"DETALHES #{i+1}", key=f"btn_live_{i}", use_container_width=True):
+                st.toast(f"Analisando {times_casa[i]} profundamente...")
 
 elif st.session_state.aba_ativa == "vencedores":
     st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
@@ -513,4 +547,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v62.1</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v62.2</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
