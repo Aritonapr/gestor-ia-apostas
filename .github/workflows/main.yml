@@ -1,36 +1,36 @@
-name: Automacao Diaria Jarvis
+name: Automação Diária Jarvis
 
 on:
   schedule:
-    # Roda a cada 1 hora automaticamente
-    - cron: '0 * * * *'
-  workflow_dispatch: # Permite que você rode manualmente se quiser
+    # Roda a cada 10 minutos para manter o Scanner sempre vivo
+    - cron: '*/10 * * * *'
+  workflow_dispatch: # Permite que você clique em "Run workflow" para testar agora
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write # Permissão para o Jarvis salvar os dados no seu GitHub
 
     steps:
-      - name: 📥 Baixando Repositorio
-        uses: actions/checkout@v3
+    - name: Checkout do repositório
+      uses: actions/checkout@v3
 
-      - name: 🐍 Configurando Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
+    - name: Configurar Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
 
-      - name: 📦 Instalando Dependencias
-        run: pip install pandas requests
+    - name: Instalar Dependências de Busca
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas requests beautifulsoup4
 
-      - name: 🚀 Rodar Jarvis (sync_data.py)
-        run: python sync_data.py
+    - name: EXECUTAR COLETOR DE JOGOS REAIS
+      run: python coletor_sites.py
 
-      - name: 💾 Salvando Dados Novos
-        run: |
-          git config --global user.name "Jarvis Bot"
-          git config --global user.email "bot@jarvis.ia"
-          git add data/database_diario.csv
-          git commit -m "📊 Sincronia Temporal v63.0 - 5 Temporadas" || echo "Sem mudanças"
-          git push
+    - name: Salvar Dados no Repositório (Commit)
+      run: |
+        git config --global user.name 'Jarvis-Bot'
+        git config --global user.email 'bot@jarvis.ai'
+        git add base_jogos_jarvis.csv
+        git commit -m "Atualização de Jogos em Tempo Real: $(date)" || echo "Sem mudanças para salvar"
+        git push
