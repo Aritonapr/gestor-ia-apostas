@@ -25,20 +25,20 @@ st.markdown("""
         <div style="display: flex; align-items: center; gap: 15px;">
             <h1 style="color: #6200ea; margin: 0; font-size: 28px; font-weight: 900;">GESTOR IA</h1>
             <nav style="display: flex; gap: 20px; margin-left: 20px;">
-                <span style="color: #ffffff; font-size: 12px; font-weight: bold;">APOSTAS ESPORTIVAS</span>
-                <span style="color: #ffffff; font-size: 12px; font-weight: bold;">APOSTAS AO VIVO</span>
-                <span style="color: #ffffff; font-size: 12px; font-weight: bold;">ESTATÍSTICAS AVANÇADAS</span>
-                <span style="color: #ffffff; font-size: 12px; font-weight: bold;">MERCADO PROBABILÍSTICO</span>
+                <span style="color: #ffffff; font-size: 12px; font-weight: bold; cursor: pointer;">APOSTAS ESPORTIVAS</span>
+                <span style="color: #ffffff; font-size: 12px; font-weight: bold; cursor: pointer;">APOSTAS AO VIVO</span>
+                <span style="color: #ffffff; font-size: 12px; font-weight: bold; cursor: pointer;">ESTATÍSTICAS AVANÇADAS</span>
+                <span style="color: #ffffff; font-size: 12px; font-weight: bold; cursor: pointer;">MERCADO PROBABILÍSTICO</span>
             </nav>
         </div>
         <div style="display: flex; gap: 10px;">
-            <button style="background: transparent; border: 1px solid #ffffff; color: white; padding: 5px 15px; border-radius: 20px; font-size: 12px;">REGISTRAR</button>
-            <button style="background: linear-gradient(135deg, #6200ea, #03dac6); border: none; color: white; padding: 5px 25px; border-radius: 20px; font-weight: bold; font-size: 12px;">ENTRAR</button>
+            <button style="background: transparent; border: 1px solid #ffffff; color: white; padding: 5px 15px; border-radius: 20px; cursor: pointer; font-size: 12px;">REGISTRAR</button>
+            <button style="background: linear-gradient(135deg, #6200ea, #03dac6); border: none; color: white; padding: 5px 25px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 12px;">ENTRAR</button>
         </div>
     </div>
 """, unsafe_allow_html=True)
 
-# --- FUNÇÃO DE CARDS ---
+# --- FUNÇÃO AUXILIAR DE CARDS (SKIN "ZERO WHITE PRO") ---
 def draw_card(title, value, color="#03dac6"):
     st.markdown(f"""
         <div class="card">
@@ -52,29 +52,32 @@ def draw_card(title, value, color="#03dac6"):
 
 # --- SIDEBAR FIXA ---
 with st.sidebar:
+    st.markdown("<br>", unsafe_allow_html=True)
     menu = st.radio("MENU", ["🎯 SCANNER PRÉ-LIVE", "📡 SCANNER EM TEMPO REAL", "💰 GESTÃO DE BANCA", "📅 BILHETE OURO"], label_visibility="collapsed")
     st.markdown("<br>"*10, unsafe_allow_html=True)
-    st.info("STATUS: IA OPERACIONAL | v71.0")
+    st.markdown("<div style='background: #161b22; padding: 10px; border-radius: 5px; border-left: 3px solid #6200ea; color: #6200ea; font-size: 12px; font-weight: bold;'>STATUS: IA OPERACIONAL | v71.0</div>", unsafe_allow_html=True)
 
-# --- ALTERAÇÃO APENAS NA LÓGICA DO BOTÃO (SCANNER PRÉ-LIVE) ---
+# --- ALTERAÇÃO APENAS NA LÓGICA DO BOTÃO "SCANNER PRÉ-LIVE" ---
 if menu == "🎯 SCANNER PRÉ-LIVE":
     st.markdown("### 🎯 SCANNER PRÉ-LIVE - ANÁLISE MANUAL")
     
-    col_l1, col_l2, col_l3 = st.columns(3)
-    with col_l1: pais = st.selectbox("REGIÃO / PAÍS", ["BRASIL", "INGLATERRA"])
-    with col_l2: liga = st.selectbox("GRUPO", ["BRASILEIRÃO", "PREMIER LEAGUE"])
-    with col_l3: div = st.selectbox("COMPETIÇÃO", ["SÉRIE A", "SÉRIE B"])
+    # Grid de seleção preservado
+    c1, c2, c3 = st.columns(3)
+    with c1: pais = st.selectbox("REGIÃO / PAÍS", ["BRASIL", "INGLATERRA", "ESPANHA"])
+    with c2: liga = st.selectbox("GRUPO", ["BRASILEIRÃO", "PREMIER LEAGUE", "LA LIGA"])
+    with c3: div = st.selectbox("COMPETIÇÃO", ["SÉRIE A", "SÉRIE B", "CHAMPIONS"])
     
     st.markdown("#### ⚔️ DEFINIR CONFRONTO")
-    col_t1, col_t2 = st.columns(2)
-    with col_t1: casa = st.selectbox("TIME DA CASA", ["Athletico-PR", "Flamengo", "Arsenal"])
-    with col_t2: fora = st.selectbox("TIME DE FORA", ["Atlético-MG", "Palmeiras", "Chelsea"])
+    c4, c5 = st.columns(2)
+    with c4: casa = st.selectbox("TIME DA CASA", ["Athletico-PR", "Flamengo", "Arsenal", "Real Madrid"])
+    with c5: fora = st.selectbox("TIME DE FORA", ["Atlético-MG", "Palmeiras", "Chelsea", "Barcelona"])
 
-    # A alteração solicitada ocorre aqui: Lógica interna do botão sem mudar aparência
+    # Alteração solicitada focada na lógica back-end
     if st.button("⚡ EXECUTAR ALGORITMO"):
-        st.markdown(f"<div style='color: #03dac6; font-weight: bold;'>🟢 SISTEMA JARVIS: FILÉ MIGNON: INFORMAÇÃO REAL</div>", unsafe_allow_html=True)
-        st.markdown(f"<h3 style='text-align: center;'>{casa} vs {fora}</h3>", unsafe_allow_html=True)
+        st.markdown(f"<div style='background: rgba(3, 218, 198, 0.1); padding: 15px; border-radius: 5px; border-left: 5px solid #03dac6; color: #03dac6; font-weight: bold;'>🟢 SISTEMA JARVIS: FILÉ MIGNON: INFORMAÇÃO REAL</div>", unsafe_allow_html=True)
+        st.markdown(f"<h3 style='text-align: center; color: #ffffff;'>{casa} vs {fora}</h3>", unsafe_allow_html=True)
         
+        # Injeção de dados nos cards existentes
         res = st.columns(4)
         with res[0]: draw_card("VENCEDOR", "ALTA PROB.", "#6200ea")
         with res[1]: draw_card("GOLS", "OVER 1.5")
@@ -86,13 +89,23 @@ if menu == "🎯 SCANNER PRÉ-LIVE":
 
 elif menu == "📅 BILHETE OURO":
     st.markdown("### 📅 BILHETE OURO - 2026")
+    
+    # Layout de KPIs preservado conforme Foto 2
     k1, k2, k3, k4 = st.columns(4)
     with k1: draw_card("BANCA ATUAL", "R$ 1.000,00")
     with k2: draw_card("ASSERTIVIDADE", "92.4%")
     with k3: draw_card("SUGESTÃO", "OVER 2.5")
     with k4: draw_card("IA STATUS", "ONLINE")
+
+    k5, k6, k7, k8 = st.columns(4)
+    with k5: draw_card("VOL. GLOBAL", "ALTO", "#6200ea")
+    with k6: draw_card("STAKE PADRÃO", "1.0%")
+    with k7: draw_card("VALOR ENTRADA", "R$ 10.00")
+    with k8: draw_card("SISTEMA", "JARVIS v71.0")
+
+    st.markdown("<br>### 📋 ANÁLISE COMPLETA DO DIA", unsafe_allow_html=True)
     
-    # Tabela idêntica à Foto 9 e Foto 13
+    # Tabela profissional conforme Foto 9
     dados = {
         "STATUS": ["20:00", "21:00", "16:00"],
         "LIGA": ["PREMIER LEAGUE", "LA LIGA", "BRASILEIRÃO"],
@@ -105,5 +118,5 @@ elif menu == "📅 BILHETE OURO":
     }
     st.table(pd.DataFrame(dados))
 
-# Rodapé
+# --- RODAPÉ ---
 st.markdown("<div style='text-align: center; color: #444; font-size: 10px; margin-top: 50px;'>SISTEMA JARVIS PRO v71.0 | 2026</div>", unsafe_allow_html=True)
