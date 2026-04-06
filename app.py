@@ -5,7 +5,7 @@ from datetime import datetime
 import numpy as np
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v62.1 - INTEGRIDADE TOTAL + CONEXÃO GITHUB 2026]
+# [PROTOCOLO DE MANUTENÇÃO v63.0 - INTEGRIDADE TOTAL + CONEXÃO GITHUB 2026]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -51,7 +51,9 @@ def carregar_dados_ia():
         path_local = "data/database_diario.csv"
         if os.path.exists(path_local):
             try:
-                return pd.read_csv(path_local)
+                df_l = pd.read_csv(path_local)
+                df_l.columns = [c.upper() for c in df_l.columns]
+                return df_l
             except:
                 return None
     return None
@@ -67,16 +69,21 @@ def processar_ia_bot():
         vips = []
         try:
             temp_df = df_diario.copy()
+            # Identifica a coluna de confiança
             col_conf = 'CONF' if 'CONF' in temp_df.columns else 'CONFIANCA'
+            
             if col_conf in temp_df.columns:
+                # Converte para numérico removendo o % se existir
                 temp_df['CONF_NUM'] = temp_df[col_conf].astype(str).str.replace('%', '').astype(float)
-                vips_df = temp_df[temp_df['CONF_NUM'] >= 85].head(20)
+                
+                # CORREÇÃO SOLICITADA: Ordena pelos melhores (maior confiança) e pega os TOP 20
+                vips_df = temp_df.sort_values(by='CONF_NUM', ascending=False).head(20)
                 
                 for _, jogo in vips_df.iterrows():
                     vips.append({
                         "C": jogo.get('CASA', 'Time A'),
                         "F": jogo.get('FORA', 'Time B'),
-                        "P": f"{jogo.get('CONF_NUM', 0)}%",
+                        "P": f"{int(jogo.get('CONF_NUM', 0))}%",
                         "G": "OVER 1.5 (PROB. 94% - AMBOS TEMPOS)",
                         "CT": "4.5+ NO TOTAL (DISTRIBUIÇÃO 2/2)",
                         "E": f"9.5 total (C:{jogo.get('C_CASA', 5)} | F:{jogo.get('C_FORA', 4)})",
@@ -85,9 +92,10 @@ def processar_ia_bot():
                         "DF": "7+ ESPERADAS (GOLEIROS ATIVOS)"
                     })
                 st.session_state.top_20_ia = vips
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Erro no processamento IA: {e}")
 
+# Executa o processamento
 processar_ia_bot()
 
 def exibir_top_20_ia():
@@ -282,6 +290,7 @@ if st.session_state.aba_ativa == "home":
         with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
         with h8: draw_card("SISTEMA", "JARVIS v62.1", 100)
         
+        # CHAMA OS TOP 20 AQUI
         exibir_top_20_ia()
         
         st.markdown("### 📋 ANÁLISE COMPLETA DO DIA")
@@ -366,7 +375,6 @@ elif st.session_state.aba_ativa == "analise":
         status_txt = "FILÉ MIGNON: INFORMAÇÃO REAL" if is_real else "ALERTA: ESTATÍSTICA FRIA"
         cor_luz = "#00ff88" if is_real else "#ff4b4b"
         
-        # INJEÇÃO DE 8 MÉTRICAS PARA O RESULTADO DO ALGORITMO
         st.session_state.analise_bloqueada = {
             "casa": t_casa, "fora": t_fora, 
             "vencedor": "ALTA PROB.", "gols": "OVER 1.5", 
@@ -390,14 +398,12 @@ elif st.session_state.aba_ativa == "analise":
         
         st.markdown(f"<h3 style='color:white; text-align:center; font-weight: 800; margin-bottom: 30px;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
         
-        # LINHA 1 DE RESULTADOS (4 CARDS)
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("MERCADO GOLS", m['gols'], 70)
         with r3: draw_card("VALOR STAKE", m['stake_val'], 100)
         with r4: draw_card("ESCANTEIOS", m['cantos'], 65)
 
-        # LINHA 2 DE RESULTADOS (4 CARDS)
         r5, r6, r7, r8 = st.columns(4)
         with r5: draw_card("AMBAS MARCAM", m['btss'], 74)
         with r6: draw_card("CARTÕES", m['cartoes'], 60)
@@ -513,4 +519,4 @@ elif st.session_state.aba_ativa == "historico":
                     st.session_state.historico_calls.pop(idx)
                     st.rerun()
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v62.1</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v63.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
