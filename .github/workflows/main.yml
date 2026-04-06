@@ -1,9 +1,9 @@
 name: Atualizar Big Data Jarvis
 
 on:
-  workflow_dispatch: # Isso cria o BOTÃO para você clicar e rodar manualmente
+  workflow_dispatch: 
   schedule:
-    - cron: '0 0 * * 1' # Roda automaticamente toda segunda-feira à meia-noite
+    - cron: '0 0 * * 1'
 
 jobs:
   build:
@@ -19,16 +19,20 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: 📦 Instalando Pandas e Requests
+      - name: 📦 Instalando Dependencias
         run: pip install pandas requests
 
       - name: 🚀 Rodar Script de Download
         run: python baixar_big_data.py
 
-      - name: 💾 Salvando arquivos no GitHub
+      - name: 💾 Salvando no GitHub (Blindado)
         run: |
           git config --global user.name "Jarvis Big Data"
           git config --global user.email "bot@jarvis.ia"
           git add data/*.csv
-          git commit -m "📊 Big Data Atualizado (2021-2026)" || echo "Sem mudanças"
-          git push
+          if git diff --cached --exit-code; then
+            echo "Nenhuma mudança detectada nos dados."
+          else
+            git commit -m "📊 Big Data Atualizado (Sincronia 2026)"
+            git push
+          fi
