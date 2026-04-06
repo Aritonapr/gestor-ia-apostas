@@ -1,17 +1,15 @@
-name: Automacao Diaria Jarvis
+name: Atualizar Big Data Jarvis
 
 on:
+  workflow_dispatch: # Isso cria o BOTÃO para você clicar e rodar manualmente
   schedule:
-    # Roda a cada 1 hora automaticamente
-    - cron: '0 * * * *'
-  workflow_dispatch: # Permite que você rode manualmente se quiser
+    - cron: '0 0 * * 1' # Roda automaticamente toda segunda-feira à meia-noite
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # Permissão para o Jarvis salvar os dados no seu GitHub
-
+      contents: write
     steps:
       - name: 📥 Baixando Repositorio
         uses: actions/checkout@v3
@@ -21,16 +19,16 @@ jobs:
         with:
           python-version: '3.9'
 
-      - name: 📦 Instalando Dependencias
+      - name: 📦 Instalando Pandas e Requests
         run: pip install pandas requests
 
-      - name: 🚀 Rodar Jarvis (sync_data.py)
-        run: python sync_data.py
+      - name: 🚀 Rodar Script de Download
+        run: python baixar_big_data.py
 
-      - name: 💾 Salvando Dados Novos
+      - name: 💾 Salvando arquivos no GitHub
         run: |
-          git config --global user.name "Jarvis Bot"
+          git config --global user.name "Jarvis Big Data"
           git config --global user.email "bot@jarvis.ia"
-          git add data/database_diario.csv
-          git commit -m "📊 Sincronia Temporal v63.0 - 5 Temporadas" || echo "Sem mudanças"
+          git add data/*.csv
+          git commit -m "📊 Big Data Atualizado (2021-2026)" || echo "Sem mudanças"
           git push
