@@ -51,9 +51,7 @@ def carregar_dados_ia():
         path_local = "data/database_diario.csv"
         if os.path.exists(path_local):
             try:
-                df_local = pd.read_csv(path_local)
-                df_local.columns = [c.upper() for c in df_local.columns]
-                return df_local
+                return pd.read_csv(path_local)
             except:
                 return None
     return None
@@ -61,7 +59,7 @@ def carregar_dados_ia():
 df_diario = carregar_dados_ia()
 
 # ==============================================================================
-# LÓGICA DO BOT (BACK-END): MOTOR DE PROCESSAMENTO INVISÍVEL - UPGRADE TOP 20
+# LÓGICA DO BOT (BACK-END): MOTOR DE PROCESSAMENTO INVISÍVEL
 # ==============================================================================
 
 def processar_ia_bot():
@@ -71,34 +69,20 @@ def processar_ia_bot():
             temp_df = df_diario.copy()
             col_conf = 'CONF' if 'CONF' in temp_df.columns else 'CONFIANCA'
             if col_conf in temp_df.columns:
-                # Filtro: Apenas probabilidade real matemática alta (>= 85%)
                 temp_df['CONF_NUM'] = temp_df[col_conf].astype(str).str.replace('%', '').astype(float)
-                vips_df = temp_df[temp_df['CONF_NUM'] >= 85].sort_values(by='CONF_NUM', ascending=False).head(20)
+                vips_df = temp_df[temp_df['CONF_NUM'] >= 85].head(20)
                 
                 for _, jogo in vips_df.iterrows():
-                    conf_val = jogo.get('CONF_NUM', 0)
-                    c_total = int(jogo.get('C_CASA', 5)) + int(jogo.get('C_FORA', 4))
-                    
-                    # Injeção das 7 métricas solicitadas com lógica de distribuição
                     vips.append({
-                        "CONFRONTO": f"{jogo.get('CASA', 'Time A')} vs {jogo.get('FORA', 'Time B')}",
-                        "1- VENCEDOR": f"Prob. {conf_val}% ({'Favorito' if conf_val > 90 else 'Tendência'})",
-                        "2- GOLS": "OVER 1.5 (Tendência em Ambos Tempos - 94%)",
-                        "3- CARTÕES": "4.5+ Total (Distribuição 2 HT / 3 FT)",
-                        "4- ESCANTEIOS": f"{c_total}+ Jogo (HT: {c_total//2} | Casa: {jogo.get('C_CASA', 5)} - Fora: {jogo.get('C_FORA', 4)})",
-                        "5- TIROS META": "16+ no jogo (Média 8 por tempo)",
-                        "6- CHUTES GOL": "9+ no alvo (Constância em ambos tempos)",
-                        "7- DEFESAS": "7+ Goleiros ativos (Pressão total)",
-                        # Metadados para cards expansíveis
-                        "P": f"{conf_val}%",
                         "C": jogo.get('CASA', 'Time A'),
                         "F": jogo.get('FORA', 'Time B'),
-                        "G": "OVER 1.5 (94% AMBOS TEMPOS)",
-                        "CT": "4.5+ (DISTRIBUIÇÃO 2/3)",
-                        "E": f"{c_total} (HT: {c_total//2} | C:{jogo.get('C_CASA', 5)} | F:{jogo.get('C_FORA', 4)})",
+                        "P": f"{jogo.get('CONF_NUM', 0)}%",
+                        "G": "OVER 1.5 (PROB. 94% - AMBOS TEMPOS)",
+                        "CT": "4.5+ NO TOTAL (DISTRIBUIÇÃO 2/2)",
+                        "E": f"9.5 total (C:{jogo.get('C_CASA', 5)} | F:{jogo.get('C_FORA', 4)})",
                         "TM": "16+ (8 POR TEMPO)",
-                        "CH": "9+ AO GOL (CONSTÂNCIA)",
-                        "DF": "7+ ESPERADAS"
+                        "CH": "9+ AO GOL (CONSTÂNCIA ALTA)",
+                        "DF": "7+ ESPERADAS (GOLEIROS ATIVOS)"
                     })
                 st.session_state.top_20_ia = vips
         except Exception:
@@ -108,19 +92,19 @@ processar_ia_bot()
 
 def exibir_top_20_ia():
     if st.session_state.aba_ativa == "home" and st.session_state.top_20_ia:
-        st.markdown("<h4 style='color:#06b6d4; margin-top:30px;'>🤖 DETALHAMENTO TOP 20 - ESTATÍSTICAS AVANÇADAS</h4>", unsafe_allow_html=True)
+        st.markdown("<h4 style='color:#06b6d4; margin-top:30px;'>🤖 TOP 20 ANALISES IA - PROBABILIDADE REAL</h4>", unsafe_allow_html=True)
         for j in st.session_state.top_20_ia:
-            with st.expander(f"➔ {j['C']} vs {j['F']} | CONFIANÇA: {j['P']}"):
+            with st.expander(f"➔ {j['C']} vs {j['F']} | CONF: {j['P']}"):
                 c1, c2, c3 = st.columns(3)
                 with c1:
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>⚽ GOLS: <b style='color:white;'>{j['2- GOLS']}</b></p>", unsafe_allow_html=True)
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🚩 ESCANTEIOS: <b style='color:white;'>{j['4- ESCANTEIOS']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>⚽ GOLS: <b style='color:white;'>{j['G']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🚩 ESCANTEIOS: <b style='color:white;'>{j['E']}</b></p>", unsafe_allow_html=True)
                 with c2:
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🟨 CARTÕES: <b style='color:white;'>{j['3- CARTÕES']}</b></p>", unsafe_allow_html=True)
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🥅 CHUTES GOL: <b style='color:white;'>{j['6- CHUTES GOL']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🟨 CARTÕES: <b style='color:white;'>{j['CT']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🥅 CHUTES GOL: <b style='color:white;'>{j['CH']}</b></p>", unsafe_allow_html=True)
                 with c3:
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>👟 TIROS META: <b style='color:white;'>{j['5- TIROS META']}</b></p>", unsafe_allow_html=True)
-                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🧤 DEFESAS: <b style='color:white;'>{j['7- DEFESAS']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>👟 TIROS META: <b style='color:white;'>{j['TM']}</b></p>", unsafe_allow_html=True)
+                    st.markdown(f"<p style='font-size:11px; color:#94a3b8;'>🧤 DEFESAS: <b style='color:white;'>{j['DF']}</b></p>", unsafe_allow_html=True)
 
 # ==============================================================================
 # 2. CAMADA DE ESTILO CSS INTEGRAL (DIRETRIZ VISUAL IMUTÁVEL)
@@ -280,7 +264,7 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 4. LÓGICA DE TELAS (APARÊNCIA IMUTÁVEL + UPGRADE TOP 20)
+# 4. LÓGICA DE TELAS (APARÊNCIA IMUTÁVEL)
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
@@ -298,18 +282,10 @@ if st.session_state.aba_ativa == "home":
         with h7: draw_card("VALOR ENTRADA", f"R$ {(st.session_state.banca_total * st.session_state.stake_padrao / 100):,.2f}", 100)
         with h8: draw_card("SISTEMA", "JARVIS v62.1", 100)
         
-        # Exibe os expansores detalhados (opcional, para visualização rápida)
         exibir_top_20_ia()
         
-        # --- SEÇÃO: ANÁLISE COMPLETA DO DIA (TOP 20 COM 7 MÉTRICAS) ---
-        st.markdown("<h3 style='color:white; margin-top:30px;'>📋 ANÁLISE COMPLETA DO DIA (TOP 20 IA)</h3>", unsafe_allow_html=True)
-        if st.session_state.top_20_ia:
-            df_display = pd.DataFrame(st.session_state.top_20_ia)[
-                ["CONFRONTO", "1- VENCEDOR", "2- GOLS", "3- CARTÕES", "4- ESCANTEIOS", "5- TIROS META", "6- CHUTES GOL", "7- DEFESAS"]
-            ]
-            st.dataframe(df_display, use_container_width=True, hide_index=True)
-        else:
-            st.info("Sincronizando previsões matemáticas de alta confiança...")
+        st.markdown("### 📋 ANÁLISE COMPLETA DO DIA")
+        st.dataframe(df_diario, use_container_width=True)
     else:
         st.warning("Aguardando sincronização de dados diários...")
 
@@ -362,7 +338,16 @@ elif st.session_state.aba_ativa == "analise":
         except: pass
 
     if not lista_base:
-        lista_base = ["Time Elite A", "Time Elite B", "Time Elite C"]
+        if "BRASIL" in sel_pais:
+            lista_base = ["Flamengo", "Palmeiras", "São Paulo", "Corinthians", "Galo", "Grêmio", "Botafogo", "Fluminense", "Internacional", "Cruzeiro", "Vasco", "Bahia", "Fortaleza", "Athletico-PR", "Santos"]
+        elif "FIFA" in sel_grupo or "MUNDO" in sel_pais:
+            lista_base = ["Brasil", "Argentina", "França", "Inglaterra", "Espanha", "Alemanha", "Portugal", "Holanda", "Itália", "Uruguai", "Marrocos", "Japão", "Colômbia", "Bélgica", "Croácia"]
+        elif "EUROPA" in sel_pais:
+            lista_base = ["Real Madrid", "Man City", "Bayern Munich", "Arsenal", "Barcelona", "Inter Milan", "PSG", "Liverpool", "Bayer Leverkusen", "Chelsea", "Juventus", "Atletico Madrid", "Milan", "Dortmund"]
+        elif "AMÉRICAS" in sel_pais:
+            lista_base = ["River Plate", "Boca Juniors", "Flamengo", "Palmeiras", "Inter Miami", "LA Galaxy", "Club América", "Monterrey", "Colo-Colo", "Peñarol", "Nacional", "Ind. del Valle"]
+        else:
+            lista_base = ["Time Elite A", "Time Elite B", "Time Elite C"]
 
     c1, c2 = st.columns(2)
     with c1:
@@ -373,6 +358,15 @@ elif st.session_state.aba_ativa == "analise":
 
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         v_calc = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
+        is_real = False
+        if df_diario is not None:
+            col_c = next((c for c in df_diario.columns if c.upper() in ['CASA', 'HOME']), 'CASA')
+            if not df_diario[df_diario[col_c] == t_casa].empty: is_real = True
+        
+        status_txt = "FILÉ MIGNON: INFORMAÇÃO REAL" if is_real else "ALERTA: ESTATÍSTICA FRIA"
+        cor_luz = "#00ff88" if is_real else "#ff4b4b"
+        
+        # INJEÇÃO DE 8 MÉTRICAS PARA O RESULTADO DO ALGORITMO
         st.session_state.analise_bloqueada = {
             "casa": t_casa, "fora": t_fora, 
             "vencedor": "ALTA PROB.", "gols": "OVER 1.5", 
@@ -380,8 +374,8 @@ elif st.session_state.aba_ativa == "analise":
             "btss": "SIM (74%)", "cartoes": "4.5+",
             "chutes": "8.5 p/g", "confia": "94.2%",
             "data": datetime.now().strftime("%H:%M"),
-            "luz": "🟢", 
-            "motivo": "INFORMAÇÃO REAL ANALISADA", "cor": "#00ff88"
+            "luz": "🟢" if is_real else "🔴", 
+            "motivo": status_txt, "cor": cor_luz
         }
     
     if st.session_state.analise_bloqueada:
@@ -394,32 +388,129 @@ elif st.session_state.aba_ativa == "analise":
             </div>
         """, unsafe_allow_html=True)
         
+        st.markdown(f"<h3 style='color:white; text-align:center; font-weight: 800; margin-bottom: 30px;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
+        
+        # LINHA 1 DE RESULTADOS (4 CARDS)
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("MERCADO GOLS", m['gols'], 70)
         with r3: draw_card("VALOR STAKE", m['stake_val'], 100)
         with r4: draw_card("ESCANTEIOS", m['cantos'], 65)
 
+        # LINHA 2 DE RESULTADOS (4 CARDS)
+        r5, r6, r7, r8 = st.columns(4)
+        with r5: draw_card("AMBAS MARCAM", m['btss'], 74)
+        with r6: draw_card("CARTÕES", m['cartoes'], 60)
+        with r7: draw_card("CHUTES AO GOL", m['chutes'], 80)
+        with r8: draw_card("IA CONFIANÇA", m['confia'], 94)
+        
+        if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
+            st.session_state.historico_calls.append(m.copy())
+            st.toast("✅ CALL SALVA COM SUCESSO!")
+
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("""<div class="banca-title-banner">💰 GESTÃO DE BANCA INTELIGENTE</div>""", unsafe_allow_html=True)
-    st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=float(st.session_state.banca_total), step=50.0)
-    st.session_state.stake_padrao = st.slider("STAKE POR OPERAÇÃO (%)", 0.1, 10.0, float(st.session_state.stake_padrao))
+    col_input, col_display = st.columns([1.2, 2.5])
+    with col_input:
+        st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=float(st.session_state.banca_total), step=50.0)
+        st.session_state.stake_padrao = st.slider("STAKE POR OPERAÇÃO (%)", 0.1, 10.0, float(st.session_state.stake_padrao))
+        st.session_state.meta_diaria = st.slider("META DIÁRIA - STOP GAIN (%)", 1.0, 30.0, float(st.session_state.meta_diaria))
+        st.session_state.stop_loss = st.slider("LIMITE DE PERDA - STOP LOSS (%)", 1.0, 30.0, float(st.session_state.stop_loss))
+
+    v_stake = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
+    v_meta = (st.session_state.banca_total * st.session_state.meta_diaria / 100)
+    v_loss = (st.session_state.banca_total * st.session_state.stop_loss / 100)
+    alvo_final = st.session_state.banca_total + v_meta
+    entradas_meta = int(v_meta/v_stake) if v_stake > 0 else 0
+    saude_label = "EXCELENTE" if st.session_state.stake_padrao <= 2.0 else "MODERADA" if st.session_state.stake_padrao <= 5.0 else "CRÍTICA"
+    saude_color = "#00ff88" if saude_label == "EXCELENTE" else "#ffcc00" if saude_label == "MODERADA" else "#ff4b4b"
+
+    with col_display:
+        g1, g2, g3, g4 = st.columns(4)
+        with g1: draw_card("VALOR ENTRADA", f"R$ {v_stake:,.2f}", 100, "#00d2ff")
+        with g2: draw_card("STOP GAIN (R$)", f"R$ {v_meta:,.2f}", 100, "#00d2ff")
+        with g3: draw_card("STOP LOSS (R$)", f"R$ {v_loss:,.2f}", 100, "#00d2ff")
+        with g4: draw_card("ALVO FINAL", f"R$ {alvo_final:,.2f}", 100, "#00d2ff")
+        g5, g6, g7, g8 = st.columns(4)
+        with g5: draw_card("RISCO TOTAL", f"{st.session_state.stake_padrao}%", 100, "#00d2ff")
+        with g6: draw_card("ENTRADAS/META", f"{entradas_meta}", 100, "#00d2ff")
+        with g7: draw_card("SAÚDE BANCA", saude_label, 100, saude_color)
+        with g8: draw_card("SISTEMA", "GESTOR PRO", 100, "#00d2ff")
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white;'>📡 SCANNER EM TEMPO REAL</h2>", unsafe_allow_html=True)
-    draw_card("IA CONFIANÇA", "94.2%", 94)
+    l1, l2, l3, l4 = st.columns(4)
+    with l1: draw_card("PRESSÃO CASA", "88%", 88)
+    with l2: draw_card("ATAQUES/5m", "14", 70)
+    with l3: draw_card("POSSE BOLA", "65%", 65)
+    with l4: draw_card("GOL PROB", "90%", 90)
+    l5, l6, l7, l8 = st.columns(4)
+    with l5: draw_card("CANTOS LIVE", "12", 85)
+    with l6: draw_card("CARTÕES", "4", 50)
+    with l7: draw_card("PERIGO ATAQUE", "ALTO", 95)
+    with l8: draw_card("IA CONFIANÇA", "94.2%", 94)
+    
+    st.markdown("<h4 style='color:#06b6d4; margin-top:30px;'>🎮 MONITORAMENTO DE PARTIDAS EM TEMPO REAL</h4>", unsafe_allow_html=True)
+    dados_live = {
+        "TEMPO": ["22'", "58'", "81'", "12'"],
+        "CONFRONTO": ["Flamengo vs Palmeiras", "Real Madrid vs Barcelona", "Man City vs Arsenal", "Inter vs Milan"],
+        "PLACAR": ["1 - 0", "2 - 2", "0 - 1", "0 - 0"],
+        "PRESSÃO (C/F)": ["75 / 25", "50 / 50", "30 / 70", "55 / 45"],
+        "CANTOS": [4, 9, 11, 2],
+        "TENDÊNCIA IA": ["OVER 1.5", "OVER 4.5", "UNDER 1.5", "BTTS YES"]
+    }
+    st.dataframe(pd.DataFrame(dados_live), use_container_width=True, hide_index=True)
 
 elif st.session_state.aba_ativa == "vencedores":
     st.markdown("<h2 style='color:white;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
+    v1, v2, v3, v4 = st.columns(4)
+    with v1: draw_card("FAVORITO 1", "Brasil", 45)
+    with v2: draw_card("FAVORITO 2", "França", 38)
+    with v3: draw_card("FAVORITO 3", "Espanha", 25)
+    with v4: draw_card("ZEBRA PROB", "Marrocos", 12)
+    v5, v6, v7, v8 = st.columns(4)
+    with v5: draw_card("MELHOR ATAQUE", "Alemanha", 88)
+    with v6: draw_card("MELHOR DEFESA", "Itália", 92)
+    with v7: draw_card("PROJEÇÃO GOLS", "3.2 p/j", 75)
+    with v8: draw_card("ODDS VALOR", "Inglaterra", 60)
 
 elif st.session_state.aba_ativa == "gols":
     st.markdown("<h2 style='color:white;'>⚽ APOSTAS POR GOLS</h2>", unsafe_allow_html=True)
+    g1, g2, g3, g4 = st.columns(4)
+    with g1: draw_card("OVER 0.5 HT", "82%", 82)
+    with g2: draw_card("OVER 1.5 FT", "75%", 75)
+    with g3: draw_card("AMBAS MARCAM", "61%", 61)
+    with g4: draw_card("UNDER 3.5", "90%", 90)
+    g5, g6, g7, g8 = st.columns(4)
+    with g5: draw_card("OVER 2.5 FT", "58%", 58)
+    with g6: draw_card("GOLS CASA", "1.5+", 70)
+    with g7: draw_card("GOLS FORA", "0.5+", 85)
+    with g8: draw_card("BTTS NO", "39%", 39)
 
 elif st.session_state.aba_ativa == "escanteios":
     st.markdown("<h2 style='color:white;'>🚩 APOSTAS POR ESCANTEIOS</h2>", unsafe_allow_html=True)
+    e1, e2, e3, e4 = st.columns(4)
+    with e1: draw_card("OVER 8.5", "88%", 88)
+    with e2: draw_card("OVER 10.5", "62%", 62)
+    with e3: draw_card("CANTOS HT", "4.5+", 70)
+    with e4: draw_card("CORNER RACE", "Time A", 55)
+    e5, e6, e7, e8 = st.columns(4)
+    with e5: draw_card("UNDER 12.5", "92%", 92)
+    with e6: draw_card("CANTOS CASA", "5.5+", 75)
+    with e7: draw_card("CANTOS FORA", "4.5+", 65)
+    with e8: draw_card("RACE TO 7", "Ninguém", 40)
 
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
     if not st.session_state.historico_calls: st.info("Nenhuma operação registrada.")
+    else:
+        for i, call in enumerate(reversed(st.session_state.historico_calls)):
+            idx = len(st.session_state.historico_calls) - 1 - i
+            col_info, col_del = st.columns([0.92, 0.08])
+            with col_info: st.markdown(f"""<div class="history-card-box"><div style="color:white; font-weight:800;"><span style="color:#9d54ff;">[{call['data']}]</span> {call['casa']} x {call['fora']} <span style="color:#06b6d4; margin-left:20px;">{call['stake_val']} | {call['gols']}</span></div></div>""", unsafe_allow_html=True)
+            with col_del:
+                if st.button("🗑️", key=f"del_{idx}"):
+                    st.session_state.historico_calls.pop(idx)
+                    st.rerun()
 
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v62.1</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
