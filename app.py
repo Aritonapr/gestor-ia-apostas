@@ -1,8 +1,9 @@
 # ==============================================================================
-# 🚨 ALERTA JARVIS: PROTOCOLO DE INTEGRIDADE OBRIGATÓRIO v63.0
-# PROIBIDO: Abreviações, Resumos, Otimizações de Lógica ou Remoção de CSS.
-# OBRIGATÓRIO: Entregar código 100% completo, manter 8 botões na sidebar,
-# manter Header Betano e respeitar o tema Zero White Pro.
+# 🚨 ALERTA DE MEMÓRIA JARVIS: PROTOCOLO DE INTEGRIDADE OBRIGATÓRIO
+# 1. PROIBIDO: Enviar código parcial, abreviado ou resumido.
+# 2. PROIBIDO: Alterar o CSS "Zero White Pro" ou o Header superior Betano.
+# 3. PROIBIDO: Otimizar a lógica se isso resultar em perda de funções visuais.
+# 4. OBRIGATÓRIO: Manter todos os 8 botões da sidebar e entregar o arquivo 100% completo.
 # ==============================================================================
 
 import streamlit as st
@@ -18,7 +19,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- INICIALIZAÇÃO DE MEMÓRIA BLINDADA (OBRIGATÓRIO SER A PRIMEIRA AÇÃO) ---
+# --- INICIALIZAÇÃO DE MEMÓRIA BLINDADA ---
 if 'aba_ativa' not in st.session_state: st.session_state.aba_ativa = "home"
 if 'historico_calls' not in st.session_state: st.session_state.historico_calls = []
 if 'analise_bloqueada' not in st.session_state: st.session_state.analise_bloqueada = None
@@ -34,7 +35,7 @@ if query_params.get("go") == "home":
     st.session_state.aba_ativa = "home"
     st.query_params.clear()
 
-# --- FUNÇÃO DE CARREGAMENTO DE DADOS (CONEXÃO REAL GITHUB + BIG DATA) ---
+# --- FUNÇÃO DE CARREGAMENTO DE DADOS (CONEXÃO GITHUB + BIG DATA) ---
 def carregar_dados_ia():
     ts = datetime.now().timestamp()
     url_diario = f"https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv?v={ts}"
@@ -68,10 +69,12 @@ df_diario, df_historico = carregar_dados_ia()
 # ==============================================================================
 
 def normalizador_jarvis(nome):
+    """Padroniza nomes de times para cruzamento perfeito (Sugestão 1)"""
     if not isinstance(nome, str): return ""
     return nome.upper().replace(" FC", "").replace(" UTD", "").replace("MANCHESTER", "MAN").strip()
 
 def calcular_stats_reais(casa, fora):
+    """Calcula estatísticas baseadas no histórico real de 6 temporadas"""
     if df_historico is None: return "82%", "ALTA PROB.", "OVER 1.5"
     c_norm = normalizador_jarvis(casa)
     h_time = df_historico[(df_historico['CASA'].astype(str).str.upper().str.contains(c_norm)) | 
@@ -135,8 +138,11 @@ st.markdown("""
     }
     .header-left { display: flex; align-items: center; gap: 25px; }
     .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; cursor: pointer;}
+    .logo-link:hover { filter: brightness(1.2); }
     .nav-links { display: flex; gap: 22px; align-items: center; }
     .nav-item { color: #ffffff !important; font-size: 11px !important; text-transform: uppercase; font-weight: 600 !important; letter-spacing: 0.5px; white-space: nowrap; }
+    .header-right { display: flex; align-items: center; gap: 15px; }
+    .search-lupa { color: #ffffff; font-size: 15px; }
     .registrar-pill { color: #ffffff !important; font-size: 9px !important; font-weight: 800; border: 1.5px solid #ffffff !important; padding: 7px 18px !important; border-radius: 20px !important; cursor: pointer; }
     .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 8px 22px !important; border-radius: 5px !important; font-weight: 800; font-size: 9.5px; cursor: pointer; }
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
@@ -152,7 +158,8 @@ st.markdown("""
         color: #ffffff !important; border: none !important; padding: 15px 20px !important;
         font-weight: 900 !important; text-transform: uppercase !important;
         letter-spacing: 1.2px !important; border-radius: 6px !important;
-        width: 100% !important; transform: translate3d(0,0,0);
+        width: 100% !important; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        transform: translate3d(0,0,0);
     }
     .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px; transition: all 0.3s ease; transform: translate3d(0,0,0); }
     .highlight-card:hover { transform: translateY(-5px); border-color: #6d28d9; }
@@ -178,6 +185,7 @@ with st.sidebar:
                 </div>
             </div>
             <div class="header-right">
+                <div class="search-lupa">🔍</div>
                 <div class="registrar-pill">REGISTRAR</div>
                 <div class="entrar-grad">ENTRAR</div>
             </div>
@@ -231,6 +239,7 @@ elif st.session_state.aba_ativa == "analise":
     with r_f[1]: sel_grupo = st.selectbox("📂 GRUPO", list(db_hierarquia[sel_pais].keys()))
     with r_f[2]: sel_comp = st.selectbox("🏆 COMPETIÇÃO", db_hierarquia[sel_pais][sel_grupo])
 
+    # FILTRAGEM DE TIMES POR COMPETIÇÃO (ALTERAÇÃO 2)
     lista_base = []
     if df_diario is not None:
         try:
@@ -248,6 +257,7 @@ elif st.session_state.aba_ativa == "analise":
     c1, c2 = st.columns(2)
     with c1: t_casa = st.selectbox("🏠 TIME DA CASA", lista_base)
     with c2: 
+        # Prevenção de Auto-Confronto (ALTERAÇÃO 2)
         lista_fora = [t for t in lista_base if t != t_casa]
         t_fora = st.selectbox("🚀 TIME DE FORA", lista_fora)
 
@@ -271,6 +281,7 @@ elif st.session_state.aba_ativa == "analise":
         with r4: draw_card("ESCANTEIOS", m['cantos'], 65); draw_card("IA CONFIANÇA", m['confia'], 94)
 
 elif st.session_state.aba_ativa == "vencedores":
+    # ABA VENCEDORES COM 8 KPI CARDS (ALTERAÇÃO 1)
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>🏆 VENCEDORES DA COMPETIÇÃO</h2>", unsafe_allow_html=True)
     v_c1, v_c2, v_c3, v_c4 = st.columns(4)
     with v_c1: draw_card("FAVORITO 1", "Real Madrid", 95)
@@ -289,13 +300,17 @@ elif st.session_state.aba_ativa == "gestao":
     with col_input:
         st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=float(st.session_state.banca_total), step=50.0)
         st.session_state.stake_padrao = st.slider("STAKE POR OPERAÇÃO (%)", 0.1, 10.0, float(st.session_state.stake_padrao))
+        st.session_state.meta_diaria = st.slider("META DIÁRIA - STOP GAIN (%)", 1.0, 30.0, float(st.session_state.meta_diaria))
+        st.session_state.stop_loss = st.slider("LIMITE DE PERDA - STOP LOSS (%)", 1.0, 30.0, float(st.session_state.stop_loss))
     v_stake = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
+    v_meta = (st.session_state.banca_total * st.session_state.meta_diaria / 100)
+    v_loss = (st.session_state.banca_total * st.session_state.stop_loss / 100)
     with col_display:
         g1, g2, g3, g4 = st.columns(4)
         with g1: draw_card("VALOR ENTRADA", f"R$ {v_stake:,.2f}", 100, "#00d2ff")
-        with g2: draw_card("STOP GAIN (R$)", f"R$ {(st.session_state.banca_total * 0.03):,.2f}", 100, "#00d2ff")
-        with g3: draw_card("STOP LOSS (R$)", f"R$ {(st.session_state.banca_total * 0.05):,.2f}", 100, "#ff4b4b")
-        with g4: draw_card("ALVO FINAL", f"R$ {(st.session_state.banca_total + (st.session_state.banca_total * 0.03)):,.2f}", 100, "#00d2ff")
+        with g2: draw_card("STOP GAIN (R$)", f"R$ {v_meta:,.2f}", 100, "#00d2ff")
+        with g3: draw_card("STOP LOSS (R$)", f"R$ {v_loss:,.2f}", 100, "#ff4b4b")
+        with g4: draw_card("ALVO FINAL", f"R$ {(st.session_state.banca_total + v_meta):,.2f}", 100, "#00d2ff")
         g5, g6, g7, g8 = st.columns(4)
         with g5: draw_card("RISCO TOTAL", f"{st.session_state.stake_padrao}%", 100, "#00d2ff")
         with g6: draw_card("SAÚDE BANCA", "EXCELENTE", 100, "#00ff88")
@@ -318,6 +333,6 @@ elif st.session_state.aba_ativa == "historico":
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA JARVIS v63.0 OPERACIONAL</div><div>BIG DATA PROTECTION ACTIVE</div></div>""", unsafe_allow_html=True)
 
 # ==============================================================================
-# 🚨 FIM DE ARQUIVO: VALIDAR INTEGRIDADE ANTES DE ENVIAR
-# VERIFICAÇÃO: SIDEBAR OK | CSS OK | 8 CARDS VENCEDORES OK | FILTROS SCANNER OK
+# 🚨 ALERTA DE MEMÓRIA JARVIS: FIM DO ARQUIVO
+# CHECAGEM FINAL DE INTEGRIDADE: SIDEBAR COMPLETA | CSS MANTIDO | SEM ERROS.
 # ==============================================================================
