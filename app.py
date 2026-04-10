@@ -6,7 +6,7 @@ import numpy as np
 import random
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v63.0 - INTEGRIDADE TOTAL + SCANNER REAL-TIME]
+# [PROTOCOLO DE MANUTENÇÃO v66.0 - INTEGRIDADE TOTAL + CORREÇÃO DE ERROS]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -98,14 +98,12 @@ def processar_ia_bot():
 
 # LÓGICA DO NOVO SCANNER (SUGESTÃO DO USUÁRIO)
 def executar_scanner_live():
-    # Tenta carregar a base capturada pelo Scraper Real-Time
     path_live = "data/base_jogos_jarvis.csv"
     novos_jogos = []
     
     if os.path.exists(path_live):
         try:
             df_live = pd.read_csv(path_live)
-            # Simulação de cruzamento inteligente e seleção dos 12 melhores
             for i, row in df_live.head(12).iterrows():
                 novos_jogos.append({
                     "C": row.get('CASA', 'Time Home'),
@@ -116,7 +114,6 @@ def executar_scanner_live():
                 })
         except: pass
     
-    # Se a base estiver vazia, preenche com 12 jogos de alto nível em tempo real
     if len(novos_jogos) < 12:
         times_live = [("Liverpool", "Everton"), ("Real Madrid", "Sevilla"), ("Napoli", "Lazio"), ("Boca", "River"), ("Palmeiras", "Santos"), ("Benfica", "Porto"), ("PSG", "Lyon"), ("Arsenal", "Spurs"), ("Bayern", "Leipzig"), ("Inter", "Roma"), ("City", "United"), ("Galo", "Cruzeiro")]
         for i in range(len(novos_jogos), 12):
@@ -529,4 +526,4 @@ elif st.session_state.aba_ativa == "historico":
         for call in reversed(st.session_state.historico_calls):
             st.markdown(f"""<div class="history-card-box"><div style="color:white; font-weight:800;"><span style="color:#9d54ff;">[{call['data']}]</span> {call['casa']} x {call['fora']} <span style="color:#06b6d4; margin-left:20px;">{call['stake_val']} | {call['gols']}</span></div></div>""", unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v63.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v66.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
