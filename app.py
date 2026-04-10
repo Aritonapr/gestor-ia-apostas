@@ -47,15 +47,7 @@ def carregar_dados_ia():
         df.columns = [c.upper() for c in df.columns]
         return df
     except:
-        path_local = "data/database_diario.csv"
-        if os.path.exists(path_local):
-            try:
-                df_local = pd.read_csv(path_local)
-                df_local.columns = [c.upper() for c in df_local.columns]
-                return df_local
-            except:
-                return None
-    return None
+        return None
 
 df_diario = carregar_dados_ia()
 
@@ -155,26 +147,18 @@ st.markdown("""
     
     .header-left { display: flex; align-items: center; gap: 25px; }
     .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; cursor: pointer;}
-    .logo-link:hover { filter: brightness(1.2); }
-    
     .nav-links { display: flex; gap: 22px; align-items: center; }
     .nav-item { 
         color: #ffffff !important; font-size: 11px !important; text-transform: uppercase; 
         opacity: 1 !important; font-weight: 600 !important; letter-spacing: 0.5px; 
         transition: 0.3s ease; cursor: pointer; white-space: nowrap;
     }
-    .nav-item:hover { color: #06b6d4 !important; transform: scale(1.05); }
-
     .header-right { display: flex; align-items: center; gap: 15px; }
-    .search-lupa { color: #ffffff; font-size: 15px; cursor: pointer; transition: 0.3s; }
-    
     .registrar-pill { 
         color: #ffffff !important; font-size: 9px !important; font-weight: 800; 
         border: 1.5px solid #ffffff !important; padding: 7px 18px !important; 
         border-radius: 20px !important; transition: 0.3s ease; cursor: pointer;
     }
-    .registrar-pill:hover { background: white !important; color: #001a4d !important; }
-    
     .entrar-grad { 
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; 
         color: white !important; padding: 8px 22px !important; border-radius: 5px !important; 
@@ -215,14 +199,13 @@ st.markdown("""
         transition: all 0.3s ease; transform: translate3d(0,0,0);
     }
     
-    /* KPI CARD: AJUSTE DE SIMETRIA (ALTURA E PADDING CALIBRADOS) */
+    /* KPI CARD: AJUSTE DE SIMETRIA (ALTURA AUTOMÁTICA PARA ELIMINAR O VAZIO) */
     .kpi-detailed-card { 
-        background: #11151a; border: 1px solid #1e293b; padding: 20px 15px; 
-        border-radius: 8px; margin-bottom: 15px; height: 350px; 
-        display: flex; flex-direction: column; justify-content: space-between;
+        background: #11151a; border: 1px solid #1e293b; padding: 20px 18px; 
+        border-radius: 8px; margin-bottom: 15px; height: auto !important; min-height: 200px;
         transition: 0.3s ease; transform: translate3d(0,0,0);
     }
-    .kpi-stat { font-size: 10px; color: #94a3b8; margin-bottom: 5px; display: flex; justify-content: space-between;}
+    .kpi-stat { font-size: 10px; color: #94a3b8; margin-bottom: 6px; display: flex; justify-content: space-between;}
     .kpi-stat b { color: white; }
 
     .banca-title-banner {
@@ -231,12 +214,6 @@ st.markdown("""
         display: flex; align-items: center; gap: 15px;
     }
 
-    .history-card-box { 
-        background: #161b22 !important; border: 1px solid #30363d !important; 
-        padding: 15px 25px !important; border-radius: 8px; margin-bottom: 12px; 
-        display: flex; justify-content: space-between; align-items: center; 
-    }
-    
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     </style>
 """, unsafe_allow_html=True)
@@ -300,21 +277,19 @@ if st.session_state.aba_ativa == "home":
         cols = st.columns(4)
         for i, j in enumerate(row):
             with cols[i]:
-                # HTML CALIBRADO PARA SIMETRIA TOTAL (PADDINGS E MARGINS EQUILIBRADOS)
+                # AJUSTE CIRÚRGICO: MARGEM SUPERIOR DO INVESTIMENTO REDUZIDA PARA COLAR NO CONTEÚDO
                 st.markdown(f"""
                 <div class="kpi-detailed-card">
-                    <div>
-                        <div style="color:#9d54ff; font-size:10px; font-weight:900; margin-bottom:5px;">IA CONFIANÇA: {j['P']}</div>
-                        <div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div>
-                        <div class="kpi-stat">🏆 VENCEDOR: <b>{j['V']}</b></div>
-                        <div class="kpi-stat">⚽ GOLS: <b>{j['G']}</b></div>
-                        <div class="kpi-stat">🟨 CARTÕES: <b>{j['CT']}</b></div>
-                        <div class="kpi-stat">🚩 ESCANTEIOS: <b>{j['E']}</b></div>
-                        <div class="kpi-stat">👟 TIROS META: <b>{j['TM']}</b></div>
-                        <div class="kpi-stat">🥅 CHUTES GOL: <b>{j['CH']}</b></div>
-                        <div class="kpi-stat">🧤 DEFESAS: <b>{j['DF']}</b></div>
-                    </div>
-                    <div style="margin-top:10px; padding-top:10px; border-top:1px dashed #334155; color:#06b6d4; font-size:11px; font-weight:900; text-align:center;">
+                    <div style="color:#9d54ff; font-size:10px; font-weight:900; margin-bottom:5px;">IA CONFIANÇA: {j['P']}</div>
+                    <div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div>
+                    <div class="kpi-stat">🏆 VENCEDOR: <b>{j['V']}</b></div>
+                    <div class="kpi-stat">⚽ GOLS: <b>{j['G']}</b></div>
+                    <div class="kpi-stat">🟨 CARTÕES: <b>{j['CT']}</b></div>
+                    <div class="kpi-stat">🚩 ESCANTEIOS: <b>{j['E']}</b></div>
+                    <div class="kpi-stat">👟 TIROS META: <b>{j['TM']}</b></div>
+                    <div class="kpi-stat">🥅 CHUTES GOL: <b>{j['CH']}</b></div>
+                    <div class="kpi-stat">🧤 DEFESAS: <b>{j['DF']}</b></div>
+                    <div style="margin-top:15px; padding-top:12px; border-top:1px dashed #334155; color:#06b6d4; font-size:11px; font-weight:900; text-align:center;">
                         INVESTIMENTO: R$ {v_entrada:,.2f}
                     </div>
                 </div>
@@ -376,15 +351,13 @@ elif st.session_state.aba_ativa == "live":
             with cols[i]:
                 st.markdown(f"""
                 <div class="kpi-detailed-card">
-                    <div>
-                        <div style="color:#00ff88; font-size:10px; font-weight:900; margin-bottom:5px;">IA LIVE: {j['P']}</div>
-                        <div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div>
-                        <div class="kpi-stat">🏆 VENCEDOR: <b>{j['V']}</b></div>
-                        <div class="kpi-stat">⚽ GOLS: <b>{j['G']}</b></div>
-                        <div class="kpi-stat">🚩 ESCANTEIOS: <b>{j['E']}</b></div>
-                        <div class="kpi-stat">🥅 CHUTES GOL: <b>{j['CH']}</b></div>
-                    </div>
-                    <div style="margin-top:10px; padding-top:10px; border-top:1px dashed #334155; color:#9d54ff; font-size:11px; font-weight:900; text-align:center;">
+                    <div style="color:#00ff88; font-size:10px; font-weight:900; margin-bottom:5px;">IA LIVE: {j['P']}</div>
+                    <div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div>
+                    <div class="kpi-stat">🏆 VENCEDOR: <b>{j['V']}</b></div>
+                    <div class="kpi-stat">⚽ GOLS: <b>{j['G']}</b></div>
+                    <div class="kpi-stat">🚩 ESCANTEIOS: <b>{j['E']}</b></div>
+                    <div class="kpi-stat">🥅 CHUTES GOL: <b>{j['CH']}</b></div>
+                    <div style="margin-top:15px; padding-top:12px; border-top:1px dashed #334155; color:#9d54ff; font-size:11px; font-weight:900; text-align:center;">
                         INVESTIMENTO LIVE: R$ {v_entrada:,.2f}
                     </div>
                 </div>
