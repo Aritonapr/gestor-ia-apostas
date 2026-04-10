@@ -1,15 +1,17 @@
-name: Atualizar Big Data Jarvis
+name: Atualizar Dados Jarvis 2026
 
 on:
   workflow_dispatch: 
   schedule:
-    - cron: '0 0 * * 1'
+    # Este comando faz o robô rodar automaticamente a cada 6 horas
+    - cron: '0 */6 * * *'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      
     steps:
       - name: 📥 Baixando Repositorio
         uses: actions/checkout@v3
@@ -20,19 +22,25 @@ jobs:
           python-version: '3.9'
 
       - name: 📦 Instalando Dependencias
-        run: pip install pandas requests
+        run: |
+          pip install pandas requests
 
-      - name: 🚀 Rodar Script de Download
+      - name: 🚀 Rodar Coletor Jarvis (Dados Gratuitos)
+        run: python coletor_jarvis.py
+
+      - name: 📊 Rodar Script de Download (Big Data Semanal)
         run: python baixar_big_data.py
 
-      - name: 💾 Salvando no GitHub (Blindado)
+      - name: 💾 Salvando no GitHub (Blindagem de Evolução)
         run: |
-          git config --global user.name "Jarvis Big Data"
+          git config --global user.name "Jarvis Automation"
           git config --global user.email "bot@jarvis.ia"
           git add data/*.csv
+          
+          # Verifica se houve mudanças antes de salvar para evitar erros
           if git diff --cached --exit-code; then
-            echo "Nenhuma mudança detectada nos dados."
+            echo "Nenhuma mudança detectada nos dados hoje."
           else
-            git commit -m "📊 Big Data Atualizado (Sincronia 2026)"
+            git commit -m "📊 Protocolo Jarvis: Dados Atualizados (Sincronia 2026)"
             git push
           fi
