@@ -111,7 +111,7 @@ def executar_scanner_live():
             c, f = times_live[i]
             novos_jogos.append({
                 "C": c, "F": f, "P": f"{random.randint(88, 97)}%",
-                "V": "VITORIA LIVE", "G": "+0.5 GOLS", "CT": "2.5 total",
+                "V": "72% (LIVE)", "G": "+0.5 GOLS", "CT": "4.5 total",
                 "E": "10.5 total", "TM": "18+ total", "CH": "10+ total", "DF": "8+ total"
             })
     st.session_state.jogos_live_ia = novos_jogos
@@ -148,72 +148,36 @@ st.markdown("""
     .header-left { display: flex; align-items: center; gap: 25px; }
     .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; cursor: pointer;}
     .nav-links { display: flex; gap: 22px; align-items: center; }
-    .nav-item { 
-        color: #ffffff !important; font-size: 11px !important; text-transform: uppercase; 
-        opacity: 1 !important; font-weight: 600 !important; letter-spacing: 0.5px; 
-        transition: 0.3s ease; cursor: pointer; white-space: nowrap;
-    }
+    .nav-item { color: #ffffff !important; font-size: 11px !important; text-transform: uppercase; opacity: 1 !important; font-weight: 600 !important; letter-spacing: 0.5px; transition: 0.3s ease; cursor: pointer; white-space: nowrap; }
     .header-right { display: flex; align-items: center; gap: 15px; }
-    .registrar-pill { 
-        color: #ffffff !important; font-size: 9px !important; font-weight: 800; 
-        border: 1.5px solid #ffffff !important; padding: 7px 18px !important; 
-        border-radius: 20px !important; transition: 0.3s ease; cursor: pointer;
-    }
-    .entrar-grad { 
-        background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; 
-        color: white !important; padding: 8px 22px !important; border-radius: 5px !important; 
-        font-weight: 800; font-size: 9.5px; transition: 0.3s ease; cursor: pointer;
-    }
+    .registrar-pill { color: #ffffff !important; font-size: 9px !important; font-weight: 800; border: 1.5px solid #ffffff !important; padding: 7px 18px !important; border-radius: 20px !important; transition: 0.3s ease; cursor: pointer; }
+    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 8px 22px !important; border-radius: 5px !important; font-weight: 800; font-size: 9.5px; transition: 0.3s ease; cursor: pointer; }
 
     [data-testid="stSidebar"] { min-width: 320px !important; max-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
     
-    section[data-testid="stSidebar"] div.stButton > button { 
-        background-color: transparent !important; color: #94a3b8 !important; border: none !important; 
-        border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; 
-        padding: 18px 25px !important; font-size: 10px !important; text-transform: uppercase !important;
-        border-radius: 0px !important; transition: all 0.2s ease !important; white-space: nowrap !important;
-    }
-    section[data-testid="stSidebar"] div.stButton > button:hover {
-        background-color: #1e293b !important; color: #06b6d4 !important; padding-left: 35px !important; border-left: 3px solid #6d28d9 !important;
-    }
+    section[data-testid="stSidebar"] div.stButton > button { background-color: transparent !important; color: #94a3b8 !important; border: none !important; border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; padding: 18px 25px !important; font-size: 10px !important; text-transform: uppercase !important; border-radius: 0px !important; transition: all 0.2s ease !important; white-space: nowrap !important; }
+    section[data-testid="stSidebar"] div.stButton > button:hover { background-color: #1e293b !important; color: #06b6d4 !important; padding-left: 35px !important; border-left: 3px solid #6d28d9 !important; }
 
-    div.stButton > button:not([data-testid="stSidebar"] *) {
-        background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
-        color: #ffffff !important; border: none !important; padding: 15px 20px !important;
-        font-weight: 900 !important; text-transform: uppercase !important;
-        letter-spacing: 1.2px !important; border-radius: 6px !important;
-        width: 100% !important; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-        box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important; margin-top: 10px !important;
-        transform: translate3d(0,0,0);
-    }
+    div.stButton > button:not([data-testid="stSidebar"] *) { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: #ffffff !important; border: none !important; padding: 15px 20px !important; font-weight: 900 !important; text-transform: uppercase !important; letter-spacing: 1.2px !important; border-radius: 6px !important; width: 100% !important; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important; margin-top: 10px !important; transform: translate3d(0,0,0); }
 
     div[data-baseweb="input"], .stNumberInput div { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
     div[data-baseweb="input"] input { background-color: #1a202c !important; color: white !important; }
     div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; border-radius: 6px !important; }
     
-    .highlight-card { 
-        background: #11151a; border: 1px solid #1e293b; padding: 20px; 
-        border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px;
-        transition: all 0.3s ease; transform: translate3d(0,0,0);
-    }
+    .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px; transition: all 0.3s ease; transform: translate3d(0,0,0); }
     
-    /* KPI CARD: AJUSTE DE SIMETRIA (ALTURA AUTOMÁTICA PARA ELIMINAR O VAZIO) */
+    /* KPI CARD: ALTURA AUTOMÁTICA PARA ELIMINAR O VAZIO E MANTER SIMETRIA */
     .kpi-detailed-card { 
         background: #11151a; border: 1px solid #1e293b; padding: 20px 18px; 
-        border-radius: 8px; margin-bottom: 15px; height: auto !important; min-height: 200px;
+        border-radius: 8px; margin-bottom: 15px; height: auto !important;
         transition: 0.3s ease; transform: translate3d(0,0,0);
     }
     .kpi-stat { font-size: 10px; color: #94a3b8; margin-bottom: 6px; display: flex; justify-content: space-between;}
     .kpi-stat b { color: white; }
 
-    .banca-title-banner {
-        background-color: #003399 !important; padding: 15px 25px; border-radius: 5px;
-        color: white !important; font-size: 24px; font-weight: 800; margin-bottom: 35px;
-        display: flex; align-items: center; gap: 15px;
-    }
-
+    .banca-title-banner { background-color: #003399 !important; padding: 15px 25px; border-radius: 5px; color: white !important; font-size: 24px; font-weight: 800; margin-bottom: 35px; display: flex; align-items: center; gap: 15px; }
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     </style>
 """, unsafe_allow_html=True)
@@ -277,7 +241,6 @@ if st.session_state.aba_ativa == "home":
         cols = st.columns(4)
         for i, j in enumerate(row):
             with cols[i]:
-                # AJUSTE CIRÚRGICO: MARGEM SUPERIOR DO INVESTIMENTO REDUZIDA PARA COLAR NO CONTEÚDO
                 st.markdown(f"""
                 <div class="kpi-detailed-card">
                     <div style="color:#9d54ff; font-size:10px; font-weight:900; margin-bottom:5px;">IA CONFIANÇA: {j['P']}</div>
@@ -349,14 +312,18 @@ elif st.session_state.aba_ativa == "live":
         cols = st.columns(4)
         for i, j in enumerate(row):
             with cols[i]:
+                # EQUALIZAÇÃO PARA 7 RESULTADOS IGUAL AO BILHETE OURO
                 st.markdown(f"""
                 <div class="kpi-detailed-card">
                     <div style="color:#00ff88; font-size:10px; font-weight:900; margin-bottom:5px;">IA LIVE: {j['P']}</div>
                     <div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div>
                     <div class="kpi-stat">🏆 VENCEDOR: <b>{j['V']}</b></div>
                     <div class="kpi-stat">⚽ GOLS: <b>{j['G']}</b></div>
-                    <div class="kpi-stat">🚩 ESCANTEIOS: <b>{j['E']}</b></div>
-                    <div class="kpi-stat">🥅 CHUTES GOL: <b>{j['CH']}</b></div>
+                    <div class="kpi-stat">🟨 CARTÕES: <b>{j.get('CT', '4.5 total')}</b></div>
+                    <div class="kpi-stat">🚩 ESCANTEIOS: <b>{j.get('E', '9.5 total')}</b></div>
+                    <div class="kpi-stat">👟 TIROS META: <b>{j.get('TM', '14+ total')}</b></div>
+                    <div class="kpi-stat">🥅 CHUTES GOL: <b>{j.get('CH', '9+ total')}</b></div>
+                    <div class="kpi-stat">🧤 DEFESAS: <b>{j.get('DF', '7+ total')}</b></div>
                     <div style="margin-top:15px; padding-top:12px; border-top:1px dashed #334155; color:#9d54ff; font-size:11px; font-weight:900; text-align:center;">
                         INVESTIMENTO LIVE: R$ {v_entrada:,.2f}
                     </div>
