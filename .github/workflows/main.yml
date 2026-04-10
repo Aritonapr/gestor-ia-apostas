@@ -1,10 +1,12 @@
-name: Atualizar Dados Jarvis 2026
+name: Sistema Integrado Jarvis 2026
 
 on:
   workflow_dispatch: 
   schedule:
-    # Este comando faz o robô rodar automaticamente a cada 6 horas
+    # Roda a cada 6 horas para coletar dados e atualizar o site
     - cron: '0 */6 * * *'
+    # Roda uma vez por dia às 23:30 para fechar a assertividade do dia
+    - cron: '30 23 * * *'
 
 jobs:
   build:
@@ -22,25 +24,25 @@ jobs:
           python-version: '3.9'
 
       - name: 📦 Instalando Dependencias
-        run: |
-          pip install pandas requests
+        run: pip install pandas requests
 
-      - name: 🚀 Rodar Coletor Jarvis (Dados Gratuitos)
+      - name: 🚀 Coletar Novos Jogos (Manhã/Tarde)
         run: python coletor_jarvis.py
 
-      - name: 📊 Rodar Script de Download (Big Data Semanal)
+      - name: 🏆 Fechamento de Assertividade (Noite)
+        run: python fechamento_jarvis.py
+
+      - name: 📊 Atualizar Big Data Semanal
         run: python baixar_big_data.py
 
-      - name: 💾 Salvando no GitHub (Blindagem de Evolução)
+      - name: 💾 Salvando Evolução no GitHub
         run: |
-          git config --global user.name "Jarvis Automation"
+          git config --global user.name "Jarvis Intelligence"
           git config --global user.email "bot@jarvis.ia"
           git add data/*.csv
-          
-          # Verifica se houve mudanças antes de salvar para evitar erros
           if git diff --cached --exit-code; then
-            echo "Nenhuma mudança detectada nos dados hoje."
+            echo "Sem alterações para salvar."
           else
-            git commit -m "📊 Protocolo Jarvis: Dados Atualizados (Sincronia 2026)"
+            git commit -m "📊 Protocolo Jarvis: Coleta e Assertividade Atualizadas"
             git push
           fi
