@@ -1,21 +1,21 @@
 CASA,FORA,LIGA,CONFIANCA,CONF_NUM,VENCEDOR,GOLS,CANTOS,CARTÕES,CHUTES,DEFESAS,DATA,RESULTADO_IA
-Palmeiras,Chelsea,Premier League,73%,73,PROBABILISTICO,OVER 0.5,9.5+,5.5+,8+,7+,13/04/2026,GREEN ✅
-Palmeiras,Inter Milan,La Liga,98%,98,FAVORITO,OVER 1.5,10.5+,4.5+,10+,6+,13/04/2026,GREEN ✅
-Man City,Chelsea,Bundesliga,79%,79,PROBABILISTICO,OVER 1.5,8.5+,4.5+,13+,9+,13/04/2026,GREEN ✅
-Real Madrid,São Paulo,Premier League,88%,88,FAVORITO,OVER 1.5,11.5+,5.5+,8+,8+,13/04/2026,GREEN ✅
-Real Madrid,Dortmund,Bundesliga,68%,68,PROBABILISTICO,OVER 0.5,8.5+,3.5+,7+,6+,13/04/2026,RED ❌
-Barcelona,Benfica,UEFA Champions League,75%,75,PROBABILISTICO,OVER 0.5,10.5+,3.5+,13+,6+,13/04/2026,GREEN ✅
-Liverpool,Chelsea,Premier League,98%,98,FAVORITO,OVER 1.5,9.5+,3.5+,8+,5+,13/04/2026,GREEN ✅
-Flamengo,Benfica,La Liga,87%,87,FAVORITO,OVER 1.5,10.5+,4.5+,9+,5+,13/04/2026,GREEN ✅
-Barcelona,PSG,La Liga,82%,82,FAVORITO,OVER 1.5,9.5+,5.5+,14+,6+,13/04/2026,GREEN ✅
-Real Madrid,Inter Milan,Bundesliga,67%,67,PROBABILISTICO,OVER 0.5,9.5+,5.5+,7+,4+,13/04/2026,GREEN ✅
-Real Madrid,Dortmund,UEFA Champions League,68%,68,PROBABILISTICO,OVER 0.5,10.5+,4.5+,10+,4+,13/04/2026,GREEN ✅
-Real Madrid,Dortmund,Bundesliga,67%,67,PROBABILISTICO,OVER 0.5,9.5+,4.5+,11+,7+,13/04/2026,GREEN ✅
-Man City,São Paulo,Brasileirão Série A,82%,82,FAVORITO,OVER 1.5,11.5+,4.5+,12+,5+,13/04/2026,GREEN ✅
-Barcelona,Benfica,La Liga,85%,85,FAVORITO,OVER 1.5,8.5+,5.5+,10+,7+,13/04/2026,RED ❌
-Barcelona,Benfica,Brasileirão Série A,87%,87,FAVORITO,OVER 1.5,9.5+,5.5+,10+,4+,13/04/2026,GREEN ✅
-Barcelona,PSG,Premier League,90%,90,FAVORITO,OVER 1.5,9.5+,3.5+,14+,9+,13/04/2026,GREEN ✅
-Arsenal,Chelsea,UEFA Champions League,74%,74,PROBABILISTICO,OVER 0.5,11.5+,5.5+,9+,4+,13/04/2026,GREEN ✅
-Arsenal,PSG,Premier League,75%,75,PROBABILISTICO,OVER 0.5,8.5+,5.5+,8+,8+,13/04/2026,RED ❌
-Palmeiras,Juventus,Brasileirão Série A,67%,67,PROBABILISTICO,OVER 0.5,9.5+,5.5+,13+,6+,13/04/2026,GREEN ✅
-Arsenal,Corinthians,La Liga,94%,94,FAVORITO,OVER 1.5,9.5+,3.5+,9+,7+,13/04/2026,GREEN ✅
+Real Madrid,PSG,La Liga,84%,84,FAVORITO,OVER 1.5,8.5+,5.5+,13+,6+,13/04/2026,GREEN ✅
+Palmeiras,Inter Milan,La Liga,76%,76,PROBABILISTICO,OVER 1.5,10.5+,4.5+,9+,5+,13/04/2026,GREEN ✅
+Flamengo,São Paulo,Bundesliga,79%,79,PROBABILISTICO,OVER 1.5,10.5+,5.5+,7+,6+,13/04/2026,GREEN ✅
+Palmeiras,Juventus,UEFA Champions League,96%,96,FAVORITO,OVER 1.5,8.5+,4.5+,12+,7+,13/04/2026,GREEN ✅
+Flamengo,Dortmund,UEFA Champions League,68%,68,PROBABILISTICO,OVER 0.5,10.5+,4.5+,13+,6+,13/04/2026,GREEN ✅
+Flamengo,Dortmund,Brasileirão Série A,74%,74,PROBABILISTICO,OVER 0.5,8.5+,3.5+,7+,6+,13/04/2026,GREEN ✅
+Barcelona,PSG,UEFA Champions League,66%,66,PROBABILISTICO,OVER 0.5,9.5+,3.5+,12+,9+,13/04/2026,RED ❌
+Palmeiras,São Paulo,La Liga,74%,74,PROBABILISTICO,OVER 0.5,9.5+,3.5+,7+,4+,13/04/2026,GREEN ✅
+Liverpool,Benfica,Bundesliga,70%,70,PROBABILISTICO,OVER 0.5,9.5+,3.5+,7+,8+,13/04/2026,RED ❌
+Liverpool,Dortmund,Brasileirão Série A,85%,85,FAVORITO,OVER 1.5,8.5+,5.5+,7+,5+,13/04/2026,RED ❌
+Liverpool,Juventus,Premier League,98%,98,FAVORITO,OVER 1.5,8.5+,5.5+,7+,9+,13/04/2026,GREEN ✅
+Barcelona,Chelsea,La Liga,92%,92,FAVORITO,OVER 1.5,11.5+,5.5+,7+,8+,13/04/2026,GREEN ✅
+Bayern Munich,São Paulo,La Liga,87%,87,FAVORITO,OVER 1.5,8.5+,3.5+,14+,9+,13/04/2026,RED ❌
+Barcelona,Juventus,Brasileirão Série A,85%,85,FAVORITO,OVER 1.5,11.5+,5.5+,11+,6+,13/04/2026,GREEN ✅
+Liverpool,Dortmund,Brasileirão Série A,83%,83,FAVORITO,OVER 1.5,10.5+,4.5+,13+,8+,13/04/2026,GREEN ✅
+Bayern Munich,PSG,UEFA Champions League,95%,95,FAVORITO,OVER 1.5,10.5+,4.5+,9+,7+,13/04/2026,GREEN ✅
+Arsenal,Benfica,UEFA Champions League,95%,95,FAVORITO,OVER 1.5,10.5+,5.5+,8+,4+,13/04/2026,GREEN ✅
+Real Madrid,Dortmund,Brasileirão Série A,71%,71,PROBABILISTICO,OVER 0.5,8.5+,3.5+,12+,7+,13/04/2026,RED ❌
+Real Madrid,São Paulo,UEFA Champions League,93%,93,FAVORITO,OVER 1.5,10.5+,5.5+,12+,8+,13/04/2026,GREEN ✅
+Man City,Benfica,Brasileirão Série A,68%,68,PROBABILISTICO,OVER 0.5,10.5+,5.5+,14+,8+,13/04/2026,RED ❌
