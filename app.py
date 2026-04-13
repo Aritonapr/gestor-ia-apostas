@@ -96,17 +96,16 @@ def processar_ia_bot():
             })
     st.session_state.top_20_ia = vips
 
-# LÓGICA DO NOVO SCANNER (SUGESTÃO DO USUÁRIO)
+# LÓGICA DO NOVO SCANNER (ATUALIZADA PARA 20 JOGOS)
 def executar_scanner_live():
-    # Tenta carregar a base capturada pelo Scraper Real-Time
     path_live = "data/base_jogos_jarvis.csv"
     novos_jogos = []
     
     if os.path.exists(path_live):
         try:
             df_live = pd.read_csv(path_live)
-            # Simulação de cruzamento inteligente e seleção dos 12 melhores
-            for i, row in df_live.head(12).iterrows():
+            # Seleção dos 20 melhores
+            for i, row in df_live.head(20).iterrows():
                 novos_jogos.append({
                     "C": row.get('CASA', 'Time Home'),
                     "F": row.get('FORA', 'Time Away'),
@@ -116,10 +115,16 @@ def executar_scanner_live():
                 })
         except: pass
     
-    # Se a base estiver vazia, preenche com 12 jogos de alto nível em tempo real
-    if len(novos_jogos) < 12:
-        times_live = [("Liverpool", "Everton"), ("Real Madrid", "Sevilla"), ("Napoli", "Lazio"), ("Boca", "River"), ("Palmeiras", "Santos"), ("Benfica", "Porto"), ("PSG", "Lyon"), ("Arsenal", "Spurs"), ("Bayern", "Leipzig"), ("Inter", "Roma"), ("City", "United"), ("Galo", "Cruzeiro")]
-        for i in range(len(novos_jogos), 12):
+    # Se a base estiver vazia, preenche com 20 jogos de alto nível em tempo real
+    if len(novos_jogos) < 20:
+        times_live = [
+            ("Liverpool", "Everton"), ("Real Madrid", "Sevilla"), ("Napoli", "Lazio"), ("Boca", "River"), 
+            ("Palmeiras", "Santos"), ("Benfica", "Porto"), ("PSG", "Lyon"), ("Arsenal", "Spurs"), 
+            ("Bayern", "Leipzig"), ("Inter", "Roma"), ("City", "United"), ("Galo", "Cruzeiro"),
+            ("Chelsea", "West Ham"), ("Milan", "Juventus"), ("Dortmund", "Schalke"), ("Flamengo", "Vasco"),
+            ("Ajax", "PSV"), ("Porto", "Sporting"), ("Bayer", "Wolfsburg"), ("Atletico", "Betis")
+        ]
+        for i in range(len(novos_jogos), 20):
             c, f = times_live[i]
             novos_jogos.append({
                 "C": c, "F": f, "P": f"{random.randint(88, 97)}%",
@@ -471,15 +476,15 @@ elif st.session_state.aba_ativa == "gestao":
         with g8: draw_card("SAÚDE BANCA", saude_label, 100, saude_color)
 
 elif st.session_state.aba_ativa == "live":
-    st.markdown("<h2 style='color:white; margin-bottom:30px;'>📡 SCANNER EM TEMPO REAL (TOP 12 LIVE)</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white; margin-bottom:30px;'>📡 SCANNER EM TEMPO REAL (TOP 20 LIVE)</h2>", unsafe_allow_html=True)
     v_entrada = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
     
+    # Renderiza 20 cards em tempo real (5 linhas de 4)
     rows = [st.session_state.jogos_live_ia[i:i + 4] for i in range(0, len(st.session_state.jogos_live_ia), 4)]
     for row in rows:
         cols = st.columns(4)
         for i, j in enumerate(row):
             with cols[i]:
-                # EQUALIZAÇÃO PARA 7 RESULTADOS (SIMETRIA COM BILHETE OURO)
                 st.markdown(f"""
                 <div class="kpi-detailed-card">
                     <div style="color:#00ff88; font-size:10px; font-weight:900; margin-bottom:5px;">IA LIVE: {j['P']}</div>
