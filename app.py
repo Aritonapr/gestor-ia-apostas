@@ -7,7 +7,7 @@ import random
 import requests
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v79.0 - RESTAURAÇÃO TOTAL + CABEÇALHO ATIVO]
+# [PROTOCOLO DE MANUTENÇÃO v80.0 - CABEÇALHO COMPLETO + FIX SYNC]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -127,7 +127,7 @@ def executar_scanner_live():
 processar_ia_bot()
 
 # ==============================================================================
-# 2. CAMADA DE ESTILO CSS INTEGRAL (REFINO v79.0)
+# 2. CAMADA DE ESTILO CSS INTEGRAL (REFINO v80.0)
 # ==============================================================================
 st.markdown("""
     <style>
@@ -155,18 +155,19 @@ st.markdown("""
         transform: translate3d(0,0,0); -webkit-backface-visibility: hidden;
     }
     
-    .header-left { display: flex; align-items: center; gap: 25px; }
-    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none !important; cursor: pointer;}
-    .nav-links { display: flex; gap: 22px; align-items: center; }
-    .nav-item { color: #ffffff !important; font-size: 11px !important; text-transform: uppercase; font-weight: 600 !important; letter-spacing: 0.5px; transition: 0.3s ease; cursor: pointer; white-space: nowrap; text-decoration: none !important;}
-    .nav-item:hover { color: #06b6d4 !important; transform: scale(1.05); }
+    .header-left { display: flex; align-items: center; gap: 20px; }
+    .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none !important; cursor: pointer; border-bottom: 2px solid #9d54ff; padding-bottom: 2px; }
+    
+    .nav-links { display: flex; gap: 18px; align-items: center; }
+    .nav-item { color: #ffffff !important; font-size: 10px !important; text-transform: uppercase; font-weight: 700 !important; letter-spacing: 0.3px; transition: 0.3s ease; cursor: pointer; white-space: nowrap; text-decoration: none !important;}
+    .nav-item:hover { color: #06b6d4 !important; transform: scale(1.02); }
 
-    .header-right { display: flex; align-items: center; gap: 15px; min-width: 320px; justify-content: flex-end; }
+    .header-right { display: flex; align-items: center; gap: 12px; min-width: 280px; justify-content: flex-end; }
     .search-lupa { color: #ffffff; font-size: 16px; cursor: pointer; margin-right: 5px; }
     
-    .registrar-pill { color: #ffffff !important; font-size: 9px !important; font-weight: 800; border: 1.5px solid #ffffff !important; padding: 7px 18px !important; border-radius: 20px !important; transition: 0.3s ease; cursor: pointer; white-space: nowrap; }
+    .registrar-pill { color: #ffffff !important; font-size: 9px !important; font-weight: 800; border: 1.5px solid #ffffff !important; padding: 6px 15px !important; border-radius: 20px !important; transition: 0.3s ease; cursor: pointer; white-space: nowrap; }
     .registrar-pill:hover { background: white !important; color: #001a4d !important; }
-    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 8px 22px !important; border-radius: 5px !important; font-weight: 800; font-size: 9.5px; transition: 0.3s ease; cursor: pointer; white-space: nowrap; }
+    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 20px !important; border-radius: 5px !important; font-weight: 800; font-size: 9.5px; transition: 0.3s ease; cursor: pointer; white-space: nowrap; }
 
     [data-testid="stSidebar"] { min-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
@@ -186,7 +187,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. HEADER SIDEBAR (BLINDADO)
+# 3. HEADER SIDEBAR (BLINDADO - MENU COMPLETO CONFORME IMAGEM)
 with st.sidebar:
     st.markdown("""
         <div class="betano-header">
@@ -195,10 +196,17 @@ with st.sidebar:
                 <div class="nav-links">
                     <a href="?go=home" class="nav-item">APOSTAS ESPORTIVAS</a>
                     <a href="?go=live" class="nav-item">APOSTAS AO VIVO</a>
+                    <div class="nav-item">APOSTAS ENCONTRADAS</div>
+                    <div class="nav-item">ESTATÍSTICAS AVANÇADAS</div>
+                    <div class="nav-item">MERCADO PROBABILÍSTICO</div>
                     <a href="?go=assertividade" class="nav-item">ASSERTIVIDADE IA</a>
                 </div>
             </div>
-            <div class="header-right"><div class="search-lupa">🔍</div><div class="registrar-pill">REGISTRAR</div><div class="entrar-grad">ENTRAR</div></div>
+            <div class="header-right">
+                <div class="search-lupa">🔍</div>
+                <div class="registrar-pill">REGISTRAR</div>
+                <div class="entrar-grad">ENTRAR</div>
+            </div>
         </div>
         <div style="height:65px;"></div>
     """, unsafe_allow_html=True) 
@@ -216,7 +224,7 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">{title}</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:{color_footer}; height:100%; width:{perc}%;"></div></div></div>""", unsafe_allow_html=True)
 
 # ==============================================================================
-# 4. LÓGICA DE TELAS (RESTAURAÇÃO v79.0)
+# 4. LÓGICA DE TELAS (RESTAURAÇÃO v80.0)
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
@@ -259,16 +267,8 @@ elif st.session_state.aba_ativa == "gestao":
     v_m = (st.session_state.banca_total * st.session_state.meta_diaria / 100)
     v_l = (st.session_state.banca_total * st.session_state.stop_loss / 100)
     with c_out:
-        g1, g2, g3, g4 = st.columns(4)
-        with g1: draw_card("VALOR ENTRADA", f"R$ {v_s:,.2f}", 100, "#00d2ff")
-        with g2: draw_card("STOP GAIN", f"R$ {v_m:,.2f}", 100, "#00d2ff")
-        with g3: draw_card("STOP LOSS", f"R$ {v_l:,.2f}", 100, "#00d2ff")
-        with g4: draw_card("ALVO FINAL", f"R$ {(st.session_state.banca_total+v_m):,.2f}", 100, "#00d2ff")
-        g5, g6, g7, g8 = st.columns(4)
-        with g5: draw_card("RISCO TOTAL", f"{st.session_state.stake_padrao}%", 100, "#00d2ff")
-        with g6: draw_card("ENTRADAS/META", f"{int(v_m/v_s) if v_s>0 else 0}", 100, "#00d2ff")
-        with g7: draw_card("ENTRADAS/LOSS", f"{int(v_l/v_s) if v_s>0 else 0}", 100, "#00d2ff")
-        with g8: draw_card("SAÚDE BANCA", "EXCELENTE", 100, "#00ff88")
+        g1, g2, g3, g4 = st.columns(4); with g1: draw_card("VALOR ENTRADA", f"R$ {v_s:,.2f}", 100, "#00d2ff"); with g2: draw_card("STOP GAIN", f"R$ {v_m:,.2f}", 100, "#00d2ff"); with g3: draw_card("STOP LOSS", f"R$ {v_l:,.2f}", 100, "#00d2ff"); with g4: draw_card("ALVO FINAL", f"R$ {(st.session_state.banca_total+v_m):,.2f}", 100, "#00d2ff")
+        g5, g6, g7, g8 = st.columns(4); with g5: draw_card("RISCO TOTAL", f"{st.session_state.stake_padrao}%", 100, "#00d2ff"); with g6: draw_card("ENTRADAS/META", f"{int(v_m/v_s) if v_s>0 else 0}", 100, "#00d2ff"); with g7: draw_card("ENTRADAS/LOSS", f"{int(v_l/v_s) if v_s>0 else 0}", 100, "#00d2ff"); with g8: draw_card("SAÚDE BANCA", "EXCELENTE", 100, "#00ff88")
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📡 SCANNER AO VIVO (TOP 20 LIVE)</h2>", unsafe_allow_html=True)
@@ -279,33 +279,6 @@ elif st.session_state.aba_ativa == "live":
             with cols[i]:
                 st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#00ff88; font-size:10px; font-weight:900;">IA LIVE: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b;">{j['C']} vs {j['F']}</div><div class="kpi-stat">🏆 VENCEDOR: <b>{j['V']}</b></div><div class="kpi-stat">⚽ GOLS: <b>{j['G']}</b></div><div class="kpi-stat">🟨 CARTÕES: <b>{j['CT']}</b></div><div class="kpi-stat">🚩 ESCANTEIOS: <b>{j['E']}</b></div><div class="kpi-stat">👟 TIROS META: <b>{j['TM']}</b></div><div class="kpi-stat">🥅 CHUTES GOL: <b>{j['CH']}</b></div><div class="kpi-stat">🧤 DEFESAS: <b>{j['DF']}</b></div></div>""", unsafe_allow_html=True)
 
-elif st.session_state.aba_ativa == "vencedores":
-    st.markdown("<h2 style='color:white; margin-bottom:30px;'>🏆 VENCEDORES - TOP 20</h2>", unsafe_allow_html=True)
-    rows = [st.session_state.top_20_ia[i:i + 4] for i in range(0, 20, 4)]
-    for row in rows:
-        cols = st.columns(4)
-        for i, j in enumerate(row):
-            with cols[i]:
-                st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#ffcc00; font-size:10px; font-weight:900;">CHANCE: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:10px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">🏆 VENCEDOR: <b>{j['V']}</b></div></div>""", unsafe_allow_html=True)
-
-elif st.session_state.aba_ativa == "gols":
-    st.markdown("<h2 style='color:white; margin-bottom:30px;'>⚽ GOLS - TOP 20</h2>", unsafe_allow_html=True)
-    rows = [st.session_state.top_20_ia[i:i + 4] for i in range(0, 20, 4)]
-    for row in rows:
-        cols = st.columns(4)
-        for i, j in enumerate(row):
-            with cols[i]:
-                st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#00d2ff; font-size:10px; font-weight:900;">GOLS: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:10px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">⚽ GOLS: <b>{j['G']}</b></div></div>""", unsafe_allow_html=True)
-
-elif st.session_state.aba_ativa == "escanteios":
-    st.markdown("<h2 style='color:white; margin-bottom:30px;'>🚩 ESCANTEIOS - TOP 20</h2>", unsafe_allow_html=True)
-    rows = [st.session_state.top_20_ia[i:i + 4] for i in range(0, 20, 4)]
-    for row in rows:
-        cols = st.columns(4)
-        for i, j in enumerate(row):
-            with cols[i]:
-                st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#ff4b4b; font-size:10px; font-weight:900;">CANTOS: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:10px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">🚩 CANTOS: <b>{j['E']}</b></div></div>""", unsafe_allow_html=True)
-
 elif st.session_state.aba_ativa == "assertividade":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📈 ASSERTIVIDADE IA</h2>", unsafe_allow_html=True)
     path_perf = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/historico_assertividade.csv"
@@ -313,7 +286,7 @@ elif st.session_state.aba_ativa == "assertividade":
         df_p = pd.read_csv(f"{path_perf}?v={datetime.now().timestamp()}")
         if not df_p.empty:
             for r in list(reversed(df_p.to_dict('records'))):
-                st.markdown(f"""<div class="kpi-detailed-card" style="border-left:5px solid #00ff88;"><div style="color:#00ff88; font-size:10px; font-weight:900;">DATA: {r['DATA']}</div><div style="display:flex; justify-content:space-between; align-items:center;"><div style="color:white; font-size:14px; font-weight:800;">ASSERTIVIDADE: <span style="color:#00ff88;">{r['ASSERTIVIDADE']}</span></div><div style="color:#94a3b8; font-size:11px;">JOGOS: {r['JOGOS_ANALISADOS']} | ACERTOS: {r['ACERTOS']}</div></div></div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div class="kpi-detailed-card" style="border-left:5px solid #00ff88;"><div style="color:#00ff88; font-size:10px; font-weight:900;">FECHAMENTO: {r['DATA']}</div><div style="display:flex; justify-content:space-between; align-items:center;"><div style="color:white; font-size:14px; font-weight:800;">ASSERTIVIDADE: <span style="color:#00ff88;">{r['ASSERTIVIDADE']}</span></div><div style="color:#94a3b8; font-size:11px;">JOGOS: {r['JOGOS_ANALISADOS']} | ACERTOS: {r['ACERTOS']}</div></div></div>""", unsafe_allow_html=True)
     except: st.info("Aguardando processamento automático de dados históricos.")
 
 elif st.session_state.aba_ativa == "historico":
@@ -328,7 +301,7 @@ elif st.session_state.aba_ativa == "historico":
                 with cols[i]:
                     st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#06b6d4; font-size:10px; font-weight:900;">HORÁRIO: {call['data']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{call['casa']} vs {call['fora']}</div><div class="kpi-stat">🏆 CALL: <b>{call.get('vencedor', 'N/A')}</b></div><div class="kpi-stat">⚽ GOLS: <b>{call.get('gols', 'N/A')}</b></div><div class="kpi-stat">🚩 CANTOS: <b>{call.get('cantos', 'N/A')}</b></div><div class="kpi-stat">🟨 CARTÕES: <b>{call.get('cartoes', 'N/A')}</b></div><div class="kpi-stat">BTTS: <b>{call.get('btss', 'N/A')}</b></div><div class="kpi-stat">IA CONF: <b>{call.get('confia', 'N/A')}</b></div><div style="margin-top:15px; color:#9d54ff; font-size:11px; font-weight:900; text-align:center;">INVESTIDO: {call['stake_val']}</div></div>""", unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v79.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v80.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
 
 def sync():
     url = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
