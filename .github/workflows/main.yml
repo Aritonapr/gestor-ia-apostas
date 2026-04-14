@@ -1,43 +1,17 @@
-name: Sistema Integrado Jarvis 2026
-
-on:
-  workflow_dispatch: 
-  schedule:
-    # Roda automaticamente a cada 6 horas para atualizar os jogos
-    - cron: '0 */6 * * *'
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      
-    steps:
-      - name: 📥 Baixando Repositorio
-        uses: actions/checkout@v3
-
-      - name: 🐍 Configurando Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-
-      - name: 📦 Instalando Dependencias
-        run: pip install pandas requests
-
-      - name: 🚀 Executar Coletor Jarvis (Novos Jogos)
+- name: 🚀 Executar Coletor Jarvis
         run: python coletor_jarvis.py
 
-      - name: 🏆 Executar Fechamento Jarvis (Assertividade)
+      - name: 🏆 Executar Fechamento Jarvis
         run: python fechamento_jarvis.py
 
-      - name: 💾 Salvando Evolucao no GitHub
+      - name: 💾 Salvando Dados no GitHub
         run: |
           git config --global user.name "Jarvis Intelligence"
           git config --global user.email "bot@jarvis.ia"
           git add data/*.csv
           if git diff --cached --exit-code; then
-            echo "Sem novos dados para salvar."
+            echo "Sem novos dados."
           else
-            git commit -m "📊 Protocolo Jarvis: Coleta e Assertividade Atualizadas"
+            git commit -m "📊 Protocolo Jarvis: Coleta e Assertividade Sincronizadas"
             git push
           fi
