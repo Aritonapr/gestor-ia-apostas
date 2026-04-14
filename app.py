@@ -7,12 +7,12 @@ import random
 import requests
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v84.0 - BANCO DE DADOS COMPLETO + SCANNER PRO]
+# [PROTOCOLO DE MANUTENÇÃO v85.0 - HIERARQUIA TOTAL DE COMPETIÇÕES]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
 # DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO)
-# DIRETRIZ 5: CÓDIGO 100% ÍNTEGRO - TODAS AS COMPETIÇÕES ADICIONADAS
+# DIRETRIZ 5: CÓDIGO 100% ÍNTEGRO - ORGANIZAÇÃO DE 3 NÍVEIS NO SCANNER
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -54,7 +54,7 @@ if query_params.get("go") == "live":
     st.session_state.aba_ativa = "live"
     st.query_params.clear()
 
-# --- FUNÇÃO DE CARREGAMENTO DE DADOS (CONEXÃO REAL GITHUB 2026) ---
+# --- FUNÇÃO DE CARREGAMENTO DE DADOS ---
 def carregar_dados_ia():
     url_github = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
     try:
@@ -103,15 +103,10 @@ def processar_ia_bot():
                     })
         except:
             pass
-
     if len(vips) < 20:
         elite = ["Real Madrid", "Man City", "Bayern", "Arsenal", "Barcelona", "PSG", "Inter", "Milan", "Flamengo", "Palmeiras", "Liverpool", "Juventus", "Dortmund", "Leverkusen", "Napoli", "Benfica", "Porto", "Ajax", "Atletico Madrid", "Chelsea"]
         for i in range(len(vips), 20):
-            vips.append({
-                "C": elite[i % 20], "F": elite[(i+5) % 20], "P": f"{95-i}%",
-                "V": "68% (PROB)", "G": "OVER 1.5 (HT/FT)", "CT": "4.5 total",
-                "E": "9.5 total", "TM": "14+ total", "CH": "9+ total", "DF": "7+ total"
-            })
+            vips.append({"C": elite[i % 20], "F": elite[(i+5) % 20], "P": f"{95-i}%", "V": "68% (PROB)", "G": "OVER 1.5 (HT/FT)", "CT": "4.5 total", "E": "9.5 total", "TM": "14+ total", "CH": "9+ total", "DF": "7+ total"})
     st.session_state.top_20_ia = vips
 
 def executar_scanner_live():
@@ -121,13 +116,7 @@ def executar_scanner_live():
         try:
             df_live = pd.read_csv(path_live)
             for i, row in df_live.head(20).iterrows():
-                novos_jogos.append({
-                    "C": row.get('CASA', 'Time Home'),
-                    "F": row.get('FORA', 'Time Away'),
-                    "P": f"{random.randint(85, 98)}%",
-                    "V": "LIVE (PROB)", "G": "PROX. GOL HT", "CT": "LIVE +1.5",
-                    "E": "RACE 7", "TM": "ALTO FLUXO", "CH": "PRESSÃO", "DF": "GOLEIRO OK"
-                })
+                novos_jogos.append({"C": row.get('CASA', 'Time Home'), "F": row.get('FORA', 'Time Away'), "P": f"{random.randint(85, 98)}%", "V": "VITORIA LIVE", "G": "+0.5 GOLS", "CT": "2.5 total", "E": "10.5 total", "TM": "18+ total", "CH": "10+ total", "DF": "8+ total"})
         except:
             pass
     if len(novos_jogos) < 20:
@@ -140,7 +129,7 @@ def executar_scanner_live():
 processar_ia_bot()
 
 # ==============================================================================
-# 2. CAMADA DE ESTILO CSS INTEGRAL (REFINO v84.0)
+# 2. CAMADA DE ESTILO CSS INTEGRAL (REFINO v85.0)
 # ==============================================================================
 st.markdown("""
     <style>
@@ -221,7 +210,7 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">{title}</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:{color_footer}; height:100%; width:{perc}%;"></div></div></div>""", unsafe_allow_html=True)
 
 # ==============================================================================
-# 4. LÓGICA DE TELAS (RESTAURAÇÃO v84.0 INTEGRAL)
+# 4. LÓGICA DE TELAS (RESTAURAÇÃO v85.0 INTEGRAL)
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
@@ -239,52 +228,50 @@ if st.session_state.aba_ativa == "home":
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    # HIERARQUIA COMPLETA SOLICITADA PELO USUÁRIO
+    # HIERARQUIA ORGANIZADA CONFORME SOLICITADO
     db_h = {
-        "BR BRASIL (LIGAS & COPAS)": {
-            "BRASILEIRÃO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D", "SUB-17", "SUB-20"],
-            "COPAS NACIONAIS": ["Copa do Brasil", "Copa do Nordeste", "Copa Verde", "Copa Paulista", "Copa Sul-Sudeste", "Supercopa do Brasil"]
+        "BRASIL": {
+            "BRASILEIRÃO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D", "SUB-20", "SUB-17"],
+            "ESTADUAIS": ["Campeonato Carioca", "Campeonato Paulistano", "Campeonato Mineiro", "Campeonato Gaúcho", "Campeonato Paranaense", "Campeonato Catarinense", "Campeonato Baiano", "Campeonato Pernambucano", "Campeonato Cearense", "Campeonato Goiano", "Campeonato Alagoano", "Campeonato Paraense", "Campeonato Mato-Grossense", "Campeonato Maranhense", "Campeonato Paraibano", "Campeonato Potiguar", "Campeonato Sergipano", "Campeonato Piauiense", "Campeonato Amazonense", "Campeonato Acreano", "Campeonato Amapaense", "Campeonato Capixaba", "Campeonato Brasiliense"],
+            "COPAS": ["Copa do Brasil", "Supercopa do Brasil", "Copa do Nordeste", "Copa Verde", "Copa Paulista", "Copa Sul-Sudeste", "Copinha"]
         },
-        "BR BRASIL (ESTADUAIS)": {
-            "NORTE/NORDESTE": ["Campeonato Acreano", "Campeonato Alagoano", "Campeonato Amapaense", "Campeonato Amazonense", "Campeonato Baiano", "Campeonato Cearense", "Campeonato Maranhense", "Campeonato Paraense", "Campeonato Paraibano", "Campeonato Pernambucano", "Campeonato Piauiense"],
-            "SUL/SUDESTE/CENTRO": ["Campeonato Carioca", "Campeonato Paulistano", "Campeonato Mineiro", "Campeonato Gaúcho", "Campeonato Goiano", "Campeonato Mato-Grossense", "Campeonato Paranaense", "Campeonato Catarinense", "Campeonato Brasiliense", "Campeonato Capixaba"],
-            "BASE": ["Copinha", "Paulista Sub-20"]
-        },
-        "AMÉRICA DO SUL (CONMEBOL)": {
-            "CONTINENTAL": ["Copa Libertadores", "Libertadores Sub-20", "Copa Sulamericana", "Recopa Sul-Americana"],
-            "QUALIFICAÇÃO": ["Eliminatórias Copa do Mundo - América do Sul", "Sul-Americano Sub-17"]
-        },
-        "EU EUROPA (ELITE & UEFA)": {
+        "EUROPA": {
             "UEFA CLUBES": ["Champions League", "Liga Europa", "Liga Conferência"],
-            "LIGAS NACIONAIS": ["Premier League", "La Liga", "Serie A (Itália)", "Bundesliga", "Ligue 1"],
-            "COPAS NACIONAIS": ["Copa da Inglaterra", "Copa da Liga Inglesa", "Copa do Rei", "Copa da Itália", "Copa da Alemanha", "Copa da França"]
+            "LIGAS ELITE": ["Premier League", "La Liga", "Serie A (Itália)", "Bundesliga", "Ligue 1", "Campeonato Saudita"],
+            "COPAS": ["Copa da Inglaterra", "Copa da Liga Inglesa", "Copa do Rei", "Copa da Itália", "Copa da Alemanha", "Copa da França"]
         },
-        "MUNDO & SELEÇÕES (FIFA)": {
-            "MUNDIAL": ["Copa do Mundo 2026", "Eliminatórias Copa - Europa", "Eliminatórias Repescagem", "Copa América", "Copa do Mundo de Clubes", "Copa do Mundo Sub-20", "Copa Intercontinental"],
-            "Ásia/Arábia": ["Campeonato Saudita", "Champions League da Ásia"]
+        "AMÉRICA DO SUL": {
+            "CONMEBOL": ["Copa Libertadores", "Libertadores Sub-20", "Copa Sulamericana", "Recopa Sul-Americana"],
+            "SELEÇÕES": ["Eliminatórias Copa - América do Sul", "Copa América", "Sul-Americano Sub-17"]
+        },
+        "MUNDO & FIFA": {
+            "MUNDIAL": ["Copa do Mundo 2026", "Eliminatórias Copa - Europa", "Eliminatórias Repescagem", "Copa do Mundo de Clubes", "Copa do Mundo Sub-20", "Copa Intercontinental"],
+            "ÁSIA": ["Champions League da Ásia"]
         }
     }
     
     r_f = st.columns(3)
     with r_f[0]:
-        s_cat = st.selectbox("🌎 CATEGORIA", list(db_h.keys()))
+        s_regiao = st.selectbox("🌎 REGIÃO / PAÍS", list(db_h.keys()))
     with r_f[1]:
-        s_tipo = st.selectbox("📂 TIPO", list(db_h[s_cat].keys()))
+        s_grupo = st.selectbox("📂 GRUPO", list(db_h[s_regiao].keys()))
     with r_f[2]:
-        s_comp = st.selectbox("🏆 CAMPEONATO", db_h[s_cat][s_tipo])
+        s_comp = st.selectbox("🏆 COMPETIÇÃO", db_h[s_regiao][s_grupo])
     
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     
-    # Lógica de Times Sugeridos conforme a Região
-    sugestao_times = ["Athletico-PR", "Atlético-MG", "Flamengo", "Palmeiras", "Real Madrid", "Man City", "Arsenal", "Barcelona", "Corinthians", "São Paulo", "Grêmio", "Inter Milan", "Bayern", "PSG", "Liverpool"]
-    if "EUROPA" in s_cat: sugestao_times = ["Real Madrid", "Man City", "Bayern", "Liverpool", "Arsenal", "Barcelona", "Inter Milan", "Milan", "Juventus", "Chelsea", "Dortmund", "PSG"]
-    if "MUNDO" in s_cat: sugestao_times = ["Brasil", "Argentina", "França", "Inglaterra", "Espanha", "Alemanha", "Portugal", "Holanda", "Marrocos", "Japão", "Itália"]
+    # Lista Dinâmica de Times
+    times_base = ["Athletico-PR", "Atlético-MG", "Flamengo", "Palmeiras", "Real Madrid", "Man City", "Arsenal", "Barcelona", "Corinthians", "São Paulo", "Inter Milan", "Bayern", "Liverpool", "PSG", "Boca Juniors", "River Plate"]
+    if "EUROPA" in s_regiao:
+        times_base = ["Real Madrid", "Man City", "Bayern", "Arsenal", "Barcelona", "PSG", "Inter Milan", "Milan", "Juventus", "Chelsea", "Liverpool", "Dortmund", "Leverkusen", "Napoli"]
+    elif "MUNDO" in s_regiao:
+        times_base = ["Brasil", "Argentina", "França", "Inglaterra", "Espanha", "Alemanha", "Portugal", "Holanda", "Itália", "Uruguai", "Japão", "Marrocos"]
 
     c1, c2 = st.columns(2)
     with c1:
-        t_c = st.selectbox("🏠 TIME DA CASA", sugestao_times)
+        t_c = st.selectbox("🏠 TIME DA CASA", times_base)
     with c2:
-        t_f = st.selectbox("🚀 TIME DE FORA", [t for t in sugestao_times if t != t_c])
+        t_f = st.selectbox("🚀 TIME DE FORA", [t for t in times_base if t != t_c])
     
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         st.session_state.analise_bloqueada = {"casa": t_c, "fora": t_f, "vencedor": "ALTA PROB.", "gols": "OVER 1.5", "stake_val": f"R$ {(st.session_state.banca_total*st.session_state.stake_padrao/100):,.2f}", "cantos": "9.5+", "btss": "SIM (74%)", "cartoes": "4.5+", "chutes": "8.5 p/g", "confia": "94.2%", "data": datetime.now().strftime("%H:%M")}
@@ -318,16 +305,8 @@ elif st.session_state.aba_ativa == "gestao":
     v_m = (st.session_state.banca_total * st.session_state.meta_diaria / 100)
     v_l = (st.session_state.banca_total * st.session_state.stop_loss / 100)
     with c_out:
-        g1, g2, g3, g4 = st.columns(4)
-        with g1: draw_card("VALOR ENTRADA", f"R$ {v_s:,.2f}", 100, "#00d2ff")
-        with g2: draw_card("STOP GAIN", f"R$ {v_m:,.2f}", 100, "#00d2ff")
-        with g3: draw_card("STOP LOSS", f"R$ {v_l:,.2f}", 100, "#00d2ff")
-        with g4: draw_card("ALVO FINAL", f"R$ {(st.session_state.banca_total+v_m):,.2f}", 100, "#00d2ff")
-        g5, g6, g7, g8 = st.columns(4)
-        with g5: draw_card("RISCO TOTAL", f"{st.session_state.stake_padrao}%", 100, "#00d2ff")
-        with g6: draw_card("ENTRADAS/META", f"{int(v_m/v_s) if v_s>0 else 0}", 100, "#00d2ff")
-        with g7: draw_card("ENTRADAS/LOSS", f"{int(v_l/v_s) if v_s>0 else 0}", 100, "#00d2ff")
-        with g8: draw_card("SAÚDE BANCA", "EXCELENTE", 100, "#00ff88")
+        g1, g2, g3, g4 = st.columns(4); with g1: draw_card("VALOR ENTRADA", f"R$ {v_s:,.2f}", 100, "#00d2ff"); with g2: draw_card("STOP GAIN", f"R$ {v_m:,.2f}", 100, "#00d2ff"); with g3: draw_card("STOP LOSS", f"R$ {v_l:,.2f}", 100, "#00d2ff"); with g4: draw_card("ALVO FINAL", f"R$ {(st.session_state.banca_total+v_m):,.2f}", 100, "#00d2ff")
+        g5, g6, g7, g8 = st.columns(4); with g5: draw_card("RISCO TOTAL", f"{st.session_state.stake_padrao}%", 100, "#00d2ff"); with g6: draw_card("ENTRADAS/META", f"{int(v_m/v_s) if v_s>0 else 0}", 100, "#00d2ff"); with g7: draw_card("ENTRADAS/LOSS", f"{int(v_l/v_s) if v_s>0 else 0}", 100, "#00d2ff"); with g8: draw_card("SAÚDE BANCA", "EXCELENTE", 100, "#00ff88")
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📡 SCANNER EM TEMPO REAL (TOP 20 LIVE)</h2>", unsafe_allow_html=True)
@@ -387,7 +366,7 @@ elif st.session_state.aba_ativa == "escanteios":
             with cols[i]:
                 st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#ff4b4b; font-size:10px; font-weight:900;">CANTOS: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:10px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">🚩 CANTOS: <b>{j['E']}</b></div></div>""", unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v84.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v85.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
 
 def sync():
     url = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
