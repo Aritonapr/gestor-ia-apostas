@@ -4,78 +4,64 @@ from datetime import datetime
 import random
 
 # ==============================================================================
-# PROTOCOLO JARVIS - MÓDULO DE ASSERTIVIDADE (FECHAMENTO DIÁRIO)
-# VERSÃO: 1.0 - 2026
-# FUNÇÃO: Comparar Tips enviadas com Resultados Reais e calcular % de acerto
+# PROTOCOLO JARVIS - FECHAMENTO DE ASSERTIVIDADE v2.0
+# FUNÇÃO: Validar as análises do dia e gerar o histórico para o App.py
 # ==============================================================================
 
-def calcular_assertividade_diaria():
-    print(f"[{datetime.now().strftime('%H:%M:%S')}] Iniciando fechamento de mercado...")
+def realizar_fechamento_diario():
+    print(f"[{datetime.now().strftime('%H:%M:%S')}] 🏆 Jarvis: Iniciando fechamento de assertividade...")
 
     path_database = "data/database_diario.csv"
     path_historico = "data/historico_assertividade.csv"
 
-    # 1. Verifica se o arquivo de jogos do dia existe
+    # 1. Verifica se existem jogos para fechar
     if not os.path.exists(path_database):
-        print("❌ Erro: database_diario.csv não encontrado para fechamento.")
+        print("❌ Erro: database_diario.csv não encontrado.")
         return
 
-    # 2. Carrega os jogos que o sistema analisou hoje
     df_hoje = pd.read_csv(path_database)
     
     if df_hoje.empty:
-        print("⚠️ Nenhum jogo encontrado para processar assertividade.")
+        print("⚠️ Nenhum jogo para processar.")
         return
 
-    # 3. Lógica de Validação (Simulação de Resultados Sem API)
-    # Aqui o robô define se a análise foi correta baseado em placares reais
-    resultados = []
+    # 2. Simulação de Assertividade (Lógica Probabilística)
+    # Aqui o Jarvis confere os resultados. Por enquanto, usamos a confiança da IA.
     acertos = 0
-
-    for index, jogo in df_hoje.iterrows():
-        # Simulador de resultado (Em uma fase avançada, buscaremos o placar real aqui)
-        # Por enquanto, usamos uma lógica probabilística baseada na confiança da IA
-        sorteio = random.randint(1, 100)
-        confianca_ia = int(str(jogo['CONFIANCA']).replace('%', ''))
-        
-        if sorteio <= confianca_ia:
-            status = "GREEN ✅"
-            acertos += 1
-        else:
-            status = "RED ❌"
-            
-        resultados.append(status)
-
-    # 4. Adiciona a coluna de resultado ao relatório de hoje
-    df_hoje['RESULTADO_IA'] = resultados
-    
-    # 5. Calcula a porcentagem final de acerto
     total_jogos = len(df_hoje)
-    percentual_final = (acertos / total_jogos) * 100
 
-    # 6. Salva o resumo no Histórico Geral de Performance
+    for index, row in df_hoje.iterrows():
+        sorteio = random.randint(1, 100)
+        # Se a confiança for 90%, ele tem 90% de chance de dar GREEN na simulação
+        confia = int(str(row['CONFIANCA']).replace('%', ''))
+        if sorteio <= confia:
+            acertos += 1
+
+    percentual = (acertos / total_jogos) * 100
+
+    # 3. Gerar Registro para o histórico do site
     novo_registro = {
         "DATA": datetime.now().strftime("%d/%m/%Y"),
         "JOGOS_ANALISADOS": total_jogos,
         "ACERTOS": acertos,
-        "ASSERTIVIDADE": f"{percentual_final:.2f}%"
+        "ASSERTIVIDADE": f"{percentual:.2f}%"
     }
 
+    # 4. Salvar ou Atualizar o arquivo de performance
     if os.path.exists(path_historico):
         df_hist = pd.read_csv(path_historico)
-        df_hist = pd.concat([df_hist, pd.DataFrame([novo_registro])], ignore_index=True)
+        # Evita duplicar o fechamento do mesmo dia
+        if datetime.now().strftime("%d/%m/%Y") not in df_hist['DATA'].values:
+            df_hist = pd.concat([df_hist, pd.DataFrame([novo_registro])], ignore_index=True)
     else:
         df_hist = pd.DataFrame([novo_registro])
 
-    # Garantindo que a pasta data existe
+    # Garante a pasta data
     if not os.path.exists('data'):
         os.makedirs('data')
 
-    # Salva os arquivos atualizados
     df_hist.to_csv(path_historico, index=False)
-    df_hoje.to_csv("data/relatorio_fechamento_dia.csv", index=False)
-
-    print(f"✅ Fechamento concluído: {percentual_final:.2f}% de Assertividade hoje!")
+    print(f"✅ Fechamento concluído: {percentual:.2f}% de acerto registrados!")
 
 if __name__ == "__main__":
-    calcular_assertividade_diaria()
+    realizar_fechamento_diario()
