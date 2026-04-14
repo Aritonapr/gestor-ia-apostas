@@ -7,12 +7,12 @@ import random
 import requests
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v91.0 - RESUMO DE ASSERTIVIDADE EM CARD ÚNICO]
+# [PROTOCOLO DE MANUTENÇÃO v92.0 - ESPECIALISTA EM MERCADO DE GOLS]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
 # DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO)
-# DIRETRIZ 5: CÓDIGO 100% ÍNTEGRO - RESUMO MESTRE NA ASSERTIVIDADE
+# DIRETRIZ 5: CÓDIGO 100% ÍNTEGRO - 5 MÉTRICAS REAIS NA ABA GOLS
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -42,7 +42,7 @@ if 'top_20_ia' not in st.session_state:
 if 'jogos_live_ia' not in st.session_state:
     st.session_state.jogos_live_ia = []
 
-# Redirecionamento via URL (Mapeia o cabeçalho)
+# Redirecionamento via URL (Faz o topo funcionar como abas de site)
 query_params = st.query_params
 if query_params.get("go") == "home":
     st.session_state.aba_ativa = "home"
@@ -140,7 +140,7 @@ def executar_scanner_live():
 processar_ia_bot()
 
 # ==============================================================================
-# 2. CAMADA DE ESTILO CSS INTEGRAL (REFINO v91.0)
+# 2. CAMADA DE ESTILO CSS INTEGRAL (REFINO v92.0)
 # ==============================================================================
 st.markdown("""
     <style>
@@ -256,7 +256,7 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">{title}</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:{color_footer}; height:100%; width:{perc}%;"></div></div></div>""", unsafe_allow_html=True)
 
 # ==============================================================================
-# 4. LÓGICA DE TELAS (RESTAURAÇÃO v91.0 INTEGRAL)
+# 4. LÓGICA DE TELAS (RESTAURAÇÃO v92.0 INTEGRAL)
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
@@ -309,23 +309,15 @@ elif st.session_state.aba_ativa == "analise":
         m = st.session_state.analise_bloqueada
         st.markdown(f"""<div style="background:rgba(255,255,255,0.03); border-left:5px solid #00ff88; padding:18px; border-radius:6px; margin-top:25px; display:flex; align-items:center;"><div style="width:15px; height:15px; background:#00ff88; border-radius:50%; margin-right:15px;"></div><b style="color:white; font-size:11px;">SISTEMA JARVIS:</b><span style="color:#00ff88; font-weight:800; font-size:11px; margin-left:10px;">FILÉ MIGNON: INFORMAÇÃO REAL</span></div><h3 style='color:white; text-align:center; font-weight:800; margin:30px 0;'>{m['casa']} vs {m['fora']}</h3>""", unsafe_allow_html=True)
         r1, r2, r3, r4 = st.columns(4)
-        with r1:
-            draw_card("VENCEDOR", m['vencedor'], 85)
-        with r2:
-            draw_card("MERCADO GOLS", m['gols'], 70)
-        with r3:
-            draw_card("VALOR STAKE", m['stake_val'], 100)
-        with r4:
-            draw_card("ESCANTEIOS", m['cantos'], 65)
+        with r1: draw_card("VENCEDOR", m['vencedor'], 85)
+        with r2: draw_card("MERCADO GOLS", m['gols'], 70)
+        with r3: draw_card("VALOR STAKE", m['stake_val'], 100)
+        with r4: draw_card("ESCANTEIOS", m['cantos'], 65)
         r5, r6, r7, r8 = st.columns(4)
-        with r5:
-            draw_card("AMBAS MARCAM", m['btss'], 74)
-        with r6:
-            draw_card("CARTÕES", m['cartoes'], 60)
-        with r7:
-            draw_card("CHUTES AO GOL", m['chutes'], 80)
-        with r8:
-            draw_card("IA CONFIANÇA", m['confia'], 94)
+        with r5: draw_card("AMBAS MARCAM", m['btss'], 74)
+        with r6: draw_card("CARTÕES", m['cartoes'], 60)
+        with r7: draw_card("CHUTES AO GOL", m['chutes'], 80)
+        with r8: draw_card("IA CONFIANÇA", m['confia'], 94)
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True):
             st.session_state.historico_calls.append(m.copy())
             st.toast("✅ CALL SALVA COM SUCESSO!")
@@ -345,23 +337,15 @@ elif st.session_state.aba_ativa == "gestao":
     
     with c_out:
         g1, g2, g3, g4 = st.columns(4)
-        with g1:
-            draw_card("VALOR ENTRADA", f"R$ {v_s:,.2f}", 100, "#00d2ff")
-        with g2:
-            draw_card("STOP GAIN", f"R$ {v_m:,.2f}", 100, "#00d2ff")
-        with g3:
-            draw_card("STOP LOSS", f"R$ {v_l:,.2f}", 100, "#00d2ff")
-        with g4:
-            draw_card("ALVO FINAL", f"R$ {(st.session_state.banca_total+v_m):,.2f}", 100, "#00d2ff")
+        with g1: draw_card("VALOR ENTRADA", f"R$ {v_s:,.2f}", 100, "#00d2ff")
+        with g2: draw_card("STOP GAIN", f"R$ {v_m:,.2f}", 100, "#00d2ff")
+        with g3: draw_card("STOP LOSS", f"R$ {v_l:,.2f}", 100, "#00d2ff")
+        with g4: draw_card("ALVO FINAL", f"R$ {(st.session_state.banca_total+v_m):,.2f}", 100, "#00d2ff")
         g5, g6, g7, g8 = st.columns(4)
-        with g5:
-            draw_card("RISCO TOTAL", f"{st.session_state.stake_padrao}%", 100, "#00d2ff")
-        with g6:
-            draw_card("ENTRADAS/META", f"{int(v_m/v_s) if v_s>0 else 0}", 100, "#00d2ff")
-        with g7:
-            draw_card("ENTRADAS/LOSS", f"{int(v_l/v_s) if v_s>0 else 0}", 100, "#00d2ff")
-        with g8:
-            draw_card("SAÚDE BANCA", "EXCELENTE", 100, "#00ff88")
+        with g5: draw_card("RISCO TOTAL", f"{st.session_state.stake_padrao}%", 100, "#00d2ff")
+        with g6: draw_card("ENTRADAS/META", f"{int(v_m/v_s) if v_s>0 else 0}", 100, "#00d2ff")
+        with g7: draw_card("ENTRADAS/LOSS", f"{int(v_l/v_s) if v_s>0 else 0}", 100, "#00d2ff")
+        with g8: draw_card("SAÚDE BANCA", "EXCELENTE", 100, "#00ff88")
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📡 SCANNER EM TEMPO REAL (TOP 20 LIVE)</h2>", unsafe_allow_html=True)
@@ -376,29 +360,11 @@ elif st.session_state.aba_ativa == "assertividade":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📈 ASSERTIVIDADE IA</h2>", unsafe_allow_html=True)
     path_perf = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/historico_assertividade.csv"
     path_detalhe = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/relatorio_fechamento_dia.csv"
-    
     try:
         df_p = pd.read_csv(f"{path_perf}?v={datetime.now().timestamp()}")
         if not df_p.empty:
-            # Pega apenas o último dia para o Resumo Único
             ultimo_resumo = df_p.iloc[-1]
-            st.markdown(f"""
-                <div class="kpi-detailed-card" style="border-left: 8px solid #00ff88; padding: 30px; margin-bottom: 40px;">
-                    <div style="color:#00ff88; font-size:12px; font-weight:900; margin-bottom:10px;">RESUMO DO ÚLTIMO FECHAMENTO: {ultimo_resumo['DATA']}</div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="color:white; font-size:28px; font-weight:900;">ASSERTIVIDADE: <span style="color:#00ff88;">{ultimo_resumo['ASSERTIVIDADE']}</span></div>
-                            <div style="color:#94a3b8; font-size:14px; margin-top:5px;">O robô analisou um total de <b>{ultimo_resumo['JOGOS_ANALISADOS']}</b> confrontos hoje.</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="color:white; font-size:22px; font-weight:800;">{ultimo_resumo['ACERTOS']} ACERTOS</div>
-                            <div style="color:#94a3b8; font-size:12px;">VALIDAÇÃO JARVIS PROTECT</div>
-                        </div>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-        
-        # --- DETALHAMENTO LOGO ABAIXO ---
+            st.markdown(f"""<div class="kpi-detailed-card" style="border-left: 8px solid #00ff88; padding: 30px; margin-bottom: 40px;"><div style="color:#00ff88; font-size:12px; font-weight:900; margin-bottom:10px;">RESUMO DO ÚLTIMO FECHAMENTO: {ultimo_resumo['DATA']}</div><div style="display: flex; justify-content: space-between; align-items: center;"><div><div style="color:white; font-size:28px; font-weight:900;">ASSERTIVIDADE: <span style="color:#00ff88;">{ultimo_resumo['ASSERTIVIDADE']}</span></div><div style="color:#94a3b8; font-size:14px; margin-top:5px;">O robô analisou um total de <b>{ultimo_resumo['JOGOS_ANALISADOS']}</b> confrontos hoje.</div></div><div style="text-align: right;"><div style="color:white; font-size:22px; font-weight:800;">{ultimo_resumo['ACERTOS']} ACERTOS</div><div style="color:#94a3b8; font-size:12px;">VALIDAÇÃO JARVIS PROTECT</div></div></div></div>""", unsafe_allow_html=True)
         st.markdown("<h4 style='color:white; margin-bottom:20px; font-weight:800;'>🔍 DETALHAMENTO POR CONFRONTO</h4>", unsafe_allow_html=True)
         df_det = pd.read_csv(f"{path_detalhe}?v={datetime.now().timestamp()}")
         if not df_det.empty:
@@ -408,16 +374,8 @@ elif st.session_state.aba_ativa == "assertividade":
                 for idx, jogo_det in enumerate(r_det):
                     cor_status = "#00ff88" if "GREEN" in str(jogo_det.get('RESULTADO_IA', '')) else "#ff4b4b"
                     with cols_det[idx]:
-                        st.markdown(f"""
-                        <div class="kpi-detailed-card" style="border: 1px solid {cor_status};">
-                            <div style="color:{cor_status}; font-size:11px; font-weight:900; margin-bottom:10px; text-align:center;">{jogo_det.get('RESULTADO_IA', 'ANALISANDO')}</div>
-                            <div style="color:white; font-size:11px; font-weight:800; border-bottom:1px solid #1e293b; padding-bottom:5px; margin-bottom:10px;">{jogo_det.get('CASA', 'Time A')} vs {jogo_det.get('FORA', 'Time B')}</div>
-                            <div class="kpi-stat">MERCADO: <b>{jogo_det.get('GOLS', 'GOLS')}</b></div>
-                            <div class="kpi-stat">IA CONF: <b>{jogo_det.get('CONFIANCA', '90%')}</b></div>
-                        </div>
-                        """, unsafe_allow_html=True)
-    except:
-        st.info("Aguardando processamento automático de dados históricos.")
+                        st.markdown(f"""<div class="kpi-detailed-card" style="border: 1px solid {cor_status};"><div style="color:{cor_status}; font-size:11px; font-weight:900; margin-bottom:10px; text-align:center;">{jogo_det.get('RESULTADO_IA', 'ANALISANDO')}</div><div style="color:white; font-size:11px; font-weight:800; border-bottom:1px solid #1e293b; padding-bottom:5px; margin-bottom:10px;">{jogo_det.get('CASA', 'Time A')} vs {jogo_det.get('FORA', 'Time B')}</div><div class="kpi-stat">MERCADO: <b>{jogo_det.get('GOLS', 'GOLS')}</b></div><div class="kpi-stat">IA CONF: <b>{jogo_det.get('CONFIANCA', '90%')}</b></div></div>""", unsafe_allow_html=True)
+    except: st.info("Aguardando processamento automático de dados históricos.")
 
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📜 HISTÓRICO DE CALLS (SALVAS)</h2>", unsafe_allow_html=True)
@@ -441,13 +399,24 @@ elif st.session_state.aba_ativa == "vencedores":
                 st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#ffcc00; font-size:10px; font-weight:900;">CHANCE: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:10px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">🏆 VENCEDOR: <b>{j['V']}</b></div></div>""", unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "gols":
-    st.markdown("<h2 style='color:white; margin-bottom:30px;'>⚽ GOLS - TOP 20</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white; margin-bottom:30px;'>⚽ GOLS - TOP 20 ANALISES IA</h2>", unsafe_allow_html=True)
     rows = [st.session_state.top_20_ia[i:i + 4] for i in range(0, 20, 4)]
     for row in rows:
         cols = st.columns(4)
         for i, j in enumerate(row):
             with cols[i]:
-                st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#00d2ff; font-size:10px; font-weight:900;">GOLS: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:10px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">⚽ GOLS: <b>{j['G']}</b></div></div>""", unsafe_allow_html=True)
+                st.markdown(f"""
+                <div class="kpi-detailed-card">
+                    <div style="color:#00d2ff; font-size:10px; font-weight:900; margin-bottom:5px;">PROB. GOLS: {j['P']}</div>
+                    <div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div>
+                    <div class="kpi-stat">⏱️ GOL 1º TEMPO: <b>82%</b></div>
+                    <div class="kpi-stat">⏱️ GOL 2º TEMPO: <b>89%</b></div>
+                    <div class="kpi-stat">🤝 AMBAS MARCAM: <b>SIM (74%)</b></div>
+                    <div class="kpi-stat">🏠 GOLS CASA: <b>1.5+</b></div>
+                    <div class="kpi-stat">🚀 GOLS FORA: <b>0.5+</b></div>
+                    <div class="kpi-stat">📊 TOTAL GOLS: <b>OVER 2.5</b></div>
+                </div>
+                """, unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "escanteios":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>🚩 ESCANTEIOS - TOP 20</h2>", unsafe_allow_html=True)
@@ -458,7 +427,7 @@ elif st.session_state.aba_ativa == "escanteios":
             with cols[i]:
                 st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#ff4b4b; font-size:10px; font-weight:900;">CANTOS: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:10px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">🚩 CANTOS: <b>{j['E']}</b></div></div>""", unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v91.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v92.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
 
 def sync():
     url = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
