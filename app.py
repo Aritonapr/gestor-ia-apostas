@@ -4,14 +4,15 @@ import os
 from datetime import datetime
 import numpy as np
 import random
+import requests
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v63.0 - INTEGRIDADE TOTAL + SCANNER REAL-TIME]
+# [PROTOCOLO DE MANUTENÇÃO v64.0 - INTEGRIDADE TOTAL + KPI HISTORY]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
 # DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO)
-# DIRETRIZ 5: CÓDIGO 100% ÍNTEGRO - SEM ABREVIAÇÕES
+# DIRETRIZ 5: CÓDIGO 100% ÍNTEGRO - SEM ABREVIAÇÕES - ARQUIVO COMPLETO
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -104,7 +105,6 @@ def executar_scanner_live():
     if os.path.exists(path_live):
         try:
             df_live = pd.read_csv(path_live)
-            # Seleção dos 20 melhores
             for i, row in df_live.head(20).iterrows():
                 novos_jogos.append({
                     "C": row.get('CASA', 'Time Home'),
@@ -115,7 +115,6 @@ def executar_scanner_live():
                 })
         except: pass
     
-    # Se a base estiver vazia, preenche com 20 jogos de alto nível em tempo real
     if len(novos_jogos) < 20:
         times_live = [
             ("Liverpool", "Everton"), ("Real Madrid", "Sevilla"), ("Napoli", "Lazio"), ("Boca", "River"), 
@@ -232,7 +231,6 @@ st.markdown("""
     }
     .highlight-card:hover { transform: translateY(-5px); border-color: #6d28d9; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
     
-    /* KPI CARD: AJUSTE DE SIMETRIA (HEIGHT AUTO + PADDING CALIBRADO) */
     .kpi-detailed-card { 
         background: #11151a; border: 1px solid #1e293b; padding: 20px 18px; 
         border-radius: 8px; margin-bottom: 15px; height: auto !important;
@@ -411,7 +409,6 @@ elif st.session_state.aba_ativa == "analise":
         status_txt = "FILÉ MIGNON: INFORMAÇÃO REAL" if is_real else "ALERTA: ESTATÍSTICA FRIA"
         cor_luz = "#00ff88" if is_real else "#ff4b4b"
         
-        # INJEÇÃO DE 8 MÉTRICAS PARA O RESULTADO DO ALGORITMO
         st.session_state.analise_bloqueada = {
             "casa": t_casa, "fora": t_fora, 
             "vencedor": "ALTA PROB.", "gols": "OVER 1.5", 
@@ -435,7 +432,6 @@ elif st.session_state.aba_ativa == "analise":
         
         st.markdown(f"<h3 style='color:white; text-align:center; font-weight: 800; margin-bottom: 30px;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
         
-        # LINHA 1 DE RESULTADOS (4 CARDS)
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85); draw_card("AMBAS MARCAM", m['btss'], 74)
         with r2: draw_card("MERCADO GOLS", m['gols'], 70); draw_card("CARTÕES", m['cartoes'], 60)
@@ -479,7 +475,6 @@ elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📡 SCANNER EM TEMPO REAL (TOP 20 LIVE)</h2>", unsafe_allow_html=True)
     v_entrada = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
     
-    # Renderiza 20 cards em tempo real (5 linhas de 4)
     rows = [st.session_state.jogos_live_ia[i:i + 4] for i in range(0, len(st.session_state.jogos_live_ia), 4)]
     for row in rows:
         cols = st.columns(4)
@@ -577,11 +572,48 @@ elif st.session_state.aba_ativa == "escanteios":
                 </div>
                 """, unsafe_allow_html=True)
 
+# --- NOVA TELA DE HISTÓRICO COM KPI CARDS ---
 elif st.session_state.aba_ativa == "historico":
-    st.markdown("<h2 style='color:white;'>📜 HISTÓRICO DE CALLS</h2>", unsafe_allow_html=True)
-    if not st.session_state.historico_calls: st.info("Nenhuma operação registrada.")
+    st.markdown("<h2 style='color:white; margin-bottom:30px;'>📜 HISTÓRICO DE CALLS (SALVAS)</h2>", unsafe_allow_html=True)
+    if not st.session_state.historico_calls: 
+        st.info("Nenhuma operação registrada no banco de dados local.")
     else:
-        for call in reversed(st.session_state.historico_calls):
-            st.markdown(f"""<div class="history-card-box"><div style="color:white; font-weight:800;"><span style="color:#9d54ff;">[{call['data']}]</span> {call['casa']} x {call['fora']} <span style="color:#06b6d4; margin-left:20px;">{call['stake_val']} | {call['gols']}</span></div></div>""", unsafe_allow_html=True)
+        # Reorganizando em 4 colunas para manter o padrão visual do site
+        calls_rev = list(reversed(st.session_state.historico_calls))
+        rows_hist = [calls_rev[i:i + 4] for i in range(0, len(calls_rev), 4)]
+        
+        for row in rows_hist:
+            cols = st.columns(4)
+            for i, call in enumerate(row):
+                with cols[i]:
+                    st.markdown(f"""
+                    <div class="kpi-detailed-card">
+                        <div style="color:#06b6d4; font-size:10px; font-weight:900; margin-bottom:5px;">HORÁRIO: {call['data']}</div>
+                        <div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{call['casa']} vs {call['fora']}</div>
+                        <div class="kpi-stat">🏆 CALL: <b>{call.get('vencedor', 'N/A')}</b></div>
+                        <div class="kpi-stat">⚽ GOLS: <b>{call.get('gols', 'N/A')}</b></div>
+                        <div class="kpi-stat">🚩 CANTOS: <b>{call.get('cantos', 'N/A')}</b></div>
+                        <div class="kpi-stat">🟨 CARTÕES: <b>{call.get('cartoes', 'N/A')}</b></div>
+                        <div class="kpi-stat">BTTS: <b>{call.get('btss', 'N/A')}</b></div>
+                        <div class="kpi-stat">IA CONF: <b>{call.get('confia', 'N/A')}</b></div>
+                        <div style="margin-top:15px; padding-top:12px; border-top:1px dashed #334155; color:#9d54ff; font-size:11px; font-weight:900; text-align:center;">
+                            INVESTIDO: {call['stake_val']}
+                        </div>
+                    </div>
+                    """, unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v63.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v64.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+
+# --- FUNÇÃO DE SINCRONIZAÇÃO ---
+def sync():
+    url = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            if not os.path.exists('data'): os.makedirs('data')
+            with open('data/database_diario.csv', 'wb') as f:
+                f.write(response.content)
+    except: pass
+
+if __name__ == "__main__":
+    sync()
