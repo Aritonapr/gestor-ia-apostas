@@ -3,10 +3,8 @@ name: Sistema Integrado Jarvis 2026
 on:
   workflow_dispatch: 
   schedule:
-    # Roda a cada 6 horas para coletar dados e atualizar o site
+    # Roda automaticamente a cada 6 horas
     - cron: '0 */6 * * *'
-    # Roda uma vez por dia às 23:30 para fechar a assertividade do dia
-    - cron: '30 23 * * *'
 
 jobs:
   build:
@@ -26,23 +24,17 @@ jobs:
       - name: 📦 Instalando Dependencias
         run: pip install pandas requests
 
-      - name: 🚀 Coletar Novos Jogos (Manhã/Tarde)
+      - name: 🚀 Executar Coletor Jarvis
         run: python coletor_jarvis.py
 
-      - name: 🏆 Fechamento de Assertividade (Noite)
-        run: python fechamento_jarvis.py
-
-      - name: 📊 Atualizar Big Data Semanal
-        run: python baixar_big_data.py
-
-      - name: 💾 Salvando Evolução no GitHub
+      - name: 💾 Salvando Dados no GitHub
         run: |
           git config --global user.name "Jarvis Intelligence"
           git config --global user.email "bot@jarvis.ia"
           git add data/*.csv
           if git diff --cached --exit-code; then
-            echo "Sem alterações para salvar."
+            echo "Sem novos dados para salvar."
           else
-            git commit -m "📊 Protocolo Jarvis: Coleta e Assertividade Atualizadas"
+            git commit -m "📊 Protocolo Jarvis: Análises Diárias Atualizadas"
             git push
           fi
