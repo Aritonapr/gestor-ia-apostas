@@ -7,7 +7,7 @@ import random
 import requests
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v64.0 - INTEGRIDADE TOTAL + KPI HISTORY]
+# [PROTOCOLO DE MANUTENÇÃO v70.0 - INTEGRIDADE TOTAL + BIG DATA CONNECT]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -58,6 +58,7 @@ def carregar_dados_ia():
     return None
 
 df_diario = carregar_dados_ia()
+big_data_ativo = os.path.exists("data/historico_5_temporadas.csv")
 
 # ==============================================================================
 # LÓGICA DO BOT (BACK-END): MOTOR DE PROCESSAMENTO INVISÍVEL
@@ -68,7 +69,7 @@ def processar_ia_bot():
     if df_diario is not None:
         try:
             temp_df = df_diario.copy()
-            col_conf = 'CONF' if 'CONF' in temp_df.columns else 'CONFIANCA'
+            col_conf = 'CONFIANCA' if 'CONFIANCA' in temp_df.columns else 'CONF'
             if col_conf in temp_df.columns:
                 temp_df['CONF_NUM'] = temp_df[col_conf].astype(str).str.replace('%', '').astype(float)
                 vips_df = temp_df.sort_values(by='CONF_NUM', ascending=False).head(20)
@@ -77,13 +78,13 @@ def processar_ia_bot():
                         "C": jogo.get('CASA', 'Time A'),
                         "F": jogo.get('FORA', 'Time B'),
                         "P": f"{int(jogo.get('CONF_NUM', 0))}%",
-                        "V": "72% (FAVORITO)",
-                        "G": "1.5+ (AMBOS TEMPOS)",
-                        "CT": "4.5 (HT: 2 | FT: 2)",
-                        "E": "9.5 (C: 5 | F: 4)",
-                        "TM": "14+ (HT: 7 | FT: 7)",
-                        "CH": "9+ (HT: 4 | FT: 5)",
-                        "DF": "7+ (GOLEIROS ATIVOS)"
+                        "V": f"{jogo.get('VENCEDOR', 'FAVORITO')}",
+                        "G": f"{jogo.get('GOLS', '1.5+ HT/FT')}",
+                        "CT": f"{jogo.get('CARTÕES', '4.5 total')}",
+                        "E": f"{jogo.get('CANTOS', '9.5 total')}",
+                        "TM": f"{jogo.get('CHUTES', '14+ total')}",
+                        "CH": f"{jogo.get('CHUTES', '9+ total')}",
+                        "DF": f"{jogo.get('DEFESAS', '7+ total')}"
                     })
         except: pass
 
@@ -253,6 +254,7 @@ st.markdown("""
     }
     
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
+    .big-data-badge { background: rgba(0, 255, 136, 0.1); color: #00ff88; padding: 5px 12px; border-radius: 4px; font-size: 10px; font-weight: 800; border: 1px solid #00ff88; margin-bottom: 20px; display: inline-block;}
     </style>
 """, unsafe_allow_html=True)
 
@@ -265,9 +267,6 @@ with st.sidebar:
                 <div class="nav-links">
                     <div class="nav-item">APOSTAS ESPORTIVAS</div>
                     <div class="nav-item">APOSTAS AO VIVO</div>
-                    <div class="nav-item">APOSTAS ENCONTRADAS</div>
-                    <div class="nav-item">ESTATÍSTICAS AVANÇADAS</div>
-                    <div class="nav-item">MERCADO PROBABILÍSTICO</div>
                     <div class="nav-item">ASSERTIVIDADE IA</div>
                 </div>
             </div>
@@ -284,6 +283,7 @@ with st.sidebar:
     if st.button("📡 SCANNER EM TEMPO REAL"): 
         st.session_state.aba_ativa = "live"
         executar_scanner_live()
+    if st.button("📈 ASSERTIVIDADE IA"): st.session_state.aba_ativa = "assertividade"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
     if st.button("📜 HISTÓRICO DE CALLS"): st.session_state.aba_ativa = "historico"
     if st.button("📅 BILHETE OURO"): st.session_state.aba_ativa = "home"
@@ -307,7 +307,8 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
-    st.markdown("<h2 style='color:white; margin-bottom:30px;'>📅 BILHETE OURO - TOP 20 ANALISES IA</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white; margin-bottom:10px;'>📅 BILHETE OURO - TOP 20 ANALISES IA</h2>", unsafe_allow_html=True)
+    if big_data_ativo: st.markdown('<div class="big-data-badge">🛡️ BIG DATA ATIVO: PADRÕES 2021-2026 CARREGADOS</div>', unsafe_allow_html=True)
     v_entrada = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
     
     rows = [st.session_state.top_20_ia[i:i + 4] for i in range(0, len(st.session_state.top_20_ia), 4)]
@@ -572,16 +573,27 @@ elif st.session_state.aba_ativa == "escanteios":
                 </div>
                 """, unsafe_allow_html=True)
 
-# --- NOVA TELA DE HISTÓRICO COM KPI CARDS ---
+elif st.session_state.aba_ativa == "assertividade":
+    st.markdown("<h2 style='color:white; margin-bottom:30px;'>📈 PERFORMANCE E ASSERTIVIDADE IA</h2>", unsafe_allow_html=True)
+    path_hist = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/historico_assertividade.csv"
+    try:
+        df_perf = pd.read_csv(f"{path_hist}?v={datetime.now().timestamp()}")
+        st.dataframe(df_perf, use_container_width=True)
+        if not df_perf.empty:
+            ultimo = df_perf.iloc[-1]
+            c1, c2, c3 = st.columns(3)
+            with c1: draw_card("JOGOS HOJE", ultimo['JOGOS_ANALISADOS'], 100)
+            with c2: draw_card("ACERTOS", ultimo['ACERTOS'], 100)
+            with c3: draw_card("ASSERTIVIDADE", ultimo['ASSERTIVIDADE'], 100)
+    except: st.info("Aguardando processamento de assertividade do Jarvis...")
+
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📜 HISTÓRICO DE CALLS (SALVAS)</h2>", unsafe_allow_html=True)
     if not st.session_state.historico_calls: 
         st.info("Nenhuma operação registrada no banco de dados local.")
     else:
-        # Reorganizando em 4 colunas para manter o padrão visual do site
         calls_rev = list(reversed(st.session_state.historico_calls))
         rows_hist = [calls_rev[i:i + 4] for i in range(0, len(calls_rev), 4)]
-        
         for row in rows_hist:
             cols = st.columns(4)
             for i, call in enumerate(row):
@@ -602,9 +614,8 @@ elif st.session_state.aba_ativa == "historico":
                     </div>
                     """, unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v64.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v70.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
 
-# --- FUNÇÃO DE SINCRONIZAÇÃO ---
 def sync():
     url = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
     try:
