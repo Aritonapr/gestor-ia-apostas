@@ -7,7 +7,7 @@ import random
 import requests
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v86.0 - INTEGRIDADE TOTAL - FIX SINTAXE 308]
+# [PROTOCOLO DE MANUTENÇÃO v87.0 - FIX VISIBILIDADE SCANNER - 750+ LINHAS]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
@@ -131,44 +131,82 @@ def executar_scanner_live():
         except:
             pass
     if len(novos_jogos) < 20:
-        times_live = [("Liverpool", "Everton"), ("Real Madrid", "Sevilla"), ("Palmeiras", "Santos"), ("PSG", "Lyon"), ("Arsenal", "Spurs"), ("Bayern", "Leipzig")]
+        times_live = [("Liverpool", "Everton"), ("Real Madrid", "Sevilla"), ("Palmeiras", "Santos"), ("PSG", "Lyon")]
         for i in range(len(novos_jogos), 20):
-            c, f = times_live[i % 6]
+            c, f = times_live[i % 4]
             novos_jogos.append({"C": c, "F": f, "P": f"{random.randint(88, 97)}%", "V": "VITORIA LIVE", "G": "+0.5 GOLS", "CT": "2.5 total", "E": "10.5 total", "TM": "18+ total", "CH": "10+ total", "DF": "8+ total"})
     st.session_state.jogos_live_ia = novos_jogos
 
 processar_ia_bot()
 
 # ==============================================================================
-# 2. CAMADA DE ESTILO CSS INTEGRAL (REFINO v86.0)
+# 2. CAMADA DE ESTILO CSS INTEGRAL (REFINO v87.0)
 # ==============================================================================
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    
     ::-webkit-scrollbar { display: none !important; }
     * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     .header-anchor { display: none !important; }
-    html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp { background-color: #0b0e11 !important; font-family: 'Inter', sans-serif; }
+
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp {
+        background-color: #0b0e11 !important;
+        font-family: 'Inter', sans-serif;
+    }
+
     header, [data-testid="stHeader"] { display: none !important; height: 0px !important; }
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
-    .betano-header { position: fixed; top: 0; left: 0; width: 100%; height: 60px; background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; display: flex; align-items: center; justify-content: space-between; padding: 0 40px !important; z-index: 1000000; transform: translate3d(0,0,0); -webkit-backface-visibility: hidden; }
+    
+    .betano-header { 
+        position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
+        background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; 
+        display: flex; align-items: center; justify-content: space-between; 
+        padding: 0 40px !important; z-index: 1000000; 
+        transform: translate3d(0,0,0); -webkit-backface-visibility: hidden;
+    }
+    
     .header-left { display: flex; align-items: center; gap: 20px; }
     .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none !important; cursor: pointer; border-bottom: 2px solid #9d54ff; padding-bottom: 2px; }
+    
     .nav-links { display: flex; gap: 15px; align-items: center; }
-    .nav-item { color: #ffffff !important; font-size: 10px !important; text-transform: uppercase; font-weight: 700 !important; letter-spacing: 0.3px; transition: 0.3s ease; cursor: pointer; white-space: nowrap; text-decoration: none !important;}
+    .nav-item { color: #ffffff !important; font-size: 9.5px !important; text-transform: uppercase; font-weight: 700 !important; letter-spacing: 0.3px; transition: 0.3s ease; cursor: pointer; white-space: nowrap; text-decoration: none !important;}
     .nav-item:hover { color: #06b6d4 !important; transform: scale(1.02); }
-    .header-right { display: flex; align-items: center; gap: 10px; min-width: 280px; justify-content: flex-end; }
+
+    .header-right { display: flex; align-items: center; gap: 10px; min-width: 250px; justify-content: flex-end; }
     .search-lupa { color: #ffffff; font-size: 16px; cursor: pointer; margin-right: 5px; }
-    .registrar-pill { color: #ffffff !important; font-size: 9px !important; font-weight: 800; border: 1.5px solid #ffffff !important; padding: 6px 15px !important; border-radius: 20px !important; transition: 0.3s ease; cursor: pointer; white-space: nowrap; }
-    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 20px !important; border-radius: 5px !important; font-weight: 800; font-size: 9.5px; transition: 0.3s ease; cursor: pointer; white-space: nowrap; }
+    
+    .registrar-pill { color: #ffffff !important; font-size: 9px !important; font-weight: 800; border: 1.5px solid #ffffff !important; padding: 6px 14px !important; border-radius: 20px !important; transition: 0.3s ease; cursor: pointer; white-space: nowrap; }
+    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 18px !important; border-radius: 5px !important; font-weight: 800; font-size: 9.5px; transition: 0.3s ease; cursor: pointer; white-space: nowrap; }
+
     [data-testid="stSidebar"] { min-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
     section[data-testid="stSidebar"] div.stButton > button { background-color: transparent !important; color: #94a3b8 !important; border: none !important; border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; padding: 18px 25px !important; font-size: 10px !important; text-transform: uppercase !important; border-radius: 0px !important; transition: all 0.2s ease !important; white-space: nowrap !important; }
     section[data-testid="stSidebar"] div.stButton > button:hover { background-color: #1e293b !important; color: #06b6d4 !important; border-left: 3px solid #6d28d9 !important; }
     div.stButton > button:not([data-testid="stSidebar"] *) { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: #ffffff !important; border: none !important; padding: 15px 20px !important; font-weight: 900 !important; text-transform: uppercase !important; letter-spacing: 1.2px !important; border-radius: 6px !important; width: 100% !important; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important; margin-top: 10px !important; transform: translate3d(0,0,0); }
-    div[data-baseweb="input"], .stNumberInput div { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; }
+    
+    /* FIX DOS DROPDOWNS: TIRAR FUNDO BRANCO E MELHORAR LEITURA DOS NOMES */
+    [data-testid="stWidgetLabel"] p {
+        color: #e2e8f0 !important; /* Branco fosco para os nomes */
+        font-weight: 800 !important;
+        font-size: 11px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        margin-bottom: 8px !important;
+    }
+    div[data-baseweb="select"] > div {
+        background-color: #1a202c !important; /* Fundo Navy Dark */
+        color: white !important;
+        border: 1px solid #334155 !important;
+        border-radius: 6px !important;
+    }
+    div[data-baseweb="select"] span { color: white !important; } /* Cor do texto selecionado */
+    div[role="listbox"] { background-color: #11151a !important; color: white !important; } /* Lista aberta */
+    div[role="option"] { background-color: transparent !important; color: white !important; }
+    div[role="option"]:hover { background-color: #1e293b !important; color: #06b6d4 !important; }
+
     .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px; transition: all 0.3s ease; transform: translate3d(0,0,0); }
     .kpi-detailed-card { background: #11151a; border: 1px solid #1e293b; padding: 20px 18px; border-radius: 8px; margin-bottom: 15px; height: auto !important; transition: 0.3s ease; transform: translate3d(0,0,0); }
     .kpi-detailed-card:hover { border-color: #6d28d9; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
@@ -221,7 +259,7 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">{title}</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:{color_footer}; height:100%; width:{perc}%;"></div></div></div>""", unsafe_allow_html=True)
 
 # ==============================================================================
-# 4. LÓGICA DE TELAS (RESTAURAÇÃO v86.0 INTEGRAL)
+# 4. LÓGICA DE TELAS (RESTAURAÇÃO v87.0 INTEGRAL)
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
@@ -380,7 +418,7 @@ elif st.session_state.aba_ativa == "vencedores":
                 st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#ffcc00; font-size:10px; font-weight:900;">CHANCE: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:10px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">🏆 VENCEDOR: <b>{j['V']}</b></div></div>""", unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "gols":
-    st.markdown("<h2 style='color:white; margin-bottom:30px;'>⚽ APOSTAS POR GOLS - TOP 20</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white; margin-bottom:30px;'>⚽ GOLS - TOP 20</h2>", unsafe_allow_html=True)
     rows = [st.session_state.top_20_ia[i:i + 4] for i in range(0, 20, 4)]
     for row in rows:
         cols = st.columns(4)
@@ -389,7 +427,7 @@ elif st.session_state.aba_ativa == "gols":
                 st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#00d2ff; font-size:10px; font-weight:900;">GOLS: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:10px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">⚽ GOLS: <b>{j['G']}</b></div></div>""", unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "escanteios":
-    st.markdown("<h2 style='color:white; margin-bottom:30px;'>🚩 APOSTAS POR ESCANTEIOS - TOP 20</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white; margin-bottom:30px;'>🚩 ESCANTEIOS - TOP 20</h2>", unsafe_allow_html=True)
     rows = [st.session_state.top_20_ia[i:i + 4] for i in range(0, 20, 4)]
     for row in rows:
         cols = st.columns(4)
@@ -397,7 +435,7 @@ elif st.session_state.aba_ativa == "escanteios":
             with cols[i]:
                 st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#ff4b4b; font-size:10px; font-weight:900;">CANTOS: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:10px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">🚩 CANTOS: <b>{j['E']}</b></div></div>""", unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v86.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v87.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
 
 def sync():
     url = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
