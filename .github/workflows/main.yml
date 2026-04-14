@@ -1,17 +1,45 @@
-- name: 🚀 Executar Coletor Jarvis
+name: Sistema Integrado Jarvis 2026
+
+on:
+  workflow_dispatch: 
+  schedule:
+    - cron: '0 */6 * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      
+    steps:
+      - name: 📥 Baixando Repositorio
+        uses: actions/checkout@v3
+
+      - name: 🐍 Configurando Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: 📦 Instalando Dependencias
+        run: pip install pandas requests
+
+      - name: 📊 Atualizar Big Data (Histórico Europeu)
+        run: python baixar_big_data.py
+
+      - name: 🚀 Executar Coletor Jarvis (Novos Jogos)
         run: python coletor_jarvis.py
 
-      - name: 🏆 Executar Fechamento Jarvis
+      - name: 🏆 Executar Fechamento Jarvis (Assertividade)
         run: python fechamento_jarvis.py
 
-      - name: 💾 Salvando Dados no GitHub
+      - name: 💾 Salvando Evolucao no GitHub
         run: |
           git config --global user.name "Jarvis Intelligence"
           git config --global user.email "bot@jarvis.ia"
           git add data/*.csv
           if git diff --cached --exit-code; then
-            echo "Sem novos dados."
+            echo "Sem alterações."
           else
-            git commit -m "📊 Protocolo Jarvis: Coleta e Assertividade Sincronizadas"
+            git commit -m "📊 Protocolo Jarvis: Big Data e Analises Sincronizadas"
             git push
           fi
