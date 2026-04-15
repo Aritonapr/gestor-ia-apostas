@@ -7,12 +7,12 @@ import random
 import requests
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v93.0 - ESPECIALISTA EM ESCANTEIOS + GOLS]
+# [PROTOCOLO DE MANUTENÇÃO v94.0 - DETALHAMENTO MÁXIMO DE ESCANTEIOS]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
 # DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO)
-# DIRETRIZ 5: CÓDIGO 100% ÍNTEGRO - DETALHAMENTO DE CANTOS E GOLS
+# DIRETRIZ 5: CÓDIGO 100% ÍNTEGRO - DETALHAMENTO DE CANTOS CASA/FORA
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -42,7 +42,7 @@ if 'top_20_ia' not in st.session_state:
 if 'jogos_live_ia' not in st.session_state:
     st.session_state.jogos_live_ia = []
 
-# Redirecionamento via URL (Mapeia o cabeçalho)
+# Redirecionamento via URL (Faz o cabeçalho funcionar como abas de site)
 query_params = st.query_params
 if query_params.get("go") == "home":
     st.session_state.aba_ativa = "home"
@@ -139,7 +139,7 @@ def executar_scanner_live():
 processar_ia_bot()
 
 # ==============================================================================
-# 2. CAMADA DE ESTILO CSS INTEGRAL (REFINO v93.0)
+# 2. CAMADA DE ESTILO CSS INTEGRAL (REFINO v94.0)
 # ==============================================================================
 st.markdown("""
     <style>
@@ -223,7 +223,7 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">{title}</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:{color_footer}; height:100%; width:{perc}%;"></div></div></div>""", unsafe_allow_html=True)
 
 # ==============================================================================
-# 4. LÓGICA DE TELAS (RESTAURAÇÃO v93.0 INTEGRAL)
+# 4. LÓGICA DE TELAS (RESTAURAÇÃO v94.0 INTEGRAL)
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
@@ -243,23 +243,30 @@ elif st.session_state.aba_ativa == "analise":
     db_h = {
         "BRASIL": {
             "BRASILEIRÃO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D", "SUB-20", "SUB-17"],
-            "ESTADUAIS": ["Campeonato Carioca", "Campeonato Paulistano", "Campeonato Mineiro", "Campeonato Gaúcho", "Campeonato Paranaense", "Campeonato Catarinense", "Campeonato Baiano", "Campeonato Pernambucano"],
-            "COPAS": ["Copa do Brasil", "Supercopa do Brasil", "Copa do Nordeste", "Copa Verde", "Copinha"]
+            "ESTADUAIS": ["Campeonato Carioca", "Campeonato Paulistano", "Campeonato Mineiro", "Campeonato Gaúcho", "Campeonato Paranaense", "Campeonato Catarinense", "Campeonato Baiano", "Campeonato Pernambucano", "Campeonato Cearense", "Campeonato Goiano", "Campeonato Alagoano", "Campeonato Paraense", "Campeonato Mato-Grossense", "Campeonato Maranhense", "Campeonato Paraibano", "Campeonato Potiguar", "Campeonato Sergipano", "Campeonato Piauiense", "Campeonato Amazonense", "Campeonato Acreano", "Campeonato Amapaense", "Campeonato Capixaba", "Campeonato Brasiliense"],
+            "COPAS": ["Copa do Brasil", "Supercopa do Brasil", "Copa do Nordeste", "Copa Verde", "Copa Paulista", "Copa Sul-Sudeste", "Copinha"]
         },
         "EUROPA": {
             "UEFA CLUBES": ["Champions League", "Liga Europa", "Liga Conferência"],
-            "LIGAS ELITE": ["Premier League", "La Liga", "Serie A (Itália)", "Bundesliga", "Ligue 1"],
-            "COPAS": ["Copa da Inglaterra", "Copa da Liga Inglesa", "Copa do Rei"]
+            "LIGAS ELITE": ["Premier League", "La Liga", "Serie A (Itália)", "Bundesliga", "Ligue 1", "Campeonato Saudita"],
+            "COPAS": ["Copa da Inglaterra", "Copa da Liga Inglesa", "Copa do Rei", "Copa da Itália", "Copa da Alemanha", "Copa da França"]
         },
-        "MUNDO & FIFA": {"MUNDIAL": ["Copa do Mundo 2026", "Copa do Mundo de Clubes", "Copa Intercontinental"]}
+        "AMÉRICA DO SUL": {
+            "CONMEBOL": ["Copa Libertadores", "Libertadores Sub-20", "Copa Sulamericana", "Recopa Sul-Americana"],
+            "SELEÇÕES": ["Eliminatórias Copa - América do Sul", "Copa América", "Sul-Americano Sub-17"]
+        },
+        "MUNDO & FIFA": {
+            "MUNDIAL": ["Copa do Mundo 2026", "Eliminatórias Copa - Europa", "Eliminatórias Repescagem", "Copa do Mundo de Clubes", "Copa do Mundo Sub-20", "Copa Intercontinental"],
+            "ÁSIA": ["Champions League da Ásia"]
+        }
     }
     r_f = st.columns(3)
     with r_f[0]:
-        s_reg = st.selectbox("🌎 REGIÃO / PAÍS", list(db_h.keys()))
+        s_regiao = st.selectbox("🌎 REGIÃO / PAÍS", list(db_h.keys()))
     with r_f[1]:
-        s_gru = st.selectbox("📂 GRUPO", list(db_h[s_reg].keys()))
+        s_grupo = st.selectbox("📂 GRUPO", list(db_h[s_regiao].keys()))
     with r_f[2]:
-        s_cmp = st.selectbox("🏆 COMPETIÇÃO", db_h[s_reg][s_gru])
+        s_comp = st.selectbox("🏆 COMPETIÇÃO", db_h[s_regiao][s_grupo])
     
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     times_base = ["Athletico-PR", "Atlético-MG", "Flamengo", "Palmeiras", "Real Madrid", "Man City", "Arsenal", "Barcelona", "Corinthians", "São Paulo", "Inter Milan", "Bayern", "Liverpool", "PSG"]
@@ -302,23 +309,15 @@ elif st.session_state.aba_ativa == "gestao":
     v_l = (st.session_state.banca_total * st.session_state.stop_loss / 100)
     with c_out:
         g1, g2, g3, g4 = st.columns(4)
-        with g1:
-            draw_card("VALOR ENTRADA", f"R$ {v_s:,.2f}", 100, "#00d2ff")
-        with g2:
-            draw_card("STOP GAIN", f"R$ {v_m:,.2f}", 100, "#00d2ff")
-        with g3:
-            draw_card("STOP LOSS", f"R$ {v_l:,.2f}", 100, "#00d2ff")
-        with g4:
-            draw_card("ALVO FINAL", f"R$ {(st.session_state.banca_total+v_m):,.2f}", 100, "#00d2ff")
+        with g1: draw_card("VALOR ENTRADA", f"R$ {v_s:,.2f}", 100, "#00d2ff")
+        with g2: draw_card("STOP GAIN", f"R$ {v_m:,.2f}", 100, "#00d2ff")
+        with g3: draw_card("STOP LOSS", f"R$ {v_l:,.2f}", 100, "#00d2ff")
+        with g4: draw_card("ALVO FINAL", f"R$ {(st.session_state.banca_total+v_m):,.2f}", 100, "#00d2ff")
         g5, g6, g7, g8 = st.columns(4)
-        with g5:
-            draw_card("RISCO TOTAL", f"{st.session_state.stake_padrao}%", 100, "#00d2ff")
-        with g6:
-            draw_card("ENTRADAS/META", f"{int(v_m/v_s) if v_s>0 else 0}", 100, "#00d2ff")
-        with g7:
-            draw_card("ENTRADAS/LOSS", f"{int(v_l/v_s) if v_s>0 else 0}", 100, "#00d2ff")
-        with g8:
-            draw_card("SAÚDE BANCA", "EXCELENTE", 100, "#00ff88")
+        with g5: draw_card("RISCO TOTAL", f"{st.session_state.stake_padrao}%", 100, "#00d2ff")
+        with g6: draw_card("ENTRADAS/META", f"{int(v_m/v_s) if v_s>0 else 0}", 100, "#00d2ff")
+        with g7: draw_card("ENTRADAS/LOSS", f"{int(v_l/v_s) if v_s>0 else 0}", 100, "#00d2ff")
+        with g8: draw_card("SAÚDE BANCA", "EXCELENTE", 100, "#00ff88")
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📡 SCANNER EM TEMPO REAL (TOP 20 LIVE)</h2>", unsafe_allow_html=True)
@@ -378,18 +377,7 @@ elif st.session_state.aba_ativa == "gols":
         cols = st.columns(4)
         for i, j in enumerate(row):
             with cols[i]:
-                st.markdown(f"""
-                <div class="kpi-detailed-card">
-                    <div style="color:#00d2ff; font-size:10px; font-weight:900; margin-bottom:5px;">PROB. GOLS: {j['P']}</div>
-                    <div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div>
-                    <div class="kpi-stat">⏱️ GOL 1º TEMPO: <b>82%</b></div>
-                    <div class="kpi-stat">⏱️ GOL 2º TEMPO: <b>89%</b></div>
-                    <div class="kpi-stat">🤝 AMBAS MARCAM: <b>SIM (74%)</b></div>
-                    <div class="kpi-stat">🏠 GOLS CASA: <b>1.5+</b></div>
-                    <div class="kpi-stat">🚀 GOLS FORA: <b>0.5+</b></div>
-                    <div class="kpi-stat">📊 TOTAL GOLS: <b>OVER 2.5</b></div>
-                </div>
-                """, unsafe_allow_html=True)
+                st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#00d2ff; font-size:10px; font-weight:900; margin-bottom:5px;">PROB. GOLS: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">⏱️ GOL 1º TEMPO: <b>82%</b></div><div class="kpi-stat">⏱️ GOL 2º TEMPO: <b>89%</b></div><div class="kpi-stat">🤝 AMBAS MARCAM: <b>SIM (74%)</b></div><div class="kpi-stat">🏠 GOLS CASA: <b>1.5+</b></div><div class="kpi-stat">🚀 GOLS FORA: <b>0.5+</b></div><div class="kpi-stat">📊 TOTAL GOLS: <b>OVER 2.5</b></div></div>""", unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "escanteios":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>🚩 ESCANTEIOS - TOP 20 ANALISES IA</h2>", unsafe_allow_html=True)
@@ -398,18 +386,9 @@ elif st.session_state.aba_ativa == "escanteios":
         cols = st.columns(4)
         for i, j in enumerate(row):
             with cols[i]:
-                st.markdown(f"""
-                <div class="kpi-detailed-card">
-                    <div style="color:#ff4b4b; font-size:10px; font-weight:900; margin-bottom:5px;">CANTOS: {j['P']}</div>
-                    <div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div>
-                    <div class="kpi-stat">⏱️ CANTOS 1º TEMPO: <b>4.5+</b></div>
-                    <div class="kpi-stat">⏱️ CANTOS 2º TEMPO: <b>5.5+</b></div>
-                    <div class="kpi-stat">🏠 CASA / 🚀 FORA: <b>6 | 4</b></div>
-                    <div class="kpi-stat">📊 QUANTIDADE TOTAL: <b>OVER 9.5</b></div>
-                </div>
-                """, unsafe_allow_html=True)
+                st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#ff4b4b; font-size:10px; font-weight:900; margin-bottom:5px;">CANTOS: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">⏱️ CANTOS 1º TEMPO: <b>4.5+</b></div><div class="kpi-stat">⏱️ CANTOS 2º TEMPO: <b>5.5+</b></div><div class="kpi-stat">🏠 CANTOS CASA: <b>6</b></div><div class="kpi-stat">🚀 CANTOS FORA: <b>4</b></div><div class="kpi-stat">📊 QUANTIDADE TOTAL: <b>OVER 9.5</b></div></div>""", unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v93.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v94.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
 
 def sync():
     url = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
