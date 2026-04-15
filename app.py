@@ -7,12 +7,12 @@ import random
 import requests
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v94.0 - DETALHAMENTO MÁXIMO DE ESCANTEIOS]
+# [PROTOCOLO DE MANUTENÇÃO v95.0 - BLINDAGEM TOTAL DE CONFRONTO E COMPETIÇÃO]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
 # DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO)
-# DIRETRIZ 5: CÓDIGO 100% ÍNTEGRO - DETALHAMENTO DE CANTOS CASA/FORA
+# DIRETRIZ 5: CÓDIGO 100% ÍNTEGRO - TIMES VINCULADOS E SEM DUPLICIDADE
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -42,7 +42,7 @@ if 'top_20_ia' not in st.session_state:
 if 'jogos_live_ia' not in st.session_state:
     st.session_state.jogos_live_ia = []
 
-# Redirecionamento via URL (Faz o cabeçalho funcionar como abas de site)
+# Redirecionamento via URL (Mapeia o cabeçalho)
 query_params = st.query_params
 if query_params.get("go") == "home":
     st.session_state.aba_ativa = "home"
@@ -139,7 +139,7 @@ def executar_scanner_live():
 processar_ia_bot()
 
 # ==============================================================================
-# 2. CAMADA DE ESTILO CSS INTEGRAL (REFINO v94.0)
+# 2. CAMADA DE ESTILO CSS INTEGRAL (REFINO v95.0)
 # ==============================================================================
 st.markdown("""
     <style>
@@ -148,29 +148,60 @@ st.markdown("""
     * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     .header-anchor { display: none !important; }
-    html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp { background-color: #0b0e11 !important; font-family: 'Inter', sans-serif; }
+
+    html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp {
+        background-color: #0b0e11 !important;
+        font-family: 'Inter', sans-serif;
+    }
+
     header, [data-testid="stHeader"] { display: none !important; height: 0px !important; }
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
-    .betano-header { position: fixed; top: 0; left: 0; width: 100%; height: 60px; background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; display: flex; align-items: center; justify-content: space-between; padding: 0 40px !important; z-index: 1000000; transform: translate3d(0,0,0); -webkit-backface-visibility: hidden; }
+    
+    .betano-header { 
+        position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
+        background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; 
+        display: flex; align-items: center; justify-content: space-between; 
+        padding: 0 40px !important; z-index: 1000000; 
+        transform: translate3d(0,0,0); -webkit-backface-visibility: hidden;
+    }
+    
     .header-left { display: flex; align-items: center; gap: 20px; }
     .logo-link { color: #9d54ff !important; font-weight: 900; font-size: 21px !important; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none !important; cursor: pointer; border-bottom: 2px solid #9d54ff; padding-bottom: 2px; }
+    
     .nav-links { display: flex; gap: 15px; align-items: center; }
     .nav-item { color: #ffffff !important; font-size: 9.5px !important; text-transform: uppercase; font-weight: 700 !important; letter-spacing: 0.3px; transition: 0.3s ease; cursor: pointer; white-space: nowrap; text-decoration: none !important;}
     .nav-item:hover { color: #06b6d4 !important; transform: scale(1.02); }
+
     .header-right { display: flex; align-items: center; gap: 10px; min-width: 250px; justify-content: flex-end; }
     .search-lupa { color: #ffffff; font-size: 16px; cursor: pointer; margin-right: 5px; }
+    
     .registrar-pill { color: #ffffff !important; font-size: 9px !important; font-weight: 800; border: 1.5px solid #ffffff !important; padding: 6px 14px !important; border-radius: 20px !important; transition: 0.3s ease; cursor: pointer; white-space: nowrap; }
-    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 7px 18px !important; border-radius: 5px !important; font-weight: 800; font-size: 9.5px; transition: 0.3s ease; cursor: pointer; white-space: nowrap; }
+    .entrar-grad { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: white !important; padding: 8px 22px !important; border-radius: 5px !important; font-weight: 800; font-size: 9.5px; transition: 0.3s ease; cursor: pointer; white-space: nowrap; }
+
     [data-testid="stSidebar"] { min-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
     [data-testid="stSidebar"] [data-testid="stVerticalBlock"] { margin-top: -45px !important; gap: 0px !important; }
     section[data-testid="stSidebar"] div.stButton > button { background-color: transparent !important; color: #94a3b8 !important; border: none !important; border-bottom: 1px solid #1a202c !important; text-align: left !important; width: 100% !important; padding: 18px 25px !important; font-size: 10px !important; text-transform: uppercase !important; border-radius: 0px !important; transition: all 0.2s ease !important; white-space: nowrap !important; }
     section[data-testid="stSidebar"] div.stButton > button:hover { background-color: #1e293b !important; color: #06b6d4 !important; border-left: 3px solid #6d28d9 !important; }
     div.stButton > button:not([data-testid="stSidebar"] *) { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: #ffffff !important; border: none !important; padding: 15px 20px !important; font-weight: 900 !important; text-transform: uppercase !important; letter-spacing: 1.2px !important; border-radius: 6px !important; width: 100% !important; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important; margin-top: 10px !important; transform: translate3d(0,0,0); }
-    [data-testid="stWidgetLabel"] p { color: #e2e8f0 !important; font-weight: 800 !important; font-size: 11px !important; text-transform: uppercase !important; letter-spacing: 0.5px; margin-bottom: 8px !important; }
-    div[data-baseweb="select"] > div { background-color: #1a202c !important; color: white !important; border: 1px solid #334155 !important; border-radius: 6px !important; }
+    
+    [data-testid="stWidgetLabel"] p {
+        color: #e2e8f0 !important;
+        font-weight: 800 !important;
+        font-size: 11px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        margin-bottom: 8px !important;
+    }
+    div[data-baseweb="select"] > div {
+        background-color: #1a202c !important;
+        color: white !important;
+        border: 1px solid #334155 !important;
+        border-radius: 6px !important;
+    }
     div[data-baseweb="select"] span { color: white !important; }
     div[role="listbox"] { background-color: #11151a !important; color: white !important; }
+
     .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px; transition: all 0.3s ease; transform: translate3d(0,0,0); }
     .kpi-detailed-card { background: #11151a; border: 1px solid #1e293b; padding: 20px 18px; border-radius: 8px; margin-bottom: 15px; height: auto !important; transition: 0.3s ease; transform: translate3d(0,0,0); }
     .kpi-detailed-card:hover { border-color: #6d28d9; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
@@ -223,7 +254,7 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
     st.markdown(f"""<div class="highlight-card"><div style="color:#64748b; font-size:9px; text-transform: uppercase; font-weight: 700;">{title}</div><div style="color:white; font-size:16px; font-weight:900; margin-top:10px;">{value}</div><div style="background:#1e293b; height:4px; width:80%; border-radius:10px; margin:10px auto;"><div style="background:{color_footer}; height:100%; width:{perc}%;"></div></div></div>""", unsafe_allow_html=True)
 
 # ==============================================================================
-# 4. LÓGICA DE TELAS (RESTAURAÇÃO v94.0 INTEGRAL)
+# 4. LÓGICA DE TELAS (RESTAURAÇÃO v95.0 INTEGRAL)
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
@@ -240,41 +271,67 @@ if st.session_state.aba_ativa == "home":
 
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
+    
+    # BANCO DE DADOS DE TIMES VINCULADOS A COMPETIÇÃO
+    db_times_vinc = {
+        "SÉRIE A": ["Athletico-PR", "Atlético-MG", "Bahia", "Botafogo", "Bragantino", "Corinthians", "Criciúma", "Cruzeiro", "Cuiabá", "Flamengo", "Fluminense", "Fortaleza", "Grêmio", "Internacional", "Juventude", "Palmeiras", "São Paulo", "Vasco", "Vitória"],
+        "SÉRIE B": ["Amazonas", "América-MG", "Avaí", "Botafogo-SP", "Brusque", "Ceará", "Chapecoense", "Coritiba", "CRB", "Goiás", "Guarani", "Ituano", "Mirassol", "Novorizontino", "Operário-PR", "Paysandu", "Ponte Preta", "Santos", "Sport", "Vila Nova"],
+        "SÉRIE C": ["ABC", "Aparecidense", "Botafogo-PB", "Caxias", "Confiança", "CSA", "Ferroviária", "Ferroviário", "Figueirense", "Floresta", "Londrina", "Náutico", "Remo", "São Bernardo", "São José-RS", "Sampaio Corrêa", "Tombense", "Volta Redonda"],
+        "SÉRIE D": ["América-RN", "Brasil de Pelotas", "Inter de Limeira", "Moto Club", "Portuguesa-RJ", "Santa Cruz", "Treze"],
+        "SUB-20": ["Flamengo U20", "Palmeiras U20", "Corinthians U20", "São Paulo U20", "Galo U20", "Grêmio U20"],
+        "SUB-17": ["Vasco U17", "Fluminense U17", "Santos U17", "Cruzeiro U17"],
+        "Copa do Brasil": ["Flamengo", "Palmeiras", "Galo", "Grêmio", "São Paulo", "Corinthians", "Bahia", "Vasco", "Athletico-PR"],
+        "Campeonato Carioca": ["Flamengo", "Fluminense", "Vasco", "Botafogo", "Nova Iguaçu", "Boavista", "Madureira", "Bangu", "Audax-RJ", "Sampaio Corrêa-RJ"],
+        "Campeonato Paulistano": ["Palmeiras", "Santos", "São Paulo", "Corinthians", "Bragantino", "Novorizontino", "Inter de Limeira", "Ponte Preta", "Água Santa", "Mirassol"],
+        "Campeonato Mineiro": ["Galo", "Cruzeiro", "América-MG", "Tombense", "Ipatinga", "Villa Nova", "Pouso Alegre", "Uberlândia"],
+        "Campeonato Gaúcho": ["Grêmio", "Internacional", "Juventude", "Caxias", "Brasil de Pelotas", "São José-RS", "Ypiranga", "Novo Hamburgo"],
+        "Champions League": ["Real Madrid", "Man City", "Bayern Munich", "PSG", "Inter Milan", "Arsenal", "Barcelona", "Dortmund", "Atletico Madrid", "Milan", "Leverkusen", "Napoli"],
+        "Premier League": ["Man City", "Arsenal", "Liverpool", "Aston Villa", "Spurs", "Chelsea", "Newcastle", "Man Utd", "West Ham", "Brighton"],
+        "La Liga": ["Real Madrid", "Barcelona", "Girona", "Atletico Madrid", "Athletic Bilbao", "Real Sociedad", "Real Betis", "Valencia", "Sevilla", "Villarreal"],
+        "Serie A (Itália)": ["Inter Milan", "Milan", "Juventus", "Atalanta", "Bologna", "Roma", "Lazio", "Fiorentina", "Napoli", "Torino"],
+        "Copa do Mundo 2026": ["Brasil", "Argentina", "França", "Inglaterra", "Espanha", "Alemanha", "Holanda", "Portugal", "Uruguai", "Japão", "Marrocos", "Itália", "Bélgica", "Equador"],
+        "Eliminatórias Copa - América do Sul": ["Brasil", "Argentina", "Uruguai", "Colômbia", "Equador", "Paraguai", "Chile", "Peru", "Venezuela", "Bolívia"],
+        "Copa Libertadores": ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors", "Galo", "São Paulo", "Fluminense", "Ind. del Valle", "Peñarol", "Nacional", "Colo-Colo"]
+    }
+
     db_h = {
         "BRASIL": {
             "BRASILEIRÃO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D", "SUB-20", "SUB-17"],
-            "ESTADUAIS": ["Campeonato Carioca", "Campeonato Paulistano", "Campeonato Mineiro", "Campeonato Gaúcho", "Campeonato Paranaense", "Campeonato Catarinense", "Campeonato Baiano", "Campeonato Pernambucano", "Campeonato Cearense", "Campeonato Goiano", "Campeonato Alagoano", "Campeonato Paraense", "Campeonato Mato-Grossense", "Campeonato Maranhense", "Campeonato Paraibano", "Campeonato Potiguar", "Campeonato Sergipano", "Campeonato Piauiense", "Campeonato Amazonense", "Campeonato Acreano", "Campeonato Amapaense", "Campeonato Capixaba", "Campeonato Brasiliense"],
-            "COPAS": ["Copa do Brasil", "Supercopa do Brasil", "Copa do Nordeste", "Copa Verde", "Copa Paulista", "Copa Sul-Sudeste", "Copinha"]
+            "ESTADUAIS": ["Campeonato Carioca", "Campeonato Paulistano", "Campeonato Mineiro", "Campeonato Gaúcho", "Campeonato Paranaense", "Campeonato Baiano", "Campeonato Pernambucano", "Campeonato Cearense"],
+            "COPAS": ["Copa do Brasil", "Supercopa do Brasil", "Copa do Nordeste", "Copa Verde", "Copinha"]
         },
         "EUROPA": {
             "UEFA CLUBES": ["Champions League", "Liga Europa", "Liga Conferência"],
-            "LIGAS ELITE": ["Premier League", "La Liga", "Serie A (Itália)", "Bundesliga", "Ligue 1", "Campeonato Saudita"],
-            "COPAS": ["Copa da Inglaterra", "Copa da Liga Inglesa", "Copa do Rei", "Copa da Itália", "Copa da Alemanha", "Copa da França"]
+            "LIGAS ELITE": ["Premier League", "La Liga", "Serie A (Itália)", "Bundesliga", "Ligue 1"],
+            "COPAS": ["Copa da Inglaterra", "Copa da Liga Inglesa", "Copa do Rei"]
         },
         "AMÉRICA DO SUL": {
-            "CONMEBOL": ["Copa Libertadores", "Libertadores Sub-20", "Copa Sulamericana", "Recopa Sul-Americana"],
-            "SELEÇÕES": ["Eliminatórias Copa - América do Sul", "Copa América", "Sul-Americano Sub-17"]
+            "CONMEBOL": ["Copa Libertadores", "Copa Sulamericana", "Recopa Sul-Americana"],
+            "SELEÇÕES": ["Eliminatórias Copa - América do Sul", "Copa América"]
         },
-        "MUNDO & FIFA": {
-            "MUNDIAL": ["Copa do Mundo 2026", "Eliminatórias Copa - Europa", "Eliminatórias Repescagem", "Copa do Mundo de Clubes", "Copa do Mundo Sub-20", "Copa Intercontinental"],
-            "ÁSIA": ["Champions League da Ásia"]
-        }
+        "MUNDO & FIFA": {"MUNDIAL": ["Copa do Mundo 2026", "Copa do Mundo de Clubes", "Copa Intercontinental"]}
     }
+    
     r_f = st.columns(3)
     with r_f[0]:
-        s_regiao = st.selectbox("🌎 REGIÃO / PAÍS", list(db_h.keys()))
+        sel_reg = st.selectbox("🌎 REGIÃO / PAÍS", list(db_h.keys()))
     with r_f[1]:
-        s_grupo = st.selectbox("📂 GRUPO", list(db_h[s_regiao].keys()))
+        sel_gru = st.selectbox("📂 GRUPO", list(db_h[sel_reg].keys()))
     with r_f[2]:
-        s_comp = st.selectbox("🏆 COMPETIÇÃO", db_h[s_regiao][s_grupo])
+        sel_cmp = st.selectbox("🏆 COMPETIÇÃO", db_h[sel_reg][sel_gru])
     
+    # Filtro Dinâmico de Times Baseado na Competição
+    lista_comp = db_times_vinc.get(sel_cmp, ["Time Elite A", "Time Elite B", "Time Elite C", "Time Elite D"])
+    lista_comp = sorted(lista_comp)
+
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
-    times_base = ["Athletico-PR", "Atlético-MG", "Flamengo", "Palmeiras", "Real Madrid", "Man City", "Arsenal", "Barcelona", "Corinthians", "São Paulo", "Inter Milan", "Bayern", "Liverpool", "PSG"]
     c1, c2 = st.columns(2)
     with c1:
-        t_c = st.selectbox("🏠 TIME DA CASA", times_base)
+        t_c = st.selectbox("🏠 TIME DA CASA", lista_comp)
     with c2:
-        t_f = st.selectbox("🚀 TIME DE FORA", [t for t in times_base if t != t_c])
+        # TRAVA: O time de fora não pode ser o mesmo do time da casa
+        lista_fora = [t for t in lista_comp if t != t_c]
+        t_f = st.selectbox("🚀 TIME DE FORA", lista_fora)
     
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         st.session_state.analise_bloqueada = {"casa": t_c, "fora": t_f, "vencedor": "ALTA PROB.", "gols": "OVER 1.5", "stake_val": f"R$ {(st.session_state.banca_total*st.session_state.stake_padrao/100):,.2f}", "cantos": "9.5+", "btss": "SIM (74%)", "cartoes": "4.5+", "chutes": "8.5 p/g", "confia": "94.2%", "data": datetime.now().strftime("%H:%M")}
@@ -388,7 +445,7 @@ elif st.session_state.aba_ativa == "escanteios":
             with cols[i]:
                 st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#ff4b4b; font-size:10px; font-weight:900; margin-bottom:5px;">CANTOS: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">⏱️ CANTOS 1º TEMPO: <b>4.5+</b></div><div class="kpi-stat">⏱️ CANTOS 2º TEMPO: <b>5.5+</b></div><div class="kpi-stat">🏠 CANTOS CASA: <b>6</b></div><div class="kpi-stat">🚀 CANTOS FORA: <b>4</b></div><div class="kpi-stat">📊 QUANTIDADE TOTAL: <b>OVER 9.5</b></div></div>""", unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v94.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v95.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
 
 def sync():
     url = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
