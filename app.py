@@ -7,12 +7,12 @@ import random
 import requests
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v96.1 - AUDITORIA DE ASSERTIVIDADE REAL]
+# [PROTOCOLO DE MANUTENÇÃO v96.2 - AUDITORIA DE ASSERTIVIDADE REAL]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
 # DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO)
-# DIRETRIZ 5: CÓDIGO 100% ÍNTEGRO - EXPANSÃO DE COMPETIÇÕES GLOBAIS
+# DIRETRIZ 5: CÓDIGO 100% ÍNTEGRO - EXPANSÃO CIRÚRGICA DE TIMES MUNDIAIS
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -68,7 +68,7 @@ if query_params.get("go") == "live":
 def carregar_dados_ia():
     url_github = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
     try:
-        # Trava de Cache via Timestamp
+        # Trava de Cache via Timestamp para ignorar versões antigas
         ts = datetime.now().timestamp()
         df = pd.read_csv(f"{url_github}?v={ts}", on_bad_lines='skip')
         df.columns = [c.upper() for c in df.columns]
@@ -182,13 +182,11 @@ st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
     
-    /* REMOÇÃO DE ELEMENTOS PADRÃO */
     ::-webkit-scrollbar { display: none !important; }
     * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; }
     .header-anchor { display: none !important; }
     
-    /* FUNDO E FONTE */
     html, body, [data-testid="stAppViewContainer"], [data-testid="stHeader"], .stApp { 
         background-color: #0b0e11 !important; 
         font-family: 'Inter', sans-serif; 
@@ -197,10 +195,8 @@ st.markdown("""
     header, [data-testid="stHeader"] { display: none !important; height: 0px !important; }
     [data-testid="stSidebarCollapseButton"] { display: none !important; }
     
-    /* CONTAINER PRINCIPAL */
     [data-testid="stMainBlockContainer"] { padding: 85px 40px 20px 40px !important; }
     
-    /* HEADER FIXO BETANO STYLE */
     .betano-header { 
         position: fixed; 
         top: 0; 
@@ -256,8 +252,6 @@ st.markdown("""
         justify-content: flex-end; 
     }
     
-    .search-lupa { color: #ffffff; font-size: 16px; cursor: pointer; margin-right: 5px; }
-    
     .registrar-pill { 
         color: #ffffff !important; 
         font-size: 9px !important; 
@@ -282,7 +276,6 @@ st.markdown("""
         white-space: nowrap; 
     }
     
-    /* SIDEBAR */
     [data-testid="stSidebar"] { 
         min-width: 320px !important; 
         background-color: #11151a !important; 
@@ -312,7 +305,6 @@ st.markdown("""
         border-left: 3px solid #6d28d9 !important; 
     }
     
-    /* BOTÃO PRINCIPAL GRADIENTE */
     div.stButton > button:not([data-testid="stSidebar"] *) { 
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; 
         color: #ffffff !important; 
@@ -329,27 +321,6 @@ st.markdown("""
         transform: translate3d(0,0,0); 
     }
     
-    /* WIDGETS */
-    [data-testid="stWidgetLabel"] p { 
-        color: #e2e8f0 !important; 
-        font-weight: 800 !important; 
-        font-size: 11px !important; 
-        text-transform: uppercase !important; 
-        letter-spacing: 0.5px; 
-        margin-bottom: 8px !important; 
-    }
-    
-    div[data-baseweb="select"] > div { 
-        background-color: #1a202c !important; 
-        color: white !important; 
-        border: 1px solid #334155 !important; 
-        border-radius: 6px !important; 
-    }
-    
-    div[data-baseweb="select"] span { color: white !important; }
-    div[role="listbox"] { background-color: #11151a !important; color: white !important; }
-    
-    /* CARDS */
     .highlight-card { 
         background: #11151a; 
         border: 1px solid #1e293b; 
@@ -372,8 +343,6 @@ st.markdown("""
         transition: 0.3s ease; 
         transform: translate3d(0,0,0); 
     }
-    
-    .kpi-detailed-card:hover { border-color: #6d28d9; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
     
     .kpi-stat { 
         font-size: 10px; 
@@ -523,16 +492,15 @@ if st.session_state.aba_ativa == "home":
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    # BANCO DE DADOS HIERÁRQUICO EXPANDIDO (v96.1)
     db_h = {
         "BRASIL": {
-            "BRASILEIRÃO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D", "SUB-20"],
+            "BRASILEIRÃO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D"],
             "ESTADUAIS": ["Campeonato Carioca", "Campeonato Paulista", "Campeonato Mineiro", "Campeonato Gaúcho", "Campeonato Paranaense", "Campeonato Baiano", "Campeonato Catarinense", "Campeonato Cearense"],
             "COPAS": ["Copa do Brasil", "Supercopa do Brasil", "Copa do Nordeste", "Copa Verde"]
         },
         "AMÉRICA DO SUL": {
             "CONMEBOL": ["Copa Libertadores", "Copa Sul-Americana", "Recopa Sul-Americana"],
-            "LIGAS NACIONAIS": ["Liga Argentina (LPF)", "Primera División Chile", "Categoría Primera A (Col)", "Liga Pro (Equador)"]
+            "LIGAS NACIONAIS": ["Liga Argentina (LPF)", "Primera División Chile", "Categoría Primera A (Col)", "Liga Pro (Equador)", "Primera División Uruguai"]
         },
         "EUROPA ELITE": {
             "UEFA CLUBES": ["Champions League", "Liga Europa", "Liga Conferência"],
@@ -556,20 +524,44 @@ elif st.session_state.aba_ativa == "analise":
     with r_f[2]:
         s_cmp = st.selectbox("🏆 COMPETIÇÃO", db_h[s_reg][s_gru])
     
-    # BANCO DE DADOS DE TIMES VINCULADOS (v96.1)
     db_times_vinc = {
         "SÉRIE A": ["Athletico-PR", "Atlético-MG", "Bahia", "Botafogo", "Bragantino", "Corinthians", "Criciúma", "Cruzeiro", "Cuiabá", "Flamengo", "Fluminense", "Fortaleza", "Grêmio", "Internacional", "Juventude", "Palmeiras", "São Paulo", "Vasco", "Vitória"],
-        "SÉRIE B": ["Santos", "Sport", "Ceará", "Goiás", "Coritiba", "Novorizontino", "Mirassol", "Avaí"],
-        "Copa Libertadores": ["Palmeiras", "Flamengo", "Fluminense", "River Plate", "Boca Juniors", "Peñarol", "Atlético-MG", "São Paulo", "Colo-Colo", "LDU Quito", "Bolívar", "Nacional (Uru)"],
-        "Copa Sul-Americana": ["Corinthians", "Cruzeiro", "Fortaleza", "Athletico-PR", "Racing", "Lanús", "Ind. Medellín"],
-        "Champions League": ["Real Madrid", "Man City", "Bayern Munich", "PSG", "Inter Milan", "Arsenal", "Barcelona", "Dortmund", "Liverpool", "Bayer Leverkusen"],
-        "Premier League": ["Man City", "Arsenal", "Liverpool", "Aston Villa", "Spurs", "Chelsea", "Man United", "Newcastle"],
-        "Saudi Pro League (Arábia)": ["Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Shabab", "Al-Ettifaq"],
-        "Liga Portugal (Betclic)": ["Benfica", "Porto", "Sporting CP", "Braga", "Vitória SC"],
-        "MLS (EUA)": ["Inter Miami", "LA Galaxy", "Columbus Crew", "LAFC", "Seattle Sounders"],
-        "Liga Argentina (LPF)": ["River Plate", "Boca Juniors", "Racing", "Independiente", "San Lorenzo", "Talleres", "Estudiantes"],
-        "Eredivisie (Holanda)": ["PSV", "Ajax", "Feyenoord", "AZ Alkmaar"],
-        "Süper Lig (Turquia)": ["Galatasaray", "Fenerbahce", "Besiktas", "Trabzonspor"]
+        "SÉRIE B": ["Santos", "Sport", "Ceará", "Goiás", "Coritiba", "Novorizontino", "Mirassol", "Avaí", "Operário-PR", "Amazonas", "Vila Nova", "Ponte Preta", "Chapecoense", "CRB", "Botafogo-SP", "Ituano", "Brusque", "Guarani"],
+        "Copa Libertadores": [
+            "Fluminense", "Palmeiras", "Flamengo", "Grêmio", "São Paulo", "Atlético-MG", "Botafogo", "River Plate", "Talleres", "Rosario Central", "San Lorenzo", "Estudiantes", 
+            "LDU Quito", "Independiente del Valle", "Barcelona SC", "Junior Barranquilla", "Millonarios", "Peñarol", "Nacional (Uru)", "Colo-Colo", "Cobresal", "Huachipato", 
+            "Libertad", "Cerro Porteño", "Universitario", "Alianza Lima", "Bolívar", "The Strongest", "Caracas FC", "Deportivo Táchira"
+        ],
+        "Copa Sul-Americana": [
+            "Fortaleza", "Cuiabá", "Internacional", "Cruzeiro", "Corinthians", "Athletico-PR", "Boca Juniors", "Racing", "Lanús", "Belgrano", "Argentinos Juniors", "Defensa y Justicia", 
+            "Ind. Medellín", "América de Cali", "Univ. Católica", "Coquimbo Unido", "Danubio", "Racing Montevideo", "Sportivo Luqueño", "Sportivo Ameliano"
+        ],
+        "Liga Argentina (LPF)": [
+            "River Plate", "Boca Juniors", "Racing", "Independiente", "San Lorenzo", "Talleres", "Estudiantes", "Lanús", "Vélez Sarsfield", "Huracán", "Rosario Central", "Newells Old Boys", 
+            "Belgrano", "Argentinos Juniors", "Defensa y Justicia", "Godoy Cruz", "Independiente Rivadavia", "Banfield", "Gimnasia LP", "Tigre", "Barracas Central", "Platense", "Sarmiento", "Union Santa Fe"
+        ],
+        "Premier League": [
+            "Man City", "Arsenal", "Liverpool", "Aston Villa", "Spurs", "Chelsea", "Man United", "Newcastle", "West Ham", "Brighton", "Wolves", "Fulham", "Bournemouth", "Everton", "Brentford", "Nottingham Forest", "Crystal Palace", "Leicester", "Ipswich", "Southampton"
+        ],
+        "La Liga": [
+            "Real Madrid", "Barcelona", "Atletico Madrid", "Girona", "Athletic Bilbao", "Real Sociedad", "Real Betis", "Villarreal", "Valencia", "Alaves", "Osasuna", "Getafe", "Sevilla", "Celta Vigo", "Rayo Vallecano", "Las Palmas", "Mallorca", "Valladolid", "Leganes", "Espanyol"
+        ],
+        "Serie A (Itália)": [
+            "Inter Milan", "AC Milan", "Juventus", "Atalanta", "Bologna", "AS Roma", "Lazio", "Fiorentina", "Torino", "Napoli", "Genoa", "Monza", "Verona", "Lecce", "Udinese", "Cagliari", "Empoli", "Parma", "Como", "Venezia"
+        ],
+        "Bundesliga": [
+            "Bayer Leverkusen", "Bayern Munich", "Stuttgart", "RB Leipzig", "Dortmund", "Frankfurt", "Hoffenheim", "Heidenheim", "Werder Bremen", "Freiburg", "Augsburg", "Wolfsburg", "Mainz", "Gladbach", "Union Berlin", "Bochum", "St. Pauli", "Holstein Kiel"
+        ],
+        "Ligue 1": [
+            "PSG", "Monaco", "Brest", "Lille", "Nice", "Lyon", "Lens", "Marseille", "Reims", "Rennes", "Toulouse", "Montpellier", "Strasbourg", "Nantes", "Le Havre", "Auxerre", "Angers", "Saint-Etienne"
+        ],
+        "Saudi Pro League (Arábia)": [
+            "Al-Hilal", "Al-Nassr", "Al-Ittihad", "Al-Ahli", "Al-Shabab", "Al-Ettifaq", "Al-Taawoun", "Al-Fateh", "Damac", "Al-Khaleej", "Al-Wehda", "Al-Fayha", "Al-Raed", "Al-Riyadh", "Al-Okhdood", "Al-Qadsiah", "Al-Kholood", "Al-Orobah"
+        ],
+        "Liga Portugal (Betclic)": ["Benfica", "Porto", "Sporting CP", "Braga", "Vitória SC", "Moreirense", "Arouca", "Famalicão", "Casa Pia", "Farense", "Rio Ave", "Gil Vicente", "Estoril", "Boavista", "Estrela Amadora", "Santa Clara", "Nacional", "AVS"],
+        "MLS (EUA)": ["Inter Miami", "Columbus Crew", "FC Cincinnati", "LAFC", "LA Galaxy", "Real Salt Lake", "Seattle Sounders", "Houston Dynamo", "Orlando City", "New York City", "New York RB", "Charlotte FC", "Portland Timbers", "Colorado Rapids", "Minnesota United", "Vancouver Whitecaps"],
+        "Eredivisie (Holanda)": ["PSV", "Feyenoord", "Twente", "AZ Alkmaar", "Ajax", "NEC Nijmegen", "Utrecht", "Sparta Rotterdam", "Go Ahead Eagles", "Heerenveen", "Fortuna Sittard", "Heracles", "Zwolle", "Almere City", "Willem II", "Groningen", "NAC Breda"],
+        "Süper Lig (Turquia)": ["Galatasaray", "Fenerbahce", "Trabzonspor", "Basaksehir", "Besiktas", "Kasimpasa", "Sivasspor", "Alanyaspor", "Rizespor", "Antalyaspor", "Gaziantep", "Samsunspor", "Kayserispor", "Eyupspor", "Göztepe", "Bodrum FK"]
     }
     
     lista_comp = db_times_vinc.get(s_cmp, ["Time Analítico A", "Time Analítico B", "Time Analítico C"])
@@ -607,24 +599,16 @@ elif st.session_state.aba_ativa == "analise":
         """, unsafe_allow_html=True)
         
         r1, r2, r3, r4 = st.columns(4)
-        with r1: 
-            draw_card("VENCEDOR", m['vencedor'], 85)
-        with r2: 
-            draw_card("MERCADO GOLS", m['gols'], 70)
-        with r3: 
-            draw_card("VALOR STAKE", m['stake_val'], 100)
-        with r4: 
-            draw_card("ESCANTEIOS", m['cantos'], 65)
+        with r1: draw_card("VENCEDOR", m['vencedor'], 85)
+        with r2: draw_card("MERCADO GOLS", m['gols'], 70)
+        with r3: draw_card("VALOR STAKE", m['stake_val'], 100)
+        with r4: draw_card("ESCANTEIOS", m['cantos'], 65)
             
         r5, r6, r7, r8 = st.columns(4)
-        with r5: 
-            draw_card("AMBAS MARCAM", m['btss'], 74)
-        with r6: 
-            draw_card("CARTÕES", m['cartoes'], 60)
-        with r7: 
-            draw_card("CHUTES AO GOL", m['chutes'], 80)
-        with r8: 
-            draw_card("IA CONFIANÇA", m['confia'], 94)
+        with r5: draw_card("AMBAS MARCAM", m['btss'], 74)
+        with r6: draw_card("CARTÕES", m['cartoes'], 60)
+        with r7: draw_card("CHUTES AO GOL", m['chutes'], 80)
+        with r8: draw_card("IA CONFIANÇA", m['confia'], 94)
             
         if st.button("📥 SALVAR CALL NO HISTÓRICO", use_container_width=True): 
             st.session_state.historico_calls.append(m.copy())
@@ -681,31 +665,11 @@ elif st.session_state.aba_ativa == "live":
 
 elif st.session_state.aba_ativa == "assertividade":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📈 ASSERTIVIDADE IA</h2>", unsafe_allow_html=True)
-    path_perf = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/historico_assertividade.csv"
     path_detalhe = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/relatorio_fechamento_dia.csv"
     
     try:
         ts = datetime.now().timestamp()
-        df_p = pd.read_csv(f"{path_perf}?v={ts}")
-        if not df_p.empty:
-            ultimo_resumo = df_p.iloc[-1]
-            st.markdown(f"""
-                <div class="kpi-detailed-card" style="border-left: 8px solid #00ff88; padding: 30px; margin-bottom: 40px;">
-                    <div style="color:#00ff88; font-size:12px; font-weight:900; margin-bottom:10px;">RESUMO DO ÚLTIMO FECHAMENTO: {ultimo_resumo['DATA']}</div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="color:white; font-size:28px; font-weight:900;">ASSERTIVIDADE: <span style="color:#00ff88;">{ultimo_resumo['ASSERTIVIDADE']}</span></div>
-                            <div style="color:#94a3b8; font-size:14px; margin-top:5px;">O robô analisou um total de <b>{ultimo_resumo['JOGOS_ANALISADOS']}</b> confrontos hoje.</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="color:white; font-size:22px; font-weight:800;">{ultimo_resumo['ACERTOS']} ACERTOS</div>
-                            <div style="color:#94a3b8; font-size:12px;">VALIDAÇÃO JARVIS PROTECT</div>
-                        </div>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-            
-        st.markdown("<h4 style='color:white; margin-bottom:20px; font-weight:800;'>🔍 DETALHAMENTO POR CONFRONTO</h4>", unsafe_allow_html=True)
+        st.markdown("<h4 style='color:white; margin-bottom:20px; font-weight:800;'>🔍 DETALHAMENTO GREEN/RED DO DIA</h4>", unsafe_allow_html=True)
         df_det = pd.read_csv(f"{path_detalhe}?v={ts}")
         
         if not df_det.empty:
@@ -725,12 +689,12 @@ elif st.session_state.aba_ativa == "assertividade":
                             </div>
                         """, unsafe_allow_html=True)
     except Exception:
-        st.info("Aguardando Auditoria Diária de Resultados (Fechamento às 23:30).")
+        st.info("Aguardando Auditoria Diária (Fechamento às 23:30).")
 
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📜 HISTÓRICO DE CALLS (SALVAS)</h2>", unsafe_allow_html=True)
     if not st.session_state.historico_calls:
-        st.info("Nenhuma call registrada no histórico local desta sessão.")
+        st.info("Nenhuma call registrada.")
     else:
         calls_rev = list(reversed(st.session_state.historico_calls))
         rows_hist = [calls_rev[i:i + 4] for i in range(0, len(calls_rev), 4)]
@@ -806,7 +770,7 @@ elif st.session_state.aba_ativa == "escanteios":
                     </div>
                 """, unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v96.1</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v96.2</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
 
 def sync():
     url = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
