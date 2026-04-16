@@ -7,12 +7,12 @@ import random
 import requests
 
 # ==============================================================================
-# [PROTOCOLO DE MANUTENÇÃO v96.2 - AUDITORIA DE ASSERTIVIDADE REAL]
+# [PROTOCOLO DE MANUTENÇÃO v96.3 - AUDITORIA DE ASSERTIVIDADE REAL]
 # DIRETRIZ 1: HEADER NA SIDEBAR (TRAVA DE CICLO)
 # DIRETRIZ 2: MANTER TRANSLATE3D E BACKFACE-VISIBILITY (TRAVA DE GPU)
 # DIRETRIZ 3: NAVEGAÇÃO APENAS POR SESSION_STATE (ESTABILIDADE)
 # DIRETRIZ 4: ESTILIZAÇÃO PRIORITÁRIA (ZERO WHITE REFORÇADO)
-# DIRETRIZ 5: CÓDIGO 100% ÍNTEGRO - EXPANSÃO CIRÚRGICA DE TIMES MUNDIAIS
+# DIRETRIZ 5: CÓDIGO 100% ÍNTEGRO - CORREÇÃO CIRÚRGICA DE LISTA DE TIMES
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -68,7 +68,6 @@ if query_params.get("go") == "live":
 def carregar_dados_ia():
     url_github = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
     try:
-        # Trava de Cache via Timestamp para ignorar versões antigas
         ts = datetime.now().timestamp()
         df = pd.read_csv(f"{url_github}?v={ts}", on_bad_lines='skip')
         df.columns = [c.upper() for c in df.columns]
@@ -524,12 +523,13 @@ elif st.session_state.aba_ativa == "analise":
     with r_f[2]:
         s_cmp = st.selectbox("🏆 COMPETIÇÃO", db_h[s_reg][s_gru])
     
+    # BANCO DE DADOS DE TIMES VINCULADOS (CORREÇÃO CIRÚRGICA v96.3)
     db_times_vinc = {
         "SÉRIE A": ["Athletico-PR", "Atlético-MG", "Bahia", "Botafogo", "Bragantino", "Corinthians", "Criciúma", "Cruzeiro", "Cuiabá", "Flamengo", "Fluminense", "Fortaleza", "Grêmio", "Internacional", "Juventude", "Palmeiras", "São Paulo", "Vasco", "Vitória"],
         "SÉRIE B": ["Santos", "Sport", "Ceará", "Goiás", "Coritiba", "Novorizontino", "Mirassol", "Avaí", "Operário-PR", "Amazonas", "Vila Nova", "Ponte Preta", "Chapecoense", "CRB", "Botafogo-SP", "Ituano", "Brusque", "Guarani"],
         "Copa Libertadores": [
             "Fluminense", "Palmeiras", "Flamengo", "Grêmio", "São Paulo", "Atlético-MG", "Botafogo", "River Plate", "Talleres", "Rosario Central", "San Lorenzo", "Estudiantes", 
-            "LDU Quito", "Independiente del Valle", "Barcelona SC", "Junior Barranquilla", "Millonarios", "Peñarol", "Nacional (Uru)", "Colo-Colo", "Cobresal", "Huachipato", 
+            "Independiente del Valle", "Independiente Rivadavia", "LDU Quito", "Barcelona SC", "Junior Barranquilla", "Millonarios", "Peñarol", "Nacional (Uru)", "Colo-Colo", "Cobresal", "Huachipato", 
             "Libertad", "Cerro Porteño", "Universitario", "Alianza Lima", "Bolívar", "The Strongest", "Caracas FC", "Deportivo Táchira"
         ],
         "Copa Sul-Americana": [
@@ -538,7 +538,8 @@ elif st.session_state.aba_ativa == "analise":
         ],
         "Liga Argentina (LPF)": [
             "River Plate", "Boca Juniors", "Racing", "Independiente", "San Lorenzo", "Talleres", "Estudiantes", "Lanús", "Vélez Sarsfield", "Huracán", "Rosario Central", "Newells Old Boys", 
-            "Belgrano", "Argentinos Juniors", "Defensa y Justicia", "Godoy Cruz", "Independiente Rivadavia", "Banfield", "Gimnasia LP", "Tigre", "Barracas Central", "Platense", "Sarmiento", "Union Santa Fe"
+            "Belgrano", "Argentinos Juniors", "Defensa y Justicia", "Godoy Cruz", "Independiente Rivadavia", "Banfield", "Gimnasia LP", "Tigre", "Barracas Central", "Platense", "Sarmiento", "Union Santa Fe",
+            "Instituto", "Central Córdoba", "Deportivo Riestra", "Atlético Tucumán"
         ],
         "Premier League": [
             "Man City", "Arsenal", "Liverpool", "Aston Villa", "Spurs", "Chelsea", "Man United", "Newcastle", "West Ham", "Brighton", "Wolves", "Fulham", "Bournemouth", "Everton", "Brentford", "Nottingham Forest", "Crystal Palace", "Leicester", "Ipswich", "Southampton"
@@ -770,7 +771,7 @@ elif st.session_state.aba_ativa == "escanteios":
                     </div>
                 """, unsafe_allow_html=True)
 
-st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v96.2</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
+st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v96.3</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
 
 def sync():
     url = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
