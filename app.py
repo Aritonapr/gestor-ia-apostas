@@ -42,7 +42,7 @@ if 'top_20_ia' not in st.session_state:
 if 'jogos_live_ia' not in st.session_state:
     st.session_state.jogos_live_ia = []
 
-# --- NOVAS CHAVES PARA IA CONSULTA ---
+# --- NOVAS CHAVES PARA IA CONSULTA (MEMÓRIA E CHAT) ---
 if 'mensagens_chat' not in st.session_state:
     st.session_state.mensagens_chat = []
 if 'memoria_interesses' not in st.session_state:
@@ -60,7 +60,7 @@ if query_params.get("go") == "live":
     st.session_state.aba_ativa = "live"
     st.query_params.clear()
 
-# --- FUNÇÃO DE CARREGAMENTO DE DADOS ---
+# --- FUNÇÃO DE CARREGAMENTO DE DADOS (CONEXÃO REAL GITHUB 2026) ---
 def carregar_dados_ia():
     url_github = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
     try:
@@ -191,6 +191,23 @@ st.markdown("""
     section[data-testid="stSidebar"] div.stButton > button:hover { background-color: #1e293b !important; color: #06b6d4 !important; border-left: 3px solid #6d28d9 !important; }
     div.stButton > button:not([data-testid="stSidebar"] *) { background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important; color: #ffffff !important; border: none !important; padding: 15px 20px !important; font-weight: 900 !important; text-transform: uppercase !important; letter-spacing: 1.2px !important; border-radius: 6px !important; width: 100% !important; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3) !important; margin-top: 10px !important; transform: translate3d(0,0,0); }
     
+    [data-testid="stWidgetLabel"] p {
+        color: #e2e8f0 !important;
+        font-weight: 800 !important;
+        font-size: 11px !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.5px !important;
+        margin-bottom: 8px !important;
+    }
+    div[data-baseweb="select"] > div {
+        background-color: #1a202c !important;
+        color: white !important;
+        border: 1px solid #334155 !important;
+        border-radius: 6px !important;
+    }
+    div[data-baseweb="select"] span { color: white !important; }
+    div[role="listbox"] { background-color: #11151a !important; color: white !important; }
+
     .highlight-card { background: #11151a; border: 1px solid #1e293b; padding: 20px; border-radius: 8px; text-align: center; height: 155px; margin-bottom: 15px; transition: all 0.3s ease; transform: translate3d(0,0,0); }
     .kpi-detailed-card { background: #11151a; border: 1px solid #1e293b; padding: 20px 18px; border-radius: 8px; margin-bottom: 15px; height: auto !important; transition: 0.3s ease; transform: translate3d(0,0,0); }
     .kpi-detailed-card:hover { border-color: #6d28d9; transform: translateY(-5px); box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
@@ -198,10 +215,11 @@ st.markdown("""
     .kpi-stat b { color: white; }
     .banca-title-banner { background-color: #003399 !important; padding: 15px 25px; border-radius: 5px; color: white !important; font-size: 24px; font-weight: 800; margin-bottom: 35px; display: flex; align-items: center; gap: 15px; }
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
-    
-    /* ESTILOS CHAT IA */
-    .chat-bubble-jarvis { background: #1e293b; color: white; padding: 15px; border-radius: 12px 12px 12px 0px; margin-bottom: 10px; border-left: 4px solid #9d54ff; font-size: 13px; line-height: 1.5; }
-    .chat-bubble-user { background: #06b6d4; color: white; padding: 15px; border-radius: 12px 12px 0px 12px; margin-bottom: 10px; margin-left: 20%; font-size: 13px; font-weight: 600; }
+    .big-data-badge { background: rgba(0, 255, 136, 0.1); color: #00ff88; padding: 5px 12px; border-radius: 4px; font-size: 10px; font-weight: 800; border: 1px solid #00ff88; margin-bottom: 20px; display: inline-block; }
+
+    /* ESTILOS EXCLUSIVOS CHAT IA */
+    .chat-bubble-jarvis { background: #1e293b; color: white; padding: 15px; border-radius: 12px 12px 12px 0px; margin-bottom: 10px; border-left: 4px solid #9d54ff; font-size: 13px; line-height: 1.5; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+    .chat-bubble-user { background: #06b6d4; color: white; padding: 15px; border-radius: 12px 12px 0px 12px; margin-bottom: 10px; margin-left: 20%; font-size: 13px; font-weight: 600; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
     </style>
 """, unsafe_allow_html=True)
 
@@ -251,6 +269,8 @@ def draw_card(title, value, perc, color_footer="linear-gradient(90deg, #6d28d9, 
 
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white; margin-bottom:10px;'>📅 BILHETE OURO - TOP 20 ANALISES IA</h2>", unsafe_allow_html=True)
+    if big_data_existe:
+        st.markdown('<div class="big-data-badge">🛡️ BIG DATA ATIVO: PADRÕES 2021-2026 CARREGADOS</div>', unsafe_allow_html=True)
     v_entrada = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
     rows = [st.session_state.top_20_ia[i:i + 4] for i in range(0, 20, 4)]
     for row in rows:
@@ -281,7 +301,7 @@ elif st.session_state.aba_ativa == "ia_consulta":
         classe = "chat-bubble-jarvis" if msg['role'] == "jarvis" else "chat-bubble-user"
         st.markdown(f"<div class='{classe}'>{msg['content']}</div>", unsafe_allow_html=True)
 
-    # Input de Texto e Simulação de Voz
+    # Input de Texto
     prompt = st.chat_input("Pergunte ao Jarvis (Ex: Resultado de Real Madrid vs Barcelona)...")
     
     if prompt:
@@ -299,21 +319,22 @@ elif st.session_state.aba_ativa == "ia_consulta":
         
         # Busca no Temporada 2026 e Histórico
         try:
-            # Simulando carregamento dos arquivos para busca
-            df_hist = pd.read_csv("data/historico_5_temporadas.csv") if os.path.exists("data/historico_5_temporadas.csv") else None
-            df_2026 = pd.read_csv("data/temporada_2026.csv") if os.path.exists("data/temporada_2026.csv") else None
+            path_h = "data/historico_5_temporadas.csv"
+            path_t = "data/temporada_2026.csv"
+            df_hist = pd.read_csv(path_h) if os.path.exists(path_h) else None
+            df_2026 = pd.read_csv(path_t) if os.path.exists(path_t) else None
             
-            # Lógica de filtro simples (Heurística)
             encontrou = False
             for df_check in [df_2026, df_hist]:
                 if df_check is not None and not encontrou:
-                    # Tenta achar linhas que contenham as palavras do prompt
-                    for _, row in df_check.head(100).iterrows():
-                        c = str(row.get('CASA', '')).lower()
-                        f = str(row.get('FORA', '')).lower()
-                        if (c in p_lower or f in p_lower) and len(p_lower) > 5:
-                            res_texto = f"Localizei no Big Data: O jogo entre {row['CASA']} e {row['FORA']} teve as seguintes métricas: Gols: {row.get('GOLS_CASA', 0)}x{row.get('GOLS_FORA', 0)}. Posse de bola dominante para o {row['CASA']}."
-                            resposta = f"Analisando arquivos... {res_texto}"
+                    # Filtra linhas onde Casa ou Fora batem com o Prompt
+                    df_check.columns = [c.upper() for c in df_check.columns]
+                    for _, row in df_check.iterrows():
+                        c_val = str(row.get('CASA', '')).lower()
+                        f_val = str(row.get('FORA', '')).lower()
+                        if (c_val in p_lower and f_val in p_lower) or (f_val in p_lower and c_val in p_lower):
+                            res_texto = f"Localizei no Big Data: O jogo entre {row['CASA']} e {row['FORA']} registrou o placar de {row.get('GOLS_CASA', '?')}x{row.get('GOLS_FORA', '?')}."
+                            resposta = f"Analisando arquivos Jarvis... {res_texto}"
                             encontrou = True
                             break
         except:
@@ -324,34 +345,94 @@ elif st.session_state.aba_ativa == "ia_consulta":
 
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
-    # Lista de competições (Mantida do código anterior conforme diretriz)
-    db_times_vinc = {"SÉRIE A": ["Flamengo", "Palmeiras", "Vasco", "Botafogo"], "Champions League": ["Real Madrid", "Man City", "PSG"]}
-    sel_cmp = st.selectbox("🏆 COMPETIÇÃO", list(db_times_vinc.keys()))
-    lista_comp = db_times_vinc.get(sel_cmp, ["Time A", "Time B"])
+    
+    # BANCO DE DADOS DE TIMES VINCULADOS A COMPETIÇÃO (RESTAURADO INTEGRAL)
+    db_times_vinc = {
+        "SÉRIE A": ["Athletico-PR", "Atlético-MG", "Bahia", "Botafogo", "Bragantino", "Corinthians", "Criciúma", "Cruzeiro", "Cuiabá", "Flamengo", "Fluminense", "Fortaleza", "Grêmio", "Internacional", "Juventude", "Palmeiras", "São Paulo", "Vasco", "Vitória"],
+        "SÉRIE B": ["Amazonas", "América-MG", "Avaí", "Botafogo-SP", "Brusque", "Ceará", "Chapecoense", "Coritiba", "CRB", "Goiás", "Guarani", "Ituano", "Mirassol", "Novorizontino", "Operário-PR", "Paysandu", "Ponte Preta", "Santos", "Sport", "Vila Nova"],
+        "SÉRIE C": ["ABC", "Aparecidense", "Botafogo-PB", "Caxias", "Confiança", "CSA", "Ferroviária", "Ferroviário", "Figueirense", "Floresta", "Londrina", "Náutico", "Remo", "São Bernardo", "São José-RS", "Sampaio Corrêa", "Tombense", "Volta Redonda"],
+        "SÉRIE D": ["América-RN", "Brasil de Pelotas", "Inter de Limeira", "Moto Club", "Portuguesa-RJ", "Santa Cruz", "Treze"],
+        "SUB-20": ["Flamengo U20", "Palmeiras U20", "Corinthians U20", "São Paulo U20", "Galo U20", "Grêmio U20"],
+        "SUB-17": ["Vasco U17", "Fluminense U17", "Santos U17", "Cruzeiro U17"],
+        "Copa do Brasil": ["Flamengo", "Palmeiras", "Galo", "Grêmio", "São Paulo", "Corinthians", "Bahia", "Vasco", "Athletico-PR"],
+        "Campeonato Carioca": ["Flamengo", "Fluminense", "Vasco", "Botafogo", "Nova Iguaçu", "Boavista", "Madureira", "Bangu", "Audax-RJ", "Sampaio Corrêa-RJ"],
+        "Campeonato Paulistano": ["Palmeiras", "Santos", "São Paulo", "Corinthians", "Bragantino", "Novorizontino", "Inter de Limeira", "Ponte Preta", "Água Santa", "Mirassol"],
+        "Campeonato Mineiro": ["Galo", "Cruzeiro", "América-MG", "Tombense", "Ipatinga", "Villa Nova", "Pouso Alegre", "Uberlândia"],
+        "Campeonato Gaúcho": ["Grêmio", "Internacional", "Juventude", "Caxias", "Brasil de Pelotas", "São José-RS", "Ypiranga", "Novo Hamburgo"],
+        "Champions League": ["Real Madrid", "Man City", "Bayern Munich", "PSG", "Inter Milan", "Arsenal", "Barcelona", "Dortmund", "Atletico Madrid", "Milan", "Leverkusen", "Napoli"],
+        "Premier League": ["Man City", "Arsenal", "Liverpool", "Aston Villa", "Spurs", "Chelsea", "Newcastle", "Man Utd", "West Ham", "Brighton"],
+        "La Liga": ["Real Madrid", "Barcelona", "Girona", "Atletico Madrid", "Athletic Bilbao", "Real Sociedad", "Real Betis", "Valencia", "Sevilla", "Villarreal"],
+        "Serie A (Itália)": ["Inter Milan", "Milan", "Juventus", "Atalanta", "Bologna", "Roma", "Lazio", "Fiorentina", "Napoli", "Torino"],
+        "Copa do Mundo 2026": ["Brasil", "Argentina", "França", "Inglaterra", "Espanha", "Alemanha", "Holanda", "Portugal", "Uruguai", "Japão", "Marrocos", "Itália", "Bélgica", "Equador"],
+        "Eliminatórias Copa - América do Sul": ["Brasil", "Argentina", "Uruguai", "Colômbia", "Equador", "Paraguai", "Chile", "Peru", "Venezuela", "Bolívia"],
+        "Copa Libertadores": ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors", "Galo", "São Paulo", "Fluminense", "Ind. del Valle", "Peñarol", "Nacional", "Colo-Colo"]
+    }
+
+    db_h = {
+        "BRASIL": {
+            "BRASILEIRÃO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D", "SUB-20", "SUB-17"],
+            "ESTADUAIS": ["Campeonato Carioca", "Campeonato Paulistano", "Campeonato Mineiro", "Campeonato Gaúcho", "Campeonato Paranaense", "Campeonato Baiano", "Campeonato Pernambucano", "Campeonato Cearense"],
+            "COPAS": ["Copa do Brasil", "Supercopa do Brasil", "Copa do Nordeste", "Copa Verde", "Copinha"]
+        },
+        "EUROPA": {
+            "UEFA CLUBES": ["Champions League", "Liga Europa", "Liga Conferência"],
+            "LIGAS ELITE": ["Premier League", "La Liga", "Serie A (Itália)", "Bundesliga", "Ligue 1"],
+            "COPAS": ["Copa da Inglaterra", "Copa da Liga Inglesa", "Copa do Rei"]
+        },
+        "AMÉRICA DO SUL": {
+            "CONMEBOL": ["Copa Libertadores", "Copa Sulamericana", "Recopa Sul-Americana"],
+            "SELEÇÕES": ["Eliminatórias Copa - América do Sul", "Copa América"]
+        },
+        "MUNDO & FIFA": {"MUNDIAL": ["Copa do Mundo 2026", "Copa do Mundo de Clubes", "Copa Intercontinental"]}
+    }
+    
+    r_f = st.columns(3)
+    with r_f[0]: sel_reg = st.selectbox("🌎 REGIÃO / PAÍS", list(db_h.keys()))
+    with r_f[1]: sel_gru = st.selectbox("📂 GRUPO", list(db_h[sel_reg].keys()))
+    with r_f[2]: sel_cmp = st.selectbox("🏆 COMPETIÇÃO", db_h[sel_reg][sel_gru])
+    
+    lista_comp = db_times_vinc.get(sel_cmp, ["Time Elite A", "Time Elite B"])
+    lista_comp = sorted(lista_comp)
+
+    st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     c1, c2 = st.columns(2)
     with c1: t_c = st.selectbox("🏠 TIME DA CASA", lista_comp)
     with c2: t_f = st.selectbox("🚀 TIME DE FORA", [t for t in lista_comp if t != t_c])
+    
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
-        st.session_state.analise_bloqueada = {"casa": t_c, "fora": t_f, "vencedor": "ALTA PROB.", "gols": "OVER 1.5", "stake_val": "R$ 10.00", "cantos": "9.5+", "btss": "SIM", "cartoes": "4.5+", "chutes": "8.5", "confia": "94.2%", "data": datetime.now().strftime("%H:%M")}
+        st.session_state.analise_bloqueada = {"casa": t_c, "fora": t_f, "vencedor": "ALTA PROB.", "gols": "OVER 1.5", "stake_val": f"R$ {(st.session_state.banca_total*st.session_state.stake_padrao/100):,.2f}", "cantos": "9.5+", "btss": "SIM (74%)", "cartoes": "4.5+", "chutes": "8.5 p/g", "confia": "94.2%", "data": datetime.now().strftime("%H:%M")}
+    
     if st.session_state.analise_bloqueada:
         m = st.session_state.analise_bloqueada
-        st.markdown(f"<h3 style='color:white; text-align:center;'>{m['casa']} vs {m['fora']}</h3>", unsafe_allow_html=True)
+        st.markdown(f"""<h3 style='color:white; text-align:center; font-weight:800; margin:30px 0;'>{m['casa']} vs {m['fora']}</h3>""", unsafe_allow_html=True)
         r1, r2, r3, r4 = st.columns(4)
         with r1: draw_card("VENCEDOR", m['vencedor'], 85)
         with r2: draw_card("MERCADO GOLS", m['gols'], 70)
         with r3: draw_card("VALOR STAKE", m['stake_val'], 100)
         with r4: draw_card("ESCANTEIOS", m['cantos'], 65)
+        r5, r6, r7, r8 = st.columns(4)
+        with r5: draw_card("AMBAS MARCAM", m['btss'], 74)
+        with r6: draw_card("CARTÕES", m['cartoes'], 60)
+        with r7: draw_card("CHUTES AO GOL", m['chutes'], 80)
+        with r8: draw_card("IA CONFIANÇA", m['confia'], 94)
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("<div class='banca-title-banner'>💰 GESTÃO DE BANCA INTELIGENTE</div>", unsafe_allow_html=True)
     c_in, c_out = st.columns([1.2, 2.5])
     with c_in:
-        st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=float(st.session_state.banca_total))
+        st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=float(st.session_state.banca_total), step=50.0)
+        st.session_state.stake_padrao = st.slider("STAKE (%)", 0.1, 10.0, float(st.session_state.stake_padrao))
+        st.session_state.meta_diaria = st.slider("META GAIN (%)", 1.0, 30.0, float(st.session_state.meta_diaria))
+        st.session_state.stop_loss = st.slider("STOP LOSS (%)", 1.0, 30.0, float(st.session_state.stop_loss))
     v_s = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
+    v_m = (st.session_state.banca_total * st.session_state.meta_diaria / 100)
+    v_l = (st.session_state.banca_total * st.session_state.stop_loss / 100)
     with c_out:
-        g1, g2 = st.columns(2)
+        g1, g2, g3, g4 = st.columns(4)
         with g1: draw_card("VALOR ENTRADA", f"R$ {v_s:,.2f}", 100, "#00d2ff")
-        with g2: draw_card("SAÚDE BANCA", "EXCELENTE", 100, "#00ff88")
+        with g2: draw_card("STOP GAIN", f"R$ {v_m:,.2f}", 100, "#00d2ff")
+        with g3: draw_card("STOP LOSS", f"R$ {v_l:,.2f}", 100, "#00d2ff")
+        with g4: draw_card("ALVO FINAL", f"R$ {(st.session_state.banca_total+v_m):,.2f}", 100, "#00d2ff")
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📡 SCANNER EM TEMPO REAL (TOP 20 LIVE)</h2>", unsafe_allow_html=True)
@@ -360,11 +441,17 @@ elif st.session_state.aba_ativa == "live":
         cols = st.columns(4)
         for i, j in enumerate(row):
             with cols[i]:
-                st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#00ff88; font-size:10px; font-weight:900;">IA LIVE: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b;">{j['C']} vs {j['F']}</div><div class="kpi-stat">🏆 VENCEDOR: <b>{j['V']}</b></div><div class="kpi-stat">⚽ GOLS: <b>{j['G']}</b></div></div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#00ff88; font-size:10px; font-weight:900;">IA LIVE: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b;">{j['C']} vs {j['F']}</div><div class="kpi-stat">🏆 VENCEDOR: <b>{j['V']}</b></div><div class="kpi-stat">⚽ GOLS: <b>{j['G']}</b></div><div class="kpi-stat">🟨 CARTÕES: <b>{j['CT']}</b></div><div class="kpi-stat">🚩 ESCANTEIOS: <b>{j['E']}</b></div><div class="kpi-stat">👟 TIROS META: <b>{j['TM']}</b></div><div class="kpi-stat">🥅 CHUTES GOL: <b>{j['CH']}</b></div><div class="kpi-stat">🧤 DEFESAS: <b>{j['DF']}</b></div></div>""", unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "assertividade":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📈 ASSERTIVIDADE IA</h2>", unsafe_allow_html=True)
-    st.info("Aguardando processamento automático de dados históricos.")
+    path_perf = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/historico_assertividade.csv"
+    try:
+        df_p = pd.read_csv(f"{path_perf}?v={datetime.now().timestamp()}")
+        if not df_p.empty:
+            ultimo_resumo = df_p.iloc[-1]
+            st.markdown(f"""<div class="kpi-detailed-card" style="border-left: 8px solid #00ff88; padding: 30px;"><div style="color:white; font-size:28px; font-weight:900;">ASSERTIVIDADE: <span style="color:#00ff88;">{ultimo_resumo['ASSERTIVIDADE']}</span></div></div>""", unsafe_allow_html=True)
+    except: st.info("Aguardando processamento de dados históricos.")
 
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📜 HISTÓRICO DE CALLS (SALVAS)</h2>", unsafe_allow_html=True)
@@ -377,7 +464,7 @@ elif st.session_state.aba_ativa == "gols":
         cols = st.columns(4)
         for i, j in enumerate(row):
             with cols[i]:
-                st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#00d2ff; font-size:10px; font-weight:900; margin-bottom:5px;">PROB. GOLS: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">📊 TOTAL GOLS: <b>OVER 2.5</b></div></div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#00d2ff; font-size:10px; font-weight:900; margin-bottom:5px;">PROB. GOLS: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">📊 TOTAL GOLS: <b>OVER 2.5</b></div></div>""", unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "escanteios":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>🚩 ESCANTEIOS - TOP 20 ANALISES IA</h2>", unsafe_allow_html=True)
@@ -386,9 +473,18 @@ elif st.session_state.aba_ativa == "escanteios":
         cols = st.columns(4)
         for i, j in enumerate(row):
             with cols[i]:
-                st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#ff4b4b; font-size:10px; font-weight:900; margin-bottom:5px;">CANTOS: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">📊 QUANTIDADE TOTAL: <b>OVER 9.5</b></div></div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#ff4b4b; font-size:10px; font-weight:900; margin-bottom:5px;">CANTOS: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">📊 QUANTIDADE TOTAL: <b>OVER 9.5</b></div></div>""", unsafe_allow_html=True)
 
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v95.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
 
+def sync():
+    url = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
+    try:
+        r = requests.get(url)
+        if r.status_code == 200:
+            if not os.path.exists('data'): os.makedirs('data')
+            with open('data/database_diario.csv', 'wb') as f: f.write(r.content)
+    except: pass
+
 if __name__ == "__main__":
-    pass
+    sync()
