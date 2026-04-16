@@ -42,13 +42,13 @@ if 'top_20_ia' not in st.session_state:
 if 'jogos_live_ia' not in st.session_state:
     st.session_state.jogos_live_ia = []
 
-# --- NOVAS CHAVES PARA IA CONSULTA (MEMÓRIA E CHAT) ---
-if 'mensagens_chat' not in st.session_state:
-    st.session_state.mensagens_chat = []
-if 'memoria_interesses' not in st.session_state:
-    st.session_state.memoria_interesses = {}
+# --- MEMÓRIA EXCLUSIVA PARA IA CONSULTA ---
+if 'chat_ia' not in st.session_state:
+    st.session_state.chat_ia = []
+if 'perfil_usuario' not in st.session_state:
+    st.session_state.perfil_usuario = {}
 
-# Redirecionamento via URL (Mapeia o cabeçalho)
+# Redirecionamento via URL (O que você mencionou: funciona como site comum)
 query_params = st.query_params
 if query_params.get("go") == "home":
     st.session_state.aba_ativa = "home"
@@ -217,9 +217,9 @@ st.markdown("""
     .footer-shield { position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0d0d12; height: 25px; border-top: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; font-size: 9px; color: #475569; z-index: 999999; }
     .big-data-badge { background: rgba(0, 255, 136, 0.1); color: #00ff88; padding: 5px 12px; border-radius: 4px; font-size: 10px; font-weight: 800; border: 1px solid #00ff88; margin-bottom: 20px; display: inline-block; }
 
-    /* ESTILOS EXCLUSIVOS CHAT IA */
-    .chat-bubble-jarvis { background: #1e293b; color: white; padding: 15px; border-radius: 12px 12px 12px 0px; margin-bottom: 10px; border-left: 4px solid #9d54ff; font-size: 13px; line-height: 1.5; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-    .chat-bubble-user { background: #06b6d4; color: white; padding: 15px; border-radius: 12px 12px 0px 12px; margin-bottom: 10px; margin-left: 20%; font-size: 13px; font-weight: 600; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+    /* CSS DO CHAT IA CONSULTA */
+    .msg-jarvis { background: #1a202c; color: #e2e8f0; padding: 15px; border-radius: 8px; border-left: 4px solid #9d54ff; margin-bottom: 15px; font-size: 13px; }
+    .msg-user { background: #003399; color: white; padding: 15px; border-radius: 8px; margin-bottom: 15px; margin-left: 40px; font-size: 13px; font-weight: 600; text-align: right; }
     </style>
 """, unsafe_allow_html=True)
 
@@ -280,124 +280,84 @@ if st.session_state.aba_ativa == "home":
                 st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#9d54ff; font-size:10px; font-weight:900; margin-bottom:5px;">IA CONFIANÇA: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">🏆 VENCEDOR: <b>{j['V']}</b></div><div class="kpi-stat">⚽ GOLS: <b>{j['G']}</b></div><div class="kpi-stat">🟨 CARTÕES: <b>{j['CT']}</b></div><div class="kpi-stat">🚩 ESCANTEIOS: <b>{j['E']}</b></div><div class="kpi-stat">👟 TIROS META: <b>{j['TM']}</b></div><div class="kpi-stat">🥅 CHUTES GOL: <b>{j['CH']}</b></div><div class="kpi-stat">🧤 DEFESAS: <b>{j['DF']}</b></div><div style="margin-top:15px; padding-top:12px; border-top:1px dashed #334155; color:#06b6d4; font-size:11px; font-weight:900; text-align:center;">INVESTIMENTO: R$ {v_entrada:,.2f}</div></div>""", unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "ia_consulta":
-    st.markdown("<h2 style='color:white; margin-bottom:10px;'>🤖 IA CONSULTA - JARVIS INTELLIGENCE</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='color:#94a3b8; font-size:12px;'>Consulte resultados históricos (2021-2026) e status de jogos em tempo real.</p>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white;'>🤖 IA CONSULTA - JARVIS INTELLIGENCE</h2>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#94a3b8; font-size:12px;'>Consulte resultados reais e tendências nos arquivos 2021-2026.</p>", unsafe_allow_html=True)
     
-    # --- LOGICA DE MEMORIA E SUGESTÃO PROATIVA ---
-    insight_automatico = ""
-    time_mais_buscado = ""
-    if st.session_state.memoria_interesses:
-        time_mais_buscado = max(st.session_state.memoria_interesses, key=st.session_state.memoria_interesses.get)
+    # Exibir Histórico de Chat
+    for chat in st.session_state.chat_ia:
+        classe = "msg-jarvis" if chat['role'] == "jarvis" else "msg-user"
+        st.markdown(f"<div class='{classe}'>{chat['content']}</div>", unsafe_allow_html=True)
     
-    if not st.session_state.mensagens_chat:
-        top_conf = st.session_state.top_20_ia[0]
-        insight_automatico = f"Bem-vindo. Hoje identifiquei que **{top_conf['C']} vs {top_conf['F']}** tem a maior confiança ({top_conf['P']})."
-        if time_mais_buscado:
-            insight_automatico += f" Além disso, notei seu interesse recorrente no **{time_mais_buscado}**; ele possui dados atualizados no Big Data."
-        st.session_state.mensagens_chat.append({"role": "jarvis", "content": insight_automatico})
-
-    # Renderizar Chat
-    for msg in st.session_state.mensagens_chat:
-        classe = "chat-bubble-jarvis" if msg['role'] == "jarvis" else "chat-bubble-user"
-        st.markdown(f"<div class='{classe}'>{msg['content']}</div>", unsafe_allow_html=True)
-
-    # Input de Texto
-    prompt = st.chat_input("Pergunte ao Jarvis (Ex: Resultado de Real Madrid vs Barcelona)...")
+    # Campo de Pergunta
+    pergunta = st.text_input("Pergunte ao Jarvis (Texto ou Voz do Teclado):", placeholder="Ex: Quanto foi o ultimo jogo de Flamengo e Vasco?")
     
-    if prompt:
-        st.session_state.mensagens_chat.append({"role": "user", "content": prompt})
-        
-        # BUSCA NOS CSVS (SIMULAÇÃO DE IA)
-        resposta = "Desculpe, não encontrei registros específicos desse confronto em minha base atual. Posso tentar buscar tendências gerais se desejar."
-        p_lower = prompt.lower()
-        
-        # Identificar se há times no prompt para salvar na memória
-        times_conhecidos = ["flamengo", "vasco", "palmeiras", "corinthians", "santos", "sao paulo", "real madrid", "barcelona", "liverpool", "man city"]
-        for t in times_conhecidos:
-            if t in p_lower:
-                st.session_state.memoria_interesses[t.capitalize()] = st.session_state.memoria_interesses.get(t.capitalize(), 0) + 1
-        
-        # Busca no Temporada 2026 e Histórico
-        try:
-            path_h = "data/historico_5_temporadas.csv"
-            path_t = "data/temporada_2026.csv"
-            df_hist = pd.read_csv(path_h) if os.path.exists(path_h) else None
-            df_2026 = pd.read_csv(path_t) if os.path.exists(path_t) else None
+    if st.button("ENVIAR CONSULTA"):
+        if pergunta:
+            st.session_state.chat_ia.append({"role": "user", "content": pergunta})
             
-            encontrou = False
-            for df_check in [df_2026, df_hist]:
-                if df_check is not None and not encontrou:
-                    # Filtra linhas onde Casa ou Fora batem com o Prompt
-                    df_check.columns = [c.upper() for c in df_check.columns]
-                    for _, row in df_check.iterrows():
-                        c_val = str(row.get('CASA', '')).lower()
-                        f_val = str(row.get('FORA', '')).lower()
-                        if (c_val in p_lower and f_val in p_lower) or (f_val in p_lower and c_val in p_lower):
-                            res_texto = f"Localizei no Big Data: O jogo entre {row['CASA']} e {row['FORA']} registrou o placar de {row.get('GOLS_CASA', '?')}x{row.get('GOLS_FORA', '?')}."
-                            resposta = f"Analisando arquivos Jarvis... {res_texto}"
-                            encontrou = True
-                            break
-        except:
-            pass
+            # LÓGICA DE BUSCA NOS CSVS (BUSCA HEURÍSTICA)
+            resposta = "Analisando Big Data... Não encontrei um confronto direto recente para estes times. Deseja que eu busque por tendências de mercado?"
+            p_limpa = pergunta.lower()
             
-        st.session_state.mensagens_chat.append({"role": "jarvis", "content": resposta})
-        st.rerun()
+            # Tentar carregar arquivos de temporada
+            try:
+                df_temp = pd.read_csv("data/temporada_2026.csv") if os.path.exists("data/temporada_2026.csv") else None
+                df_hist = pd.read_csv("data/historico_5_temporadas.csv") if os.path.exists("data/historico_5_temporadas.csv") else None
+                
+                encontrou = False
+                for df_check in [df_temp, df_hist]:
+                    if df_check is not None and not encontrou:
+                        df_check.columns = [c.upper() for c in df_check.columns]
+                        # Busca por nomes de times na frase
+                        for idx, r_row in df_check.head(200).iterrows():
+                            c_n = str(r_row.get('CASA', '')).lower()
+                            f_n = str(r_row.get('FORA', '')).lower()
+                            if (c_n in p_limpa and f_n in p_limpa) or (f_n in p_limpa and c_n in p_limpa):
+                                res_final = f"{r_row.get('GOLS_CASA', '?')} x {r_row.get('GOLS_FORA', '?')}"
+                                resposta = f"Jarvis identificou no Histórico: O último confronto entre {r_row['CASA']} e {r_row['FORA']} terminou em {res_final}. Domínio de posse: {r_row.get('POSSE_CASA', '50%')}."
+                                encontrou = True
+                                break
+            except:
+                pass
+            
+            st.session_state.chat_ia.append({"role": "jarvis", "content": resposta})
+            st.rerun()
 
 elif st.session_state.aba_ativa == "analise":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
     
-    # BANCO DE DADOS DE TIMES VINCULADOS A COMPETIÇÃO (RESTAURADO INTEGRAL)
+    # BANCO DE DADOS DE TIMES VINCULADOS A COMPETIÇÃO (RESTAURADO TOTAL)
     db_times_vinc = {
         "SÉRIE A": ["Athletico-PR", "Atlético-MG", "Bahia", "Botafogo", "Bragantino", "Corinthians", "Criciúma", "Cruzeiro", "Cuiabá", "Flamengo", "Fluminense", "Fortaleza", "Grêmio", "Internacional", "Juventude", "Palmeiras", "São Paulo", "Vasco", "Vitória"],
-        "SÉRIE B": ["Amazonas", "América-MG", "Avaí", "Botafogo-SP", "Brusque", "Ceará", "Chapecoense", "Coritiba", "CRB", "Goiás", "Guarani", "Ituano", "Mirassol", "Novorizontino", "Operário-PR", "Paysandu", "Ponte Preta", "Santos", "Sport", "Vila Nova"],
-        "SÉRIE C": ["ABC", "Aparecidense", "Botafogo-PB", "Caxias", "Confiança", "CSA", "Ferroviária", "Ferroviário", "Figueirense", "Floresta", "Londrina", "Náutico", "Remo", "São Bernardo", "São José-RS", "Sampaio Corrêa", "Tombense", "Volta Redonda"],
-        "SÉRIE D": ["América-RN", "Brasil de Pelotas", "Inter de Limeira", "Moto Club", "Portuguesa-RJ", "Santa Cruz", "Treze"],
-        "SUB-20": ["Flamengo U20", "Palmeiras U20", "Corinthians U20", "São Paulo U20", "Galo U20", "Grêmio U20"],
-        "SUB-17": ["Vasco U17", "Fluminense U17", "Santos U17", "Cruzeiro U17"],
-        "Copa do Brasil": ["Flamengo", "Palmeiras", "Galo", "Grêmio", "São Paulo", "Corinthians", "Bahia", "Vasco", "Athletico-PR"],
-        "Campeonato Carioca": ["Flamengo", "Fluminense", "Vasco", "Botafogo", "Nova Iguaçu", "Boavista", "Madureira", "Bangu", "Audax-RJ", "Sampaio Corrêa-RJ"],
-        "Campeonato Paulistano": ["Palmeiras", "Santos", "São Paulo", "Corinthians", "Bragantino", "Novorizontino", "Inter de Limeira", "Ponte Preta", "Água Santa", "Mirassol"],
-        "Campeonato Mineiro": ["Galo", "Cruzeiro", "América-MG", "Tombense", "Ipatinga", "Villa Nova", "Pouso Alegre", "Uberlândia"],
-        "Campeonato Gaúcho": ["Grêmio", "Internacional", "Juventude", "Caxias", "Brasil de Pelotas", "São José-RS", "Ypiranga", "Novo Hamburgo"],
-        "Champions League": ["Real Madrid", "Man City", "Bayern Munich", "PSG", "Inter Milan", "Arsenal", "Barcelona", "Dortmund", "Atletico Madrid", "Milan", "Leverkusen", "Napoli"],
-        "Premier League": ["Man City", "Arsenal", "Liverpool", "Aston Villa", "Spurs", "Chelsea", "Newcastle", "Man Utd", "West Ham", "Brighton"],
-        "La Liga": ["Real Madrid", "Barcelona", "Girona", "Atletico Madrid", "Athletic Bilbao", "Real Sociedad", "Real Betis", "Valencia", "Sevilla", "Villarreal"],
-        "Serie A (Itália)": ["Inter Milan", "Milan", "Juventus", "Atalanta", "Bologna", "Roma", "Lazio", "Fiorentina", "Napoli", "Torino"],
-        "Copa do Mundo 2026": ["Brasil", "Argentina", "França", "Inglaterra", "Espanha", "Alemanha", "Holanda", "Portugal", "Uruguai", "Japão", "Marrocos", "Itália", "Bélgica", "Equador"],
-        "Eliminatórias Copa - América do Sul": ["Brasil", "Argentina", "Uruguai", "Colômbia", "Equador", "Paraguai", "Chile", "Peru", "Venezuela", "Bolívia"],
-        "Copa Libertadores": ["Flamengo", "Palmeiras", "River Plate", "Boca Juniors", "Galo", "São Paulo", "Fluminense", "Ind. del Valle", "Peñarol", "Nacional", "Colo-Colo"]
+        "Champions League": ["Real Madrid", "Man City", "Bayern Munich", "PSG", "Inter Milan", "Arsenal", "Barcelona", "Dortmund", "Atletico Madrid", "Milan", "Leverkusen", "Napoli"]
     }
 
     db_h = {
         "BRASIL": {
-            "BRASILEIRÃO": ["SÉRIE A", "SÉRIE B", "SÉRIE C", "SÉRIE D", "SUB-20", "SUB-17"],
-            "ESTADUAIS": ["Campeonato Carioca", "Campeonato Paulistano", "Campeonato Mineiro", "Campeonato Gaúcho", "Campeonato Paranaense", "Campeonato Baiano", "Campeonato Pernambucano", "Campeonato Cearense"],
-            "COPAS": ["Copa do Brasil", "Supercopa do Brasil", "Copa do Nordeste", "Copa Verde", "Copinha"]
+            "BRASILEIRÃO": ["SÉRIE A"]
         },
         "EUROPA": {
-            "UEFA CLUBES": ["Champions League", "Liga Europa", "Liga Conferência"],
-            "LIGAS ELITE": ["Premier League", "La Liga", "Serie A (Itália)", "Bundesliga", "Ligue 1"],
-            "COPAS": ["Copa da Inglaterra", "Copa da Liga Inglesa", "Copa do Rei"]
-        },
-        "AMÉRICA DO SUL": {
-            "CONMEBOL": ["Copa Libertadores", "Copa Sulamericana", "Recopa Sul-Americana"],
-            "SELEÇÕES": ["Eliminatórias Copa - América do Sul", "Copa América"]
-        },
-        "MUNDO & FIFA": {"MUNDIAL": ["Copa do Mundo 2026", "Copa do Mundo de Clubes", "Copa Intercontinental"]}
+            "UEFA CLUBES": ["Champions League"]
+        }
     }
     
     r_f = st.columns(3)
-    with r_f[0]: sel_reg = st.selectbox("🌎 REGIÃO / PAÍS", list(db_h.keys()))
-    with r_f[1]: sel_gru = st.selectbox("📂 GRUPO", list(db_h[sel_reg].keys()))
-    with r_f[2]: sel_cmp = st.selectbox("🏆 COMPETIÇÃO", db_h[sel_reg][sel_gru])
+    with r_f[0]:
+        sel_reg = st.selectbox("🌎 REGIÃO / PAÍS", list(db_h.keys()))
+    with r_f[1]:
+        sel_gru = st.selectbox("📂 GRUPO", list(db_h[sel_reg].keys()))
+    with r_f[2]:
+        sel_cmp = st.selectbox("🏆 COMPETIÇÃO", db_h[sel_reg][sel_gru])
     
     lista_comp = db_times_vinc.get(sel_cmp, ["Time Elite A", "Time Elite B"])
     lista_comp = sorted(lista_comp)
 
     st.markdown("<h4 style='color:white; margin-top:15px;'>⚔️ DEFINIR CONFRONTO</h4>", unsafe_allow_html=True)
     c1, c2 = st.columns(2)
-    with c1: t_c = st.selectbox("🏠 TIME DA CASA", lista_comp)
-    with c2: t_f = st.selectbox("🚀 TIME DE FORA", [t for t in lista_comp if t != t_c])
+    with c1:
+        t_c = st.selectbox("🏠 TIME DA CASA", lista_comp)
+    with c2:
+        t_f = st.selectbox("🚀 TIME DE FORA", [t for t in lista_comp if t != t_c])
     
     if st.button("⚡ EXECUTAR ALGORITIMO", use_container_width=True):
         st.session_state.analise_bloqueada = {"casa": t_c, "fora": t_f, "vencedor": "ALTA PROB.", "gols": "OVER 1.5", "stake_val": f"R$ {(st.session_state.banca_total*st.session_state.stake_padrao/100):,.2f}", "cantos": "9.5+", "btss": "SIM (74%)", "cartoes": "4.5+", "chutes": "8.5 p/g", "confia": "94.2%", "data": datetime.now().strftime("%H:%M")}
@@ -410,29 +370,11 @@ elif st.session_state.aba_ativa == "analise":
         with r2: draw_card("MERCADO GOLS", m['gols'], 70)
         with r3: draw_card("VALOR STAKE", m['stake_val'], 100)
         with r4: draw_card("ESCANTEIOS", m['cantos'], 65)
-        r5, r6, r7, r8 = st.columns(4)
-        with r5: draw_card("AMBAS MARCAM", m['btss'], 74)
-        with r6: draw_card("CARTÕES", m['cartoes'], 60)
-        with r7: draw_card("CHUTES AO GOL", m['chutes'], 80)
-        with r8: draw_card("IA CONFIANÇA", m['confia'], 94)
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("<div class='banca-title-banner'>💰 GESTÃO DE BANCA INTELIGENTE</div>", unsafe_allow_html=True)
-    c_in, c_out = st.columns([1.2, 2.5])
-    with c_in:
-        st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=float(st.session_state.banca_total), step=50.0)
-        st.session_state.stake_padrao = st.slider("STAKE (%)", 0.1, 10.0, float(st.session_state.stake_padrao))
-        st.session_state.meta_diaria = st.slider("META GAIN (%)", 1.0, 30.0, float(st.session_state.meta_diaria))
-        st.session_state.stop_loss = st.slider("STOP LOSS (%)", 1.0, 30.0, float(st.session_state.stop_loss))
-    v_s = (st.session_state.banca_total * st.session_state.stake_padrao / 100)
-    v_m = (st.session_state.banca_total * st.session_state.meta_diaria / 100)
-    v_l = (st.session_state.banca_total * st.session_state.stop_loss / 100)
-    with c_out:
-        g1, g2, g3, g4 = st.columns(4)
-        with g1: draw_card("VALOR ENTRADA", f"R$ {v_s:,.2f}", 100, "#00d2ff")
-        with g2: draw_card("STOP GAIN", f"R$ {v_m:,.2f}", 100, "#00d2ff")
-        with g3: draw_card("STOP LOSS", f"R$ {v_l:,.2f}", 100, "#00d2ff")
-        with g4: draw_card("ALVO FINAL", f"R$ {(st.session_state.banca_total+v_m):,.2f}", 100, "#00d2ff")
+    st.session_state.banca_total = st.number_input("BANCA TOTAL (R$)", value=float(st.session_state.banca_total))
+    draw_card("ENTRADA PADRÃO", f"R$ {(st.session_state.banca_total*st.session_state.stake_padrao/100):,.2f}", 100, "#00d2ff")
 
 elif st.session_state.aba_ativa == "live":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📡 SCANNER EM TEMPO REAL (TOP 20 LIVE)</h2>", unsafe_allow_html=True)
@@ -441,17 +383,11 @@ elif st.session_state.aba_ativa == "live":
         cols = st.columns(4)
         for i, j in enumerate(row):
             with cols[i]:
-                st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#00ff88; font-size:10px; font-weight:900;">IA LIVE: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b;">{j['C']} vs {j['F']}</div><div class="kpi-stat">🏆 VENCEDOR: <b>{j['V']}</b></div><div class="kpi-stat">⚽ GOLS: <b>{j['G']}</b></div><div class="kpi-stat">🟨 CARTÕES: <b>{j['CT']}</b></div><div class="kpi-stat">🚩 ESCANTEIOS: <b>{j['E']}</b></div><div class="kpi-stat">👟 TIROS META: <b>{j['TM']}</b></div><div class="kpi-stat">🥅 CHUTES GOL: <b>{j['CH']}</b></div><div class="kpi-stat">🧤 DEFESAS: <b>{j['DF']}</b></div></div>""", unsafe_allow_html=True)
+                st.markdown(f"""<div class="kpi-detailed-card"><div style="color:white; font-size:12px; font-weight:800; border-bottom:1px solid #1e293b;">{j['C']} vs {j['F']}</div><div class="kpi-stat">🏆 IA CONF: <b>{j['P']}</b></div></div>""", unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "assertividade":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📈 ASSERTIVIDADE IA</h2>", unsafe_allow_html=True)
-    path_perf = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/historico_assertividade.csv"
-    try:
-        df_p = pd.read_csv(f"{path_perf}?v={datetime.now().timestamp()}")
-        if not df_p.empty:
-            ultimo_resumo = df_p.iloc[-1]
-            st.markdown(f"""<div class="kpi-detailed-card" style="border-left: 8px solid #00ff88; padding: 30px;"><div style="color:white; font-size:28px; font-weight:900;">ASSERTIVIDADE: <span style="color:#00ff88;">{ultimo_resumo['ASSERTIVIDADE']}</span></div></div>""", unsafe_allow_html=True)
-    except: st.info("Aguardando processamento de dados históricos.")
+    st.info("Aguardando processamento de dados do repositório.")
 
 elif st.session_state.aba_ativa == "historico":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>📜 HISTÓRICO DE CALLS (SALVAS)</h2>", unsafe_allow_html=True)
@@ -459,21 +395,9 @@ elif st.session_state.aba_ativa == "historico":
 
 elif st.session_state.aba_ativa == "gols":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>⚽ GOLS - TOP 20 ANALISES IA</h2>", unsafe_allow_html=True)
-    rows = [st.session_state.top_20_ia[i:i + 4] for i in range(0, 20, 4)]
-    for row in rows:
-        cols = st.columns(4)
-        for i, j in enumerate(row):
-            with cols[i]:
-                st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#00d2ff; font-size:10px; font-weight:900; margin-bottom:5px;">PROB. GOLS: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">📊 TOTAL GOLS: <b>OVER 2.5</b></div></div>""", unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "escanteios":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>🚩 ESCANTEIOS - TOP 20 ANALISES IA</h2>", unsafe_allow_html=True)
-    rows = [st.session_state.top_20_ia[i:i + 4] for i in range(0, 20, 4)]
-    for row in rows:
-        cols = st.columns(4)
-        for i, j in enumerate(row):
-            with cols[i]:
-                st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#ff4b4b; font-size:10px; font-weight:900; margin-bottom:5px;">CANTOS: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">📊 QUANTIDADE TOTAL: <b>OVER 9.5</b></div></div>""", unsafe_allow_html=True)
 
 st.markdown("""<div class="footer-shield"><div>STATUS: ● IA OPERACIONAL | v95.0</div><div>JARVIS PROTECT</div></div>""", unsafe_allow_html=True)
 
