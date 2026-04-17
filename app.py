@@ -5,6 +5,29 @@ from datetime import datetime
 import numpy as np
 import random
 import requests
+import google.generativeai as genai
+from duckduckgo_search import DDGS
+AQ.Ab8RN6LMEbr5B86ihr0Ij6uGYrD8y4xxOjDFzmaT3mxV3BJVuA
+
+# CONFIGURAÇÃO DO ORÁCULO (Substitua pelo código que você copiou do Google)
+CHAVE_GOOGLE = "AQ.Ab8RN6LMEbr5B86ihr0Ij6uGYrD8y4xxOjDFzmaT3mxV3BJVuA"
+ 
+genai.configure(api_key=CHAVE_GOOGLE)
+
+def pesquisar_oraculo(pergunta):
+    try:
+        # 1. Faz a busca no Google/DuckDuckGo
+        with DDGS() as ddgs:
+            resultados = [r['body'] for r in ddgs.text(f"{pergunta} esportes noticias", max_results=3)]
+            contexto = "\n".join(resultados)
+        
+        # 2. IA processa a notícia
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        prompt = f"Você é o Oráculo Jarvis. Baseado nestas notícias: {contexto}. Responda de forma curta e objetiva para um trader esportivo: {pergunta}"
+        response = model.generate_content(prompt)
+        return response.text
+    except:
+        return "O Oráculo está com instabilidade na conexão. Tente novamente em instantes."
 
 # ==============================================================================
 # [PROTOCOLO DE MANUTENÇÃO v95.0 - BLINDAGEM TOTAL DE CONFRONTO E COMPETIÇÃO]
@@ -243,8 +266,8 @@ with st.sidebar:
         st.session_state.aba_ativa = "historico"
     if st.button("📅 BILHETE OURO"):
         st.session_state.aba_ativa = "home"
-    if st.button("🏆 VENCEDORES DA COMPETIÇÃO"):
-        st.session_state.aba_ativa = "vencedores"
+    if st.button("🔮 ORÁCULO JARVIS"):
+       st.session_state.aba_ativa = "oraculo"
     if st.button("⚽ APOSTAS POR GOLS"):
         st.session_state.aba_ativa = "gols"
     if st.button("🚩 APOSTAS POR ESCANTEIOS"):
@@ -418,14 +441,26 @@ elif st.session_state.aba_ativa == "historico":
                 with cols[i]:
                     st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#06b6d4; font-size:10px; font-weight:900;">HORÁRIO: {call['data']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:12px; border-bottom:1px solid #1e293b; padding-bottom:5px;">{call['casa']} vs {call['fora']}</div><div class="kpi-stat">🏆 CALL: <b>{call.get('vencedor', 'N/A')}</b></div><div class="kpi-stat">⚽ GOLS: <b>{call.get('gols', 'N/A')}</b></div><div class="kpi-stat">🚩 CANTOS: <b>{call.get('cantos', 'N/A')}</b></div><div class="kpi-stat">🟨 CARTÕES: <b>{call.get('cartoes', 'N/A')}</b></div><div class="kpi-stat">BTTS: <b>{call.get('btss', 'N/A')}</b></div><div class="kpi-stat">IA CONF: <b>{call.get('confia', 'N/A')}</b></div><div style="margin-top:15px; color:#9d54ff; font-size:11px; font-weight:900; text-align:center;">INVESTIDO: {call['stake_val']}</div></div>""", unsafe_allow_html=True)
 
-elif st.session_state.aba_ativa == "vencedores":
-    st.markdown("<h2 style='color:white; margin-bottom:30px;'>🏆 VENCEDORES DA COMPETIÇÃO - TOP 20</h2>", unsafe_allow_html=True)
-    rows = [st.session_state.top_20_ia[i:i + 4] for i in range(0, 20, 4)]
-    for row in rows:
-        cols = st.columns(4)
-        for i, j in enumerate(row):
-            with cols[i]:
-                st.markdown(f"""<div class="kpi-detailed-card"><div style="color:#ffcc00; font-size:10px; font-weight:900;">CHANCE: {j['P']}</div><div style="color:white; font-size:12px; font-weight:800; margin-bottom:10px;">{j['C']} vs {j['F']}</div><div class="kpi-stat">🏆 VENCEDOR: <b>{j['V']}</b></div></div>""", unsafe_allow_html=True)
+elif st.session_state.aba_ativa == "oraculo":
+    st.markdown("<h2 style='color:white; margin-bottom:10px;'>🔮 ORÁCULO JARVIS - INTELIGÊNCIA EM TEMPO REAL</h2>", unsafe_allow_html=True)
+    st.markdown('<div class="big-data-badge">🌐 PESQUISA AO VIVO ATIVA</div>', unsafe_allow_html=True)
+    
+    # Caixa de entrada estilizada (usando o padrão do seu sistema)
+    pergunta_usuario = st.text_input("QUAL A SUA DÚVIDA SOBRE O MUNDO ESPORTIVO?", placeholder="Ex: Escalação do Real Madrid hoje, clima em Londres para o jogo...")
+    
+    if pergunta_usuario:
+        with st.spinner("O Oráculo está consultando a rede..."):
+            resposta_ia = pesquisar_oraculo(pergunta_usuario)
+            
+            # Exibição dentro do seu card imutável
+            st.markdown(f"""
+                <div class="kpi-detailed-card" style="border-left: 5px solid #9d54ff; height: auto !important;">
+                    <div style="color:#9d54ff; font-size:12px; font-weight:900; margin-bottom:10px;">RESPOSTA DO ORÁCULO:</div>
+                    <div style="color:white; font-size:14px; line-height:1.6; text-align: justify;">
+                        {resposta_ia}
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "gols":
     st.markdown("<h2 style='color:white; margin-bottom:30px;'>⚽ GOLS - TOP 20 ANALISES IA</h2>", unsafe_allow_html=True)
