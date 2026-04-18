@@ -7,8 +7,8 @@ import random
 import requests
 
 # ==============================================================================
-# [PROTOCOLO JARVIS v101.0 - ESTABILIDADE SUPREMA]
-# DIRETRIZ: LAYOUT ZERO WHITE PRO (IMUTÁVEL) - 100% PROTEGIDO CONTRA ERROS
+# [PROTOCOLO JARVIS v104.0 - ESTABILIDADE FINAL]
+# DIRETRIZ: LAYOUT ZERO WHITE PRO (IMUTÁVEL) - ANTI-TELA BRANCA
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -18,44 +18,39 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- CONFIGURAÇÃO DA CHAVE DE API ---
+# --- CHAVE DE API JARVIS ---
 API_KEY_JARVIS = "AIzaSyC83QqObkFM5QaJfVrivAmdqIp1ruWHo-4"
 
-# --- FUNÇÃO DE CONSULTA COM PROTEÇÃO TOTAL (ANTI-ERRO DE BIBLIOTECA) ---
+# --- FUNÇÃO DE CONSULTA (BLINDADA CONTRA ERROS DE IMPORTAÇÃO) ---
 def realizar_ia_consulta(pergunta):
     try:
-        # Tenta carregar as bibliotecas apenas na hora da busca
+        # Importação segura apenas dentro da função
         import google.generativeai as genai
         from duckduckgo_search import DDGS
         
-        # Configura a IA
         genai.configure(api_key=API_KEY_JARVIS)
         
-        # Busca Notícias
         with DDGS() as ddgs:
             busca = list(ddgs.text(f"{pergunta} futebol", max_results=2))
             contexto = "\n".join([r['body'] for r in busca])
         
-        # Gera Resposta
         model = genai.GenerativeModel('gemini-1.5-flash')
-        prompt = f"Jarvis, responda curto: {pergunta}. Contexto: {contexto}"
+        prompt = f"Jarvis: {pergunta}. Contexto: {contexto}"
         response = model.generate_content(prompt)
         return response.text
 
-    except ImportError as e:
-        # Se faltar a biblioteca (Erro da sua imagem), o site NÃO TRAVA
-        return f"Aviso Jarvis: A biblioteca '{str(e.name)}' não está instalada no servidor. O layout foi preservado, mas a busca real requer instalação."
+    except (ImportError, ModuleNotFoundError):
+        return "⚠️ O servidor ainda está processando o seu arquivo 'requirements.txt'. Reinicie o aplicativo no painel do Streamlit ou aguarde alguns minutos."
     except Exception as e:
-        return f"Jarvis: Erro de conexão. Detalhe: {str(e)}"
+        return f"❌ Erro: {str(e)}"
 
-# --- INICIALIZAÇÃO DE SESSÃO (EVITA TELA BRANCA) ---
+# --- SESSÃO E DADOS ---
 if 'aba_ativa' not in st.session_state:
     st.session_state.aba_ativa = "home"
 if 'resultado_ia_consulta' not in st.session_state:
     st.session_state.resultado_ia_consulta = ""
 if 'top_20_ia' not in st.session_state:
-    # Garante que sempre existam dados para o layout não quebrar
-    st.session_state.top_20_ia = [{"C": "Time Casa", "F": "Time Fora", "P": "92%", "V": "Favorito", "G": "1.5+"} for _ in range(20)]
+    st.session_state.top_20_ia = [{"C": "Time Casa", "F": "Time Fora", "P": "92%", "V": "Analise", "G": "2.5+"} for _ in range(20)]
 
 # ==============================================================================
 # 2. ESTILO CSS ZERO WHITE (IMUTÁVEL)
@@ -63,7 +58,6 @@ if 'top_20_ia' not in st.session_state:
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
-    
     ::-webkit-scrollbar { display: none !important; }
     [data-testid="stHeader"] { display: none !important; }
     
@@ -111,7 +105,6 @@ st.markdown("""
         background-color: #1a202c !important;
         color: white !important;
         border: 1px solid #334155 !important;
-        padding: 15px !important;
     }
 
     .betano-header { 
@@ -138,28 +131,26 @@ if st.session_state.aba_ativa == "home":
     for idx, jogo in enumerate(st.session_state.top_20_ia):
         with cols[idx % 4]:
             st.markdown(f"""<div class="kpi-card">
-                <div style="color:#06b6d4; font-size:10px; font-weight:900;">IA: {jogo['P']}</div>
+                <div style="color:#06b6d4; font-size:10px; font-weight:900;">SUCESSO: {jogo['P']}</div>
                 <div style="font-size:13px; font-weight:700; margin:8px 0;">{jogo['C']} x {jogo['F']}</div>
-                <div style="color:#94a3b8; font-size:10px;">VENCEDOR: {jogo['V']}</div>
+                <div style="color:#94a3b8; font-size:10px;">TIP: {jogo['V']}</div>
             </div>""", unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "vencedores":
-    st.markdown("<h2>🔍 IA CONSULTA - AGENTE JARVIS</h2>", unsafe_allow_html=True)
+    st.markdown("<h2>🔍 IA CONSULTA - JARVIS</h2>", unsafe_allow_html=True)
+    pergunta = st.text_input("QUAL SUA DÚVIDA?", placeholder="Ex: Flamengo joga hoje?")
     
-    pergunta_input = st.text_input("FAÇA SUA PERGUNTA:", placeholder="Ex: Notícias do jogo do Flamengo hoje?")
-    
-    if st.button("EXECUTAR ANALISE"):
-        if pergunta_input:
-            with st.spinner("Processando..."):
-                st.session_state.resultado_ia_consulta = realizar_ia_consulta(pergunta_input)
+    if st.button("CONSULTAR"):
+        if pergunta:
+            with st.spinner("Buscando..."):
+                st.session_state.resultado_ia_consulta = realizar_ia_consulta(pergunta)
         else:
             st.warning("Digite uma pergunta.")
 
     if st.session_state.resultado_ia_consulta:
         st.markdown(f"""<div class="kpi-card" style="border-left: 5px solid #06b6d4; margin-top:20px;">
-            <div style="color:#06b6d4; font-size:10px; font-weight:900; margin-bottom:15px;">RESULTADO:</div>
             <div style="color:white; font-size:14px; line-height:1.6;">{st.session_state.resultado_ia_consulta}</div>
         </div>""", unsafe_allow_html=True)
 
 # RODAPÉ
-st.markdown("""<div style="position: fixed; bottom: 0; left: 0; width: 100%; background: #0b0e11; text-align:center; font-size:10px; color:#475569; padding:5px; border-top:1px solid #1e293b; z-index:1000;">PROTOCOLO JARVIS v101.0 - PROTEÇÃO ATIVA</div>""", unsafe_allow_html=True)
+st.markdown("""<div style="position: fixed; bottom: 0; left: 0; width: 100%; background: #0b0e11; text-align:center; font-size:10px; color:#475569; padding:5px; border-top:1px solid #1e293b; z-index:1000;">PROTOCOLO JARVIS v104.0 - ESTÁVEL</div>""", unsafe_allow_html=True)
