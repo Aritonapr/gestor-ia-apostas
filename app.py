@@ -6,7 +6,7 @@ import numpy as np
 import google.generativeai as genai
 
 # ==============================================================================
-# [SISTEMA JARVIS - VERSÃO ESTÁVEL GEMINI-PRO]
+# [SISTEMA JARVIS - PROTOCOLO DE CONEXÃO AUTOMÁTICA MÚLTIPLA]
 # ==============================================================================
 
 # CHAVE DE API DO SEU PRINT
@@ -14,18 +14,22 @@ CHAVE_GOOGLE = "AIzaSyC83QqObkFM5QaJfVrivAmdqIp1ruWHo-4"
 
 def pesquisar_oraculo(pergunta):
     try:
-        # Configuração do cérebro
         genai.configure(api_key=CHAVE_GOOGLE)
         
-        # MUDANÇA PARA O MODELO MAIS ESTÁVEL DO MUNDO (GEMINI-PRO)
-        model = genai.GenerativeModel('gemini-pro')
+        # Tenta modelos diferentes em ordem para evitar o erro 404 de "Não encontrado"
+        modelos_para_testar = ['gemini-1.5-flash', 'gemini-1.0-pro', 'gemini-pro']
         
-        prompt = f"Responda de forma curta e objetiva como o Oráculo Jarvis: {pergunta}"
-        response = model.generate_content(prompt)
-        return response.text
+        for nome_modelo in modelos_para_testar:
+            try:
+                model = genai.GenerativeModel(nome_modelo)
+                response = model.generate_content(f"Responda de forma curta e objetiva como o Oráculo Jarvis: {pergunta}")
+                return response.text
+            except:
+                continue # Se der erro 404, pula para o próximo modelo da lista
+                
+        return "⚠️ O Google ainda não liberou os modelos de IA para esta chave. Verifique se as permissões estão ativas no painel do Google AI Studio."
     except Exception as e:
-        erro_msg = str(e)
-        return f"O Oráculo está pronto, mas o Google enviou este erro: {erro_msg}. Tente clicar no botão novamente agora."
+        return f"⚠️ Erro de conexão: {str(e)}. Tente clicar no botão novamente."
 
 # 1. CONFIGURAÇÃO DE PÁGINA (VISUAL ORIGINAL LUXUOSO)
 st.set_page_config(
@@ -38,7 +42,7 @@ if 'aba_ativa' not in st.session_state:
     st.session_state.aba_ativa = "home"
 
 # ==============================================================================
-# 2. ESTILO CSS (SEU LAYOUT ORIGINAL PRESERVADO - ZERO WHITE)
+# 2. ESTILO CSS (ALTO CONTRASTE E LETRAS GIGANTES PARA FACILITAR A VISÃO)
 # ==============================================================================
 st.markdown("""
     <style>
@@ -70,17 +74,17 @@ st.markdown("""
         color: white !important;
         font-weight: 900 !important;
         border: none !important;
-        padding: 18px 30px !important;
+        padding: 20px 30px !important;
         text-transform: uppercase !important;
         border-radius: 8px !important;
         width: 100% !important;
-        font-size: 15px !important;
+        font-size: 16px !important;
         box-shadow: 0 4px 15px rgba(109, 40, 217, 0.4) !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. SIDEBAR
+# 3. SIDEBAR (MENU)
 with st.sidebar:
     st.markdown('<div class="betano-header"><div class="header-left"><a href="#" class="logo-link">GESTOR IA</a></div></div><div style="height:65px;"></div>', unsafe_allow_html=True) 
     if st.button("📅 BILHETE OURO"): st.session_state.aba_ativa = "home"
@@ -89,27 +93,27 @@ with st.sidebar:
 # 4. TELA DO ORÁCULO
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
-    st.write("Dados da IA ativos.")
+    st.write("Sistema Jarvis Operacional.")
 
 elif st.session_state.aba_ativa == "oraculo":
-    st.markdown("<h2 style='color:white; font-size: 30px;'>🔮 ORÁCULO JARVIS - PESQUISA REAL</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white; font-size: 32px;'>🔮 ORÁCULO JARVIS - PESQUISA REAL</h2>", unsafe_allow_html=True)
     
-    pergunta = st.text_input("QUAL A SUA DÚVIDA?", placeholder="Digite sua pergunta aqui...")
+    pergunta = st.text_input("QUAL A SUA DÚVIDA?", placeholder="Ex: Quem ganhou o último jogo do Flamengo?")
     
     # BOTÃO EXECUTAR
     if st.button("🔮 EXECUTAR CONSULTA AO ORÁCULO AGORA"):
         if pergunta:
-            with st.spinner("O Oráculo está processando..."):
+            with st.spinner("O Oráculo está testando as conexões e processando..."):
                 resposta = pesquisar_oraculo(pergunta)
                 st.markdown(f"""
                     <div class="kpi-detailed-card" style="border-left: 8px solid #9d54ff; margin-top: 25px;">
-                        <div style="color:#9d54ff; font-size:14px; font-weight:900; margin-bottom:12px;">RESPOSTA DO ORÁCULO:</div>
-                        <div style="color:white; font-size:22px; font-weight:700; line-height:1.6; text-align: justify;">
+                        <div style="color:#9d54ff; font-size:14px; font-weight:900; margin-bottom:15px;">RESPOSTA DO ORÁCULO:</div>
+                        <div style="color:white; font-size:24px; font-weight:700; line-height:1.5; text-align: justify;">
                             {resposta}
                         </div>
                     </div>
                 """, unsafe_allow_html=True)
         else:
-            st.warning("Por favor, digite sua pergunta primeiro.")
+            st.warning("Por favor, digite sua dúvida primeiro.")
 
 st.markdown("""<div style="position:fixed; bottom:0; left:0; width:100%; background:#0d0d12; color:#475569; font-size:9px; padding:5px 20px;">STATUS: ● IA OPERACIONAL | JARVIS PROTECT</div>""", unsafe_allow_html=True)
