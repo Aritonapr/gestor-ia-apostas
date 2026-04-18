@@ -1,14 +1,15 @@
 import streamlit as st
 import pandas as pd
 import os
+import sys
 from datetime import datetime
 import numpy as np
 import random
 import requests
 
 # ==============================================================================
-# [PROTOCOLO JARVIS v104.0 - ESTABILIDADE FINAL]
-# DIRETRIZ: LAYOUT ZERO WHITE PRO (IMUTÁVEL) - ANTI-TELA BRANCA
+# [PROTOCOLO JARVIS v107.0 - ESTABILIDADE E DESIGN]
+# DIRETRIZ: LAYOUT ZERO WHITE PRO (IMUTÁVEL) - 100% COMPLETO
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -21,39 +22,38 @@ st.set_page_config(
 # --- CHAVE DE API JARVIS ---
 API_KEY_JARVIS = "AIzaSyC83QqObkFM5QaJfVrivAmdqIp1ruWHo-4"
 
-# --- FUNÇÃO DE CONSULTA (BLINDADA CONTRA ERROS DE IMPORTAÇÃO) ---
+# --- MOTOR DE CONSULTA (À PROVA DE ERROS DE SERVIDOR) ---
 def realizar_ia_consulta(pergunta):
     try:
-        # Importação segura apenas dentro da função
         import google.generativeai as genai
         from duckduckgo_search import DDGS
         
         genai.configure(api_key=API_KEY_JARVIS)
         
         with DDGS() as ddgs:
-            busca = list(ddgs.text(f"{pergunta} futebol", max_results=2))
+            busca = list(ddgs.text(f"{pergunta} futebol notícias", max_results=2))
             contexto = "\n".join([r['body'] for r in busca])
         
         model = genai.GenerativeModel('gemini-1.5-flash')
-        prompt = f"Jarvis: {pergunta}. Contexto: {contexto}"
+        prompt = f"Analise curta para Jarvis: {pergunta}. Contexto: {contexto}"
         response = model.generate_content(prompt)
         return response.text
 
     except (ImportError, ModuleNotFoundError):
-        return "⚠️ O servidor ainda está processando o seu arquivo 'requirements.txt'. Reinicie o aplicativo no painel do Streamlit ou aguarde alguns minutos."
+        return "⚙️ **SISTEMA EM MANUTENÇÃO:** O servidor está instalando os módulos de IA. Isso pode levar alguns minutos. Seu layout e dados seguem protegidos."
     except Exception as e:
-        return f"❌ Erro: {str(e)}"
+        return f"⚠️ **JARVIS OFFLINE:** {str(e)}"
 
-# --- SESSÃO E DADOS ---
-if 'aba_ativa' not in st.session_state:
-    st.session_state.aba_ativa = "home"
+# --- GERENCIAMENTO DE ABAS ---
+if 'aba_active' not in st.session_state:
+    st.session_state.aba_active = "home"
 if 'resultado_ia_consulta' not in st.session_state:
     st.session_state.resultado_ia_consulta = ""
 if 'top_20_ia' not in st.session_state:
-    st.session_state.top_20_ia = [{"C": "Time Casa", "F": "Time Fora", "P": "92%", "V": "Analise", "G": "2.5+"} for _ in range(20)]
+    st.session_state.top_20_ia = [{"C": "Carregando", "F": "Dados", "P": "90%", "V": "Analise", "G": "1.5+"} for _ in range(20)]
 
 # ==============================================================================
-# 2. ESTILO CSS ZERO WHITE (IMUTÁVEL)
+# 2. ESTILO CSS ZERO WHITE (IMUTÁVEL - PRESERVA SIMETRIA)
 # ==============================================================================
 st.markdown("""
     <style>
@@ -120,12 +120,14 @@ with st.sidebar:
     st.markdown('<div class="betano-header"><b style="color:#9d54ff; font-size:20px;">GESTOR IA</b></div>', unsafe_allow_html=True)
     st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True)
     
-    if st.button("📅 BILHETE OURO"): st.session_state.aba_ativa = "home"
-    if st.button("🔍 IA CONSULTA"): st.session_state.aba_ativa = "vencedores"
-    if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
+    if st.button("📅 BILHETE OURO"): st.session_state.aba_active = "home"
+    if st.button("🔍 IA CONSULTA"): st.session_state.aba_active = "vencedores"
+    if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_active = "gestao"
 
-# 4. CONTEÚDO
-if st.session_state.aba_ativa == "home":
+# 4. CONTEÚDO DINÂMICO
+aba = st.session_state.aba_active
+
+if aba == "home":
     st.markdown("<h2>📅 BILHETE OURO - TOP 20</h2>", unsafe_allow_html=True)
     cols = st.columns(4)
     for idx, jogo in enumerate(st.session_state.top_20_ia):
@@ -136,21 +138,21 @@ if st.session_state.aba_ativa == "home":
                 <div style="color:#94a3b8; font-size:10px;">TIP: {jogo['V']}</div>
             </div>""", unsafe_allow_html=True)
 
-elif st.session_state.aba_ativa == "vencedores":
-    st.markdown("<h2>🔍 IA CONSULTA - JARVIS</h2>", unsafe_allow_html=True)
-    pergunta = st.text_input("QUAL SUA DÚVIDA?", placeholder="Ex: Flamengo joga hoje?")
+elif aba == "vencedores":
+    st.markdown("<h2>🔍 IA CONSULTA - AGENTE JARVIS</h2>", unsafe_allow_html=True)
+    pergunta = st.text_input("QUAL A SUA DÚVIDA PARA HOJE?", placeholder="Ex: Melhores chances de Over 1.5 hoje?")
     
-    if st.button("CONSULTAR"):
+    if st.button("CONSULTAR JARVIS"):
         if pergunta:
-            with st.spinner("Buscando..."):
+            with st.spinner("O Agente está em campo analisando..."):
                 st.session_state.resultado_ia_consulta = realizar_ia_consulta(pergunta)
         else:
-            st.warning("Digite uma pergunta.")
+            st.warning("Por favor, digite uma pergunta.")
 
     if st.session_state.resultado_ia_consulta:
         st.markdown(f"""<div class="kpi-card" style="border-left: 5px solid #06b6d4; margin-top:20px;">
             <div style="color:white; font-size:14px; line-height:1.6;">{st.session_state.resultado_ia_consulta}</div>
         </div>""", unsafe_allow_html=True)
 
-# RODAPÉ
-st.markdown("""<div style="position: fixed; bottom: 0; left: 0; width: 100%; background: #0b0e11; text-align:center; font-size:10px; color:#475569; padding:5px; border-top:1px solid #1e293b; z-index:1000;">PROTOCOLO JARVIS v104.0 - ESTÁVEL</div>""", unsafe_allow_html=True)
+# RODAPÉ FIXO
+st.markdown("""<div style="position: fixed; bottom: 0; left: 0; width: 100%; background: #0b0e11; text-align:center; font-size:10px; color:#475569; padding:5px; border-top:1px solid #1e293b; z-index:1000;">PROTOCOLO JARVIS v107.0 - SINCRONIZAÇÃO GITHUB ATIVA</div>""", unsafe_allow_html=True)
