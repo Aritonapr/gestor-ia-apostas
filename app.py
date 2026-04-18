@@ -9,8 +9,8 @@ import google.generativeai as genai
 from duckduckgo_search import DDGS
 
 # ==============================================================================
-# [PROTOCOLO JARVIS v97.0 - AGENTE INTELIGENTE RAG]
-# DIRETRIZ: LAYOUT ZERO WHITE PRO (IMUTÁVEL) - SEM ABREVIAÇÕES
+# [PROTOCOLO JARVIS v98.0 - SISTEMA INTEGRADO]
+# DIRETRIZ: LAYOUT ZERO WHITE PRO (IMUTÁVEL) - 100% COMPLETO
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -20,11 +20,11 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- CONFIGURAÇÃO DA CHAVE DE API (SUA CHAVE ATIVA) ---
+# --- CONFIGURAÇÃO DA CHAVE DE API ---
 API_KEY_JARVIS = "AIzaSyC83QqObkFM5QaJfVrivAmdqIp1ruWHo-4"
 genai.configure(api_key=API_KEY_JARVIS)
 
-# --- INICIALIZAÇÃO DE MEMÓRIA (EVITA TELA BRANCA) ---
+# --- INICIALIZAÇÃO DE MEMÓRIA (EVITA ERROS DE TELA BRANCA) ---
 if 'aba_ativa' not in st.session_state:
     st.session_state.aba_ativa = "home"
 if 'resultado_ia_consulta' not in st.session_state:
@@ -37,54 +37,50 @@ if 'banca_total' not in st.session_state:
 # --- MOTOR DE BUSCA EM TEMPO REAL (RAG) ---
 def realizar_ia_consulta(pergunta):
     try:
-        # 1. Busca no DuckDuckGo (Olhos na Internet)
+        # Busca real no DuckDuckGo
         with DDGS() as ddgs:
-            busca = list(ddgs.text(f"{pergunta} futebol notícias hoje", max_results=3))
+            busca = list(ddgs.text(f"{pergunta} futebol notícias", max_results=3))
             contexto = "\n".join([r['body'] for r in busca])
         
-        # 2. Processamento com Gemini 1.5 Flash
+        # Processamento Gemini
         model = genai.GenerativeModel('gemini-1.5-flash')
         prompt = f"""
-        Você é o Agente Jarvis. Baseado nestas notícias reais: {contexto}
-        Responda de forma técnica, curta e direta sobre: {pergunta}
-        Mantenha o tom profissional de análise esportiva.
+        Você é o Agente Jarvis. Baseado nas notícias: {contexto}
+        Responda de forma técnica e curta sobre: {pergunta}
         """
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
-        return f"Jarvis: Sistema de busca momentaneamente offline. Detalhe: {str(e)}"
+        return f"Jarvis: Erro na sincronização em tempo real. {str(e)}"
 
-# --- CARREGAMENTO DE DADOS (BLINDAGEM) ---
-def carregar_dados_safe():
+# --- CARREGAMENTO DE DADOS COM TRAVA DE SEGURANÇA ---
+def carregar_dados():
     url = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
     try:
         df = pd.read_csv(f"{url}?v={datetime.now().timestamp()}")
-        # Simulação de dados se o CSV estiver vazio para evitar quebra
-        if df.empty: return None
         return df
     except:
         return None
 
-# Inicializa o Top 20 para evitar erro de 'NoneType'
+df_diario = carregar_dados()
+
+# Preenchimento preventivo do Top 20 para evitar erro de NoneType
 if not st.session_state.top_20_ia:
     for i in range(20):
         st.session_state.top_20_ia.append({
-            "C": f"Time Casa {i+1}", "F": f"Time Fora {i+1}", 
-            "P": f"{random.randint(85, 98)}%", "V": "Favorito", "G": "1.5+"
+            "C": "Carregando...", "F": "Aguarde...", "P": "0%", "V": "Analizando", "G": "---"
         })
 
 # ==============================================================================
-# 2. ESTILO CSS ZERO WHITE (IMUTÁVEL)
+# 2. ESTILO CSS ZERO WHITE (IMUTÁVEL E BLINDADO)
 # ==============================================================================
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
     
-    /* Esconde elementos padrão */
     ::-webkit-scrollbar { display: none !important; }
     [data-testid="stHeader"] { display: none !important; }
     
-    /* Fundo Principal */
     html, body, [data-testid="stAppViewContainer"], .stApp {
         background-color: #0b0e11 !important;
         font-family: 'Inter', sans-serif;
@@ -93,13 +89,12 @@ st.markdown("""
     
     [data-testid="stMainBlockContainer"] { padding: 80px 40px !important; }
     
-    /* Sidebar Dark */
+    /* SIDEBAR */
     [data-testid="stSidebar"] { 
         background-color: #11151a !important; 
         border-right: 1px solid #1e293b !important;
     }
     
-    /* Botões Laterais */
     section[data-testid="stSidebar"] div.stButton > button {
         background-color: transparent !important;
         color: #94a3b8 !important;
@@ -120,7 +115,7 @@ st.markdown("""
         border-left: 4px solid #6d28d9 !important;
     }
 
-    /* Cards e Inputs */
+    /* CARDS */
     .kpi-card {
         background: #11151a;
         border: 1px solid #1e293b;
@@ -128,15 +123,17 @@ st.markdown("""
         border-radius: 10px;
         margin-bottom: 15px;
     }
-    
+
+    /* INPUT DE BUSCA IA */
     .stTextInput>div>div>input {
         background-color: #1a202c !important;
         color: white !important;
         border: 1px solid #334155 !important;
-        padding: 12px !important;
+        padding: 15px !important;
+        border-radius: 8px !important;
     }
 
-    /* Cabeçalho Fixo */
+    /* HEADER FIXO */
     .betano-header { 
         position: fixed; top: 0; left: 0; width: 100%; height: 60px; 
         background-color: #001a4d !important; border-bottom: 1px solid rgba(255,255,255,0.05); 
@@ -145,7 +142,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# 3. SIDEBAR MENU
+# 3. SIDEBAR (MENU LATERAL)
 with st.sidebar:
     st.markdown('<div class="betano-header"><b style="color:#9d54ff; font-size:20px;">GESTOR IA</b></div>', unsafe_allow_html=True)
     st.markdown('<div style="height:65px;"></div>', unsafe_allow_html=True)
@@ -153,12 +150,12 @@ with st.sidebar:
     if st.button("🎯 SCANNER PRÉ-LIVE"): st.session_state.aba_ativa = "scanner"
     if st.button("📅 BILHETE OURO"): st.session_state.aba_ativa = "home"
     
-    # NOME CORRIGIDO E FUNCIONAL
+    # BOTÃO IA CONSULTA (RENOMEADO)
     if st.button("🔍 IA CONSULTA"): st.session_state.aba_ativa = "vencedores"
     
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
 
-# 4. ÁREAS DE CONTEÚDO
+# 4. CONTEÚDO DAS ABAS
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 BILHETE OURO - TOP 20</h2>", unsafe_allow_html=True)
     cols = st.columns(4)
@@ -166,42 +163,42 @@ if st.session_state.aba_ativa == "home":
         with cols[idx % 4]:
             st.markdown(f"""
             <div class="kpi-card">
-                <div style="color:#06b6d4; font-size:10px; font-weight:900;">IA: {jogo['P']}</div>
-                <div style="font-size:13px; font-weight:700; margin:8px 0;">{jogo['C']} x {jogo['F']}</div>
-                <div style="color:#94a3b8; font-size:10px;">PALPITE: {jogo['V']}</div>
+                <div style="color:#06b6d4; font-size:10px; font-weight:900;">CONFIANÇA: {jogo['P']}</div>
+                <div style="font-size:13px; font-weight:700; margin:10px 0;">{jogo['C']} x {jogo['F']}</div>
+                <div style="color:#94a3b8; font-size:11px;">Palpite: {jogo['V']}</div>
             </div>
             """, unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "vencedores":
     st.markdown("<h2 style='color:white;'>🔍 IA CONSULTA - AGENTE EM TEMPO REAL</h2>", unsafe_allow_html=True)
-    st.markdown("<p style='color:#94a3b8; font-size:12px;'>O JARVIS PESQUISA NOTÍCIAS REAIS E ANALISA PARA VOCÊ.</p>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#94a3b8;'>O Jarvis utiliza RAG para ler as notícias mais recentes e analisar os jogos.</p>", unsafe_allow_html=True)
     
-    # Área de Input formatada
-    pergunta_user = st.text_input("DIGITE SUA DÚVIDA SOBRE OS JOGOS DE HOJE:", placeholder="Ex: Qual a escalação do Manchester City hoje?")
+    # Campo de pergunta formatado
+    pergunta_input = st.text_input("DIGITE SUA PERGUNTA PARA O JARVIS:", placeholder="Ex: Quais as chances do Manchester City vencer hoje?")
     
-    if st.button("PERGUNTAR AO JARVIS"):
-        if pergunta_user:
-            with st.spinner("Buscando dados em tempo real..."):
-                st.session_state.resultado_ia_consulta = realizar_ia_consulta(pergunta_user)
+    if st.button("PERGUNTAR AO AGENTE"):
+        if pergunta_input:
+            with st.spinner("Jarvis pesquisando notícias e gerando análise..."):
+                st.session_state.resultado_ia_consulta = realizar_ia_consulta(pergunta_input)
         else:
-            st.error("Digite uma pergunta para o Agente.")
+            st.warning("Por favor, digite uma pergunta.")
 
-    # Resultado dentro do Layout Dark
+    # Resposta dentro do Card Zero White
     if st.session_state.resultado_ia_consulta:
         st.markdown(f"""
-        <div class="kpi-card" style="border-left: 4px solid #06b6d4; margin-top:20px;">
-            <div style="color:#06b6d4; font-size:10px; font-weight:900; margin-bottom:12px;">RESPOSTA DO JARVIS:</div>
+        <div class="kpi-card" style="border-left: 5px solid #06b6d4; margin-top:20px;">
+            <div style="color:#06b6d4; font-size:10px; font-weight:900; margin-bottom:15px;">RESPOSTA DO JARVIS:</div>
             <div style="color:white; font-size:14px; line-height:1.6;">{st.session_state.resultado_ia_consulta}</div>
         </div>
         """, unsafe_allow_html=True)
 
 elif st.session_state.aba_ativa == "scanner":
     st.markdown("<h2 style='color:white;'>🎯 SCANNER PRÉ-LIVE</h2>", unsafe_allow_html=True)
-    st.write("Dados em processamento...")
+    st.info("Scanner aguardando sincronização de dados.")
 
 elif st.session_state.aba_ativa == "gestao":
     st.markdown("<h2 style='color:white;'>💰 GESTÃO DE BANCA</h2>", unsafe_allow_html=True)
-    st.write("Controle sua banca aqui.")
+    st.write("Configurações de banca.")
 
-# RODAPÉ DE PROTEÇÃO
-st.markdown("""<div style="position: fixed; bottom: 0; left: 0; width: 100%; background: #0b0e11; text-align:center; font-size:10px; color:#475569; padding:5px; border-top:1px solid #1e293b; z-index:1000;">PROTOCOLO JARVIS v97.0 - SISTEMA PROTEGIDO</div>""", unsafe_allow_html=True)
+# RODAPÉ
+st.markdown("""<div style="position: fixed; bottom: 0; left: 0; width: 100%; background: #0b0e11; text-align:center; font-size:10px; color:#475569; padding:5px; border-top:1px solid #1e293b; z-index:1000;">PROTOCOLO JARVIS v98.0 - OPERACIONAL</div>""", unsafe_allow_html=True)
