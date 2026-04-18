@@ -1,15 +1,12 @@
 import streamlit as st
 import pandas as pd
 import os
-import sys
 from datetime import datetime
 import numpy as np
-import random
-import requests
 
 # ==============================================================================
-# [PROTOCOLO JARVIS v107.0 - ESTABILIDADE E DESIGN]
-# DIRETRIZ: LAYOUT ZERO WHITE PRO (IMUTÁVEL) - 100% COMPLETO
+# [PROTOCOLO JARVIS v108.0 - ESTABILIDADE FINAL]
+# DIRETRIZ: LAYOUT ZERO WHITE PRO (IMUTÁVEL) - ANTI-CRASH
 # ==============================================================================
 
 # 1. CONFIGURAÇÃO DE PÁGINA
@@ -22,9 +19,11 @@ st.set_page_config(
 # --- CHAVE DE API JARVIS ---
 API_KEY_JARVIS = "AIzaSyC83QqObkFM5QaJfVrivAmdqIp1ruWHo-4"
 
-# --- MOTOR DE CONSULTA (À PROVA DE ERROS DE SERVIDOR) ---
+# --- MOTOR DE CONSULTA JARVIS (IMPORTAÇÃO PROTEGIDA) ---
 def realizar_ia_consulta(pergunta):
     try:
+        # Só importa as bibliotecas quando o usuário clica no botão
+        # Isso evita que o site dê erro ao abrir
         import google.generativeai as genai
         from duckduckgo_search import DDGS
         
@@ -40,7 +39,7 @@ def realizar_ia_consulta(pergunta):
         return response.text
 
     except (ImportError, ModuleNotFoundError):
-        return "⚙️ **SISTEMA EM MANUTENÇÃO:** O servidor está instalando os módulos de IA. Isso pode levar alguns minutos. Seu layout e dados seguem protegidos."
+        return "⚙️ **ESTADO DE INSTALAÇÃO:** O servidor do GitHub ainda está configurando as ferramentas de IA. Aguarde 2 minutos e tente novamente. O layout está preservado."
     except Exception as e:
         return f"⚠️ **JARVIS OFFLINE:** {str(e)}"
 
@@ -53,7 +52,7 @@ if 'top_20_ia' not in st.session_state:
     st.session_state.top_20_ia = [{"C": "Carregando", "F": "Dados", "P": "90%", "V": "Analise", "G": "1.5+"} for _ in range(20)]
 
 # ==============================================================================
-# 2. ESTILO CSS ZERO WHITE (IMUTÁVEL - PRESERVA SIMETRIA)
+# 2. ESTILO CSS ZERO WHITE (IMUTÁVEL)
 # ==============================================================================
 st.markdown("""
     <style>
@@ -124,7 +123,7 @@ with st.sidebar:
     if st.button("🔍 IA CONSULTA"): st.session_state.aba_active = "vencedores"
     if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_active = "gestao"
 
-# 4. CONTEÚDO DINÂMICO
+# 4. CONTEÚDO
 aba = st.session_state.aba_active
 
 if aba == "home":
@@ -133,18 +132,18 @@ if aba == "home":
     for idx, jogo in enumerate(st.session_state.top_20_ia):
         with cols[idx % 4]:
             st.markdown(f"""<div class="kpi-card">
-                <div style="color:#06b6d4; font-size:10px; font-weight:900;">SUCESSO: {jogo['P']}</div>
+                <div style="color:#06b6d4; font-size:10px; font-weight:900;">PROBABILIDADE: {jogo['P']}</div>
                 <div style="font-size:13px; font-weight:700; margin:8px 0;">{jogo['C']} x {jogo['F']}</div>
                 <div style="color:#94a3b8; font-size:10px;">TIP: {jogo['V']}</div>
             </div>""", unsafe_allow_html=True)
 
 elif aba == "vencedores":
     st.markdown("<h2>🔍 IA CONSULTA - AGENTE JARVIS</h2>", unsafe_allow_html=True)
-    pergunta = st.text_input("QUAL A SUA DÚVIDA PARA HOJE?", placeholder="Ex: Melhores chances de Over 1.5 hoje?")
+    pergunta = st.text_input("QUAL A SUA DÚVIDA?", placeholder="Ex: Notícias do jogo do Flamengo?")
     
-    if st.button("CONSULTAR JARVIS"):
+    if st.button("EXECUTAR CONSULTA"):
         if pergunta:
-            with st.spinner("O Agente está em campo analisando..."):
+            with st.spinner("O Agente está acessando as notícias..."):
                 st.session_state.resultado_ia_consulta = realizar_ia_consulta(pergunta)
         else:
             st.warning("Por favor, digite uma pergunta.")
@@ -154,5 +153,5 @@ elif aba == "vencedores":
             <div style="color:white; font-size:14px; line-height:1.6;">{st.session_state.resultado_ia_consulta}</div>
         </div>""", unsafe_allow_html=True)
 
-# RODAPÉ FIXO
-st.markdown("""<div style="position: fixed; bottom: 0; left: 0; width: 100%; background: #0b0e11; text-align:center; font-size:10px; color:#475569; padding:5px; border-top:1px solid #1e293b; z-index:1000;">PROTOCOLO JARVIS v107.0 - SINCRONIZAÇÃO GITHUB ATIVA</div>""", unsafe_allow_html=True)
+# RODAPÉ
+st.markdown("""<div style="position: fixed; bottom: 0; left: 0; width: 100%; background: #0b0e11; text-align:center; font-size:10px; color:#475569; padding:5px; border-top:1px solid #1e293b; z-index:1000;">PROTOCOLO JARVIS v108.0 - OPERACIONAL</div>""", unsafe_allow_html=True)
