@@ -6,7 +6,7 @@ import numpy as np
 import google.generativeai as genai
 
 # ==============================================================================
-# [SISTEMA JARVIS - PROTOCOLO DE RECUPERAÇÃO TOTAL]
+# [SISTEMA JARVIS - VERSÃO ESTÁVEL GEMINI-PRO]
 # ==============================================================================
 
 # CHAVE DE API DO SEU PRINT
@@ -16,20 +16,16 @@ def pesquisar_oraculo(pergunta):
     try:
         # Configuração do cérebro
         genai.configure(api_key=CHAVE_GOOGLE)
-        # Usando o modelo mais estável (Gemini Pro)
-        model = genai.GenerativeModel('gemini-1.5-flash')
         
-        response = model.generate_content(f"Responda de forma curta e profissional para um trader: {pergunta}")
+        # MUDANÇA PARA O MODELO MAIS ESTÁVEL DO MUNDO (GEMINI-PRO)
+        model = genai.GenerativeModel('gemini-pro')
+        
+        prompt = f"Responda de forma curta e objetiva como o Oráculo Jarvis: {pergunta}"
+        response = model.generate_content(prompt)
         return response.text
     except Exception as e:
-        # Se der erro, ele vai mostrar o motivo real para podermos consertar
         erro_msg = str(e)
-        if "API_KEY_INVALID" in erro_msg:
-            return "⚠️ A chave que você colou parece inválida. Verifique se copiou todos os caracteres."
-        elif "429" in erro_msg:
-            return "⚠️ O Google está limitando o acesso gratuito. Aguarde 30 segundos e tente o botão novamente."
-        else:
-            return f"⚠️ O Google respondeu este erro: {erro_msg}. Geralmente isso significa que você precisa clicar em 'Enable API' no seu painel."
+        return f"O Oráculo está pronto, mas o Google enviou este erro: {erro_msg}. Tente clicar no botão novamente agora."
 
 # 1. CONFIGURAÇÃO DE PÁGINA (VISUAL ORIGINAL LUXUOSO)
 st.set_page_config(
@@ -65,11 +61,10 @@ st.markdown("""
     
     [data-testid="stSidebar"] { min-width: 320px !important; background-color: #11151a !important; border-right: 1px solid #1e293b !important; }
     section[data-testid="stSidebar"] div.stButton > button { background-color: transparent !important; color: #94a3b8 !important; border: none !important; text-align: left !important; width: 100% !important; padding: 18px 25px !important; font-size: 10px !important; text-transform: uppercase !important; border-radius: 0px !important; }
-    section[data-testid="stSidebar"] div.stButton > button:hover { background-color: #1e293b !important; color: #06b6d4 !important; border-left: 3px solid #6d28d9 !important; }
     
-    .kpi-detailed-card { background: #11151a; border: 1px solid #1e293b; padding: 25px; border-radius: 8px; margin-bottom: 15px; }
-    
-    /* BOTÃO DE EXECUÇÃO EM DESTAQUE */
+    .kpi-detailed-card { background: #11151a; border: 1px solid #1e293b; padding: 30px; border-radius: 8px; margin-bottom: 15px; }
+
+    /* BOTÃO DE EXECUÇÃO LARGO E COLORIDO PARA FACILITAR SUA VISÃO */
     div.stButton > button:not([data-testid="stSidebar"] *) {
         background: linear-gradient(90deg, #6d28d9 0%, #06b6d4 100%) !important;
         color: white !important;
@@ -77,10 +72,9 @@ st.markdown("""
         border: none !important;
         padding: 18px 30px !important;
         text-transform: uppercase !important;
-        border-radius: 6px !important;
+        border-radius: 8px !important;
         width: 100% !important;
         font-size: 15px !important;
-        margin-top: 10px !important;
         box-shadow: 0 4px 15px rgba(109, 40, 217, 0.4) !important;
     }
     </style>
@@ -91,17 +85,16 @@ with st.sidebar:
     st.markdown('<div class="betano-header"><div class="header-left"><a href="#" class="logo-link">GESTOR IA</a></div></div><div style="height:65px;"></div>', unsafe_allow_html=True) 
     if st.button("📅 BILHETE OURO"): st.session_state.aba_ativa = "home"
     if st.button("🔮 ORÁCULO JARVIS"): st.session_state.aba_ativa = "oraculo"
-    if st.button("💰 GESTÃO DE BANCA"): st.session_state.aba_ativa = "gestao"
 
-# 4. TELAS
+# 4. TELA DO ORÁCULO
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:white;'>📅 BILHETE OURO</h2>", unsafe_allow_html=True)
     st.write("Dados da IA ativos.")
 
 elif st.session_state.aba_ativa == "oraculo":
-    st.markdown("<h2 style='color:white; font-size: 30px;'>🔮 ORÁCULO JARVIS - INTELIGÊNCIA REAL</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:white; font-size: 30px;'>🔮 ORÁCULO JARVIS - PESQUISA REAL</h2>", unsafe_allow_html=True)
     
-    pergunta = st.text_input("QUAL A SUA DÚVIDA?", placeholder="Ex: Resultado do último jogo do Flamengo")
+    pergunta = st.text_input("QUAL A SUA DÚVIDA?", placeholder="Digite sua pergunta aqui...")
     
     # BOTÃO EXECUTAR
     if st.button("🔮 EXECUTAR CONSULTA AO ORÁCULO AGORA"):
@@ -109,8 +102,8 @@ elif st.session_state.aba_ativa == "oraculo":
             with st.spinner("O Oráculo está processando..."):
                 resposta = pesquisar_oraculo(pergunta)
                 st.markdown(f"""
-                    <div class="kpi-detailed-card" style="border-left: 5px solid #9d54ff; margin-top: 25px;">
-                        <div style="color:#9d54ff; font-size:12px; font-weight:900; margin-bottom:10px;">RESPOSTA DO ORÁCULO:</div>
+                    <div class="kpi-detailed-card" style="border-left: 8px solid #9d54ff; margin-top: 25px;">
+                        <div style="color:#9d54ff; font-size:14px; font-weight:900; margin-bottom:12px;">RESPOSTA DO ORÁCULO:</div>
                         <div style="color:white; font-size:22px; font-weight:700; line-height:1.6; text-align: justify;">
                             {resposta}
                         </div>
