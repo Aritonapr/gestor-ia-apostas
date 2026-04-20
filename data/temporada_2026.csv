@@ -318,6 +318,15 @@ Nott'm Forest,Aston Villa,1,1,2526
 Sunderland,Tottenham,1,0,2526
 Chelsea,Man City,0,3,2526
 Man United,Leeds,1,2,2526
+Brentford,Fulham,0,0,2526
+Leeds,Wolves,3,0,2526
+Newcastle,Bournemouth,1,2,2526
+Tottenham,Brighton,2,2,2526
+Chelsea,Man United,0,1,2526
+Aston Villa,Sunderland,4,3,2526
+Everton,Liverpool,1,2,2526
+Nott'm Forest,Burnley,4,1,2526
+Man City,Arsenal,2,1,2526
 Girona,Vallecano,1,3,2526
 Villarreal,Oviedo,2,0,2526
 Mallorca,Barcelona,0,3,2526
@@ -948,6 +957,15 @@ Parma,Napoli,1,1,2526
 Bologna,Lecce,2,0,2526
 Como,Inter,3,4,2526
 Fiorentina,Lazio,1,0,2526
+Sassuolo,Como,2,1,2526
+Inter,Cagliari,3,0,2526
+Udinese,Parma,0,1,2526
+Napoli,Lazio,0,2,2526
+Roma,Atalanta,1,1,2526
+Cremonese,Torino,0,0,2526
+Verona,Milan,0,1,2526
+Pisa,Genoa,1,2,2526
+Juventus,Bologna,2,0,2526
 Bayern Munich,RB Leipzig,6,0,2526
 Ein Frankfurt,Werder Bremen,4,1,2526
 Freiburg,Augsburg,1,3,2526
@@ -1209,6 +1227,15 @@ St Pauli,Bayern Munich,0,5,2526
 FC Koln,Werder Bremen,3,1,2526
 Stuttgart,Hamburg,4,0,2526
 Mainz,Freiburg,0,1,2526
+St Pauli,FC Koln,1,1,2526
+Hoffenheim,Dortmund,2,1,2526
+Leverkusen,Augsburg,1,2,2526
+Union Berlin,Wolfsburg,1,2,2526
+Werder Bremen,Hamburg,3,1,2526
+Ein Frankfurt,RB Leipzig,1,3,2526
+Freiburg,Heidenheim,2,1,2526
+Bayern Munich,Stuttgart,4,2,2526
+M'gladbach,Mainz,1,1,2526
 Rennes,Marseille,1,0,2526
 Lens,Lyon,0,1,2526
 Monaco,Le Havre,3,1,2526
@@ -1467,3 +1494,12 @@ Rennes,Angers,2,1,2526
 Nice,Le Havre,1,1,2526
 Toulouse,Lille,0,4,2526
 Lyon,Lorient,2,0,2526
+Lens,Toulouse,3,2,2526
+Lorient,Marseille,2,0,2526
+Angers,Le Havre,1,1,2526
+Lille,Nice,0,0,2526
+Monaco,Auxerre,2,2,2526
+Metz,Paris FC,1,3,2526
+Nantes,Brest,1,1,2526
+Strasbourg,Rennes,0,3,2526
+Paris SG,Lyon,1,2,2526
