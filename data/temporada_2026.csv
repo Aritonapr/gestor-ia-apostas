@@ -331,6 +331,12 @@ Crystal Palace,West Ham,0,0,2526
 Brighton,Chelsea,3,0,2526
 Bournemouth,Leeds,2,2,2526
 Burnley,Man City,0,1,2526
+Sunderland,Nott'm Forest,0,5,2526
+Fulham,Aston Villa,1,0,2526
+Liverpool,Crystal Palace,3,1,2526
+West Ham,Everton,2,1,2526
+Wolves,Tottenham,0,1,2526
+Arsenal,Newcastle,1,0,2526
 Girona,Vallecano,1,3,2526
 Villarreal,Oviedo,2,0,2526
 Mallorca,Barcelona,0,3,2526
@@ -651,6 +657,15 @@ Barcelona,Celta,1,0,2526
 Levante,Sevilla,2,0,2526
 Vallecano,Espanol,1,0,2526
 Oviedo,Villarreal,1,1,2526
+Betis,Real Madrid,1,1,2526
+Alaves,Mallorca,2,1,2526
+Getafe,Barcelona,0,2,2526
+Valencia,Girona,2,1,2526
+Ath Madrid,Ath Bilbao,3,2,2526
+Vallecano,Sociedad,3,3,2526
+Oviedo,Elche,1,2,2526
+Osasuna,Sevilla,2,1,2526
+Villarreal,Celta,2,1,2526
 Genoa,Lecce,0,0,2526
 Sassuolo,Napoli,0,2,2526
 Milan,Cremonese,1,2,2526
@@ -981,6 +996,14 @@ Verona,Milan,0,1,2526
 Pisa,Genoa,1,2,2526
 Juventus,Bologna,2,0,2526
 Lecce,Fiorentina,1,1,2526
+Napoli,Cremonese,4,0,2526
+Parma,Pisa,1,0,2526
+Bologna,Roma,0,2,2526
+Verona,Lecce,0,0,2526
+Fiorentina,Sassuolo,0,0,2526
+Genoa,Como,0,2,2526
+Torino,Inter,2,2,2526
+Milan,Juventus,0,0,2526
 Bayern Munich,RB Leipzig,6,0,2526
 Ein Frankfurt,Werder Bremen,4,1,2526
 Freiburg,Augsburg,1,3,2526
@@ -1251,6 +1274,15 @@ Ein Frankfurt,RB Leipzig,1,3,2526
 Freiburg,Heidenheim,2,1,2526
 Bayern Munich,Stuttgart,4,2,2526
 M'gladbach,Mainz,1,1,2526
+RB Leipzig,Union Berlin,3,1,2526
+Augsburg,Ein Frankfurt,1,1,2526
+FC Koln,Leverkusen,1,2,2526
+Heidenheim,St Pauli,2,0,2526
+Mainz,Bayern Munich,3,4,2526
+Wolfsburg,M'gladbach,0,0,2526
+Hamburg,Hoffenheim,1,2,2526
+Stuttgart,Werder Bremen,1,1,2526
+Dortmund,Freiburg,4,0,2526
 Rennes,Marseille,1,0,2526
 Lens,Lyon,0,1,2526
 Monaco,Le Havre,3,1,2526
@@ -1519,3 +1551,12 @@ Nantes,Brest,1,1,2526
 Strasbourg,Rennes,0,3,2526
 Paris SG,Lyon,1,2,2526
 Paris SG,Nantes,3,0,2526
+Brest,Lens,3,3,2526
+Lyon,Auxerre,3,2,2526
+Angers,Paris SG,0,3,2526
+Toulouse,Monaco,2,2,2526
+Lorient,Strasbourg,2,3,2526
+Le Havre,Metz,4,4,2526
+Paris FC,Lille,0,1,2526
+Rennes,Nantes,2,1,2526
+Marseille,Nice,1,1,2526
