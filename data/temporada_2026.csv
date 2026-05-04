@@ -338,6 +338,14 @@ West Ham,Everton,2,1,2526
 Wolves,Tottenham,0,1,2526
 Arsenal,Newcastle,1,0,2526
 Man United,Brentford,2,1,2526
+Leeds,Burnley,3,1,2526
+Brentford,West Ham,3,0,2526
+Newcastle,Brighton,3,1,2526
+Wolves,Sunderland,1,1,2526
+Arsenal,Fulham,3,0,2526
+Bournemouth,Crystal Palace,3,0,2526
+Man United,Liverpool,3,2,2526
+Aston Villa,Tottenham,1,2,2526
 Girona,Vallecano,1,3,2526
 Villarreal,Oviedo,2,0,2526
 Mallorca,Barcelona,0,3,2526
@@ -668,6 +676,15 @@ Oviedo,Elche,1,2,2526
 Osasuna,Sevilla,2,1,2526
 Villarreal,Celta,2,1,2526
 Espanol,Levante,0,0,2526
+Girona,Mallorca,0,1,2526
+Villarreal,Levante,5,1,2526
+Valencia,Ath Madrid,0,2,2526
+Alaves,Ath Bilbao,2,4,2526
+Osasuna,Barcelona,1,2,2526
+Celta,Elche,3,1,2526
+Getafe,Vallecano,0,2,2526
+Betis,Oviedo,3,0,2526
+Espanol,Real Madrid,0,2,2526
 Genoa,Lecce,0,0,2526
 Sassuolo,Napoli,0,2,2526
 Milan,Cremonese,1,2,2526
@@ -1008,6 +1025,14 @@ Torino,Inter,2,2,2526
 Milan,Juventus,0,0,2526
 Cagliari,Atalanta,3,2,2526
 Lazio,Udinese,3,3,2526
+Pisa,Lecce,1,2,2526
+Udinese,Torino,2,0,2526
+Como,Napoli,0,0,2526
+Atalanta,Genoa,0,0,2526
+Bologna,Cagliari,0,0,2526
+Sassuolo,Milan,2,0,2526
+Juventus,Verona,1,1,2526
+Inter,Parma,2,0,2526
 Bayern Munich,RB Leipzig,6,0,2526
 Ein Frankfurt,Werder Bremen,4,1,2526
 Freiburg,Augsburg,1,3,2526
@@ -1287,6 +1312,15 @@ Wolfsburg,M'gladbach,0,0,2526
 Hamburg,Hoffenheim,1,2,2526
 Stuttgart,Werder Bremen,1,1,2526
 Dortmund,Freiburg,4,0,2526
+Bayern Munich,Heidenheim,3,3,2526
+Ein Frankfurt,Hamburg,1,2,2526
+Hoffenheim,Stuttgart,3,3,2526
+Union Berlin,FC Koln,2,2,2526
+Werder Bremen,Augsburg,1,3,2526
+Leverkusen,RB Leipzig,4,1,2526
+St Pauli,Mainz,1,2,2526
+M'gladbach,Dortmund,1,0,2526
+Freiburg,Wolfsburg,1,1,2526
 Rennes,Marseille,1,0,2526
 Lens,Lyon,0,1,2526
 Monaco,Le Havre,3,1,2526
@@ -1564,3 +1598,12 @@ Le Havre,Metz,4,4,2526
 Paris FC,Lille,0,1,2526
 Rennes,Nantes,2,1,2526
 Marseille,Nice,1,1,2526
+Nantes,Marseille,3,0,2526
+Paris SG,Lorient,2,2,2526
+Metz,Monaco,1,2,2526
+Nice,Lens,1,1,2526
+Lille,Le Havre,1,1,2526
+Auxerre,Angers,3,1,2526
+Paris FC,Brest,4,0,2526
+Strasbourg,Toulouse,1,2,2526
+Lyon,Rennes,4,2,2526
