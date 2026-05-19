@@ -32,7 +32,7 @@ if 'analise_bloqueada' not in st.session_state:
 if 'banca_total' not in st.session_state:
     st.session_state.banca_total = 1000.00
 if 'stake_padrao' not in st.session_state:
-    st.session_state.stake_padrao = 10.00  # Configurado para R$ 10.00 conforme layout
+    st.session_state.stake_padrao = 10.00
 if 'meta_diaria' not in st.session_state:
     st.session_state.meta_diaria = 3.0
 if 'stop_loss' not in st.session_state:
@@ -42,21 +42,29 @@ if 'top_20_ia' not in st.session_state:
 if 'jogos_live_ia' not in st.session_state:
     st.session_state.jogos_live_ia = []
 
-# Redirecionamento via URL (Mapeia o cabeçalho)
-query_params = st.query_params
-if query_params.get("go") == "home":
-    st.session_state.aba_ativa = "home"
+# --- MOTOR DE CAPTURA DO CLIQUE NO BOTÃO AZUL DE INVESTIMENTO ---
+if "investir_jogo" in st.query_params:
+    try:
+        jogo_id = int(st.query_params["investir_jogo"])
+        valor_aposta = 10.00
+        if st.session_state.banca_total >= valor_aposta and len(st.session_state.top_20_ia) > 0:
+            jogo_clicado = st.session_state.top_20_ia[jogo_id % len(st.session_state.top_20_ia)]
+            st.session_state.banca_total -= valor_aposta
+            st.session_state.historico_calls.append({
+                "DATA": datetime.now().strftime("%d/%m/%Y %H:%M"),
+                "CONFRONTO": f"{jogo_clicado['C']} vs {jogo_clicado['F']}",
+                "VALOR": f"R$ {valor_aposta:.2f}",
+                "STATUS": "ATIVO"
+            })
+            st.toast(f"✅ R$ {valor_aposta:.2f} investidos em {jogo_clicado['C']}!")
+    except:
+        pass
     st.query_params.clear()
-if query_params.get("go") == "assertividade":
-    st.session_state.aba_ativa = "assertividade"
-    st.query_params.clear()
-if query_params.get("go") == "live":
-    st.session_state.aba_ativa = "live"
-    st.query_params.clear()
+    st.rerun()
 
 # --- FUNÇÃO DE CARREGAMENTO DE DADOS (CONEXÃO REAL GITHUB 2026) ---
 def carregar_dados_ia():
-    url_github = "https://raw.githubusercontent.com/Aritonapr/gestor-ia-apostas/main/data/database_diario.csv"
+    url_github = "https://githubusercontent.com"
     try:
         df = pd.read_csv(f"{url_github}?v={datetime.now().timestamp()}", on_bad_lines='skip')
         df.columns = [c.upper() for c in df.columns]
@@ -104,12 +112,11 @@ def processar_ia_bot():
         except:
             pass
     if len(vips) < 20:
-        # Fallback sincronizado mantendo correspondência com seu design visual real
         elite_casa = ["Bayer Leverkusen", "Barcelona", "Man City", "Man City", "Real Madrid", "Arsenal", "Bayern", "PSG", "Inter", "Milan", "Flamengo", "Palmeiras", "Liverpool", "Juventus", "Dortmund", "Leverkusen", "Napoli", "Benfica", "Porto", "Ajax"]
         elite_fora = ["Milan", "Napoli", "Benfica", "Milan", "Sevilla", "Chelsea", "Dortmund", "Lyon", "Juventus", "Atalanta", "Fluminense", "Santos", "Everton", "Roma", "Schalke", "Bremen", "Lazio", "Sporting", "Braga", "PSV"]
         for i in range(len(vips), 20):
             vips.append({
-                "C": elite_casa[i % 20], "F": elite_fora[i % 20], "P": f"{98 - (i // 4)}%",
+                "C": elite_casa[i % 20], "F": elite_fora[i % 20], "P": "98%",
                 "V": "72% (FAVORITO)", "G": "1.5+ (AMBOS TEMPOS)", "CT": "4.5 (HT: 2 | FT: 2)",
                 "E": "9.5 (C: 5 | F: 4)", "TM": "14+ (HT: 7 | FT: 7)", "CH": "9+ (HT: 4 | FT: 5)", "DF": "7+ (GOLEIROS ATIVOS)"
             })
@@ -138,6 +145,7 @@ def executar_scanner_live():
             novos_jogos.append({"C": c, "F": f, "P": f"{random.randint(88, 97)}%", "V": "VITORIA LIVE", "G": "+0.5 GOLS", "CT": "2.5 total", "E": "10.5 total", "TM": "18+ total", "CH": "10+ total", "DF": "8+ total"})
     st.session_state.jogos_live_ia = novos_jogos
 
+# Executa o motor invisível
 processar_ia_bot()
 
 # ==============================================================================
@@ -145,7 +153,7 @@ processar_ia_bot()
 # ==============================================================================
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+    @import url('https://googleapis.com');
     ::-webkit-scrollbar { display: none !important; }
     * { -ms-overflow-style: none !important; scrollbar-width: none !important; }
     [data-testid="stSidebarContent"] { overflow: hidden !important; background-color: #06090e !important; }
@@ -175,57 +183,48 @@ st.markdown("""
     .nav-item { color: #ffffff !important; font-size: 9.5px !important; text-transform: uppercase; font-weight: 700 !important; letter-spacing: 0.3px; transition: 0.3s ease; cursor: pointer; white-space: nowrap; text-decoration: none !important;}
     .nav-item:hover { color: #06b6d4 !important; }
 
-    /* Estilização Customizada dos Cards Premium */
+    /* Estilização dos Cards Escuros Premium */
     .card-ia {
-        background: linear-gradient(135deg, #11161d 0%, #0d1117 100%) !important;
-        border: 1px solid rgba(157, 84, 255, 0.15) !important;
+        background-color: #11161d !important;
+        border: 1px solid rgba(255,255,255,0.05) !important;
         border-radius: 8px !important;
-        padding: 16px !important;
+        padding: 20px !important;
         margin-bottom: 20px !important;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.4);
     }
     .badge-confianca {
         color: #9d54ff !important;
         font-weight: 700;
         font-size: 11px;
         text-transform: uppercase;
-        margin-bottom: 8px;
+        margin-bottom: 10px;
     }
     .titulo-confronto {
         color: #ffffff !important;
-        font-size: 15px !important;
+        font-size: 16px !important;
         font-weight: 700 !important;
-        margin: 4px 0 15px 0 !important;
+        margin: 5px 0 15px 0 !important;
     }
     .metric-row {
-        display: flex;
-        align-items: center;
-        gap: 8px;
         font-size: 12px;
         margin-bottom: 8px;
-        color: #e2e8f0;
+        color: #ffffff !important;
     }
-    .metric-label { color: #94a3b8; font-weight: 500; }
+    .metric-label { color: #888888; }
     
-    /* Botão Streamlit injetado no container visual */
+    /* Customização dos botões pretos do Streamlit na Sidebar */
     div.stButton > button {
-        background-color: #0066cc !important;
+        background-color: #0056b3 !important;
         color: white !important;
-        border: none !important;
+        font-weight: bold !important;
         border-radius: 4px !important;
-        font-weight: 700 !important;
-        font-size: 13px !important;
-        padding: 10px 0 !important;
-        transition: background 0.2s;
-    }
-    div.stButton > button:hover {
-        background-color: #0052a3 !important;
+        border: none !important;
     }
     </style>
 """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 3. INTERFACE VISUAL PRINCIPAL (HEADER FIXO SUPERIOR)
+# 3. INTERFACE VISUAL PRINCIPAL (HEADER SUPERIOR CONSTANTE)
 # ==============================================================================
 st.markdown("""
     <div class="betano-header">
@@ -241,37 +240,37 @@ st.markdown("""
             </div>
         </div>
         <div style="display: flex; gap: 10px; align-items: center;">
-            <button style="background:transparent; border:1px solid #fff; color:#fff; border-radius:4px; padding:6px 12px; font-size:11px; font-weight:700; cursor:pointer;">REGISTRAR</button>
-            <button style="background:#9d54ff; border:none; color:#fff; border-radius:4px; padding:6px 12px; font-size:11px; font-weight:700; cursor:pointer;">ENTRAR</button>
+            <button style="background:transparent; border:1px solid #fff; color:#fff; border-radius:4px; padding:6px 12px; font-size:11px; font-weight:700;">REGISTRAR</button>
+            <button style="background:#9d54ff; border:none; color:#fff; border-radius:4px; padding:6px 12px; font-size:11px; font-weight:700;">ENTRAR</button>
         </div>
     </div>
 """, unsafe_allow_html=True)
 
-# Barra Lateral estruturada para controle de rotas estáveis e exibição do Saldo
+# Barra Lateral fixa (Sidebar) para Navegação Controlada e Exibição de Saldo Real
 with st.sidebar:
     st.markdown("<h2 style='color:#9d54ff; font-weight:900;'>🎛️ PAINEL CONTROL</h2>", unsafe_allow_html=True)
     st.markdown(f"💰 **SALDO ATUAL BANCA:** R$ {st.session_state.banca_total:.2f}")
     st.markdown("---")
     
     if st.button("🎯 SCANNER PRÉ-LIVE", use_container_width=True):
-        st.session_state.aba_ativa = "home"
+        st.session_state.aba_active = "home"
         st.rerun()
     if st.button("🎥 SCANNER EM TEMPO REAL", use_container_width=True):
-        st.session_state.aba_ativa = "live"
+        st.session_state.aba_active = "live"
         st.rerun()
     if st.button("📊 HISTÓRICO DE CALLS", use_container_width=True):
-        st.session_state.aba_ativa = "assertividade"
+        st.session_state.aba_active = "assertividade"
         st.rerun()
 
 # ==============================================================================
-# 4. RENDERIZAÇÃO DE TELAS COM GRID PREMIUM
+# 4. EXIBIÇÃO DA TELA DO BILHETE OURO
 # ==============================================================================
 
 if st.session_state.aba_ativa == "home":
     st.markdown("<h2 style='color:#fff; font-weight:800; margin-bottom:5px;'>🎫 BILHETE OURO - TOP 20 ANALISES IA</h2>", unsafe_allow_html=True)
     st.markdown("<div style='background-color:#00c853; color:#fff; padding:6px 12px; border-radius:4px; font-size:11px; font-weight:700; display:inline-block; margin-bottom:25px;'>🟢 BIG DATA ATIVO: PADRÕES 2021-2026 CARREGADOS</div>", unsafe_allow_html=True)
     
-    # Grid de 4 colunas horizontais para os cards idênticos à imagem do sistema
+    # Processamento do grid estruturado de 4 colunas horizontais
     jogos_ia = st.session_state.top_20_ia
     for chunk_idx in range(0, len(jogos_ia), 4):
         cols = st.columns(4)
@@ -280,7 +279,7 @@ if st.session_state.aba_ativa == "home":
         for idx, jogo in enumerate(chunk):
             global_idx = chunk_idx + idx
             with cols[idx]:
-                # Renderização da estrutura interna HTML/CSS estruturada do Card
+                # Toda a estrutura do card, incluindo o botão azul na base, unificada em HTML puro!
                 st.markdown(f"""
                     <div class="card-ia">
                         <div class="badge-confianca">IA CONFIANÇA: {jogo['P']}</div>
@@ -292,32 +291,22 @@ if st.session_state.aba_ativa == "home":
                         <div class="metric-row">🏹 <span class="metric-label">TIROS META:</span> <b>{jogo['TM']}</b></div>
                         <div class="metric-row">🎯 <span class="metric-label">CHUTES GOL:</span> <b>{jogo['CH']}</b></div>
                         <div class="metric-row">🛡️ <span class="metric-label">DEFESAS:</span> <b>{jogo['DF']}</b></div>
+                        
+                        <a href="?investir_jogo={global_idx}" target="_self" style="text-decoration: none !important;">
+                            <div style="background-color: #0066cc; color: white; text-align: center; font-weight: 800; font-size: 13px; padding: 12px 0; border-radius: 4px; margin-top: 15px; cursor: pointer;">
+                                INVESTIMENTO: R$ 10.00
+                            </div>
+                        </a>
                     </div>
                 """, unsafe_allow_html=True)
-                
-                # Injeção segura do botão dinâmico com chave e execução controlada em Python
-                valor_aposta = 10.00
-                if st.button(f"INVESTIMENTO: R$ {valor_aposta:.2f}", key=f"btn_inv_{global_idx}", use_container_width=True):
-                    if st.session_state.banca_total >= valor_aposta:
-                        st.session_state.banca_total -= valor_aposta
-                        st.session_state.historico_calls.append({
-                            "DATA": datetime.now().strftime("%d/%m/%Y %H:%M"),
-                            "CONFRONTO": f"{jogo['C']} vs {jogo['F']}",
-                            "VALOR": valor_aposta,
-                            "RESULTADO": "AGUARDANDO"
-                        })
-                        st.toast(f"✅ Investimento computado para {jogo['C']} x {jogo['F']}!")
-                        st.rerun()
-                    else:
-                        st.error("❌ Saldo insuficiente na banca.")
 
 elif st.session_state.aba_ativa == "assertividade":
-    st.markdown("<h2 style='color:#fff;'>📊 Histórico das Operações</h2>", unsafe_allow_html=True)
+    st.markdown("<h2 style='color:#fff;'>📊 Histórico das Operações Realizadas</h2>", unsafe_allow_html=True)
     if st.session_state.historico_calls:
         st.dataframe(pd.DataFrame(st.session_state.historico_calls), use_container_width=True)
     else:
-        st.info("Nenhuma operação registrada na memória temporária deste ciclo.")
+        st.info("Nenhuma operação financeira foi registrada na memória deste ciclo.")
 
 elif st.session_state.aba_ativa == "live":
-    st.markdown("<h2 style='color:#fff;'>🎥 Scanner de Transmissões Jarvis Live</h2>", unsafe_allow_html=True)
-    st.write("Aguardando novas entradas automáticas da API...")
+    st.markdown("<h2 style='color:#fff;'>🎥 Monitor de Transmissões Jarvis Live</h2>", unsafe_allow_html=True)
+    st.write("Aguardando conexões da API em tempo real...")
